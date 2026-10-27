@@ -72,7 +72,9 @@ export interface SmartWebTestHook {
  *   suggestion-item          each suggestion (data-action=<ActionId>)
  *   adaptive-grid            the container whose children get reordered
  *   pattern-layer            the generative background
- *   dot-grid                 the transform dot visual
+ *   network-view             the live network visual (canvas; data-top, data-weights)
+ *   network-output           one per output node (data-action), shows the CSS probability
+ *   dot-grid                 the matrix3d lattice (src/cssnet/visual, no longer rendered by the app)
  *   debug-drawer, debug-toggle
  *   reset-model, export-model, import-model, replay-journey, mode-select
  */

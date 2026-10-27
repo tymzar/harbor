@@ -93,6 +93,8 @@ export class SmartWebController {
   private net: CssNet | null = null
   private host: HTMLElement | null = null
   private snap: ModelSnapshot | null = null
+  /** Live MLP weights for visualisation (row-major per contract). */
+  currentWeights() { return this.snap?.weights ?? null }
   private detach: (() => void) | null = null
   private chain: Promise<unknown> = Promise.resolve()
   private pendingLatencyT0: number | null = null

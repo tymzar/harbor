@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => { await openFresh(page) })
 
 test('renders every data-testid from contract.ts, backed by the real CSS net', async ({ page }) => {
   for (const a of ALL_ACTIONS) await expect(page.getByTestId(`action-${a}`), `action-${a}`).toHaveCount(1)
-  for (const id of ['suggestion-list', 'adaptive-grid', 'pattern-layer', 'dot-grid', 'debug-toggle',
+  for (const id of ['suggestion-list', 'adaptive-grid', 'pattern-layer', 'network-view', 'debug-toggle',
     'reset-model', 'export-model', 'import-model', 'replay-journey', 'mode-select']) {
     await expect(page.getByTestId(id), id).toHaveCount(1)
   }

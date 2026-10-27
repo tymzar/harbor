@@ -18,22 +18,21 @@ const transitions = Array.from({ length: N_F }, (_, i) => `--cn-f${i} 520ms cubi
 
 export const VISUAL_CSS = `${regs}
 .cn-pattern{position:absolute;inset:0;overflow:hidden;pointer-events:none;isolation:isolate;${squash};transition:${transitions}}
-.cn-pattern__base{position:absolute;left:50%;top:50%;width:160vmax;height:160vmax;margin:-80vmax 0 0 -80vmax;border-radius:50%;
+.cn-pattern__base{position:absolute;left:50%;top:50%;width:140vmax;height:140vmax;margin:-70vmax 0 0 -70vmax;
   background:
-    radial-gradient(circle at 30% 30%, oklch(78% 0.17 300 / .55) 0, transparent 38%),
-    radial-gradient(circle at 70% 65%, oklch(80% 0.16 200 / .5) 0, transparent 42%),
-    conic-gradient(from 0deg, oklch(45% 0.19 290), oklch(55% 0.16 220), oklch(70% 0.15 80), oklch(60% 0.2 350), oklch(45% 0.19 290));
+    radial-gradient(closest-side at 32% 38%, oklch(72% 0.09 255 / .42), transparent),
+    radial-gradient(closest-side at 70% 62%, oklch(80% 0.06 200 / .34), transparent);
   will-change:filter,transform;
-  filter:hue-rotate(calc(var(--cn-g0) * 160deg)) saturate(calc(0.7 + var(--cn-g1) * 1.1)) contrast(calc(0.85 + var(--cn-g2) * 0.6)) brightness(calc(0.75 + var(--cn-g3) * 0.6)) blur(calc(28px + var(--cn-g11) * 30px));
-  transform:rotate(calc(var(--cn-g4) * 120deg - 30deg)) scale(calc(0.9 + var(--cn-g5) * 0.3)) translate(calc(var(--cn-g6) * 8vmax - 4vmax), calc(var(--cn-g7) * 8vmax - 4vmax))}
-.cn-pattern__glow{position:absolute;left:50%;top:50%;width:70vmax;height:70vmax;margin:-35vmax 0 0 -35vmax;border-radius:50%;
-  background:radial-gradient(circle, oklch(85% 0.14 160 / .6) 0, oklch(70% 0.2 320 / .25) 35%, transparent 62%);
-  mix-blend-mode:screen;will-change:transform,opacity,filter;
-  opacity:calc(0.25 + var(--cn-g8) * 0.6);
-  filter:hue-rotate(calc(var(--cn-g12) * 200deg)) blur(calc(10px + var(--cn-g13) * 20px));
-  transform:translate(calc(var(--cn-g9) * 50vmax - 25vmax), calc(var(--cn-g10) * 50vmax - 25vmax)) scale(calc(0.8 + var(--cn-g14) * 0.7))}
-.cn-pattern__grain{position:absolute;inset:0;mix-blend-mode:overlay;opacity:calc(0.15 + var(--cn-g15) * 0.35);
-  background:repeating-linear-gradient(115deg, transparent 0 7px, oklch(100% 0 0 / .05) 7px 8px);will-change:opacity}
+  filter:hue-rotate(calc(var(--cn-g0) * 36deg - 18deg)) saturate(calc(0.8 + var(--cn-g1) * 0.5)) blur(calc(56px + var(--cn-g11) * 24px));
+  transform:rotate(calc(var(--cn-g4) * 40deg - 20deg)) scale(calc(0.92 + var(--cn-g5) * 0.16)) translate(calc(var(--cn-g6) * 6vmax - 3vmax), calc(var(--cn-g7) * 6vmax - 3vmax))}
+.cn-pattern__glow{position:absolute;left:50%;top:50%;width:60vmax;height:60vmax;margin:-30vmax 0 0 -30vmax;
+  background:radial-gradient(closest-side, oklch(82% 0.05 270 / .35), transparent);
+  will-change:transform,opacity,filter;
+  opacity:calc(0.35 + var(--cn-g8) * 0.4);
+  filter:blur(calc(40px + var(--cn-g13) * 20px)) hue-rotate(calc(var(--cn-g12) * 30deg - 15deg));
+  transform:translate(calc(var(--cn-g9) * 30vmax - 15vmax), calc(var(--cn-g10) * 30vmax - 15vmax)) scale(calc(0.85 + var(--cn-g14) * 0.3))}
+.cn-pattern__grain{position:absolute;inset:0;opacity:calc(0.035 + var(--cn-g15) * 0.02);will-change:opacity;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
 .cn-dotgrid{position:relative;perspective:var(--cn-persp, 700px);display:grid;place-items:center;overflow:hidden;pointer-events:none;${squash};transition:${transitions}}
 .cn-dotgrid__m{width:var(--cn-size, 240px);height:var(--cn-size, 240px);will-change:transform}
