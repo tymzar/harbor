@@ -30,6 +30,10 @@ test('intensity changes the MLP ranking inside a category', async ({ page }) => 
     afterCalm: { reading: afterCalm[ri], maps: afterCalm[mi] },
     afterRushed: { reading: afterRushed[ri], maps: afterRushed[mi] },
     stats: await page.evaluate(() => window.__smartweb.stats()),
+    // Diagnostics: a non-finite CSS read (seen once, intermittently) shows up next to the JS reference.
+    js: await page.evaluate(() => window.__smartweb.jsOutputs()),
+    cssNow: await mlp(),
+    source: await page.evaluate(() => window.__smartweb.netSource()),
   }
   recordMetrics('intensity', r)
   expect(afterCalm[ri], JSON.stringify(r)).toBeGreaterThan(afterCalm[mi])

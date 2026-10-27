@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { CARD_IDS } from '../src/cssnet/contract'
+import { CARDS, CARD_IDS } from '../src/cssnet/contract'
 import { CALM, NORMAL, RUSHED, SCREENS, humanClick, l1, openFresh, recordMetrics, resetMouse } from './helpers'
 
 mkdirSync(SCREENS, { recursive: true })
@@ -26,7 +26,7 @@ const netProbe = (page: Page) => page.evaluate(() => {
     // CSS-driven nodes: values live in the computing elements' own styles.
     outputs: [...el.querySelectorAll<HTMLElement>('[data-net-scope][data-active] [data-node=output]')]
       .sort((a, b) => +a.dataset.k! - +b.dataset.k!)
-      .map((o) => ({ pct: Number(o.computedStyleMap().get('--cn-pct')!.toString()), top: Number(o.computedStyleMap().get('--nv-top')!.toString()) })),
+      .map((o) => ({ k: +o.dataset.k!, pct: Number(o.computedStyleMap().get('--cn-pct')!.toString()), top: Number(o.computedStyleMap().get('--nv-top')!.toString()) })),
     hiddenW: [...el.querySelectorAll<HTMLElement>('[data-net-scope][data-active] [data-node=hidden]')]
       .sort((a, b) => +a.dataset.j! - +b.dataset.j!).map((h) => parseFloat(getComputedStyle(h).width)),
   }
@@ -75,12 +75,15 @@ test('pattern layer and network view respond to the network', async ({ page }) =
   // The network view draws the live weights and shows the CSS engine's own outputs.
   expect(d1.lit, 'canvas has drawn content').toBeGreaterThan(500)
   expect(d1.weights).not.toBe(d0.weights)
-  expect(d1.outputs).toHaveLength(18) // all outputs mounted; the stylesheet masks other categories
-  const top = css.indexOf(Math.max(...css))
+  // The active category's net builds output nodes only for its own 6 cards, keyed by global index data-k.
+  expect(d1.outputs).toHaveLength(6)
+  const ks = d1.outputs.map((o) => o.k)
+  expect(ks.map((k) => CARDS[k].category), 'active scope outputs belong to the current category').toEqual(Array(6).fill('home'))
+  const top = ks.reduce((bi, k) => (css[k] > css[bi] ? k : bi), ks[0])
   expect(d1.top, 'network view top output = CSS argmax').toBe(CARD_IDS[top])
   // Nodes are drawn by CSS: printed percentages, argmax flag and hidden sizes come from the stylesheet.
-  for (const [k, o] of d1.outputs.entries()) expect(o.pct, `output ${k} pct`).toBe(Math.round(css[k] * 100))
-  expect(d1.outputs.map((o) => o.top).indexOf(1), 'CSS argmax flag').toBe(top)
+  for (const o of d1.outputs) expect(o.pct, `output ${o.k} pct`).toBe(Math.round(css[o.k] * 100))
+  expect(d1.outputs.filter((o) => o.top === 1).map((o) => o.k), 'CSS argmax flag').toEqual([top])
   await checkNodes(page, 'calc')
 })
 
@@ -104,9 +107,11 @@ test('CSS-driven nodes track the network in every engine mode', async ({ page })
     await humanClick(page, 'card-tidepools-open', NORMAL)
     await checkNodes(page, mode)
     const pcts = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-net-scope][data-active] [data-node=output]')]
-      .sort((a, b) => +a.dataset.k! - +b.dataset.k!).map((o) => Number(o.computedStyleMap().get('--cn-pct')!.toString())))
+      .map((o) => ({ k: +o.dataset.k!, pct: Number(o.computedStyleMap().get('--cn-pct')!.toString()) })))
     const css = await page.evaluate(() => window.__smartweb.cssOutputs())
-    expect(pcts, `${mode}: CSS counter percentages`).toEqual(css.map((v) => Math.round(v * 100)))
+    expect(pcts.map((o) => o.k).sort((a, b) => a - b), `${mode}: active scope = explore's outputs`)
+      .toEqual(CARDS.flatMap((c, k) => (c.category === 'explore' ? [k] : [])))
+    for (const o of pcts) expect(o.pct, `${mode}: CSS counter percentage of output ${o.k}`).toBe(Math.round(css[o.k] * 100))
     // Masked outputs (other categories) are invisible, in-scope ones visible: opacity is var(--cn-m{k}).
     const op = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-net-scope][data-active] [data-node=output]')]
       .sort((a, b) => +a.dataset.k! - +b.dataset.k!).map((o) => Number(getComputedStyle(o).opacity)))

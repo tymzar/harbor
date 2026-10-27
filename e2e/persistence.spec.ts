@@ -33,11 +33,15 @@ test('the learned order is applied automatically on reload; reset returns to the
   await enter(page, 'library', NORMAL)
   expect(await domOrder(page)).toEqual(before.orders.library)
 
+  await page.getByTestId('nav-model').click()
   await page.getByTestId('reset-model').click()
   await expect.poll(async () => (await stats(page)).examples).toBe(0)
   await page.waitForTimeout(SAVE_WAIT)
   await page.reload(); await ready(page)
+  // The app lands on the Home category page.
+  await expect(page.getByTestId('adaptive-grid')).toBeVisible()
   expect(await domOrder(page)).toEqual(cardsOf('home'))
+  expect(await page.evaluate(() => window.__smartweb.navOrder())).toEqual([...CATEGORIES])
   for (const c of CATEGORIES) expect((await snapshot(page)).orders[c]).toEqual(cardsOf(c))
   recordMetrics('persistence_reload', { ordersBefore: before.orders, ordersAfterReload: after.orders, examples: before.stats.examples })
 })
@@ -60,6 +64,7 @@ test('export: URL fragment and JSON file reproduce the orders in fresh browser c
   await page.waitForTimeout(SAVE_WAIT)
   const src = await snapshot(page)
 
+  await page.getByTestId('nav-model').click()
   await page.getByTestId('debug-toggle').click()
   await page.getByTestId('export-link').click()
   const linkEl = page.getByTestId('debug-drawer').getByText(/^link: /)
@@ -81,6 +86,7 @@ test('export: URL fragment and JSON file reproduce the orders in fresh browser c
 
   const ctxB = await browser.newContext(); const b = await ctxB.newPage()
   await b.goto('/'); await ready(b)
+  await b.getByTestId('nav-model').click()
   const chooserP = b.waitForEvent('filechooser')
   await b.getByTestId('import-model').click()
   await (await chooserP).setFiles({ name: 'model.json', mimeType: 'application/json', buffer: Buffer.from(json) })
@@ -88,6 +94,9 @@ test('export: URL fragment and JSON file reproduce the orders in fresh browser c
   const viaJson = await snapshot(b)
   expect(viaJson.orders).toEqual(src.orders)
   expect(maxAbsDiff(flat(viaJson.w), flat(src.w))).toBe(0)
+  expect(await b.evaluate(() => window.__smartweb.navOrder())).toEqual(await page.evaluate(() => window.__smartweb.navOrder()))
+  await b.getByTestId('nav-home').click()
+  expect(await domOrder(b)).toEqual(src.orders.home)
   recordMetrics('persistence_export', { fragmentChars: link.split('#m=')[1].length, jsonBytes: json.length, orders: src.orders })
   await ctxA.close(); await ctxB.close()
 })
