@@ -1,14 +1,15 @@
 import { memo, useState, type ComponentType, type ReactNode } from 'react'
-import { Button, Drawer, Kbd, Tooltip } from '@heroui/react'
+import { Avatar, Button, Chip, Drawer, Kbd, Popover, Tooltip } from '@heroui/react'
 import { motion } from 'motion/react'
-import { Bars, BookOpen, Compass, Cpu, House, LayoutCells, Magnifier, Play, Sliders } from '@gravity-ui/icons'
+import { Bars, BellDot, BookOpen, Compass, Cpu, House, Magnifier, Sparkles, Sun } from '@gravity-ui/icons'
 import { cardsOf, type Category } from '../cssnet/contract'
 import { CATEGORY_INFO } from './catalog'
 import type { AppState, SmartWebController } from './controller'
+import { NOTIFICATIONS, PRODUCT, USER, ago, greeting, longDate, useNow } from './content'
 
 export type Page = 'overview' | 'category' | 'model'
 export const PAGE_INFO: Record<Exclude<Page, 'category'>, { title: string; lede: string }> = {
-  overview: { title: 'Overview', lede: 'Everything the model has learned so far.' },
+  overview: { title: 'Today', lede: '' },
   model: { title: 'Model', lede: 'One network, three scopes, computed by the stylesheet.' },
 }
 
@@ -57,15 +58,15 @@ export function SidebarContents({ state, c, page, onPage, onNavigate }: { state:
       <div className="flex items-center gap-2.5 px-2">
         <Mark />
         <div className="flex flex-col leading-tight">
-          <span className="text-sm font-semibold tracking-tight">smart-web</span>
-          <span className="text-xs text-muted">Learns your layout</span>
+          <span className="text-sm font-semibold tracking-tight">{PRODUCT.name}</span>
+          <span className="text-xs text-muted">{PRODUCT.tagline}</span>
         </div>
       </div>
       <nav className="flex flex-col gap-0.5" aria-label="Pages">
-        <NavItem testId="nav-overview" icon={LayoutCells} label="Overview" active={page === 'overview'} onPress={() => { onPage('overview'); onNavigate?.() }} />
+        <NavItem testId="nav-overview" icon={Sun} label="Today" active={page === 'overview'} onPress={() => { onPage('overview'); onNavigate?.() }} />
       </nav>
       <nav className="flex flex-col gap-0.5" aria-label="Categories" data-testid="nav-categories">
-        <span className="px-2.5 pb-1 text-xs text-muted">Categories</span>
+        <span className="px-2.5 pb-1 text-xs text-muted">Spaces</span>
         {/* Learned order: the categories you use most move up (same model, same hysteresis as the cards). */}
         {/* layoutDependency: measure only when the order changes, not on every visit count update. */}
         {state.navOrder.map((cat, i) => (
@@ -83,9 +84,7 @@ export function SidebarContents({ state, c, page, onPage, onNavigate }: { state:
       </nav>
       <div className="mt-auto flex flex-col gap-3">
         <NavItem testId="nav-model" icon={Cpu} label="Model" active={page === 'model'} onPress={() => { onPage('model'); onNavigate?.() }} />
-        <p className="px-2.5 text-xs text-muted">
-          {state.netSource === 'cssnet' ? 'Ranking runs in CSS' : 'Ranking runs in JavaScript'} · {state.workerKind === 'worker' ? 'trained in a worker' : 'trained in-thread'}
-        </p>
+        <UserRow />
       </div>
     </div>
   )
@@ -99,11 +98,78 @@ export const Sidebar = memo(function Sidebar({ state, c, page, onPage }: { state
   )
 }, (a, b) => a.page === b.page && a.state.category === b.state.category && a.state.navOrder === b.state.navOrder && a.state.engaged === b.state.engaged && a.state.netSource === b.state.netSource && a.state.workerKind === b.state.workerKind)
 
-export const Navbar = memo(function Navbar({ state, c, page, onPage, debugOpen, onToggleDebug, onSearch }: { state: AppState; c: SmartWebController; page: Page; onPage: (p: Page) => void; debugOpen: boolean; onToggleDebug: () => void; onSearch: () => void }) {
-  const [menu, setMenu] = useState(false)
-  const info = page === 'category' ? { ...CATEGORY_INFO[state.category], lede: `${CATEGORY_INFO[state.category].lede} Ordered by how you use it.` } : PAGE_INFO[page]
+function UserRow() {
   return (
-    <header className="flex items-center gap-3 px-4 pb-2 pt-6 sm:px-6 lg:px-8">
+    <div className="flex items-center gap-2.5 px-2 py-1.5">
+      <Avatar size="sm" color="accent" variant="soft"><Avatar.Fallback>{USER.initials}</Avatar.Fallback></Avatar>
+      <div className="flex min-w-0 flex-col leading-tight">
+        <span className="truncate text-sm font-medium">{USER.name}</span>
+        <span className="truncate text-xs text-muted">{USER.email}</span>
+      </div>
+    </div>
+  )
+}
+
+function Notifications({ onOpenCard }: { onOpenCard: (cat: Category) => void }) {
+  const t = useNow()
+  return (
+    <Popover>
+      <Tooltip delay={400}>
+        <Button isIconOnly size="sm" variant="tertiary" aria-label="Notifications"><BellDot className="size-4" /></Button>
+        <Tooltip.Content>Notifications</Tooltip.Content>
+      </Tooltip>
+      <Popover.Content placement="bottom end" className="w-80">
+        <Popover.Dialog className="p-2">
+          <Popover.Heading className="px-2 pb-1 pt-1 text-sm font-medium">Notifications</Popover.Heading>
+          <ul className="flex flex-col">
+            {NOTIFICATIONS.map((n) => (
+              <li key={n.text}>
+                <Button variant="ghost" fullWidth className="h-auto flex-col items-start gap-0.5 rounded-lg px-2 py-2 text-left" onPress={() => onOpenCard('home')}>
+                  <span className="text-sm">{n.text}</span>
+                  <span className="text-xs text-muted">{n.at ? ago(t, t - n.at) : 'in a few minutes'}</span>
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </Popover.Dialog>
+      </Popover.Content>
+    </Popover>
+  )
+}
+
+function Heading({ state, page }: { state: AppState; page: Page }) {
+  const t = useNow()
+  if (page === 'overview') return <TitleBlock title={`${greeting(t)}, ${USER.first}`} lede={longDate(t)} />
+  if (page === 'model') return <TitleBlock title={PAGE_INFO.model.title} lede={PAGE_INFO.model.lede} />
+  const info = CATEGORY_INFO[state.category]
+  return (
+    <TitleBlock title={info.title} lede={info.lede} badge={
+      <Tooltip delay={300}>
+        <Button size="sm" variant="ghost" aria-label="Arranged for you" className="h-6 min-w-0 rounded-full px-0">
+          <Chip size="sm" variant="soft" color="accent" className="gap-1"><Sparkles className="size-3" />Arranged for you</Chip>
+        </Button>
+        <Tooltip.Content className="max-w-60">The cards you reach for most move to the front. It learns on this device only.</Tooltip.Content>
+      </Tooltip>
+    } />
+  )
+}
+
+function TitleBlock({ title, lede, badge }: { title: string; lede: string; badge?: ReactNode }) {
+  return (
+    <div className="flex min-w-0 flex-col">
+      <div className="flex items-center gap-2">
+        <h1 className="truncate text-xl font-semibold tracking-tight">{title}</h1>
+        {badge}
+      </div>
+      <p className="truncate text-sm text-muted">{lede}</p>
+    </div>
+  )
+}
+
+export const Navbar = memo(function Navbar({ state, c, page, onPage, onSearch, onOpenCategory }: { state: AppState; c: SmartWebController; page: Page; onPage: (p: Page) => void; onSearch: () => void; onOpenCategory: (cat: Category) => void }) {
+  const [menu, setMenu] = useState(false)
+  return (
+    <header className="flex items-center gap-3 px-4 pb-2 pt-8 sm:px-6 lg:px-8">
       <Drawer isOpen={menu} onOpenChange={setMenu}>
         <Button isIconOnly variant="ghost" aria-label="Open navigation" className="rounded-full lg:hidden" onPress={() => setMenu(true)}>
           <Bars className="size-4" />
@@ -119,30 +185,18 @@ export const Navbar = memo(function Navbar({ state, c, page, onPage, debugOpen, 
           </Drawer.Content>
         </Drawer.Backdrop>
       </Drawer>
-      <div className="flex min-w-0 flex-col">
-        <h1 className="truncate text-xl font-semibold tracking-tight">{info.title}</h1>
-        <p className="truncate text-sm text-muted">{info.lede}</p>
-      </div>
+      <Heading state={state} page={page} />
       <div className="ml-auto flex items-center gap-2">
         <Button data-testid="search-open" size="sm" variant="tertiary" aria-label="Search" onPress={onSearch} className="gap-2">
           <Magnifier className="size-4" />
           <span className="hidden sm:inline">Search</span>
           <Kbd className="hidden sm:inline-flex">⌘K</Kbd>
         </Button>
-        <Button data-testid="replay-journey" size="sm" variant="secondary" isDisabled={!state.ready || state.replaying} onPress={() => c.replay()}>
-          <Play className="size-4" />
-          {state.replaying ? 'Replaying…' : 'Replay'}
-        </Button>
-        <Tooltip delay={300}>
-          <Button data-testid="debug-toggle" isIconOnly size="sm" variant="tertiary" aria-label={debugOpen ? 'Hide debug' : 'Show debug'} aria-expanded={debugOpen} onPress={onToggleDebug}>
-            <Sliders className="size-4" />
-          </Button>
-          <Tooltip.Content>{debugOpen ? 'Hide debug' : 'Debug'}</Tooltip.Content>
-        </Tooltip>
+        <Notifications onOpenCard={onOpenCategory} />
       </div>
     </header>
   )
-}, (a, b) => a.page === b.page && a.debugOpen === b.debugOpen && a.state.category === b.state.category && a.state.ready === b.state.ready && a.state.replaying === b.state.replaying)
+}, (a, b) => a.page === b.page && a.state.category === b.state.category)
 
 /** Category switcher for the mobile drawer (no test ids, so the desktop ones stay unique). */
 function MobileNav({ state, c, page, onPage, onNavigate }: { state: AppState; c: SmartWebController; page: Page; onPage: (p: Page) => void; onNavigate: () => void }) {
@@ -151,7 +205,7 @@ function MobileNav({ state, c, page, onPage, onNavigate }: { state: AppState; c:
       {(['overview'] as const).map((pg) => (
         <Button key={pg} variant="ghost" fullWidth onPress={() => { onPage(pg); onNavigate() }}
           className={`h-10 justify-start gap-2.5 rounded-xl px-2.5 ${page === pg ? 'bg-surface shadow-sm' : 'text-muted'}`}>
-          {pg === 'overview' ? <LayoutCells className="size-4" /> : <Cpu className="size-4" />}{PAGE_INFO[pg].title}
+          <Sun className="size-4" />{PAGE_INFO[pg].title}
         </Button>
       ))}
       {state.navOrder.map((cat) => {

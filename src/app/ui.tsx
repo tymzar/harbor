@@ -2,8 +2,9 @@ import { Component, memo, useMemo, type ReactNode } from 'react'
 import { Button, Card, Tooltip } from '@heroui/react'
 import { motion } from 'motion/react'
 import { CARD_IDS, CATEGORIES, type CardId, type Category, type CssNetMode } from '../cssnet/contract'
+import { CardPreview } from './previews'
 import { RAW_FEATURE_NAMES, INPUT_NAMES } from '../signals/features'
-import { CARD_INFO, CATEGORY_INFO } from './catalog'
+import { CATEGORY_INFO } from './catalog'
 import type { AppState, SmartWebController } from './controller'
 
 export function percentile(xs: number[], p: number): number {
@@ -35,13 +36,7 @@ function ShareIcon() {
  * the count reconciles the card shell and that span, not the three buttons and two tooltips.
  */
 const FeatureCard = memo(function FeatureCard({ id, n, fav, c }: { id: CardId; n: number; fav: boolean; c: SmartWebController }) {
-  const info = CARD_INFO[id]
-  const header = useMemo(() => (
-    <Card.Header className="gap-1">
-      <Card.Title className="text-base font-medium tracking-tight">{info.title}</Card.Title>
-      <Card.Description className="text-sm text-muted">{info.desc}</Card.Description>
-    </Card.Header>
-  ), [info])
+  const header = useMemo(() => <CardPreview id={id} />, [id])
   const open = useMemo(() => (
     <Button data-testid={`card-${id}-open`} size="sm" className="rounded-full" onPress={() => c.engage(id, 'open')}>Open</Button>
   ), [id, c])
@@ -63,11 +58,11 @@ const FeatureCard = memo(function FeatureCard({ id, n, fav, c }: { id: CardId; n
     </span>
   ), [id, fav, c])
   return (
-    <Card data-testid={`card-${id}`} className="h-44 justify-between rounded-2xl p-5">
+    <Card data-testid={`card-${id}`} className="h-[19rem] justify-between gap-0 overflow-hidden rounded-2xl p-0">
       {header}
-      <Card.Footer className="flex items-center gap-1">
+      <Card.Footer className="flex items-center gap-1 px-5 pb-4 pt-3">
         {open}
-        {n > 0 && <span className="ml-2 text-xs tabular-nums text-muted">{n} {n === 1 ? 'visit' : 'visits'}</span>}
+        {n > 0 && <span className="ml-2 text-xs tabular-nums text-muted">{n} {n === 1 ? 'open' : 'opens'}</span>}
         {actions}
       </Card.Footer>
     </Card>

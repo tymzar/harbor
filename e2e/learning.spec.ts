@@ -43,6 +43,7 @@ test('order is applied on entry: train Explore, leave, come back', async ({ page
 
 test('replay journey teaches clear per-category preferences', async ({ page }) => {
   await openFresh(page)
+  await page.getByTestId('nav-model').click()
   await page.getByTestId('replay-journey').click()
   await expect(page.getByTestId('replay-journey')).toBeEnabled({ timeout: 60_000 })
   await page.evaluate(() => window.__smartweb.idle())

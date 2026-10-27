@@ -2,12 +2,13 @@ import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyn
 import { MotionConfig } from 'motion/react'
 import { Card, Tabs } from '@heroui/react'
 import type { AppState, SmartWebController } from './app/controller'
-import { CARD_IDS, CATEGORIES, cardsOf, type Category } from './cssnet/contract'
+import { CARDS, CARD_IDS, CATEGORIES, cardsOf, type CardId, type Category } from './cssnet/contract'
 import { CARD_INFO, CATEGORY_INFO } from './app/catalog'
 import { AdaptiveGrid, DebugDrawer, NetworkHeader, VisualBoundary } from './app/ui'
 import { Navbar, Sidebar, type Page } from './app/shell'
 import { ActivityTable, KpiStrip, RankingQualityCard, ScoreBreakdownCard, UsageCard } from './app/dashboard'
 import { EngineCard, LiveSignalsCard, OrdersOverview } from './app/overview'
+import { TodayPage } from './app/today'
 import { ModelBar } from './app/modelbar'
 import { SearchPalette } from './app/search'
 import { useAfterPaint } from './app/afterPaint'
@@ -26,40 +27,13 @@ const OUT_LABELS = CARD_IDS.map((id) => CARD_INFO[id].title)
 
 type ModelTab = 'network' | 'learning' | 'engine'
 
-/** Everything below the fold renders from a lagging copy of the state that catches up after the reorder has been painted. */
-const OverviewPage = memo(function OverviewPage({ state, c, onOpen }: { state: AppState; c: SmartWebController; onOpen: (cat: Category) => void }) {
+/** Model page panels render from a lagging copy of the state that catches up after the reorder has been painted. */
+const LearningTab = memo(function LearningTab({ state, onOpen }: { state: AppState; onOpen: (cat: Category) => void }) {
   const d = useAfterPaint(state)
   return (
     <>
       <KpiStrip state={d} />
       <OrdersOverview state={d} onOpen={onOpen} />
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
-        <LiveSignalsCard state={d} />
-        <RankingQualityCard state={d} />
-        <UsageCard state={d} />
-      </div>
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-        <EngineCard state={d} c={c} />
-        <ActivityTable state={d} />
-      </div>
-    </>
-  )
-})
-
-const CategoryExtras = memo(function CategoryExtras({ state }: { state: AppState }) {
-  const d = useAfterPaint(state)
-  return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-      <ScoreBreakdownCard state={d} />
-      <LiveSignalsCard state={d} />
-    </div>
-  )
-})
-
-const LearningTab = memo(function LearningTab({ state }: { state: AppState }) {
-  const d = useAfterPaint(state)
-  return (
-    <>
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         {CATEGORIES.map((cat) => <ScoreBreakdownCard key={cat} state={d} category={cat} />)}
       </div>
@@ -68,6 +42,7 @@ const LearningTab = memo(function LearningTab({ state }: { state: AppState }) {
         <LiveSignalsCard state={d} />
         <UsageCard state={d} />
       </div>
+      <ActivityTable state={d} />
     </>
   )
 })
@@ -92,6 +67,11 @@ export default function App({ controller: c }: { controller: SmartWebController 
   // Measure the model's size whenever the Model page opens or the model changes while it is open.
   useEffect(() => { if (page === 'model' && state.ready) void c.measureSize() }, [c, page, state.ready, state.stats.examples])
   const openCategory = useCallback((cat: Category) => { setPage('category'); void c.enter(cat) }, [c])
+  const openCard = useCallback(async (id: CardId) => {
+    setPage('category')
+    await c.enter(CARDS[CARD_IDS.indexOf(id)].category as Category)
+    await c.engage(id, 'open')
+  }, [c])
   const [visuals, setVisuals] = useState<CssNetVisuals>({})
 
   useEffect(() => {
@@ -110,21 +90,20 @@ export default function App({ controller: c }: { controller: SmartWebController 
   const groups = CATEGORIES.map((cat) => ({ title: CATEGORY_INFO[cat].title, size: 6, active: cat === state.category }))
   return (
     <MotionConfig reducedMotion="user">
-      <div className="relative min-h-dvh bg-background text-foreground">
+      <div className="relative min-h-dvh bg-background text-foreground" data-app-ready={state.ready ? '' : undefined}>
         {PatternLayer && (
-          <div className="pointer-events-none fixed inset-0 opacity-60" aria-hidden>
+          <div className={`pointer-events-none fixed inset-0 transition-opacity duration-500 ${page === 'model' ? 'opacity-60' : 'opacity-0'}`} aria-hidden>
             <VisualBoundary name="PatternLayer"><PatternLayer {...visualProps} /></VisualBoundary>
           </div>
         )}
         <div className="relative flex">
           <Sidebar state={state} c={c} page={page} onPage={setPage} />
           <div className="flex min-w-0 flex-1 flex-col">
-            <Navbar state={state} c={c} page={page} onPage={setPage} debugOpen={debugOpen} onToggleDebug={toggleDebug} onSearch={openSearch} />
+            <Navbar state={state} c={c} page={page} onPage={setPage} onSearch={openSearch} onOpenCategory={openCategory} />
             <main className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 pb-12 pt-4 sm:px-6 lg:px-8">
               <AdaptiveGrid state={state} c={c} shown={page === 'category'} />
-              {page === 'category' && <CategoryExtras state={state} />}
-              {page === 'overview' && <OverviewPage state={state} c={c} onOpen={openCategory} />}
-              {page === 'model' && <ModelBar state={state} c={c} />}
+              {page === 'overview' && <TodayPage state={state} onOpen={openCard} />}
+              {page === 'model' && <ModelBar state={state} c={c} debugOpen={debugOpen} onToggleDebug={toggleDebug} />}
               {page === 'model' && (
                 <Tabs selectedKey={tab} onSelectionChange={(k) => setTab(k as ModelTab)}>
                   <Tabs.ListContainer>
@@ -136,7 +115,7 @@ export default function App({ controller: c }: { controller: SmartWebController 
                   </Tabs.ListContainer>
                 </Tabs>
               )}
-              {page === 'model' && tab === 'learning' && <LearningTab state={state} />}
+              {page === 'model' && tab === 'learning' && <LearningTab state={state} onOpen={openCategory} />}
               {page === 'model' && tab === 'engine' && <EngineCard state={state} c={c} />}
               {/* Always mounted: the CSS nets live in this card. Offscreen (not display:none) when not shown. */}
               <div className={showNetwork ? '' : 'pointer-events-none fixed top-0 -left-[10000px] w-[1100px]'} aria-hidden={!showNetwork} data-offscreen={showNetwork ? undefined : ''}>

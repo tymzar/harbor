@@ -99,8 +99,9 @@ export interface SmartWebTestHook {
  *   nav-<Category>                 category tabs
  *   adaptive-grid                  the current category's cards (children carry data-card)
  *   card-<CardId>                  a card; inside it: card-<CardId>-open, -favorite, -share
- *   pattern-layer                  the generative background
+ *   pattern-layer                  the generative background (visible on the Model page only)
  *   network-view, cssnet-host      the live network; CSS nodes carry data-node / data-k
- *   debug-drawer, debug-toggle
- *   reset-model, export-model, export-link, import-model, replay-journey, mode-select
+ *   debug-drawer
+ *   Model page: debug-toggle, reset-model, export-model, export-link, import-model, replay-journey, mode-select
+ * The app root carries data-app-ready once the model has loaded.
  */

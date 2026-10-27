@@ -339,7 +339,10 @@ function NetworkViewImpl(props: NetworkViewProps) {
   const geo = width ? geometry(width, height, [I, H, O], groupSizes) : null
   let top = 0
   outV.forEach((v, k) => { if (v > (outV[top] ?? 0)) top = k })
-  const wsig = props.weights ? Array.from(props.weights.W1).reduce((a, b) => a + Math.abs(b), 0).toFixed(3) : 'none'
+  // Fingerprint of all W1 and W2 weights, position-weighted, so any training step changes it (a sum of |W1| alone moved by ~0.003 over six presses).
+  const wsig = props.weights
+    ? [props.weights.W1, props.weights.W2].flatMap((m) => Array.from(m)).reduce((a: number, w: number, i: number) => a + w * (1 + (i % 97)), 0).toFixed(6)
+    : 'none'
 
   return (
     <div

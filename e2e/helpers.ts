@@ -11,8 +11,7 @@ declare global { interface Window { __smartweb: Hook } }
 
 export async function ready(page: Page) {
   await page.waitForFunction(() => {
-    const b = document.querySelector('[data-testid=replay-journey]') as HTMLButtonElement | null
-    return !!window.__smartweb && !!b && !b.disabled
+    return !!window.__smartweb && !!document.querySelector('[data-app-ready]')
   })
 }
 

@@ -1,12 +1,12 @@
 import { Fragment, useRef } from 'react'
 import { Button, Card } from '@heroui/react'
-import { ArrowDownToLine, ArrowRotateLeft, ArrowUpFromLine, Link as LinkIcon } from '@gravity-ui/icons'
+import { ArrowDownToLine, ArrowRotateLeft, ArrowUpFromLine, Link as LinkIcon, Play, Sliders } from '@gravity-ui/icons'
 import type { AppState, SmartWebController } from './controller'
 
 const kb = (b: number) => `${(b / 1024).toFixed(1)} KB`
 
 /** Model page header: how big the model is, and what you can do with it. */
-export function ModelBar({ state, c }: { state: AppState; c: SmartWebController }) {
+export function ModelBar({ state, c, debugOpen, onToggleDebug }: { state: AppState; c: SmartWebController; debugOpen: boolean; onToggleDebug: () => void }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const m = state.modelSize
   const stats: [string, string, string][] = m
@@ -23,6 +23,8 @@ export function ModelBar({ state, c }: { state: AppState; c: SmartWebController 
         <Button data-testid="export-model" size="sm" variant="tertiary" isDisabled={!state.ready} onPress={() => void c.exportJson()}><ArrowDownToLine className="size-4" />Export JSON</Button>
         <Button data-testid="export-link" size="sm" variant="tertiary" isDisabled={!state.ready} onPress={() => void c.exportLink()}><LinkIcon className="size-4" />Copy Link</Button>
         <Button data-testid="import-model" size="sm" variant="tertiary" isDisabled={!state.ready} onPress={() => fileRef.current?.click()}><ArrowUpFromLine className="size-4" />Import</Button>
+        <Button data-testid="replay-journey" size="sm" variant="tertiary" isDisabled={!state.ready || state.replaying} onPress={() => c.replay()}><Play className="size-4" />{state.replaying ? 'Replaying…' : 'Replay Demo'}</Button>
+        <Button data-testid="debug-toggle" size="sm" variant="tertiary" aria-expanded={debugOpen} onPress={onToggleDebug}><Sliders className="size-4" />{debugOpen ? 'Hide Debug' : 'Debug'}</Button>
         <Button data-testid="reset-model" size="sm" variant="danger-soft" className="ml-auto" isDisabled={!state.ready} onPress={() => void c.reset().then(() => c.measureSize())}><ArrowRotateLeft className="size-4" />Reset Model</Button>
         <input
           ref={fileRef} data-testid="import-file" type="file" accept="application/json,.json" className="hidden"
