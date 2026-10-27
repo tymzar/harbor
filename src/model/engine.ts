@@ -46,6 +46,8 @@ export class ModelEngine {
   private lastVisit: { c: Category; t: number } | null = null
   category: Category = 'home'
   private last: { card: number; verb: Verb; t: number } | null = null
+  /** Dedupe for negative verbs, kept apart so they never reopen the window of the press they undo. */
+  private lastNegative: { card: number; t: number } | null = null
 
   private readonly clock: () => number
   constructor(clock: () => number = () => Date.now()) {
@@ -67,6 +69,7 @@ export class ModelEngine {
     this.navOrder = null
     this.lastVisit = null
     this.last = null
+    this.lastNegative = null
     this.updatedAt = this.clock()
   }
 
@@ -115,18 +118,31 @@ export class ModelEngine {
    * clicking, in this category, at this time), weighted by verb and deliberation. Then fold
    * this click's intensity into the running context. A repeat press on the same card within
    * DEDUPE_MS with the same verb is not a new preference signal (rage bursts collapse to one event).
-   * A zero-weight verb (unfavorite: undoing a favorite) teaches nothing and leaves the dedupe window
-   * alone, so favorite → unfavorite → favorite within DEDUPE_MS still counts one favorite.
+   * A negative verb (unfavorite: undoing a favorite) slightly lowers the card in both the affinity
+   * and the MLP. It is not a use: no category credit, no accuracy sample, no example count. It has
+   * its own dedupe slot, so favorite → unfavorite → favorite within DEDUPE_MS still counts one
+   * favorite, and heart spam nets out positive (one +1.5, one −0.3).
    */
   step(raw: ArrayLike<number>, card: CardId, verb: Verb, category: Category, t: number): ModelSnapshot {
     const k = CARD_IDS.indexOf(card)
     if (k < 0) throw new Error(`unknown card ${card}`)
     this.observeTime(raw)
     this.category = category
-    const silent = VERB_WEIGHT[verb] === 0
-    const dup = silent || (!!this.last && this.last.card === k && this.last.verb === verb && t - this.last.t < DEDUPE_MS)
-    if (!silent) this.last = { card: k, verb, t }
     let event: ModelEvent = { card, verb, category, weight: 0, counted: false, hit: false }
+    const negative = VERB_WEIGHT[verb] < 0
+    if (negative) {
+      const dup = !!this.lastNegative && this.lastNegative.card === k && t - this.lastNegative.t < DEDUPE_MS
+      this.lastNegative = { card: k, t }
+      if (!dup) {
+        const w = VERB_WEIGHT[verb]
+        // Gradient ascent on this card's loss, scaled small; no L2 term (a negative rate would grow weights).
+        sgdStep(SHAPE, this.weights, this.context(category), k, { ...SGD, l2: 0 }, categoryMask(category), w)
+        this.affinity.lower(k, -w)
+        event = { ...event, weight: w, counted: true }
+      }
+    }
+    const dup = negative || (!!this.last && this.last.card === k && this.last.verb === verb && t - this.last.t < DEDUPE_MS)
+    if (!negative) this.last = { card: k, verb, t }
     if (!dup) {
       const z = this.norm.apply(raw)
       const x = this.context(category)
@@ -214,6 +230,7 @@ export class ModelEngine {
     this.accMlp.load(m.acc?.mlp ?? [])
     this.accBlend.load(m.acc?.blend ?? [])
     this.last = null
+    this.lastNegative = null
   }
 }
 

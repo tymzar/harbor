@@ -3,6 +3,20 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Harbor teal replaces HeroUI's default blue. Everything accent-derived (hover, soft, focus) follows.
+ * Light: oklch 0.52 so white button text has 5.05:1. Dark: a brighter step (0.68, 6.3:1 as text on
+ * the dark background) with dark text on filled buttons (7.6:1).
+ */
+:root {
+  --accent: oklch(0.52 0.11 195);
+  --accent-foreground: oklch(0.99 0 0);
+}
+.dark {
+  --accent: oklch(0.68 0.11 195);
+  --accent-foreground: oklch(0.18 0.03 195);
+}
+
 :root {
   --glass-bg: color-mix(in oklab, var(--surface) 62%, transparent);
   --glass-bg-strong: color-mix(in oklab, var(--surface) 78%, transparent);

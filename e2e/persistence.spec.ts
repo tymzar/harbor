@@ -100,3 +100,33 @@ test('export: URL fragment and JSON file reproduce the orders in fresh browser c
   recordMetrics('persistence_export', { fragmentChars: link.split('#m=')[1].length, jsonBytes: json.length, orders: src.orders })
   await ctxA.close(); await ctxB.close()
 })
+
+test('favorites, open counts and recent activity survive a reload; reset clears them', async ({ page }) => {
+  await openFresh(page); resetMouse()
+  for (const [c, v] of [['inbox', 'open'], ['notes', 'favorite'], ['inbox', 'open']] as [CardId, Verb][]) await engage(page, c, v, NORMAL)
+  await page.waitForTimeout(SAVE_WAIT)
+  await page.reload(); await ready(page)
+  await expect(page.getByTestId('card-notes-favorite')).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByTestId('card-inbox')).toContainText('2 opens')
+  await page.getByTestId('nav-overview').click()
+  const recent = page.getByTestId('recent')
+  await expect(recent).toContainText('Inbox')
+  await expect(recent).toContainText('Notes')
+
+  // Unfavorite after the reload: the heart turns off, and that also persists.
+  await page.getByTestId('nav-home').click()
+  await engage(page, 'notes', 'favorite', NORMAL)
+  await expect(page.getByTestId('card-notes-favorite')).toHaveAttribute('aria-pressed', 'false')
+  await page.waitForTimeout(SAVE_WAIT)
+  await page.reload(); await ready(page)
+  await expect(page.getByTestId('card-notes-favorite')).toHaveAttribute('aria-pressed', 'false')
+
+  await page.getByTestId('nav-model').click()
+  await page.getByTestId('reset-model').click()
+  await expect.poll(() => page.evaluate(() => window.__smartweb.stats().examples)).toBe(0) // reset has run
+  await page.reload(); await ready(page)
+  await page.getByTestId('nav-home').click()
+  await expect(page.getByTestId('card-inbox')).not.toContainText('opens')
+  await page.getByTestId('nav-overview').click()
+  await expect(page.getByText('Things you open will show up here.')).toBeVisible()
+})

@@ -1,6 +1,7 @@
 import {
   CARDS, CARD_IDS, CATEGORIES, categoryMask, type ActionId, type CardId, type Category, type CssNet, type CssNetMode, type SmartWebTestHook, type Verb,
 } from '../cssnet/contract'
+import { ACTIVITY_KEEP, userStore } from './userData'
 import { SHAPE } from '../model/config'
 import { ModelClient } from '../model/client'
 import { fragmentParam } from '../model/quantize'
@@ -84,9 +85,9 @@ export interface AppState {
   /** In-browser engine benchmark (run on demand). */
   benchmark: { mode: CssNetMode; usPerEval: number; usWithNodes: number; maxDiff: number; evals: number }[] | null
   benchmarking: boolean
-  /** Last presses, newest first (session). */
+  /** Last presses, newest first (kept across reloads, see userData). */
   activity: (ModelEvent & { at: number })[]
-  /** Engagements per card this session. */
+  /** Engagements per card (kept across reloads, see userData). */
   engaged: Partial<Record<CardId, number>>
   favorites: Partial<Record<CardId, boolean>>
   latencies: number[]
@@ -166,6 +167,22 @@ export class SmartWebController {
     return p
   }
 
+  private userTimer: ReturnType<typeof setTimeout> | null = null
+  /** Favorites, open counts and recent activity: saved shortly after each press, like the model. */
+  private scheduleUserSave() {
+    if (this.userTimer) clearTimeout(this.userTimer)
+    this.userTimer = setTimeout(() => { this.userTimer = null; this.saveUser() }, 800)
+  }
+  private flushUser() {
+    if (!this.userTimer) return
+    clearTimeout(this.userTimer); this.userTimer = null
+    this.saveUser()
+  }
+  private saveUser() {
+    const { engaged, favorites, activity } = this.state
+    void userStore.save({ version: 1, engaged, favorites, activity }).catch((e) => this.log(`user data save failed: ${(e as Error).message}`))
+  }
+
   async start(host: HTMLElement): Promise<void> {
     if (this.started) return
     this.started = true
@@ -182,7 +199,7 @@ export class SmartWebController {
       navigator.storage.persist().then((ok) => this.log(`storage.persist(): ${ok}`)).catch(() => undefined)
     }
     // Never lose the last interaction to the 1 s save debounce.
-    const flush = () => { void this.client?.flush() }
+    const flush = () => { void this.client?.flush(); this.flushUser() }
     addEventListener('pagehide', flush)
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush() })
     this.mod = await loadCssNetModule()
@@ -197,6 +214,8 @@ export class SmartWebController {
       this.log('model imported from URL fragment')
       history.replaceState(null, '', location.pathname + location.search)
     } else if (r.source === 'idb') this.log('model restored from IndexedDB')
+    const user = await userStore.load().catch(() => null)
+    if (user) this.set({ engaged: user.engaged, favorites: user.favorites, activity: user.activity })
     this.set({ ready: true, netSource: source, jsForwardSource: this.mod.jsForwardSource, workerKind: this.client.kind, raw: Array.from(raw) })
     // On load: restore the saved orders, then bring every category up to date.
     if (r.snapshot.orders) this.set({ orders: r.snapshot.orders })
@@ -326,10 +345,10 @@ export class SmartWebController {
     const cssAll = [...this.state.cssAll]
     CARD_IDS.forEach((_, i) => { if (mask[i]) cssAll[i] = cssValid ? css[i] : s.mlp[i] })
     const ev = s.lastEvent
-    const history = ev?.counted
+    const history = ev?.counted && ev.weight > 0
       ? [...this.state.history, { n: s.stats.examples, shown: s.stats.blendAcc, affinity: s.stats.affinityAcc, mlp: s.stats.mlpAcc }].slice(-200)
       : this.state.history
-    const activity = ev ? [{ ...ev, at: Date.now() }, ...this.state.activity].slice(0, 10) : this.state.activity
+    const activity = ev ? [{ ...ev, at: Date.now() }, ...this.state.activity].slice(0, ACTIVITY_KEEP) : this.state.activity
 
     this.set({
       orders, moved: changed ? moved : this.state.moved, orderVersion: this.state.orderVersion + (changed ? 1 : 0), scores, affinity: Array.from(s.affinity), evidence: s.evidence, mlpWorker: Array.from(s.mlp),
@@ -339,6 +358,7 @@ export class SmartWebController {
       latencies: this.lat, latenciesDoubleRaf: this.latDbl, ...this.pendingPatch,
     })
     this.pendingPatch = {}
+    if (ev) this.scheduleUserSave()
     this.refreshOthers(s)
   }
 
@@ -440,6 +460,8 @@ export class SmartWebController {
       const s = await this.client.reset(selectModelFeatures(this.fx.idle()), this.state.category)
       this.lat = []; this.latDbl = []
       this.set({ orders: defaultOrders(), navOrder: [...CATEGORIES], moved: [], latencies: [], latenciesDoubleRaf: [], engaged: {}, favorites: {}, history: [], activity: [] })
+      if (this.userTimer) { clearTimeout(this.userTimer); this.userTimer = null }
+      await userStore.clear().catch((e) => this.log(`user data clear failed: ${(e as Error).message}`))
       this.apply(s, 'none')
       this.log('model reset to prior')
     })

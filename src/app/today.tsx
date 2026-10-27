@@ -80,10 +80,10 @@ const RecentlyUsed = memo(function RecentlyUsed({ state }: { state: AppState }) 
   const seen = new Set<CardId>()
   const items = state.activity.filter((a) => a.verb !== 'query' && !seen.has(a.card) && seen.add(a.card)).slice(0, 5)
   return (
-    <Card className="rounded-2xl p-5">
+    <Card data-testid="recent" className="rounded-2xl p-5">
       <Card.Header className="gap-0.5">
-        <Card.Title className="text-base">Recently Used</Card.Title>
-        <Card.Description className="text-sm text-muted">From this session</Card.Description>
+        <Card.Title className="text-base">Recent</Card.Title>
+        <Card.Description className="text-sm text-muted">The cards you used last</Card.Description>
       </Card.Header>
       <Card.Content className="pt-3">
         {items.length === 0 ? (
@@ -138,7 +138,7 @@ const Favorites = memo(function Favorites({ state, onOpen }: { state: AppState; 
   )
 }, (a, b) => a.state.favorites === b.state.favorites)
 
-/** Where your time went this session: opens per space. */
+/** Where your time went: actions per space. */
 const Spaces = memo(function Spaces({ state }: { state: AppState }) {
   const counts = CATEGORIES.map((cat) => CARD_IDS.filter((id) => categoryOf(id) === cat).reduce((n, id) => n + (state.engaged[id] ?? 0), 0))
   const max = Math.max(1, ...counts)
@@ -146,7 +146,7 @@ const Spaces = memo(function Spaces({ state }: { state: AppState }) {
     <Card className="rounded-2xl p-5">
       <Card.Header className="gap-0.5">
         <Card.Title className="text-base">Your Spaces</Card.Title>
-        <Card.Description className="text-sm text-muted">{counts.reduce((a, b) => a + b, 0)} actions this session</Card.Description>
+        <Card.Description className="text-sm text-muted">{counts.reduce((a, b) => a + b, 0)} actions so far</Card.Description>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4 pt-3">
         {CATEGORIES.map((cat, i) => (

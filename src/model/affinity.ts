@@ -18,6 +18,11 @@ export class Affinity {
     this.counts[card] += weight
   }
 
+  /** A small step back (e.g. an unfavorite): no decay, since it is not a use, and never below zero. */
+  lower(card: number, amount: number): void {
+    this.counts[card] = Math.max(0, this.counts[card] - amount)
+  }
+
   /** Probabilities over all 18 cards, each category normalised on its own. */
   probs(): Float32Array {
     const out = new Float32Array(CARDS.length)

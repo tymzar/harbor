@@ -16,7 +16,7 @@ export const AFFINITY_PRIOR = 1
 export const INTENSITY_EMA = 0.3
 /** The same press (card + verb) repeated within this window counts once (rage bursts collapse). */
 export const DEDUPE_MS = 1500
-export const VERB_WEIGHT = { open: 1, favorite: 1.5, unfavorite: 0, share: 1.5, search: 1.25, query: 0.3 } as const
+export const VERB_WEIGHT = { open: 1, favorite: 1.5, unfavorite: -0.3, share: 1.5, search: 1.25, query: 0.3 } as const
 /** Verbs that come from a pointer press (their weight is scaled by hover deliberation). */
 export const POINTER_VERBS = new Set(['open', 'favorite', 'share'])
 /** Category ranking: a visit counts 1, a card press counts this share of its weight to its category. */

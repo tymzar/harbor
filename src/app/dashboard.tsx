@@ -160,7 +160,7 @@ export const ActivityTable = memo(function ActivityTable({ state }: { state: App
                   <Table.Column>Time</Table.Column>
                 </Table.Header>
                 <Table.Body>
-                  {state.activity.map((a) => (
+                  {state.activity.slice(0, 20).map((a) => (
                     <Table.Row key={`${a.at}-${a.card}-${a.verb}`} id={`${a.at}-${a.card}-${a.verb}`}>
                       <Table.Cell>{CARD_INFO[a.card].title}</Table.Cell>
                       <Table.Cell>{CATEGORY_INFO[a.category].title}</Table.Cell>

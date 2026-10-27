@@ -6,7 +6,7 @@ test('today page, model tabs and engine benchmark render with real data', async 
   for (const [c, v] of [['drafts', 'open'], ['team', 'open'], ['drafts', 'share'], ['team', 'open']] as const) await engage(page, c, v, NORMAL)
 
   await page.getByTestId('nav-overview').click()
-  for (const t of ['Jump Back In', 'Up Next', 'Recently Used', 'Favorites', 'Your Spaces']) await expect(page.getByText(t, { exact: true })).toBeVisible()
+  for (const t of ['Jump Back In', 'Up Next', 'Recent', 'Favorites', 'Your Spaces']) await expect(page.getByText(t, { exact: true })).toBeVisible()
   // The product pages carry no model internals; those live on the Model page.
   for (const t of ['Learned Orders', 'Live Signals', 'Ranking Quality', 'CSS Engine']) await expect(page.getByText(t, { exact: true })).toHaveCount(0)
   // Jump Back In leads with the learned order: Home's top card first (drafts after 3 presses), and opening it counts.
