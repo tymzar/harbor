@@ -22,23 +22,29 @@ function Thumb({ id }: { id: CardId }) {
 }
 
 /**
- * Jump back in: the first cards of each space, in the learned orders and in the learned
- * space order, so the page leads with whatever you reach for most.
+ * Jump back in: cards you have actually used (opened or favorited), in the learned orders and
+ * the learned space order, so the page leads with whatever you reach for most. Empty slots are
+ * filled from the same orders and labelled as suggestions, never presented as something you used.
  */
 const JumpBackIn = memo(function JumpBackIn({ state, onOpen }: { state: AppState; onOpen: (id: CardId) => void }) {
-  const [first, ...rest] = state.navOrder
-  const picks = [state.orders[first][0], state.orders[first][1], ...rest.map((cat) => state.orders[cat][0])]
+  const used = (id: CardId) => (state.engaged[id] ?? 0) > 0 || !!state.favorites[id]
+  // Rank-major over the spaces in sidebar order: every space's #1, then every #2, ...
+  const ranked = [0, 1, 2, 3, 4, 5].flatMap((r) => state.navOrder.map((cat) => state.orders[cat][r]))
+  const picks = [...ranked.filter(used), ...ranked.filter((id) => !used(id))].slice(0, 4)
+  const anyUsed = picks.some(used)
   return (
     <section className="flex flex-col gap-3" aria-label="Jump back in">
-      <h2 className="text-base font-medium tracking-tight">Jump Back In</h2>
+      <h2 className="text-base font-medium tracking-tight">{anyUsed ? 'Jump Back In' : 'Suggested for You'}</h2>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {picks.map((id) => (
-          <Card key={id} className="rounded-2xl p-0">
+          <Card key={id} className="rounded-2xl p-0" data-jump={id} data-suggested={used(id) ? undefined : ''}>
             <Button variant="ghost" className="h-auto w-full justify-start gap-3 rounded-2xl p-3 text-left" onPress={() => onOpen(id)}>
               <Thumb id={id} />
               <span className="flex min-w-0 flex-col">
                 <span className="truncate text-sm font-medium text-foreground">{CARD_INFO[id].title}</span>
-                <span className="truncate text-xs text-muted">{CATEGORY_INFO[categoryOf(id)].title} · {CARD_INFO[id].desc}</span>
+                <span className="truncate text-xs text-muted">
+                  {anyUsed && !used(id) ? 'Suggested' : CATEGORY_INFO[categoryOf(id)].title} · {CARD_INFO[id].desc}
+                </span>
               </span>
             </Button>
           </Card>
@@ -46,7 +52,7 @@ const JumpBackIn = memo(function JumpBackIn({ state, onOpen }: { state: AppState
       </div>
     </section>
   )
-}, (a, b) => a.state.orders === b.state.orders && a.state.navOrder === b.state.navOrder)
+}, (a, b) => a.state.orders === b.state.orders && a.state.navOrder === b.state.navOrder && a.state.engaged === b.state.engaged && a.state.favorites === b.state.favorites)
 
 function UpNext() {
   const t = useNow()
@@ -138,7 +144,7 @@ const Favorites = memo(function Favorites({ state, onOpen }: { state: AppState; 
   )
 }, (a, b) => a.state.favorites === b.state.favorites)
 
-/** Where your time went: actions per space. */
+/** Where your time went: opens per space. */
 const Spaces = memo(function Spaces({ state }: { state: AppState }) {
   const counts = CATEGORIES.map((cat) => CARD_IDS.filter((id) => categoryOf(id) === cat).reduce((n, id) => n + (state.engaged[id] ?? 0), 0))
   const max = Math.max(1, ...counts)
@@ -146,7 +152,7 @@ const Spaces = memo(function Spaces({ state }: { state: AppState }) {
     <Card className="rounded-2xl p-5">
       <Card.Header className="gap-0.5">
         <Card.Title className="text-base">Your Spaces</Card.Title>
-        <Card.Description className="text-sm text-muted">{counts.reduce((a, b) => a + b, 0)} actions so far</Card.Description>
+        <Card.Description className="text-sm text-muted">{counts.reduce((a, b) => a + b, 0)} opens so far</Card.Description>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4 pt-3">
         {CATEGORIES.map((cat, i) => (

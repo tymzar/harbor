@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { cardsOf } from '../src/cssnet/contract'
-import { NORMAL, domOrder, engage, openFresh, recordMetrics, resetMouse } from './helpers'
+import { NORMAL, domOrder, engage, openFresh, recordMetrics, resetMouse, shownOrder } from './helpers'
 
 test('evidence gate and hysteresis: no move on the first press, no flip-flop between equal favourites', async ({ page }) => {
   await openFresh(page); resetMouse()
@@ -17,4 +17,15 @@ test('evidence gate and hysteresis: no move on the first press, no flip-flop bet
   recordMetrics('guardrails', { orders, flipsInTail: flips })
   for (const o of tail) expect(o.slice(0, 2).sort()).toEqual(['inbox', 'notes'])
   expect(flips, JSON.stringify(tail)).toBeLessThanOrEqual(2)
+})
+
+test('the grid never reorders under the pointer; the new order applies when the pointer leaves', async ({ page }) => {
+  await openFresh(page); resetMouse()
+  // Spaced past the 1.5 s repeat window so each counts; the pointer stays over the grid throughout.
+  for (let k = 0; k < 4; k++) { await engage(page, 'notes', 'open', NORMAL); await page.waitForTimeout(1600) }
+  const model = await page.evaluate(() => window.__smartweb.orders().home)
+  expect(model, 'the model has already moved Notes up').not.toEqual(cardsOf('home'))
+  expect(await shownOrder(page), 'held while the pointer is over the grid').toEqual(cardsOf('home'))
+  await expect(page.locator('[data-testid=adaptive-grid][data-order-pending]')).toHaveCount(1)
+  expect(await domOrder(page), 'applied once the pointer leaves').toEqual(model)
 })

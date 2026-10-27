@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { CATEGORIES, type CardId, type Category } from '../src/cssnet/contract'
-import { NORMAL, engage, enter, openFresh, ready, recordMetrics, resetMouse, stats } from './helpers'
+import { NORMAL, engage, enter, moveAway, openFresh, ready, recordMetrics, resetMouse, stats } from './helpers'
 
 const SAVE_WAIT = 1500 // saves are debounced by 1 s
 
@@ -12,6 +12,7 @@ const navOrder = (page: Page) => page.evaluate(() => window.__smartweb.navOrder(
 /** Sidebar DOM order and the controller's navOrder agree; returns the order. */
 async function order(page: Page): Promise<Category[]> {
   const nav = await navOrder(page)
+  await moveAway(page) // the sidebar holds its order while the pointer is over it
   await expect.poll(() => sidebarOrder(page)).toEqual(nav)
   return nav
 }

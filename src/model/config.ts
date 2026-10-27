@@ -8,7 +8,9 @@ export const SHAPE: NetShape = { inputs: MODEL_INPUTS, hidden: 16, outputs: CARD
 /** Cold-start prior: uniform within each category (each category has 6 cards). */
 export const PRIOR: readonly number[] = CARDS.map(() => 1 / 6)
 
-export const SGD = { lr: 0.08, l2: 1e-4, clip: 5 }
+// lr 0.04 (was 0.08): at 0.08 the MLP mostly remembered the last press, so the top card flipped
+// on a steady 60/40 preference about every 9 presses (src/model/stability.test.ts).
+export const SGD = { lr: 0.04, l2: 1e-4, clip: 5 }
 /** Affinity: per-event decay of a category's counts, and prior pseudo-count mass per category. */
 export const AFFINITY_DECAY = 0.97
 export const AFFINITY_PRIOR = 1
@@ -25,7 +27,8 @@ export const ACC_WINDOW = 20
 /** MLP blend weight: 0 at first, grows to its share of recent accuracy after BLEND_RAMP examples. */
 export const BLEND_RAMP = 20
 export const BLEND_MIN = 0.1
-export const BLEND_MAX = 0.7
+// The MLP's share of the shown score is capped (was 0.7): its recency noise moved the top card.
+export const BLEND_MAX = 0.35
 export const INIT_SEED = 7
 /**
  * Save after every training step (coalesced within one tick). IndexedDB writes of this small

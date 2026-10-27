@@ -125,5 +125,24 @@ export function percentile(xs: number[], p: number): number {
 }
 
 /** Card order as rendered in the grid (DOM order). */
-export const domOrder = (page: Page) =>
+/**
+ * Lists hold their order while the pointer is over them (src/app/hold.ts). Move the pointer to an
+ * empty spot in the header and wait until no list has a held order pending.
+ */
+export async function moveAway(page: Page) {
+  const header = await page.locator('header').boundingBox()
+  const away = header ? { x: header.x + header.width * 0.45, y: header.y + 8 } : { x: 640, y: 4 }
+  await page.mouse.move(away.x, away.y)
+  mousePos = away
+  await page.waitForFunction(() => !document.querySelector('[data-order-pending]'))
+}
+
+/** The current grid's order, as a user sees it once the pointer has left the grid. */
+export async function domOrder(page: Page): Promise<string[]> {
+  await moveAway(page)
+  return page.evaluate(() => [...document.querySelectorAll('[data-testid=adaptive-grid] > [data-card]')].map((e) => e.getAttribute('data-card')!))
+}
+
+/** What the grid shows right now, without moving the pointer (for checking the hold itself). */
+export const shownOrder = (page: Page) =>
   page.evaluate(() => [...document.querySelectorAll('[data-testid=adaptive-grid] > [data-card]')].map((e) => e.getAttribute('data-card')!))

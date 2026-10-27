@@ -1,8 +1,9 @@
-import { Component, memo, useMemo, type ReactNode } from 'react'
+import { Component, memo, useMemo, useRef, type ReactNode } from 'react'
 import { Button, Card, Tooltip } from '@heroui/react'
 import { motion } from 'motion/react'
 import { CARD_IDS, CATEGORIES, type CardId, type Category, type CssNetMode } from '../cssnet/contract'
 import { CardPreview } from './previews'
+import { sameOrder, useHeldOrder } from './hold'
 import { RAW_FEATURE_NAMES, INPUT_NAMES } from '../signals/features'
 import { CATEGORY_INFO } from './catalog'
 import type { AppState, SmartWebController } from './controller'
@@ -105,10 +106,23 @@ const GridItem = memo(function GridItem({ id, n, fav, flash, live, c }: { id: Ca
  * costs a re-render of its six memoised items.
  */
 function CategoryGrid({ category, shown, state, c }: { category: Category; shown: boolean; state: AppState; c: SmartWebController }) {
-  const order = state.orders[category]
   const current = shown && state.category === category
+  const { shown: order, pending, onPointerEnter, onPointerLeave } = useHeldOrder(state.orders[category])
+  // Flash the cards that moved when the shown order changes (not when the model's order changes
+  // while it is held under the pointer).
+  const prev = useRef(order)
+  const flashKey = useRef(0)
+  const moved = useRef<Set<CardId>>(new Set())
+  if (!sameOrder(prev.current, order)) {
+    moved.current = new Set(order.filter((id, i) => prev.current[i] !== id))
+    flashKey.current++
+    prev.current = order
+  }
   return (
     <div
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+      data-order-pending={pending ? '' : undefined}
       data-testid={current ? 'adaptive-grid' : undefined}
       data-category={current ? category : undefined}
       hidden={!current}
@@ -118,7 +132,7 @@ function CategoryGrid({ category, shown, state, c }: { category: Category; shown
       className="grid-enter grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
     >
       {order.map((id) => (
-        <GridItem key={id} id={id} n={state.engaged[id] ?? 0} fav={!!state.favorites[id]} flash={current && state.moved.includes(id) ? state.orderVersion : null} live={current} c={c} />
+        <GridItem key={id} id={id} n={state.engaged[id] ?? 0} fav={!!state.favorites[id]} flash={current && moved.current.has(id) ? flashKey.current : null} live={current} c={c} />
       ))}
     </div>
   )

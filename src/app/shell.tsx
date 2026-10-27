@@ -5,6 +5,7 @@ import { Bars, BellDot, BookOpen, Compass, Cpu, House, Magnifier, Sparkles, Sun 
 import { cardsOf, type Category } from '../cssnet/contract'
 import { CATEGORY_INFO } from './catalog'
 import type { AppState, SmartWebController } from './controller'
+import { useHeldOrder } from './hold'
 import { NOTIFICATIONS, PRODUCT, USER, ago, greeting, longDate, useNow } from './content'
 
 export type Page = 'overview' | 'category' | 'model'
@@ -53,6 +54,8 @@ const NavItem = memo(function NavItem({ icon: Icon, label, active, trailing, onP
 
 export function SidebarContents({ state, c, page, onPage, onNavigate }: { state: AppState; c: SmartWebController; page: Page; onPage: (p: Page) => void; onNavigate?: () => void }) {
   const visits = (cat: Category) => cardsOf(cat).reduce((n, id) => n + (state.engaged[id] ?? 0), 0)
+  // Held while the pointer is over the list, like the card grid: a space never slides under the cursor.
+  const nav = useHeldOrder(state.navOrder)
   return (
     <div className="flex h-full flex-col gap-6 px-3 py-5">
       <div className="flex items-center gap-2.5 px-2">
@@ -65,11 +68,11 @@ export function SidebarContents({ state, c, page, onPage, onNavigate }: { state:
       <nav className="flex flex-col gap-0.5" aria-label="Pages">
         <NavItem testId="nav-overview" icon={Sun} label="Today" active={page === 'overview'} onPress={() => { onPage('overview'); onNavigate?.() }} />
       </nav>
-      <nav className="flex flex-col gap-0.5" aria-label="Categories" data-testid="nav-categories">
+      <nav className="flex flex-col gap-0.5" aria-label="Categories" data-testid="nav-categories" data-order-pending={nav.pending ? '' : undefined} onPointerEnter={nav.onPointerEnter} onPointerLeave={nav.onPointerLeave}>
         <span className="px-2.5 pb-1 text-xs text-muted">Spaces</span>
         {/* Learned order: the categories you use most move up (same model, same hysteresis as the cards). */}
         {/* layoutDependency: measure only when the order changes, not on every visit count update. */}
-        {state.navOrder.map((cat, i) => (
+        {nav.shown.map((cat, i) => (
           <motion.div key={cat} layout layoutDependency={i} data-nav={cat} transition={{ type: 'spring', stiffness: 300, damping: 32 }}>
             <NavItem
               testId={`nav-${cat}`}

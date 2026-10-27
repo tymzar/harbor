@@ -87,7 +87,7 @@ export interface AppState {
   benchmarking: boolean
   /** Last presses, newest first (kept across reloads, see userData). */
   activity: (ModelEvent & { at: number })[]
-  /** Engagements per card (kept across reloads, see userData). */
+  /** Opens per card (kept across reloads, see userData). */
   engaged: Partial<Record<CardId, number>>
   favorites: Partial<Record<CardId, boolean>>
   latencies: number[]
@@ -394,7 +394,9 @@ export class SmartWebController {
     if (verb === 'favorite' && this.state.favorites[card]) verb = 'unfavorite'
     const raw = this.fx.snapshot((verb === 'unfavorite' ? 'favorite' : verb) as ActionId, t)
     const category = opts.category ?? this.state.category
-    const engaged = { ...this.state.engaged, [card]: (this.state.engaged[card] ?? 0) + 1 }
+    // Opens only (a search pick opens the card too): favorites and shares are not visits.
+    const opened = verb === 'open' || verb === 'search'
+    const engaged = opened ? { ...this.state.engaged, [card]: (this.state.engaged[card] ?? 0) + 1 } : this.state.engaged
     const favorites = verb === 'favorite' || verb === 'unfavorite' ? { ...this.state.favorites, [card]: verb === 'favorite' } : this.state.favorites
     this.pendingPatch = { ...this.pendingPatch, engaged, favorites }
     // Keep state current for reads before the model answers (renders happen with the update).

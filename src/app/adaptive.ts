@@ -7,15 +7,19 @@ import type { Orders } from '../model/types'
  * re-sorts the whole category in one pass.
  */
 export const SWAP_MARGIN = 0.01
-/** A card passes another when it leads by about this many (decayed, weighted) presses. */
-export const SWAP_PRESSES = 0.6
 /**
- * Affinity is (count + prior/6) / (evidence + 1), so a lead of SWAP_PRESSES presses is a score
- * gap of SWAP_PRESSES / (evidence + 1). Two equally used favourites settle at about +-0.5 presses
- * apart (decay 0.97), so they do not swap on every press; a single press over zero still counts.
+ * A card passes another when it leads by about this many (decayed, weighted) presses: 0.6 on a
+ * fresh model, so the first presses visibly count, growing by 0.1 per unit of evidence to 2.5
+ * once a category has a history. Close favourites then stop trading the top slot on streaks.
+ */
+export const SWAP_PRESSES = { start: 0.6, perEvidence: 0.1, max: 2.5 }
+/**
+ * Affinity is (count + prior/6) / (evidence + 1), so a lead of p presses is a score gap of
+ * p / (evidence + 1). Measured on a steady 60/40 preference (src/model/stability.test.ts).
  */
 export function swapMargin(evidence: number): number {
-  return SWAP_MARGIN + SWAP_PRESSES / (evidence + 1)
+  const presses = Math.min(SWAP_PRESSES.max, SWAP_PRESSES.start + SWAP_PRESSES.perEvidence * evidence)
+  return SWAP_MARGIN + presses / (evidence + 1)
 }
 /**
  * Evidence before a category starts reordering: the decayed engagement mass in that

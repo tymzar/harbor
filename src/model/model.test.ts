@@ -195,7 +195,9 @@ describe('ModelEngine (per-category ranking)', () => {
     expect(blendAlpha(0, 0.5, 0.5)).toBe(0)
     expect(blendAlpha(100, 0.9, 0.1)).toBeCloseTo(0.1, 5)
     expect(blendAlpha(100, 0.1, 0.9)).toBeCloseTo(BLEND_MAX, 5)
-    expect(blendAlpha(100, 0.5, 0.5)).toBeCloseTo(0.5, 5)
+    // Equal accuracy is a 50% share, capped: the MLP never carries more than BLEND_MAX of the shown score.
+    expect(blendAlpha(100, 0.5, 0.5)).toBeCloseTo(Math.min(0.5, BLEND_MAX), 5)
+    expect(blendAlpha(100, 0.7, 0.3)).toBeCloseTo(0.3, 5)
   })
 })
 

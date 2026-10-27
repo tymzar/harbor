@@ -18,7 +18,9 @@ test('mostly using two cards re-orders the whole category, live', async ({ page 
   }
   const final = await domOrder(page)
   expect(final.slice(0, 2), JSON.stringify(trail)).toEqual(['drafts', 'team'])
-  expect(final[2]).toBe('calendar')
+  // One Calendar press is not a clear lead over the untouched cards (margin ~1.7 presses at this
+  // evidence, src/app/adaptive.ts), so the rest keep their default relative order.
+  expect(final.slice(2)).toEqual(['briefing', 'calendar', 'inbox', 'notes'])
   // Live: the order changed during the session, not only on reload.
   expect(trail.some((o) => o.join() !== cardsOf('home').join())).toBe(true)
   // Untouched categories keep their default order.
