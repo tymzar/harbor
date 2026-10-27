@@ -4,7 +4,7 @@ import { RunningNorm } from '../signals/normalizer'
 import { RollingAccuracy } from './accuracy'
 import { Affinity } from './affinity'
 import {
-  ACC_WINDOW, AFFINITY_DECAY, AFFINITY_PRIOR, CARD_TO_CATEGORY, DEDUPE_MS, INIT_SEED, INTENSITY_EMA, PRIOR, SCHEMA_VERSION, SGD, SHAPE, VERB_WEIGHT, blendAlpha,
+  ACC_WINDOW, AFFINITY_DECAY, AFFINITY_PRIOR, CARD_TO_CATEGORY, DEDUPE_MS, POINTER_VERBS, INIT_SEED, INTENSITY_EMA, PRIOR, SCHEMA_VERSION, SGD, SHAPE, VERB_WEIGHT, blendAlpha,
 } from './config'
 import { cloneWeights, forward, initWeights, sgdStep } from './mlp'
 import { deserialWeights, serialWeights, type ModelEvent, type ModelSnapshot, type Orders, type PersistedModel } from './types'
@@ -135,7 +135,7 @@ export class ModelEngine {
       this.accMlp.push(inTopK(mlp, category, k))
       const hit = inTopK(aff.map((a, i) => (1 - alpha) * a + alpha * mlp[i]), category, k)
       this.accBlend.push(hit)
-      const deliberate = Math.max(0.7, Math.min(1.3, 1 + 0.15 * z[HOVER]))
+      const deliberate = POINTER_VERBS.has(verb) ? Math.max(0.7, Math.min(1.3, 1 + 0.15 * z[HOVER])) : 1
       const w = VERB_WEIGHT[verb] * deliberate
       sgdStep(SHAPE, this.weights, x, k, SGD, mask, w)
       this.affinity.update(k, w)

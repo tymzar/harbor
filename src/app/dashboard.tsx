@@ -7,6 +7,7 @@ import type { AppState } from './controller'
 import { percentile } from './ui'
 
 const pct = (v: number) => `${Math.round(v * 100)}%`
+const VERB_LABEL: Record<string, string> = { open: 'Open', favorite: 'Favorite', share: 'Share', search: 'Search pick', query: 'Searched, no pick' }
 
 function Kpi({ title, value, caption }: { title: string; value: string; caption: string }) {
   return (
@@ -157,7 +158,7 @@ export const ActivityTable = memo(function ActivityTable({ state }: { state: App
                     <Table.Row key={`${a.at}-${a.card}-${a.verb}`} id={`${a.at}-${a.card}-${a.verb}`}>
                       <Table.Cell>{CARD_INFO[a.card].title}</Table.Cell>
                       <Table.Cell>{CATEGORY_INFO[a.category].title}</Table.Cell>
-                      <Table.Cell className="capitalize">{a.verb}</Table.Cell>
+                      <Table.Cell>{VERB_LABEL[a.verb]}</Table.Cell>
                       <Table.Cell className="tabular-nums">{a.counted ? a.weight.toFixed(2) : 'repeat'}</Table.Cell>
                       <Table.Cell>
                         {a.counted

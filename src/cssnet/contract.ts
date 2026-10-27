@@ -8,9 +8,13 @@
  * Interaction kinds the signal extractor logs (navigation + what you did to a card).
  * Not the model's output space: the model ranks CARDS.
  */
-export const ACTIONS = ['nav-home', 'nav-explore', 'nav-library', 'open', 'favorite', 'share'] as const
+export const ACTIONS = ['nav-home', 'nav-explore', 'nav-library', 'open', 'favorite', 'share', 'search', 'query'] as const
 export type ActionId = (typeof ACTIONS)[number]
-export type Verb = 'open' | 'favorite' | 'share'
+/**
+ * What you did to a card. search = picked it from the search palette (explicit intent);
+ * query = typed a search it topped but closed without picking (weak interest).
+ */
+export type Verb = 'open' | 'favorite' | 'share' | 'search' | 'query'
 
 /** Categories: each is a scope whose cards are ranked independently. */
 export const CATEGORIES = ['home', 'explore', 'library'] as const

@@ -1,7 +1,7 @@
 import { memo, useState, type ComponentType, type ReactNode } from 'react'
-import { Button, Drawer, Tooltip } from '@heroui/react'
+import { Button, Drawer, Kbd, Tooltip } from '@heroui/react'
 import { motion } from 'motion/react'
-import { Bars, BookOpen, Compass, Cpu, House, LayoutCells, Play, Sliders } from '@gravity-ui/icons'
+import { Bars, BookOpen, Compass, Cpu, House, LayoutCells, Magnifier, Play, Sliders } from '@gravity-ui/icons'
 import { cardsOf, type Category } from '../cssnet/contract'
 import { CATEGORY_INFO } from './catalog'
 import type { AppState, SmartWebController } from './controller'
@@ -93,7 +93,7 @@ export const Sidebar = memo(function Sidebar({ state, c, page, onPage }: { state
   )
 }, (a, b) => a.page === b.page && a.state.category === b.state.category && a.state.navOrder === b.state.navOrder && a.state.engaged === b.state.engaged && a.state.netSource === b.state.netSource && a.state.workerKind === b.state.workerKind)
 
-export const Navbar = memo(function Navbar({ state, c, page, onPage, debugOpen, onToggleDebug }: { state: AppState; c: SmartWebController; page: Page; onPage: (p: Page) => void; debugOpen: boolean; onToggleDebug: () => void }) {
+export const Navbar = memo(function Navbar({ state, c, page, onPage, debugOpen, onToggleDebug, onSearch }: { state: AppState; c: SmartWebController; page: Page; onPage: (p: Page) => void; debugOpen: boolean; onToggleDebug: () => void; onSearch: () => void }) {
   const [menu, setMenu] = useState(false)
   const info = page === 'category' ? { ...CATEGORY_INFO[state.category], lede: `${CATEGORY_INFO[state.category].lede} Ordered by how you use it.` } : PAGE_INFO[page]
   return (
@@ -118,6 +118,11 @@ export const Navbar = memo(function Navbar({ state, c, page, onPage, debugOpen, 
         <p className="truncate text-sm text-muted">{info.lede}</p>
       </div>
       <div className="ml-auto flex items-center gap-2">
+        <Button data-testid="search-open" size="sm" variant="tertiary" aria-label="Search" onPress={onSearch} className="gap-2">
+          <Magnifier className="size-4" />
+          <span className="hidden sm:inline">Search</span>
+          <Kbd className="hidden sm:inline-flex">⌘K</Kbd>
+        </Button>
         <Button data-testid="replay-journey" size="sm" variant="secondary" isDisabled={!state.ready || state.replaying} onPress={() => c.replay()}>
           <Play className="size-4" />
           {state.replaying ? 'Replaying…' : 'Replay'}

@@ -9,6 +9,7 @@ import { Navbar, Sidebar, type Page } from './app/shell'
 import { ActivityTable, KpiStrip, RankingQualityCard, ScoreBreakdownCard, UsageCard } from './app/dashboard'
 import { EngineCard, LiveSignalsCard, OrdersOverview } from './app/overview'
 import { ModelBar } from './app/modelbar'
+import { SearchPalette } from './app/search'
 import { NetworkView } from './app/NetworkView'
 import { loadCssNetModule, type CssNetVisuals } from './app/cssnetBridge'
 import { SHAPE } from './model/config'
@@ -77,6 +78,16 @@ export default function App({ controller: c }: { controller: SmartWebController 
   const toggleDebug = useCallback(() => setDebugOpen((v) => !v), [])
   const [page, setPage] = useState<Page>('category')
   const [tab, setTab] = useState<ModelTab>('network')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const openSearch = useCallback(() => setSearchOpen(true), [])
+  const onPicked = useCallback(() => setPage('category'), [])
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setSearchOpen((o) => !o) }
+    }
+    addEventListener('keydown', onKey)
+    return () => removeEventListener('keydown', onKey)
+  }, [])
   // Measure the model's size whenever the Model page opens or the model changes while it is open.
   useEffect(() => { if (page === 'model' && state.ready) void c.measureSize() }, [c, page, state.ready, state.stats.examples])
   const openCategory = useCallback((cat: Category) => { setPage('category'); void c.enter(cat) }, [c])
@@ -107,7 +118,7 @@ export default function App({ controller: c }: { controller: SmartWebController 
         <div className="relative flex">
           <Sidebar state={state} c={c} page={page} onPage={setPage} />
           <div className="flex min-w-0 flex-1 flex-col">
-            <Navbar state={state} c={c} page={page} onPage={setPage} debugOpen={debugOpen} onToggleDebug={toggleDebug} />
+            <Navbar state={state} c={c} page={page} onPage={setPage} debugOpen={debugOpen} onToggleDebug={toggleDebug} onSearch={openSearch} />
             <main className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 pb-12 pt-4 sm:px-6 lg:px-8">
               {page === 'category' && (
                 <>
@@ -157,6 +168,7 @@ export default function App({ controller: c }: { controller: SmartWebController 
                 </Card>
               </div>
               {debugOpen && <DebugDrawer state={state} />}
+              <SearchPalette state={state} c={c} open={searchOpen} onOpenChange={setSearchOpen} onPicked={onPicked} />
             </main>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import {
-  CARD_IDS, CATEGORIES, categoryMask, type ActionId, type CardId, type Category, type CssNet, type CssNetMode, type SmartWebTestHook, type Verb,
+  CARDS, CARD_IDS, CATEGORIES, categoryMask, type ActionId, type CardId, type Category, type CssNet, type CssNetMode, type SmartWebTestHook, type Verb,
 } from '../cssnet/contract'
 import { SHAPE } from '../model/config'
 import { ModelClient } from '../model/client'
@@ -341,12 +341,12 @@ export class SmartWebController {
   }
 
   /** The user engaged a card in the current category: train, then re-sort the category live. */
-  engage(card: CardId, verb: Verb, opts: { t?: number; t0?: number } = {}): Promise<void> {
+  engage(card: CardId, verb: Verb, opts: { t?: number; t0?: number; category?: Category } = {}): Promise<void> {
     const now = performance.now()
     const t = opts.t ?? now
     const t0 = this.latencyStart(now, opts.t0)
     const raw = this.fx.snapshot(verb as ActionId, t)
-    const category = this.state.category
+    const category = opts.category ?? this.state.category
     const engaged = { ...this.state.engaged, [card]: (this.state.engaged[card] ?? 0) + 1 }
     const favorites = verb === 'favorite' ? { ...this.state.favorites, [card]: !this.state.favorites[card] } : this.state.favorites
     this.pendingPatch = { ...this.pendingPatch, engaged, favorites }
@@ -359,6 +359,18 @@ export class SmartWebController {
       this.set({ raw: Array.from(raw) })
       this.apply(s, 'live')
     })
+  }
+
+  /** Picked a card in the search palette: go to its category, then learn it as explicit intent. */
+  async searchPick(card: CardId): Promise<void> {
+    const cat = CARDS[CARD_IDS.indexOf(card)].category as Category
+    if (cat !== this.state.category) await this.enter(cat)
+    await this.engage(card, 'search')
+  }
+
+  /** Closed the palette after a query without picking: the top match gets a small interest signal. */
+  searchAbandon(card: CardId): Promise<void> {
+    return this.engage(card, 'query', { category: CARDS[CARD_IDS.indexOf(card)].category as Category })
   }
 
   /**

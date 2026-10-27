@@ -8,11 +8,11 @@ const at = (v: Float32Array, name: string) => v[RAW_FEATURE_NAMES.indexOf(name)]
 const fixedDate = () => new Date(2026, 0, 1, 6, 0) // 06:00 -> quarter day
 
 describe('feature catalogue', () => {
-  it('has 46 raw features, a 9-feature raw subset and 12 network inputs', () => {
-    expect(RAW_FEATURE_COUNT).toBe(46)
+  it('has 52 raw features, a 9-feature raw subset and 12 network inputs', () => {
+    expect(RAW_FEATURE_COUNT).toBe(52)
     expect(MODEL_FEATURES.map((f) => f.name).slice(7)).toEqual(['todSin', 'todCos'])
     expect(MODEL_INPUTS).toBe(12)
-    expect(ACTIONS).toHaveLength(6)
+    expect(ACTIONS).toHaveLength(8)
   })
 })
 
