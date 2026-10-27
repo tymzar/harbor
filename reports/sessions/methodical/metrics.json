@@ -1,0 +1,547 @@
+{
+ "interactions": 127,
+ "firstSuggestCorrectNonPrior": 6,
+ "firstSuggestAction": "nav-explore",
+ "firstGridReorder": 23,
+ "firstAdaptationAtInteraction": 6,
+ "sustained10From": 6,
+ "markovTop1AccFinal": 0.75,
+ "mlpTop1AccFinal": 0.7,
+ "last20": {
+  "suggest": 0.75,
+  "markov": 0.8,
+  "mlp": 0.75
+ },
+ "overall": {
+  "suggest": 0.8818897637795275,
+  "markov": 0.889763779527559,
+  "mlp": 0.7086614173228346
+ },
+ "routineOnly": {
+  "suggest": 0.9256198347107438
+ },
+ "deviations": 6,
+ "deviationPredicted": 0,
+ "afterDeviationSuggest": 0.3333333333333333,
+ "latencyN": 127,
+ "latencyMsP50": 27.200000002980232,
+ "latencyMsP95": 34.29999999701977,
+ "latencyMax": 43.900000005960464,
+ "latencyDoubleRafP50": 42.5,
+ "latencyDoubleRafP95": 49.69999998807907,
+ "cssJsMaxAbsDiff": 0.000004470348358154297,
+ "layoutMovesTotal": 40,
+ "layoutMoves": [
+  {
+   "i": 23,
+   "action": "favorite",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "share,open-card,favorite,search,settings"
+  },
+  {
+   "i": 27,
+   "action": "nav-explore",
+   "from": "share,open-card,favorite,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 34,
+   "action": "favorite",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "share,open-card,favorite,search,settings"
+  },
+  {
+   "i": 37,
+   "action": "nav-explore",
+   "from": "share,open-card,favorite,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 39,
+   "action": "favorite",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "share,open-card,favorite,search,settings"
+  },
+  {
+   "i": 42,
+   "action": "nav-explore",
+   "from": "share,open-card,favorite,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 44,
+   "action": "favorite",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "share,open-card,favorite,search,settings"
+  },
+  {
+   "i": 47,
+   "action": "nav-explore",
+   "from": "share,open-card,favorite,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 49,
+   "action": "favorite",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "share,open-card,favorite,search,settings"
+  },
+  {
+   "i": 52,
+   "action": "nav-explore",
+   "from": "share,open-card,favorite,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 53,
+   "action": "open-card",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "favorite,open-card,share,search,settings"
+  },
+  {
+   "i": 54,
+   "action": "favorite",
+   "from": "favorite,open-card,share,search,settings",
+   "to": "favorite,share,open-card,search,settings"
+  },
+  {
+   "i": 57,
+   "action": "nav-explore",
+   "from": "favorite,share,open-card,search,settings",
+   "to": "open-card,favorite,share,search,settings"
+  },
+  {
+   "i": 59,
+   "action": "open-card",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "favorite,open-card,share,search,settings"
+  },
+  {
+   "i": 63,
+   "action": "nav-explore",
+   "from": "favorite,open-card,share,search,settings",
+   "to": "open-card,favorite,share,search,settings"
+  },
+  {
+   "i": 64,
+   "action": "open-card",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "favorite,open-card,share,search,settings"
+  },
+  {
+   "i": 66,
+   "action": "share",
+   "from": "favorite,open-card,share,search,settings",
+   "to": "share,favorite,open-card,search,settings"
+  },
+  {
+   "i": 68,
+   "action": "nav-explore",
+   "from": "share,favorite,open-card,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 69,
+   "action": "open-card",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "favorite,open-card,share,search,settings"
+  },
+  {
+   "i": 79,
+   "action": "open-card",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "favorite,open-card,share,search,settings"
+  },
+  {
+   "i": 80,
+   "action": "favorite",
+   "from": "favorite,open-card,share,search,settings",
+   "to": "favorite,share,open-card,search,settings"
+  },
+  {
+   "i": 83,
+   "action": "nav-explore",
+   "from": "favorite,share,open-card,search,settings",
+   "to": "open-card,favorite,share,search,settings"
+  },
+  {
+   "i": 84,
+   "action": "open-card",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "favorite,open-card,share,search,settings"
+  },
+  {
+   "i": 87,
+   "action": "nav-explore",
+   "from": "favorite,open-card,share,search,settings",
+   "to": "open-card,favorite,share,search,settings"
+  },
+  {
+   "i": 94,
+   "action": "favorite",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "share,open-card,favorite,search,settings"
+  },
+  {
+   "i": 97,
+   "action": "nav-explore",
+   "from": "share,open-card,favorite,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 98,
+   "action": "open-card",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "open-card,favorite,share,search,settings"
+  },
+  {
+   "i": 99,
+   "action": "favorite",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "share,open-card,favorite,search,settings"
+  },
+  {
+   "i": 102,
+   "action": "nav-explore",
+   "from": "share,open-card,favorite,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 103,
+   "action": "open-card",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "favorite,open-card,share,search,settings"
+  },
+  {
+   "i": 107,
+   "action": "nav-explore",
+   "from": "favorite,open-card,share,search,settings",
+   "to": "open-card,favorite,share,search,settings"
+  },
+  {
+   "i": 108,
+   "action": "open-card",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "favorite,open-card,share,search,settings"
+  },
+  {
+   "i": 109,
+   "action": "favorite",
+   "from": "favorite,open-card,share,search,settings",
+   "to": "share,favorite,open-card,search,settings"
+  },
+  {
+   "i": 113,
+   "action": "nav-explore",
+   "from": "share,favorite,open-card,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 114,
+   "action": "open-card",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "favorite,open-card,share,search,settings"
+  },
+  {
+   "i": 117,
+   "action": "nav-explore",
+   "from": "favorite,open-card,share,search,settings",
+   "to": "open-card,favorite,share,search,settings"
+  },
+  {
+   "i": 119,
+   "action": "favorite",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "share,open-card,favorite,search,settings"
+  },
+  {
+   "i": 122,
+   "action": "nav-explore",
+   "from": "share,open-card,favorite,search,settings",
+   "to": "open-card,share,favorite,search,settings"
+  },
+  {
+   "i": 124,
+   "action": "search",
+   "from": "open-card,share,favorite,search,settings",
+   "to": "open-card,favorite,share,search,settings"
+  },
+  {
+   "i": 125,
+   "action": "favorite",
+   "from": "open-card,favorite,share,search,settings",
+   "to": "share,open-card,favorite,search,settings"
+  }
+ ],
+ "movedUnderPointer": [],
+ "multiExample": [
+  {
+   "i": 124,
+   "action": "search",
+   "n": 2
+  }
+ ],
+ "missed": [],
+ "viaSuggestion": 11,
+ "netSources": [
+  "cssnet"
+ ],
+ "finalAlpha": 0.7101973684210526,
+ "finalExamples": 127,
+ "finalGrid": [
+  "share",
+  "open-card",
+  "favorite",
+  "search",
+  "settings"
+ ],
+ "coldGrid": [
+  "open-card",
+  "favorite",
+  "share",
+  "search",
+  "settings"
+ ],
+ "windows": [
+  {
+   "from": 0,
+   "to": 19,
+   "suggest": 0.75,
+   "markov": 0.75,
+   "mlp": 0.05,
+   "routineSuggest": 0.75,
+   "gridMoves": 0,
+   "alphaEnd": 0.37777777777777777
+  },
+  {
+   "from": 20,
+   "to": 39,
+   "suggest": 0.9,
+   "markov": 0.9,
+   "mlp": 0.6,
+   "routineSuggest": 0.9473684210526315,
+   "gridMoves": 5,
+   "alphaEnd": 0.5230769230769231
+  },
+  {
+   "from": 40,
+   "to": 59,
+   "suggest": 0.9,
+   "markov": 0.95,
+   "mlp": 0.85,
+   "routineSuggest": 0.9473684210526315,
+   "gridMoves": 9,
+   "alphaEnd": 0.6
+  },
+  {
+   "from": 60,
+   "to": 79,
+   "suggest": 1,
+   "markov": 0.95,
+   "mlp": 0.95,
+   "routineSuggest": 1,
+   "gridMoves": 6,
+   "alphaEnd": 0.6456730769230768
+  },
+  {
+   "from": 80,
+   "to": 99,
+   "suggest": 0.95,
+   "markov": 0.95,
+   "mlp": 0.95,
+   "routineSuggest": 1,
+   "gridMoves": 8,
+   "alphaEnd": 0.6786290322580645
+  },
+  {
+   "from": 100,
+   "to": 119,
+   "suggest": 0.85,
+   "markov": 0.9,
+   "mlp": 0.85,
+   "routineSuggest": 0.9444444444444444,
+   "gridMoves": 9,
+   "alphaEnd": 0.7024305555555554
+  },
+  {
+   "from": 120,
+   "to": 126,
+   "suggest": 0.7142857142857143,
+   "markov": 0.7142857142857143,
+   "mlp": 0.7142857142857143,
+   "routineSuggest": 0.8333333333333334,
+   "gridMoves": 3,
+   "alphaEnd": 0.7101973684210526
+  }
+ ],
+ "parity": {
+  "calc": {
+   "netSource": "cssnet",
+   "maxDiff": 0.00000286102294921875
+  },
+  "hybrid": {
+   "netSource": "cssnet",
+   "maxDiff": 0.00000286102294921875
+  },
+  "animation": {
+   "netSource": "cssnet",
+   "maxDiff": 0.00000286102294921875
+  }
+ },
+ "events": [
+  {
+   "i": 124,
+   "type": "multiple-examples",
+   "action": "search",
+   "examplesAdded": 2
+  }
+ ],
+ "reload": {
+  "i": 72,
+  "type": "reload",
+  "before": {
+   "stats": {
+    "examples": 72,
+    "markovAcc": 0.95,
+    "mlpAcc": 0.85,
+    "mode": "calc"
+   },
+   "grid": [
+    "favorite",
+    "open-card",
+    "share",
+    "search",
+    "settings"
+   ],
+   "ranking": [
+    "nav-home",
+    "share",
+    "favorite",
+    "open-card",
+    "nav-explore",
+    "settings",
+    "nav-library",
+    "search"
+   ]
+  },
+  "after": {
+   "stats": {
+    "examples": 71,
+    "markovAcc": 0.95,
+    "mlpAcc": 0.85,
+    "mode": "calc"
+   },
+   "grid": [
+    "open-card",
+    "favorite",
+    "share",
+    "search",
+    "settings"
+   ],
+   "ranking": [
+    "nav-home",
+    "share",
+    "open-card",
+    "nav-explore",
+    "nav-library",
+    "settings",
+    "search",
+    "favorite"
+   ]
+  }
+ },
+ "consoleErrors": 0,
+ "glRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Pro, Unspecified Version)",
+ "wrongSuggestions": [
+  {
+   "i": 25,
+   "action": "settings",
+   "kind": "deviation",
+   "said": "nav-home",
+   "rank": 5,
+   "markov": "nav-home",
+   "mlp": "nav-home"
+  },
+  {
+   "i": 26,
+   "action": "nav-home",
+   "kind": "routine",
+   "said": "favorite",
+   "rank": 1,
+   "markov": "open-card",
+   "mlp": "favorite"
+  },
+  {
+   "i": 58,
+   "action": "nav-library",
+   "kind": "deviation",
+   "said": "open-card",
+   "rank": 6,
+   "markov": "open-card",
+   "mlp": "open-card"
+  },
+  {
+   "i": 59,
+   "action": "open-card",
+   "kind": "routine",
+   "said": "nav-home",
+   "rank": 4,
+   "markov": "open-card",
+   "mlp": "nav-home"
+  },
+  {
+   "i": 85,
+   "action": "share",
+   "kind": "deviation",
+   "said": "favorite",
+   "rank": 4,
+   "markov": "favorite",
+   "mlp": "favorite"
+  },
+  {
+   "i": 111,
+   "action": "settings",
+   "kind": "deviation",
+   "said": "nav-home",
+   "rank": 5,
+   "markov": "nav-home",
+   "mlp": "nav-home"
+  },
+  {
+   "i": 112,
+   "action": "nav-home",
+   "kind": "routine",
+   "said": "favorite",
+   "rank": 1,
+   "markov": "nav-home",
+   "mlp": "favorite"
+  },
+  {
+   "i": 115,
+   "action": "share",
+   "kind": "deviation",
+   "said": "favorite",
+   "rank": 1,
+   "markov": "favorite",
+   "mlp": "favorite"
+  },
+  {
+   "i": 124,
+   "action": "search",
+   "kind": "deviation",
+   "said": "favorite",
+   "rank": 7,
+   "markov": "favorite",
+   "mlp": "favorite"
+  },
+  {
+   "i": 125,
+   "action": "favorite",
+   "kind": "routine",
+   "said": "nav-home",
+   "rank": 6,
+   "markov": "search",
+   "mlp": "nav-home"
+  }
+ ]
+}
