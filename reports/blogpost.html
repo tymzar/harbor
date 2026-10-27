@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stylesheet Neural Network</title>
+<meta name="description" content="Notes from an overnight experiment: a browser app whose model forward pass runs in CSS, trains in a Web Worker, and realigns a HeroUI screen from interaction intensity.">
+<style>
+:root{color-scheme:light dark;
+ --bg:#fbfaf7;--fg:#1d1d1b;--muted:#6b6a64;--accent:#1f5fbf;--accent-2:#b44a1f;--line:#e3e0d8;--code-bg:#f1efe8;--quote:#5c5a52;--th:#eeece5;--img-border:#d9d6cd;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#141414;--fg:#e7e5df;--muted:#9c9a92;--accent:#7fb0ff;--accent-2:#f0956a;--line:#2b2b29;--code-bg:#1f1f1d;--quote:#b5b2a8;--th:#222220;--img-border:#333331;}}
+:root[data-theme="dark"]{
+ --bg:#141414;--fg:#e7e5df;--muted:#9c9a92;--accent:#7fb0ff;--accent-2:#f0956a;--line:#2b2b29;--code-bg:#1f1f1d;--quote:#b5b2a8;--th:#222220;--img-border:#333331;}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 ui-serif,"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;}
+main{max-width:46rem;margin:0 auto;padding:2.5rem 16px 5rem}
+h1,h2,h3{font-family:ui-sans-serif,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;line-height:1.2;letter-spacing:-.01em}
+h1{font-size:2.2rem;margin:.2em 0 .4em}
+h2{font-size:1.55rem;margin:2.4em 0 .6em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.8em 0 .5em}
+p{margin:0 0 1em}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+a:hover{color:var(--accent-2)}
+strong{font-weight:650}
+hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
+hr+h2{border-top:0;padding-top:0;margin-top:0}
+blockquote{margin:1.2em 0;padding:.2em 1em;border-left:3px solid var(--accent);color:var(--quote);font-style:italic}
+blockquote em{font-style:normal}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:.86em}
+code{background:var(--code-bg);padding:.1em .35em;border-radius:4px;overflow-wrap:anywhere}
+pre{background:var(--code-bg);padding:1em;border-radius:8px;overflow-x:auto;line-height:1.45;margin:1em 0}
+pre code{background:none;padding:0;font-size:.82em}
+ul,ol{padding-left:1.4em;margin:0 0 1em}
+li{margin:.25em 0}
+li p{margin:0}
+table{border-collapse:collapse;width:100%;margin:1em 0 1.5em;font-size:.86rem;line-height:1.4;font-family:ui-sans-serif,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;display:block;overflow-x:auto}
+thead th{background:var(--th);text-align:left;font-weight:650;border-bottom:2px solid var(--line);padding:.45em .6em;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:.45em .6em;vertical-align:top;min-width:6em}
+tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--th) 45%,transparent)}
+figure{margin:1.5em 0}
+img{max-width:100%;height:auto;display:block;border:1px solid var(--img-border);border-radius:8px}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:.5em;font-family:ui-sans-serif,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif}
+.lede{font-size:1.12rem;color:var(--muted)}
+.meta{font-size:.9rem;color:var(--muted);font-family:ui-sans-serif,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif}
+.toc{font-family:ui-sans-serif,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;font-size:.92rem;background:var(--code-bg);border-radius:8px;padding:1em 1.2em;margin:1.5em 0}
+.toc ol{margin:0;padding-left:1.2em;columns:2;column-gap:2em}
+.toc li{break-inside:avoid}
+@media (max-width:640px){body{font-size:16px}h1{font-size:1.7rem}.toc ol{columns:1}}
+</style>
+</head>
+<body>
+<main>
+<h1 id="can-a-stylesheet-be-a-neural-network">Can a stylesheet be a neural network?</h1><p class="lede">Notes from one overnight experiment: a browser app whose model's forward pass runs in CSS, trains in a Web Worker, and rearranges a HeroUI screen based on how hard you click.</p>
+<p class="meta"><strong>Date:</strong> 2026-10-22. <strong>Repo:</strong> <code>smart-web</code>. <strong>Browser for every number below:</strong> headless Chromium 156.0.8078.4 via Playwright 1.64 on an Apple M2 Pro (macOS), unless a line says otherwise. Nothing was tested in Firefox or Safari. No human used the app; four scripted "personas" did.</p>
+<nav class="toc" aria-label="Contents"><ol><li><a href="#the-hook">The hook</a></li><li><a href="#the-idea">The idea</a></li><li><a href="#what-the-browser-can-and-cannot-compute">What the browser can and cannot compute</a></li><li><a href="#architecture-of-smart-web">Architecture of smart-web</a></li><li><a href="#how-learning-works">How learning works</a></li><li><a href="#results-from-the-e2e-suite">Results from the e2e suite</a></li><li><a href="#the-four-persona-sessions">The four persona sessions</a></li><li><a href="#what-failed-or-surprised">What failed or surprised</a></li><li><a href="#what-to-try-next">What to try next</a></li><li><a href="#how-to-run-it-locally">How to run it locally</a></li></ol></nav>
+<p>Throughout, <strong>measured</strong> means a number that is in a committed file in this repo (<code>reports/</code>, <code>research/</code>, <code>src/cssnet/parity.check.mjs</code> output). <strong>Assumed</strong> means a guess, and it is labelled as one.</p>
+<hr />
+<h2 id="the-hook">The hook</h2>
+<p>Between 02:43 and 04:43 on 22 October 2026 a git repository went from an empty Vite scaffold to a working app, two research reports, an 18-test Playwright suite and four simulated user sessions, in fourteen commits (that is from <code>git log</code>, nothing else). The question that started it was deliberately silly:</p>
+<blockquote>
+<p>If a CSS custom property can hold a number, and <code>calc()</code> can multiply and add, and <code>@property</code> can register <code>&lt;number&gt;</code> types, and <code>exp()</code> and <code>max()</code> are now in CSS... is the stylesheet a neural network? And if it is, can the browser <em>run</em> it, not just describe it?</p>
+</blockquote>
+<p>The honest answer after one night: <strong>yes, it is, and it runs</strong>, synchronously, to float32 precision, in under half a millisecond for a 15-16-8 multi-layer perceptron, with no JavaScript between the layers. The part everyone assumes, that it would run on the GPU, is false. The part nobody assumes, that the <em>CSS animation engine</em> can be the matrix multiply, is true, and it took a laundering trick with <code>font-size</code> to get there.</p>
+<p>It also turns out that an app that learns from your clicks and moves buttons around is a jumpy thing to use, and the four personas had a lot to say about it. Those findings are the second half of this post.</p>
+<hr />
+<h2 id="the-idea">The idea</h2>
+<p><code>smart-web</code> is a small HeroUI v3 screen: three navigation tabs, a grid of cards (open, favourite, share, search, settings), a "Suggested next" panel, and a decorative background. Every one of the 8 learnable actions is instrumented. Each interaction produces 52 raw features: press duration, approach velocity, deceleration, path straightness, tremor, hover dwell, rage-click burst count, scroll velocity and reversals, typing cadence, time on view, and so on. The model sees 15 of them: 7 pointer-dynamics features (normalised) plus a one-hot of the last action.</p>
+<p>Two predictors run per interaction:</p>
+<ul>
+<li>a <strong>first-order Markov chain</strong> over actions (decay 0.97, prior strength 1), which only knows <em>what</em> you just did;</li>
+<li>a <strong>15-16-8 MLP</strong> trained online with SGD, which also knows <em>how</em> you did it.</li>
+</ul>
+<p>Their outputs are blended, the blend orders the suggestion panel, and a damped version of it is allowed to move at most one card per interaction in the grid. Weights live in IndexedDB. There is no backend, no sync, no telemetry.</p>
+<p>The twist is where inference happens. The weights are written into a stylesheet. The inputs are written into custom properties. The browser's style engine does the forward pass. JavaScript reads the softmax back out of computed style. The same net is also available as a plain JS function (<code>src/cssnet/reference.ts</code>) so that every test can check that CSS and JS agree.</p>
+<hr />
+<h2 id="what-the-browser-can-and-cannot-compute">What the browser can and cannot compute</h2>
+<p>This section is the research half of the night, done by two agents in parallel. Full reports: <a href="../research/r1-animation-forward-pass.md"><code>research/r1-animation-forward-pass.md</code></a> and <a href="../research/r2-readback-and-visuals.md"><code>research/r2-readback-and-visuals.md</code></a>. Experiment scripts are in <code>research/experiments/</code>.</p>
+<h3 id="the-gpu-myth">The GPU myth</h3>
+<p>The first thing to let go of: nothing here runs on the GPU. A CDP <code>LayerTree</code> probe (research 2, <code>r2-layers.mjs</code>) confirmed what the Chromium docs say: <code>transform</code>, <code>opacity</code> and <code>filter</code> with <code>will-change</code> get their own compositor layers; a gradient background, a width change or a background-colour animation do not. Everything that <em>computes a number</em> (<code>calc()</code>, <code>@property</code> resolution, animation sampling, layout) is CPU work inside style recalc or layout. Compositor properties are only useful for the <em>visuals</em> fed by the net, never for the net itself.</p>
+<p>That also sets the cost floor. For a 16-16-8 net on one element, the forward pass is the style recalc of the host element: <strong>about 300 µs</strong> (measured 297–354 µs across readback channels in research 2). Reading values back adds roughly 0.25–0.3 µs each. So the choice of readback channel is never about its own cost; it is about <strong>what it forces</strong>.</p>
+<h3 id="calc-and-property-the-baseline-that-just-works"><code>calc()</code> and <code>@property</code>: the baseline that just works</h3>
+<p>Register every neuron as <code>@property --h3 { syntax: '&lt;number&gt;'; inherits: false; initial-value: 0 }</code>, write <code>--h3: max(0, calc(var(--b3) + var(--w3_0) * var(--x0) + ...))</code>, do the same for the logits, then softmax with <code>exp()</code> and division. Three things the research found about this path:</p>
+<ul>
+<li><strong>Chrome's <code>calc()</code> is float32.</strong> <code>exp(90)</code> overflowed (two flex children got equal widths instead of 731/269). The practical precision of any CSS number is ~1e-5; the measured residual against a double-precision JS reference is 3–8e-6. The fix for softmax is the standard one and is expressible in CSS: <code>--zmax: max(var(--z0), ..., var(--z7))</code> then <code>exp(var(--z_i) - var(--zmax))</code>.</li>
+<li><strong><code>getComputedStyle</code> serialises to 6 significant digits; <code>computedStyleMap()</code> returns the raw double.</strong> Both cost the same (~0.25 µs/value, style-only). The Typed OM is the right readback.</li>
+<li><strong>Argmax is also pure CSS:</strong> <code>--is3: calc(1 - clamp(0, (var(--pmax) - var(--p3)) * 1e6, 1))</code> gives a 0/1 flag per output, verified 100/100 against JS. Any element can drive its highlight from it without a JS comparison.</li>
+</ul>
+<p>Measured in the final engine (<code>node src/cssnet/parity.check.mjs</code>, 200 random inputs shaped like the app's, weights re-randomised every 10 trials):</p>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>max abs diff vs JS (probs)</th>
+<th>argmax agreement</th>
+<th>µs per eval (set 15 inputs + read 8 outputs)</th>
+<th>setWeights + read</th>
+<th>CSS animations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>calc (weights as custom properties)</td>
+<td>5.5e-6</td>
+<td>200/200</td>
+<td><strong>388</strong></td>
+<td>477 µs</td>
+<td>0</td>
+</tr>
+<tr>
+<td>calc (weights baked as literals)</td>
+<td>—</td>
+<td>—</td>
+<td><strong>221</strong></td>
+<td>398 µs</td>
+<td>0</td>
+</tr>
+<tr>
+<td>hybrid</td>
+<td>4.5e-6</td>
+<td>200/200</td>
+<td>796</td>
+<td>1.6 ms</td>
+<td>240</td>
+</tr>
+<tr>
+<td>animation</td>
+<td>4.5e-6</td>
+<td>200/200</td>
+<td>1152</td>
+<td>2.3 ms</td>
+<td>368</td>
+</tr>
+</tbody>
+</table>
+<h3 id="animation-taint-and-the-trick-that-launders-it">Animation-taint, and the trick that launders it</h3>
+<p>An earlier experiment (Chrome 155, in the project memory) had found that the CSS animation engine is itself a compute layer: a <strong>paused</strong> animation with <code>animation-delay: calc(var(--x) * -1s)</code> samples the keyframe at time <code>x</code>; the keyframe end value is the weight; a <code>linear()</code> easing is an arbitrary 1-D activation; <code>animation-composition: add</code> sums several animations onto one property. Exact to 4 decimals, ~30 µs per evaluation. But that experiment also hit the wall: an animated custom property is <strong>animation-tainted</strong>, and <code>var()</code> of it inside any <code>animation-*</code> property resolves to 0. So an animation layer could never feed a second animation layer. One animated layer, then <code>calc()</code> for the rest.</p>
+<p>Research 1 re-confirmed the taint (it also propagates through inheritance to a grandchild) and then found that the rule is narrower than it looks. The taint follows a <strong>custom property substituted by <code>var()</code></strong>. It does not follow a value that leaves the custom-property world. Four bridges were found; three are synchronous:</p>
+<table>
+<thead>
+<tr>
+<th>bridge</th>
+<th>mechanism</th>
+<th>synchronous on <code>getComputedStyle</code>?</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>em</code></strong></td>
+<td>parent: <code>font-size: calc((var(--h) + 8) * 1px)</code>; child: <code>animation-delay: calc((1em / 1px - 8) * -1s)</code></td>
+<td><strong>yes</strong>, no layout</td>
+<td>chained to <strong>256 layers</strong> with no limit found; ~5 µs per extra layer; ~5e-6 error per hop; <code>font-size</code> clamps to [0, 10000px]</td>
+</tr>
+<tr>
+<td><code>lh</code></td>
+<td>same with <code>line-height</code> / <code>1lh</code></td>
+<td>yes</td>
+<td>an independent second scalar channel per element</td>
+</tr>
+<tr>
+<td><code>cqw</code></td>
+<td>container <code>width: calc(var(--h) * 100px)</code>; child reads <code>1cqw / 1px</code></td>
+<td>yes, but forces layout</td>
+<td><code>container-type</code> imposes containment: the container cannot be sized by its own children</td>
+</tr>
+<tr>
+<td>view-timeline</td>
+<td>a spacer's width moves a <code>view-timeline</code> subject; the next layer uses <code>animation-timeline</code></td>
+<td><strong>no</strong>: stale until the next frame</td>
+<td>a 2-hop chain still settles in a single frame; transforms do <em>not</em> move the subject</td>
+</tr>
+</tbody>
+</table>
+<p>The enabler is that Chrome 156 accepts <code>calc(&lt;length&gt; / &lt;length&gt;)</code> as a <code>&lt;number&gt;</code> inside <code>animation-delay</code> (<code>CSS.supports('animation-delay: calc(1em / 1px * -1s)') === true</code>).</p>
+<p>The gotcha that broke the first attempt, with the real output: <code>L=2 ... sync read=0.1 ref=1.15 MISMATCH</code>. <code>em</code> inside a non-<code>font-size</code> property is the element's <strong>own</strong> font-size, and Blink resolves <code>animation-*</code> from the element's base style, where its own <code>--h</code> is still the pre-animation value (just the bias). <strong>Producer and consumer must be different elements.</strong> Two elements per layer (<code>.n &gt; .f &gt; .n &gt; .f ...</code>) fixed it: <code>L=256 ... OK</code>.</p>
+<p>The second problem was summation across elements for the output layer. A font-size carries one scalar; an output neuron needs all 16 hidden values. The answer is to nest the hidden neurons and use <em>inherited</em> <code>animation-composition: add</code>: each <code>.p_j</code> runs one animation per output <code>--o_k</code> whose underlying value is the <code>--o_k</code> inherited from <code>.p_{j-1}</code>, so the chain accumulates <code>b2[k] + Σ_j W2[k][j]·relu(h_j)</code> with no JS and no <code>calc()</code>. Verified: max abs error on logits 1.06e-5.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode css"><code class="sourceCode css"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">@keyframes</span> o3-7 { <span class="dv">from</span> { <span class="va">--o3</span><span class="ch">:</span> <span class="dv">0</span> } <span class="dv">to</span> { <span class="va">--o3</span><span class="ch">:</span> <span class="fu">calc(</span><span class="dv">W2</span>[<span class="dv">3</span>][<span class="dv">7</span>] <span class="op">*</span> <span class="dv">8</span><span class="fu">)</span> } }</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">.p</span> { <span class="kw">animation-duration</span><span class="ch">:</span> <span class="dv">16</span><span class="dt">s</span><span class="op">;</span>                       <span class="co">/* samples h over [-8, 8] */</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>     <span class="kw">animation-timing-function</span><span class="ch">:</span> linear<span class="fu">(</span><span class="dv">0</span><span class="op">,</span> <span class="dv">0</span> <span class="dv">50</span><span class="dt">%</span><span class="op">,</span> <span class="dv">1</span><span class="fu">)</span><span class="op">;</span> <span class="co">/* relu */</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>     <span class="kw">animation-play-state</span><span class="ch">:</span> <span class="dv">paused</span><span class="op">;</span> <span class="kw">animation-fill-mode</span><span class="ch">:</span> <span class="dv">both</span><span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>     <span class="kw">animation-composition</span><span class="ch">:</span> <span class="dv">add</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>     <span class="kw">animation-delay</span><span class="ch">:</span> <span class="fu">calc(</span>((<span class="dv">1</span><span class="dt">em</span> <span class="op">/</span> <span class="dv">1</span><span class="dt">px</span>) <span class="op">-</span> <span class="dv">8</span> <span class="op">-</span> <span class="dv">-8</span>) <span class="op">*</span> <span class="dv">-1</span><span class="dt">s</span><span class="fu">)</span><span class="op">;</span> }</span></code></pre></div>
+<p>Result: a <strong>full 15-16-8 MLP with both weighted layers and the relu in the animation engine</strong>, matching the JS reference to 1e-5 (argmax 100/100), synchronous on <code>getComputedStyle</code>, at ~1.3 ms per evaluation. The only thing the animation engine cannot do is <strong>division</strong>: <code>exp()</code> could be an easing and the sum a composition, but softmax normalisation needs one <code>calc()</code> per output. The cost model is roughly <strong>3.5 µs per CSS animation whose delay changes</strong>; changing just one input still cost 813 µs because every animation on an element re-resolves when its delay list changes.</p>
+<p>A 4-5-3 demo of this (<code>research/experiments/r1-best-demo.html</code>) runs in "auto" mode with <strong>zero JavaScript</strong>: its four inputs are running CSS animations delivered into layer 1 through four independent unit channels (<code>1lh</code>, <code>1rlh</code>, <code>1rem</code>, <code>100cqw</code>), and a read-only JS overlay reports parity of 3.4e-7 on probabilities.</p>
+<h3 id="other-things-that-were-tried">Other things that were tried</h3>
+<table>
+<thead>
+<tr>
+<th>technique</th>
+<th>works?</th>
+<th>note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>layout as the dot product (animated <code>width</code>/<code>margin-left</code> per input, flex <code>max-content</code>, abspos reader with <code>container-type</code>, <code>100cqw</code> out)</td>
+<td>yes, 62 µs for 5 inputs</td>
+<td>bars literally sum; negative weights via negative margins; 1/64 px quantisation. First attempt gave <code>width: 0</code> because the flex container itself had <code>container-type</code></td>
+</tr>
+<tr>
+<td><code>@container style(--h &gt; 0.5)</code> range queries</td>
+<td>yes</td>
+<td>discrete thresholds on registered numbers; the demo uses it to print a minus sign</td>
+</tr>
+<tr>
+<td><code>steps()</code> running clock as a per-frame time-multiplexer</td>
+<td>yes</td>
+<td>a running <code>steps(4, jump-none)</code> animation drives a paused layer frame by frame with no JS; feed-forward only</td>
+</tr>
+<tr>
+<td>animated non-custom property (<code>width</code> keyframes) → <code>cqw</code> → delay</td>
+<td>yes</td>
+<td>regular animated properties carry no taint at all</td>
+</tr>
+<tr>
+<td>transition on a custom property → <code>var()</code> in delay</td>
+<td>not tainted</td>
+<td>but a transition needs a value-change trigger, so it is not a bridge for animation output</td>
+</tr>
+<tr>
+<td>recurrence / feedback loop</td>
+<td><strong>no</strong></td>
+<td>CSS rejects dependency cycles (both properties become invalid); no ancestor can read a descendant; there is no state cell</td>
+</tr>
+<tr>
+<td>nested <code>matrix3d</code> chain read by view-timeline</td>
+<td><strong>no</strong></td>
+<td>view-timeline progress was identical with <code>translateX(-300px)</code>; transforms are only readable by JS via <code>getBoundingClientRect</code></td>
+</tr>
+<tr>
+<td><code>anchor-size()</code> as a size bridge</td>
+<td>abspos only</td>
+<td>non-positioned elements get the fallback even though <code>CSS.supports</code> says true</td>
+</tr>
+<tr>
+<td>softmax entirely in animation</td>
+<td><strong>no</strong></td>
+<td>division has no animation-engine form</td>
+</tr>
+</tbody>
+</table>
+<p>The earlier memory note on transforms stands: nested <code>div</code>s with the default <code>transform-style: flat</code> apply the perspective divide at <em>every</em> level (a real projective nonlinearity, ~2.5 µs per point when read back via <code>getBoundingClientRect</code>, 0.03 px precision), but it is CPU layout work and only JS can read it. It became the <code>DotGrid</code> visual, not a compute path.</p>
+<h3 id="reading-the-answer-back-out">Reading the answer back out</h3>
+<p>Research 2 measured 12 readback channels. The decisive split:</p>
+<table>
+<thead>
+<tr>
+<th>channel</th>
+<th>forces</th>
+<th>µs mutate+read, light / heavy DOM</th>
+<th>precision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getComputedStyle().getPropertyValue</code></td>
+<td>style only</td>
+<td>325 / 347</td>
+<td>3.7e-6 (6 sig. digits)</td>
+</tr>
+<tr>
+<td><code>computedStyleMap()</code> (Typed OM)</td>
+<td>style only</td>
+<td>326 / 297</td>
+<td>3.4e-6 (raw double)</td>
+</tr>
+<tr>
+<td><code>getBoundingClientRect</code> of <code>width: calc(var(--p) * 10000px)</code></td>
+<td>style + layout</td>
+<td>375 / <strong>2024</strong></td>
+<td>3.5e-6</td>
+</tr>
+<tr>
+<td><code>offsetWidth</code> / <code>scrollWidth</code> (sum and max pooling in one integer read)</td>
+<td>style + layout</td>
+<td>~370 / ~2020</td>
+<td>5e-5 to 6e-4</td>
+</tr>
+<tr>
+<td><code>document.elementFromPoint</code> over <code>z-index: calc(var(--p) * 1e6)</code> (argmax)</td>
+<td>style + layout + hit test</td>
+<td>398 / <strong>3158</strong></td>
+<td>exact, 60/60</td>
+</tr>
+<tr>
+<td><code>anchor-size()</code> cross-element sum</td>
+<td>style + layout</td>
+<td>374 / 2012</td>
+<td>4e-6</td>
+</tr>
+<tr>
+<td><code>ResizeObserver</code></td>
+<td>async, after layout</td>
+<td>~700 / 3800 latency</td>
+<td>1.7e-6</td>
+</tr>
+<tr>
+<td><code>IntersectionObserver</code> ratio == p</td>
+<td>async, separate task</td>
+<td>~7100–7500 latency</td>
+<td>1.5e-5, only on threshold crossings</td>
+</tr>
+<tr>
+<td>canvas <code>drawImage</code> of an SVG <code>&lt;foreignObject&gt;</code> with the inline net</td>
+<td>separate image document</td>
+<td>~1300 per snapshot</td>
+<td>1.9e-3 (8-bit)</td>
+</tr>
+</tbody>
+</table>
+<p>"Heavy DOM" is a 6000-box subtree whose layout depends on the net. Any geometry channel re-lays out everything HeroUI has dirtied; the style-only channels do not care. So the app reads with <code>computedStyleMap()</code> and never touches geometry per frame.</p>
+<p>Two bonus findings: <strong>flex layout is a softmax</strong> (<code>flex-grow: calc(exp(var(--z_i)))</code> on 8 children distributes free space proportionally; max abs error 2.2e-5 at a 1000 px row, 3.2e-6 at 10000 px, argmax 200/200, ~36 µs per evaluation), and <code>Animation.effect.getComputedTiming().progress</code> reads the <em>input</em> back but does <strong>not</strong> apply the easing (<code>linear(0, 0 50%, 1)</code> gave <code>progress = x</code>), so it cannot read an activation.</p>
+<h3 id="making-it-visible">Making it visible</h3>
+<figure><img src="../research/screens/r2-visual-demo.png" alt="Research 2 visual demo: a visible network, the matrix3d dot grid, gradient fingerprints, and a conic softmax ring" loading="lazy"><figcaption>Research 2 visual demo: a visible network, the matrix3d dot grid, gradient fingerprints, and a conic softmax ring</figcaption></figure>
+<p>Research 2 built four visual layers and costed them. The expensive one is the network you can see (248 elements, ~1.5 ms per frame of style cost, with a ~700 µs fixed component once edges with <code>will-change</code> exist that was not isolated). Everything inside the net's subtree is re-styled on every input change (0.28 µs per element even with no <code>var()</code>; <code>display: none</code> does not skip an element's own style). The cheapest "alive" visual is the nested <code>matrix3d</code> dot lattice: one painted gradient, three <code>will-change: transform</code> wrappers, negligible CPU. The gradient fingerprint comes in a CPU flavour (conic/radial repaint per change) and a GPU flavour (static gradient, animated only through a <code>filter: hue-rotate() saturate() contrast() brightness()</code> chain plus a transform). The app shipped the GPU fingerprint as <code>PatternLayer</code> and the lattice as <code>DotGrid</code>.</p>
+<hr />
+<h2 id="architecture-of-smart-web">Architecture of smart-web</h2>
+<pre><code>src/signals/   52 raw features per interaction -&gt; 15 model inputs (7 pointer z-scores + last-action one-hot)
+src/model/     Web Worker: Markov + MLP (15-16-8), online SGD, blend, IndexedDB, export/import
+src/cssnet/    the CSS engine: generate.ts (stylesheet from NetShape), index.ts (calc | hybrid | animation),
+               reference.ts (JS forward pass), visual/ (PatternLayer, DotGrid), parity.check.mjs
+src/app/       HeroUI screen, adaptive grid, suggestion panel, debug drawer, replay, window.__smartweb
+src/cssnet/contract.ts   the shared contract (ACTIONS, NetShape, CssNet, test hook, data-testids)</code></pre>
+<p><strong>The three engine modes</strong> (from <code>MODE_NOTES</code> in <code>src/cssnet/index.ts</code>):</p>
+<ul>
+<li><code>calc</code>: hidden layer, logits, max-shifted softmax and argmax flags as <code>calc()</code> on one element. JS writes inputs and weights as custom properties, reads results. Default.</li>
+<li><code>hybrid</code>: the hidden layer in the animation engine (one paused animation per weight, <code>composition: add</code>); relu, output layer and softmax are <code>calc()</code> on the same element. Inputs saturate outside [-4, 4].</li>
+<li><code>animation</code>: both weighted layers and the relu in the animation engine via the em bridge and the nested inherited-composition chain; only the softmax division is <code>calc()</code>. relu saturates at <code>h = 16</code>.</li>
+</ul>
+<p>A detail that mattered: keyframes that reference weights as custom properties (<code>to { --h: var(--w) }</code>) <strong>work</strong> (a new, verified finding) but cost 1.6–2.4 ms per eval because Blink re-resolves <code>var()</code> in keyframes and copies the inherited property map down the chain. So the animation modes bake weights as literals, which makes <code>setWeights</code> a <code>&lt;style&gt;</code> rewrite (2.3 ms for 368 keyframes in animation mode). The app calls <code>setWeights</code> on every model snapshot, so a click in animation mode costs about 3.5 ms of engine time. That shows up as a few ms in the latency table below.</p>
+<p><strong>Bridge and fallback.</strong> <code>src/app/cssnetBridge.ts</code> mounts the CSS net with a mount-time probe (with zero weights every output must read 1/8); if the environment does not compute registered custom properties (jsdom, or a browser without <code>@property</code>, <code>exp()</code>, <code>linear()</code> or <code>animation-composition</code>), it throws and the app uses the JS net. The debug drawer prints which one is active: <code>net: cssnet (calc) · reference: cssnet/reference</code>.</p>
+<p><strong>Visuals.</strong> <code>PatternLayer</code> is a full-viewport static gradient animated only through compositor properties, fed 6 hidden activations. <code>DotGrid</code> is the three-level <code>matrix3d</code> lattice fed 16 hidden activations. Both update in ~260 µs per activation write (32 <code>setProperty</code> calls plus a style recalc).</p>
+<figure><img src="sessions/methodical/05-end.png" alt="The app after 127 methodical interactions: cards, suggestion panel, the dot grid and the gradient background" loading="lazy"><figcaption>The app after 127 methodical interactions: cards, suggestion panel, the dot grid and the gradient background</figcaption></figure>
+<figure><img src="sessions/methodical/06-end-debug.png" alt="The debug drawer: engine source, CSS vs JS max difference, ranking from each predictor, the 15 normalised inputs and the 52 raw features" loading="lazy"><figcaption>The debug drawer: engine source, CSS vs JS max difference, ranking from each predictor, the 15 normalised inputs and the 52 raw features</figcaption></figure>
+<hr />
+<h2 id="how-learning-works">How learning works</h2>
+<p>Everything model-side runs in a Web Worker (<code>src/model/worker.ts</code>), with a same-thread fallback.</p>
+<p><strong>Markov.</strong> An 8×8 transition table with decay 0.97 per row update and a prior strength of 1. It predicts <code>P(next | last action)</code>.</p>
+<p><strong>MLP.</strong> 15-16-8, relu, softmax, cross-entropy, online SGD with <code>lr: 0.1, l2: 1e-4, clip: 5</code>. The brief had asked for a "small" learning rate; 0.1 was chosen after a measurement on a 5-step cycle: lr 0.05 reached only 0.65 rolling top-1 after 150 steps, lr 0.1 reached 0.95 by step 125.</p>
+<p><strong>Label delay.</strong> When an interaction happens, the model predicts from the features <em>of that interaction</em> and stores the pair <code>{x, markov, mlp}</code> as pending. The <em>next</em> action is the label: both predictors' accuracies are scored against it, and one SGD step runs on <code>(pending.x, label)</code>. So the MLP learns "given how you just pressed <em>this</em>, what will you press <em>next</em>", which is the only way intensity can carry information about the future.</p>
+<p><strong>Blend.</strong> <code>alpha(n) = 0.85 · n / (n + 25)</code>, so Markov dominates early and the MLP's share climbs to about 0.7 after ~130 examples. Several session findings below are about the fact that alpha depends on the example count only, not on which predictor has been right.</p>
+<p><strong>Normalisation.</strong> A running Welford normaliser per pointer feature, seeded with an assumed desktop-mouse prior worth 20 pseudo-observations and a floor on the standard deviation. This was added after the e2e suite found that, without it, a near-constant feature got a near-zero spread and timer jitter of a few milliseconds became z = -2.73; two runs of the same calm journey then differed by L1 0.71 in output. With the prior they differ by about 0.004. The prior values are assumed, not fitted.</p>
+<p><strong>Guardrails on the grid</strong> (<code>src/app/adaptive.ts</code>):</p>
+<ul>
+<li>The grid does not move until more than 3 training examples exist (<code>COLD_START</code>).</li>
+<li>It is ordered by an EMA of the blended scores (<code>GRID_EMA = 0.25</code>), not the instantaneous prediction. Before this, a 4-step cycle swapped open-card and favorite on every interaction and a test click missed its moving target.</li>
+<li>At most <strong>one</strong> element moves per interaction, and only if its score beats its prior by 0.06 and the element it displaces by 0.03.</li>
+</ul>
+<p><strong>Persistence.</strong> Saves to IndexedDB (<code>idb-keyval</code>) are debounced to 1 s. Export as a JSON file (exact) or an int8-quantised URL fragment (~700 characters, lossy). A rolling top-1 accuracy over the last 20 examples is kept for each predictor.</p>
+<hr />
+<h2 id="results-from-the-e2e-suite">Results from the e2e suite</h2>
+<p>Final run: <strong>18 Playwright tests passed in 6.1 minutes</strong> (4 in the original <code>app.spec.ts</code> and 14 across 8 concept-level specs). <code>npm run typecheck</code> passes and covers <code>e2e/</code>; <code>npm test</code> passes 61 Vitest tests; <code>npm run build</code> passes with a warning that the bundle is over 500 kB. Metrics are written to <a href="e2e-metrics.json"><code>reports/e2e-metrics.json</code></a>; screenshots to <code>reports/screens/</code>.</p>
+<p><strong>CSS vs JS parity, in the running app</strong> (10 real interactions per mode, max abs difference on the 8 probabilities):</p>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>max abs diff</th>
+<th>tolerance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>calc</td>
+<td>2.0e-6</td>
+<td>1e-3</td>
+</tr>
+<tr>
+<td>hybrid</td>
+<td>1.0e-6</td>
+<td>1e-4</td>
+</tr>
+<tr>
+<td>animation</td>
+<td>1.8e-6</td>
+<td>1e-4</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Learning</strong> (journey <code>nav-home → nav-explore → open-card → favorite</code>, realistic pointer input):</p>
+<table>
+<thead>
+<tr>
+<th>repetition</th>
+<th>examples</th>
+<th>Markov rolling acc</th>
+<th>MLP rolling acc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>4</td>
+<td>0.25</td>
+<td>0.00</td>
+</tr>
+<tr>
+<td>2</td>
+<td>8</td>
+<td>0.50</td>
+<td>0.125</td>
+</tr>
+<tr>
+<td>3</td>
+<td>12</td>
+<td>0.67</td>
+<td>0.25</td>
+</tr>
+<tr>
+<td>5</td>
+<td>20</td>
+<td>0.80</td>
+<td>0.35</td>
+</tr>
+<tr>
+<td>7</td>
+<td>28</td>
+<td>1.00</td>
+<td>0.50</td>
+</tr>
+<tr>
+<td>8</td>
+<td>32</td>
+<td>1.00</td>
+<td>0.50</td>
+</tr>
+</tbody>
+</table>
+<p>Markov passed 0.6 on the 3rd repetition. After each step of a further repetition the top suggestion was the correct next action.</p>
+<p><strong>Intensity, two journeys.</strong> The same 4-step journey driven calmly twice and rushed once (24 examples each). MLP outputs after training: calm vs rushed differed by <strong>L1 0.47</strong>; calm vs a second calm run by <strong>0.004</strong>. Weights differed by 19.0 vs 0.045. Markov accuracy was 0.95 in all three (it cannot see intensity), MLP 0.30–0.35.</p>
+<p><strong>Intensity decides where history cannot.</strong> The user favourites after a <em>calm</em> open-card and shares after a <em>rushed</em> one. Markov stays near 50/50 on this (final: favorite 0.47 vs share 0.48 after calm; 0.50 vs 0.46 after rushed). The MLP learned it: after 12 cycles, favorite beat share by <strong>0.77</strong> after a calm press and share beat favorite by <strong>0.80</strong> after a rushed press (final MLP after calm: favorite 0.79; after rushed: share 0.82).</p>
+<p><strong>Click-to-pixel latency</strong> (pointerup → rAF + postMessage after the React commit of the new prediction, n=24 per mode):</p>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>GPU headless (<code>--use-angle=metal</code>) p50 / p95 / max</th>
+<th>SwiftShader (default headless) p50 / p95 / max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>calc</td>
+<td><strong>31.2 / 33.8 / 52.5 ms</strong></td>
+<td>96.6 / 122.3 / 146.6 ms</td>
+</tr>
+<tr>
+<td>hybrid</td>
+<td><strong>35.3 / 46.7 / 59.6 ms</strong></td>
+<td>96.5 / 120.0 / 141.5 ms</td>
+</tr>
+<tr>
+<td>animation</td>
+<td><strong>36.1 / 46.0 / 57.6 ms</strong></td>
+<td>97.6 / 121.4 / 124.8 ms</td>
+</tr>
+</tbody>
+</table>
+<p>The 50 ms target only holds on a real GPU. Under SwiftShader, the full-viewport <code>PatternLayer</code> filters cost about 100 ms per frame; with all visuals hidden the SwiftShader p50 was 27.5 ms. On macOS the suite launches Chromium with <code>--use-angle=metal</code> (WebGL reports "ANGLE Metal Renderer: Apple M2 Pro"); <code>SMARTWEB_SOFTWARE_GL=1</code> runs the software path and the latency tests are marked expected-fail there. Hybrid and animation p95 sit close to the limit, with single samples at 57–60 ms, so those tests may be flaky on a loaded machine. Not tested on Linux.</p>
+<p><strong>Guardrails.</strong> On an 18-step <code>settings → share → search</code> cycle: zero moves during cold start (first 3 interactions), then at most one grid element per interaction (the recorded <code>movedPerInteraction</code> is all 0s and 1s). Note what that <em>also</em> means: one move on almost every interaction.</p>
+<p><strong>Persistence.</strong> Reload restored identical stats and weights (12 examples, same ranking); reset returns to the prior. JSON export imports exactly. The URL fragment (706 chars, 8798 bytes as JSON) imported into a fresh context with max score error 3.2e-4 and max weight error 9.3e-3; it swapped one ranking pair whose scores differed by 9.7e-8, so the test allows swaps only below a 0.01 gap.</p>
+<p><strong>Visuals.</strong> 5 of 6 tracked <code>PatternLayer</code> computed styles changed between two trained states, and the <code>DotGrid</code> corner points moved by up to 146 px.</p>
+<figure><img src="screens/visuals-before.png" alt="Visuals before training" loading="lazy"><figcaption>Visuals before training</figcaption></figure>
+<figure><img src="screens/visuals-after.png" alt="Visuals after training: different background hue, different dot-grid warp" loading="lazy"><figcaption>Visuals after training: different background hue, different dot-grid warp</figcaption></figure>
+<p>Three integration bugs were found and fixed by the suite rather than worked around: the grid thrash (fixed by the EMA), the missing cold-start guard, and a latency measurement that started at pointerdown (so it included how long the button was held) and ended a frame late. Vite was also reloading the page under test every time the metrics file was written; <code>reports/</code> is now ignored by the dev server's watcher.</p>
+<hr />
+<h2 id="the-four-persona-sessions">The four persona sessions</h2>
+<p>After the suite was green, four agents each drove the app as a scripted "person" with <code>page.mouse</code> and <code>page.keyboard</code> only (eased Bezier paths, overshoot, tremor, hover dwell, log-normal press times, think pauses, wheel scrolls, typed searches). Each sampled the full test hook after every interaction into a <code>trace.json</code>, and each wrote its own analysis. Everything here is from <code>reports/sessions/&lt;persona&gt;/</code>.</p>
+<p>Shared setup: headless Chromium with <code>--use-angle=metal</code>, a fresh profile, <code>__smartweb.reset()</code> before the first click, and the engine confirmed as <code>cssnet</code> throughout. Three of the four ran concurrently on the same machine, which is a plausible (assumed) reason for some latency spread.</p>
+<table>
+<thead>
+<tr>
+<th>persona</th>
+<th>interactions</th>
+<th>first adaptation at</th>
+<th>Markov acc (app, final rolling-20)</th>
+<th>MLP acc (app, final)</th>
+<th>latency p50 / p95 ms</th>
+<th>max CSS–JS diff</th>
+<th>grid moves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>methodical</td>
+<td>127</td>
+<td>#6</td>
+<td>0.75</td>
+<td>0.70</td>
+<td>27.2 / 34.3</td>
+<td>4.5e-6</td>
+<td>40</td>
+</tr>
+<tr>
+<td>frustrated</td>
+<td>169</td>
+<td>#3</td>
+<td>0.60</td>
+<td>0.55</td>
+<td>27.8 / 34.4</td>
+<td>4.1e-6</td>
+<td>8</td>
+</tr>
+<tr>
+<td>explorer</td>
+<td>124</td>
+<td>#3</td>
+<td>1.00 (last 16, own count) / 0.75 (app)</td>
+<td>0.69</td>
+<td>33.8 / 826 (see bug)</td>
+<td>3.3e-6</td>
+<td>32</td>
+</tr>
+<tr>
+<td>returning</td>
+<td>123</td>
+<td>#2</td>
+<td>0.70</td>
+<td>0.65</td>
+<td>29.3 / 36.3</td>
+<td>3.4e-6</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-methodical-the-same-five-things-every-morning">1. Methodical: the same five things every morning</h3>
+<p>Routine <code>home → explore → open-card → favorite → share</code> for 26 cycles, with a 20% chance of a deviation from cycle 3 (6 happened), 11 clicks made through the suggestion panel, and one reload at #72. Report: <a href="sessions/methodical/report.md"><code>sessions/methodical/report.md</code></a>; video: <a href="sessions/methodical/session-trained.webm"><code>session-trained.webm</code></a>.</p>
+<p><strong>Measured.</strong> The suggestion panel's top item was correct from #6 and then right 19 times in a row until the first deviation at #25. Suggestion top-1 was 0.93 on routine steps and 0.88 overall; per 20-interaction window it was 0.95–1.00 from #60 to #99. The MLP read from CSS went from 0.05 (#0–19) to 0.60 (#20–39) to 0.85–0.95 from #40. The grid first moved at #23 and then <strong>never settled</strong>: 40 moves in 127 interactions, 6–9 per 20 interactions to the end. In 37 of 76 grid clicks the target was in a different slot from the user's previous click. Nothing moved during a hover; no click missed. Latency p50 27.2, p95 34.3, max 43.9 ms.</p>
+<figure><img src="sessions/methodical/02-first-adaptation.png" alt="Methodical, interaction 6: the first correct non-prior suggestion" loading="lazy"><figcaption>Methodical, interaction 6: the first correct non-prior suggestion</figcaption></figure>
+<p><strong>The verdict, in the persona's words</strong> (the agent's reading of measured behaviour, not a human opinion): <em>helpful, not creepy</em> about suggestions; the grid <em>jumpy, not broken, just restless</em>. "Being more predictable made the layout less stable, which is backwards for someone like me."</p>
+<p><strong>Bugs found.</strong> (1) A reload within ~1 s of an action loses that example (6→5 at 200 and 600 ms; 6→6 at 1500 and 2500 ms). The 1 s save debounce with no <code>pagehide</code> flush is the assumed cause. (2) Grid order is not persisted; every reload replays the default order. (3) One typed search is recorded as <strong>two</strong> actions when Enter comes more than 1.5 s after the click into the field (click + Enter after 2000 ms: 2 examples; after 300 ms: 1). At #124 this taught the model <code>search → search</code> and the real next action ranked 7th of 8. (4) The blend let a wrong MLP override a correct Markov twice (#59, #112).</p>
+<figure><img src="sessions/methodical/weird-double-count-124.png" alt="Methodical, interaction 124: one search became two training examples" loading="lazy"><figcaption>Methodical, interaction 124: one search became two training examples</figcaption></figure>
+<h3 id="2-frustrated-rage-bursts-on-open">2. Frustrated: rage bursts on "Open"</h3>
+<p>The same goal loop with 3–6 press rage bursts on Open, 2–3 angry Compact-mode toggles after each burst, Library↔︎Explore bouncing, jerky scrolling, typo-heavy search, and the engine switched to hybrid and then animation mid-session. 24 cycles, 169 presses, 166 examples, 162 s. Replicated with a second seed. Clip: <a href="sessions/frustrated/clip-rage-and-reorder.webm"><code>clip-rage-and-reorder.webm</code></a>.</p>
+<p><strong>Measured: intensity changes suggestions.</strong> Predictions made right after an Open press, second half of the run, where Markov's input is identical in both cases:</p>
+<table>
+<thead>
+<tr>
+<th>after an Open that was...</th>
+<th>what the persona did next</th>
+<th>MLP P(favorite) / P(open)</th>
+<th>Markov P(favorite) / P(open)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>calm (9 cases)</td>
+<td>favorite 9/9</td>
+<td><strong>0.55 / 0.15</strong></td>
+<td>0.22 / 0.58</td>
+</tr>
+<tr>
+<td>a rage burst (19 cases)</td>
+<td>Open 15, Compact 4</td>
+<td><strong>0.05 / 0.71</strong></td>
+<td>0.24 / 0.59</td>
+</tr>
+</tbody>
+</table>
+<p>Markov's top-1 on the calm case was 0.00; the MLP's was 0.89. The second seed agrees (calm MLP P(fav) 0.56, rage 0.037). The MLP carries the intensity signal: press-duration z about +1.2 vs -0.86, burst count z about -0.64 vs +0.49.</p>
+<p>Accuracy climbed in 25-press windows from 0.40 (blend) at the start to 0.80 around #101–125; overall blend 0.66, Markov 0.66, MLP 0.53. The ceiling is about 0.7 because the persona's own choices are coin flips. Latency p50 27.8 / p95 34.4 ms; by mode p50/p95 calc 27.2/34.7, hybrid 28.0/48.7, animation 27.5/33.6. Parity at most 4.1e-6 across all three modes. 8 grid reorders, none moving more than one element, none moving a target more than 8 px during an aimed approach.</p>
+<figure><img src="sessions/frustrated/05-burst-grid-move-40.png" alt="Frustrated, interaction 40: the second angry Compact toggle moves Settings into slot 2 while the cards are still mid-animation" loading="lazy"><figcaption>Frustrated, interaction 40: the second angry Compact toggle moves Settings into slot 2 while the cards are still mid-animation</figcaption></figure>
+<p><strong>The verdict:</strong> <em>jumpy and somewhat mocking when angry, helpful when calm, not creepy.</em> After a rage burst the top suggestion is "Open" again, the button that "isn't working". After angry toggling it suggests "Compact mode 41%" and promotes Settings to slot 1, treating the tantrum as a preference. The calm-path Favorite suggestion "felt genuinely smart: it noticed how I clicked, not just what."</p>
+<p><strong>Bugs found.</strong> (B1) Toggling Compact mode makes the Settings card <em>taller</em> (195 → 284 px) and moves the switch itself from y=378 to y=481, so a second toggle in place misses; 5 of 25 angry toggles were lost. (B2) The grid reorders during a burst and the next press lands on the Search input mid-spring, which is then learned as a <code>search</code> action (seen in both seeds). (B3) Keyboard-triggered actions report latencies up to 2 s because the timer starts at the earlier pointerup on the input (1163 ms with 6 characters at 150 ms per key). (B4) The same double-counted search as above. (B5, design) Every rage press is its own training example, so Markov learns <code>open → open</code> at ~0.58 regardless of intensity. (B6) Open-card and favorite swapped 6 times in 21 presses under Library/Explore bouncing.</p>
+<h3 id="3-explorer-60-random-clicks-then-a-habit">3. Explorer: 60 random clicks, then a habit</h3>
+<p>Interactions 0–59 uniform random over the 8 actions; 60–123 repeat <code>nav-explore → open-card → share → search</code>. Two seeds. Clip: <a href="sessions/explorer/explorer-clip.webm"><code>explorer-clip.webm</code></a>.</p>
+<p><strong>Measured, random phase.</strong> The top suggestion was right 8.3% (seed 1234) and 15% (seed 99) of the time; random guessing over 8 gives 12.5%. Yet the panel showed a mean top probability of 31% and 29%, peaking at 67% and 73%. When it showed 40–60% it was right 1 in 12 and 0 in 8 times. It suggested repeating the action just done 25 of 59 times. The grid moved only 9 and 7 times, which is calm.</p>
+<p><strong>Measured, pattern phase.</strong> Markov was right 4 in a row from #81 and #69 (pattern starts at #60); the top suggestion from #85 and #83. Over the second half of the pattern, Markov top-1 was 1.00 in both seeds, the MLP 0.66 and 0.56, the blend 0.84 and 0.78. And then the grid churned: 14 and 16 moves in the last 32 interactions while Markov was 100% correct.</p>
+<figure><img src="sessions/explorer/05-end-of-random-phase.png" alt="Explorer, end of the random phase" loading="lazy"><figcaption>Explorer, end of the random phase</figcaption></figure>
+<figure><img src="sessions/explorer/06-pattern-6-cycles.png" alt="Explorer, six cycles into the pattern: the habit is learned" loading="lazy"><figcaption>Explorer, six cycles into the pattern: the habit is learned</figcaption></figure>
+<p>Latency: all interactions p50 33.8, p95 826 ms; <strong>excluding searches</strong> p50 33.0, p95 44.5, max 58.3 ms. The 826 ms p95 is entirely the keyboard latency bug. Seed 99 excluding search: p50 47.4, p95 62.2 (assumed: machine contention from the other three sessions). Parity max 3.3e-6.</p>
+<p><strong>The verdict:</strong> suggestions <em>useless to misleading while exploring, wrong with a straight face rather than creepy</em>; layout <em>calm while exploring</em>; <em>genuinely helpful once a habit forms, but jumpy afterwards</em>, because Open, Share and Search swap places every other click.</p>
+<p><strong>Bugs found.</strong> Rage clicks become N training examples (rises of 5, 5, 4, 4, 3, 3 seen); the search double-count with a stale latency start (826–1972 ms, 7 times); overconfident cold start (<code>MARKOV_PRIOR_STRENGTH = 1</code> means one observed transition shows as ~53%); the grid moving on thin evidence (first move at 4 examples, after one repeated transition, because <code>COLD_START</code> checks only the total count); grid churn after learning; and a blend weight that grows with count only (0.73 at the end while the MLP was right 56–66% against Markov's 100%, overriding Markov wrongly at #92, #104, #114, #116, #121).</p>
+<h3 id="4-returning-three-sessions-one-profile-and-a-share-link">4. Returning: three sessions, one profile, and a share link</h3>
+<p>One persistent profile: S1 (calc) learns <code>Home → Search (typed) → Open → Favorite → Library</code> for 40 interactions; S2 resumes for 30 across calc, hybrid and animation; S3 switches to a new habit <code>Explore → Search → Open → Share</code> for 45; then the S3 share link is opened in a fresh profile (8 interactions), and the older S1 link is opened in the main profile. Video: <a href="sessions/returning/session1-short.webm"><code>session1-short.webm</code></a>.</p>
+<p><strong>Measured.</strong> Persistence works when the close comes at least 1.5 s after the last action: 47/47 and 78/78 examples restored, log says "model restored from IndexedDB". Top-1 per phase, blend / Markov / MLP: S1 0.78 / 0.75 / 0.35; S2 0.83 / 1.00 / 0.70; S3 0.58 / 0.71 / 0.44; fresh profile 0.63 / 0.88 / 0.63. The suggestion panel was trusted and clicked 9 times in S2.</p>
+<p><strong>Habit decay.</strong> After the first Open of the new habit the app still suggested Favorite at 62%. The blend's top suggestion flipped to Share at the 8th Open, 30 interactions into the new habit; the MLP flipped at the 7th, Markov alone at the 11th. Decay is per transition only (0.97 per row update); there is no wall-clock decay (read in the code, not tested with a real gap).</p>
+<figure><img src="sessions/returning/s3-old-habit-shown.png" alt="Returning, S3: the old habit (Favorite) is still suggested after the first Open of the new routine" loading="lazy"><figcaption>Returning, S3: the old habit (Favorite) is still suggested after the first Open of the new routine</figcaption></figure>
+<figure><img src="sessions/returning/s3-new-habit-learned.png" alt="Returning, S3: thirty interactions later the new habit (Share) wins" loading="lazy"><figcaption>Returning, S3: thirty interactions later the new habit (Share) wins</figcaption></figure>
+<p><strong>Portability.</strong> The link is 731 characters. In a fresh profile it imported 133 examples, Markov rows matched to 3.1e-5, and the hash was stripped from the URL. Missing after import: the rolling accuracy chips read 0%/0%, and the grid uses the default order.</p>
+<p><strong>Modes.</strong> Parity at most 3.4e-6 in all modes. Latency p50/p95: calc 27.6/38.4, hybrid 28.5/34.7, animation 30.9/37.5 ms. Switching through the dropdown kept <code>netSource = cssnet</code> every time. "As a user I could not see any difference between the modes." Accuracy differences between modes are confounded with session phase and are not attributed to the engines.</p>
+<p><strong>The verdict:</strong> <em>helpful once warm, not creepy, mildly jumpy</em> (every session start shows a wrong "Open" suggestion and replays the same 4-card reshuffle), <em>stubborn about unlearning</em> (about 30 clicks to accept the new habit). "The silent model overwrite through an old link is the one thing that would break trust."</p>
+<p><strong>Bugs found.</strong> The double search (20 of 20 typed searches); keyboard latency timed from the earlier pointerup (1521–1906 ms); the <strong>first suggestion of every session is wrong</strong> because at load the MLP is fed idle features no real press produces (pressDuration z = -4, hoverDwell z = -3.8) and answers open-card at 0.79–0.93, outvoting a correct Markov (3 of 3 loads); closing within 1 s loses the last action (<code>quickclose.json</code>: 1 of 6 lost at 100/400/800 ms, 0 at 1500/3000 ms, 3 of 6 lost for a burst closed 100 ms later); <strong>opening a share link silently replaces the local model</strong> (133 examples became 47 with no confirmation or undo); a share link opened in an already-open tab does nothing until the next reload, when it imports over everything trained in between; grid order, EMA scores and engine mode are not persisted; the URL fragment carries no rolling accuracy.</p>
+<figure><img src="sessions/returning/oldlink-overwrote.png" alt="Returning: the old S1 link, about to overwrite 133 examples" loading="lazy"><figcaption>Returning: the old S1 link, about to overwrite 133 examples</figcaption></figure>
+<h3 id="what-all-four-agree-on">What all four agree on</h3>
+<ul>
+<li>The <strong>suggestion panel</strong> adapts within a handful of interactions on a routine and was described as helpful by three of four personas. Nobody called it creepy; the consensus was that it visibly reflects only the user's own clicks.</li>
+<li>The <strong>MLP really does use intensity</strong> (frustrated, e2e branching test), and is otherwise a weaker action predictor than Markov on plain cycles.</li>
+<li>The <strong>grid never stops moving</strong> on a stable routine, because it is ordered by the <em>next-action</em> distribution, which by construction rotates through a cycle. The guardrail (one move per interaction) holds everywhere; it just means one move per interaction.</li>
+<li>The <strong>same three bugs</strong> were found independently by every persona: the double-counted typed search, the keyboard-triggered latency measured from the wrong event, and the one-second save debounce with no flush on unload.</li>
+</ul>
+<hr />
+<h2 id="what-failed-or-surprised">What failed or surprised</h2>
+<ul>
+<li><strong>The GPU does nothing for the net.</strong> Expected by the people who read the Chromium docs, still a letdown. The forward pass is style recalc on the main thread, ~300 µs minimum.</li>
+<li><strong>The animation engine <em>can</em> be the whole net</strong>, and the trick is laundering a number through <code>font-size</code> and reading it back as <code>1em / 1px</code>. Nobody planned that. The gotcha (producer and consumer must be different elements, because <code>em</code> in <code>animation-*</code> resolves from the element's own pre-animation style) cost a real failed run first.</li>
+<li><strong>Recurrence is impossible in CSS.</strong> Cycles are invalid, descendants are invisible to ancestors, and there is no state cell. A stylesheet is a feed-forward network. Time-multiplexing with <code>steps()</code> works but only forward.</li>
+<li><strong>Property-weight keyframes work but are slow</strong> (1.6–2.4 ms per eval); the animation modes bake literals and pay for it in <code>setWeights</code> instead.</li>
+<li><strong><code>getComputedTiming().progress</code> ignores easing</strong>, so the Web Animations API cannot read an activation, only its input.</li>
+<li><strong>Headless Chromium's default renderer (SwiftShader) made the app miss its latency target by 3x</strong>, entirely because of a decorative full-viewport filter layer. The fix was a launch flag, and a note that Linux CI would need either software-GL expected-fails or a cheaper background.</li>
+<li><strong>The normaliser amplified timer jitter</strong> into z-scores near -3 before a population prior was added. The prior is a guess.</li>
+<li><strong>Intensity signals leak into the UI in ways the designers did not intend:</strong> rage on Open teaches the app to suggest Open; angry toggling of Compact mode promotes Settings. The model is doing exactly what it was asked; what it was asked is the problem.</li>
+<li><strong>A click on the search field counts as a search, and so does pressing Enter</strong>, 1.5 s later. Four independent sessions found this on their first typed query.</li>
+<li><strong>Replay feeds synthetic pointer data straight into the extractor</strong> rather than dispatching DOM events; rage bursts in the replay collapse to one action. Real input during a replay mixes into the same timeline.</li>
+<li><strong>Two agents hit a harness limit</strong> on writing their <code>report.md</code> and returned the content as text instead; those reports exist only as the findings quoted here and their committed data. One agent also noted that <code>*.log</code> is gitignored, so its <code>run.log</code> link only works locally. The commit trailer model name also varies between commits because two instructions disagreed.</li>
+</ul>
+<hr />
+<h2 id="what-to-try-next">What to try next</h2>
+<p>Ordered roughly by how many sessions asked for it.</p>
+<ol type="1">
+<li><strong>Count a search once</strong> (on submit, or on click only if nothing is submitted within N seconds).</li>
+<li><strong>Start keyboard-fired latency at the keydown</strong>, not the last pointerup.</li>
+<li><strong>Flush the model save on <code>pagehide</code> / <code>visibilitychange</code></strong>, and persist grid order, EMA scores and the engine mode.</li>
+<li><strong>Stop the grid from following the cycle.</strong> Order it by a long-horizon frequency signal and leave "what's next" to the suggestion panel; or add a per-card move cooldown; or lock the order once it has repeated for K cycles; or freeze it while <code>burstCount2s &gt;= 3</code> or while the pointer is over the grid. (All untested.)</li>
+<li><strong>Collapse a press burst into one example</strong>, or down-weight presses 2..n, so rage does not teach <code>X → X</code>.</li>
+<li><strong>Set the blend weight from recent relative accuracy</strong> (rolling log-loss of each predictor), not from the example count.</li>
+<li><strong>Use Markov only for the first prediction after a load</strong>; the MLP's idle-feature input is meaningless there.</li>
+<li><strong>Ask before importing a share link</strong> over an existing model, add an undo, and listen for <code>hashchange</code>.</li>
+<li><strong>Raise <code>MARKOV_PRIOR_STRENGTH</code></strong> (4–8 was suggested) or hide percentages while the state has little history.</li>
+<li>Add <strong>time-aware decay</strong> so a week-old habit weighs less than yesterday's.</li>
+<li>Make the <strong>Compact switch not move itself</strong>, and give Open visible feedback (it is what triggered the rage persona).</li>
+<li>Engineering levers for the CSS engine if it ever needs to be cheaper: <code>literalWeights: true</code> in calc mode (221 µs), hidden width 8, or drop <code>will-change</code> on any visible-network edges and re-measure the ~700 µs fixed cost.</li>
+<li><strong>Test with a human.</strong> Every verdict above is an agent reading a trace.</li>
+</ol>
+<hr />
+<h2 id="how-to-run-it-locally">How to run it locally</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> smart-web</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev            <span class="co"># http://127.0.0.1:5173 — click around, open &quot;Debug&quot;, switch Engine</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test               <span class="co"># Vitest: 61 unit tests (jsdom; the CSS net falls back to JS there)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run typecheck      <span class="co"># tsc -b, includes e2e/</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run e2e            <span class="co"># Playwright, 18 tests, ~6 min, starts the dev server itself on 5173,</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                       <span class="co"># writes reports/e2e-metrics.json and reports/playwright/</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="va">SMARTWEB_SOFTWARE_GL</span><span class="op">=</span>1 <span class="ex">npm</span> run e2e   <span class="co"># software GL; latency tests are expected-fail there</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> src/cssnet/parity.check.mjs     <span class="co"># CSS vs JS parity + timing for all three modes, no server needed</span></span></code></pre></div>
+<p>Persona drivers (each needs its own dev server on its own port, as the file headers say):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npx</span> vite <span class="at">--port</span> 5181 <span class="at">--strictPort</span> <span class="kw">&amp;</span>  <span class="ex">node</span> reports/sessions/methodical/session.mjs</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npx</span> vite <span class="at">--port</span> 5182 <span class="at">--strictPort</span> <span class="kw">&amp;</span>  <span class="ex">node</span> reports/sessions/frustrated/session.mjs</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npx</span> vite <span class="at">--port</span> 5183 <span class="at">--strictPort</span> <span class="kw">&amp;</span>  <span class="ex">node</span> reports/sessions/explorer/session.mjs</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">npx</span> vite <span class="at">--port</span> 5184 <span class="at">--strictPort</span> <span class="kw">&amp;</span>  <span class="ex">node</span> reports/sessions/returning/session.mjs</span></code></pre></div>
+<p>Research demos that need no server: open <code>research/experiments/r1-best-demo.html</code> (the zero-JS animation-engine net) and <code>research/experiments/r2-visual-demo.html</code> in Chrome; the <code>r1-*.mjs</code> / <code>r2-*.mjs</code> scripts run with <code>node research/experiments/&lt;name&gt;.mjs</code> from the project root.</p>
+<p>In the app: <code>Replay journey</code> trains on a seeded synthetic journey, <code>Reset</code> clears IndexedDB, <code>Export JSON</code> / <code>Copy link</code> / <code>Import</code> move a model between browsers, the <code>Engine</code> select switches calc / hybrid / animation live, and <code>Debug</code> opens the drawer with the CSS-vs-JS difference, both rankings, and all 52 raw features. <code>window.__smartweb</code> is the test hook from <code>src/cssnet/contract.ts</code>.</p>
+<hr />
+<p><em>Everything in this post comes from files committed in the repository on 2026-10-22. Where a number was not measured, the text says "assumed". The research, implementation, test and persona work was done by separate agents working from a shared contract; this write-up is the reader's digest of their reports.</em></p>
+
+</main>
+</body>
+</html>
