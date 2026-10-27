@@ -6,6 +6,8 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   worker: { format: 'es' },
+  // Two apps: Harbor (index.html) and Cove, the team workspace (workspace.html).
+  build: { rollupOptions: { input: { harbor: 'index.html', cove: 'workspace.html' } } },
   server: {
     host: '127.0.0.1', port: 5173, strictPort: true,
     // Playwright writes reports/ and test-results/ while tests run; without this Vite
