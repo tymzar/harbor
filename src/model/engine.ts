@@ -1,5 +1,5 @@
 import { ACTIONS, type ActionId, type NetWeights } from '../cssnet/contract'
-import { NORMALISE_MASK } from '../signals/features'
+import { NORMALISE_MASK, NORM_PRIOR } from '../signals/features'
 import { RunningNorm } from '../signals/normalizer'
 import { RollingAccuracy } from './accuracy'
 import {
@@ -14,7 +14,7 @@ interface Pending { x: Float32Array; markov: Float32Array; mlp: Float32Array }
 /** Pure model logic (no I/O). Runs inside the worker, or in-thread as a fallback. */
 export class ModelEngine {
   weights: NetWeights
-  norm = new RunningNorm(SHAPE.inputs, NORMALISE_MASK)
+  norm = new RunningNorm(SHAPE.inputs, NORMALISE_MASK, NORM_PRIOR)
   markov = new Markov(SHAPE.outputs, PRIOR, MARKOV_DECAY, MARKOV_PRIOR_STRENGTH)
   accMarkov = new RollingAccuracy(ACC_WINDOW)
   accMlp = new RollingAccuracy(ACC_WINDOW)

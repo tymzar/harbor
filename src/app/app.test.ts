@@ -6,7 +6,7 @@ import { forward, initWeights } from '../model/mlp'
 import { memoryStore } from '../model/persist'
 import { FeatureExtractor } from '../signals/extractor'
 import { RAW_FEATURE_NAMES } from '../signals/features'
-import { GRID_ACTIONS, blend, nextGridOrder, rank } from './adaptive'
+import { COLD_START, GRID_ACTIONS, blend, emaScores, nextGridOrder, rank } from './adaptive'
 import { SmartWebController } from './controller'
 import { createFallbackNet, isProbVector, localJsForward } from './cssnetBridge'
 import { generateJourney, synthesizeStep } from './replay'
@@ -32,6 +32,21 @@ describe('adaptive grid guardrails', () => {
     s[ACTIONS.indexOf('settings')] += 0.03 // above favorite/share but below the 0.06 margin
     s[ACTIONS.indexOf('nav-home')] -= 0.03
     expect(nextGridOrder(GRID_ACTIONS, s, PRIOR).moved).toBeNull()
+  })
+  it('emaScores smooths toward the new scores', () => {
+    expect(emaScores([1, 0], [0, 1], 0.25)).toEqual([0.75, 0.25])
+  })
+  it('controller keeps the grid still during the cold start, then moves at most one element', async () => {
+    const c = new SmartWebController({ makeClient: () => new ModelClient({ forceLocal: true, store: memoryStore() }) })
+    await c.start(document.createElement('div'))
+    const orders: ActionId[][] = []
+    for (let k = 0; k < 12; k++) {
+      await c.act((['settings', 'share'] as ActionId[])[k % 2])
+      orders.push([...c.state.gridOrder])
+    }
+    for (let k = 0; k < COLD_START; k++) expect(orders[k]).toEqual([...GRID_ACTIONS])
+    expect(orders.at(-1)).not.toEqual([...GRID_ACTIONS])
+    c.stop()
   })
   it('rank and blend', () => {
     expect(rank(PRIOR)[0]).toBe('open-card')

@@ -40,7 +40,7 @@ export default function App({ controller: c }: { controller: SmartWebController 
                 {DotGrid && (
                   <Card>
                     <Card.Header><Card.Title>Network</Card.Title></Card.Header>
-                    <Card.Content><VisualBoundary name="DotGrid"><DotGrid {...visualProps} /></VisualBoundary></Card.Content>
+                    <Card.Content><VisualBoundary name="DotGrid"><DotGrid {...visualProps} dot="oklch(58% 0.14 265)" /></VisualBoundary></Card.Content>
                   </Card>
                 )}
               </aside>

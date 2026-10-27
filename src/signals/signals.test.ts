@@ -120,6 +120,20 @@ describe('RunningNorm', () => {
   })
 })
 
+describe('RunningNorm with a population prior', () => {
+  it('scores absolute values against the prior and does not amplify jitter on a constant feature', () => {
+    const n = new RunningNorm(1, [true], { mean: [4.6], std: [0.7], weight: 20 })
+    expect(n.apply([4.6])[0]).toBeCloseTo(0, 6)
+    expect(n.apply([6.0])[0]).toBeCloseTo(2, 5) // (6.0 - 4.6) / 0.7
+    for (let k = 0; k < 500; k++) n.update([6.04 + (k % 2 ? 0.01 : -0.01)]) // constant press + timer jitter
+    const z = n.apply([6.02])[0]
+    expect(Math.abs(z)).toBeLessThan(0.2) // without the floor this was |z| ~ 1-3
+    n.reset()
+    expect(n.count).toBe(20)
+    expect(n.apply([4.6])[0]).toBeCloseTo(0, 6)
+  })
+})
+
 describe('FeatureExtractor.rebase', () => {
   it('shifts stored times so a virtual-clock replay does not skew real events', () => {
     const fx = new FeatureExtractor(0)
@@ -129,5 +143,16 @@ describe('FeatureExtractor.rebase', () => {
     fx.pointerDown({ t: 10_500, x: 0, y: 0 })
     const v = fx.snapshot('favorite', 10_600)
     expect(v[RAW_FEATURE_NAMES.indexOf('timeSinceLastClick')]).toBe(500)
+  })
+})
+
+describe('lastReleaseTime', () => {
+  it('reports the pointerup of a fresh press and null while still pressed', () => {
+    const fx = new FeatureExtractor(0)
+    fx.pointerDown({ t: 100, x: 10, y: 10 })
+    expect(fx.lastReleaseTime(150)).toBeNull()
+    fx.pointerUp(180)
+    expect(fx.lastReleaseTime(200)).toBe(180)
+    expect(fx.lastReleaseTime(5000)).toBeNull()
   })
 })

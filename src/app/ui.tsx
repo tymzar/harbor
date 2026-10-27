@@ -166,7 +166,7 @@ function GridCard({ action, state, c }: { action: ActionId; state: AppState; c: 
         return null
     }
   })()
-  return <Card className={state.compact ? 'gap-2 p-3 text-sm' : 'min-h-40'}>{body}</Card>
+  return <Card className={state.compact ? 'h-full gap-2 p-3 text-sm' : 'h-full min-h-40'}>{body}</Card>
 }
 
 export function AdaptiveGrid({ state, c }: { state: AppState; c: SmartWebController }) {

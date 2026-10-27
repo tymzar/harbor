@@ -7,6 +7,11 @@ export interface NormStats {
 
 export const NORM_CLAMP = 4
 
+/** Seed for the Welford state: `weight` pseudo-observations with this mean/std (per feature). */
+export interface NormPrior { mean: readonly number[]; std: readonly number[]; weight: number }
+/** The std never drops below this fraction of the prior std (guards against jitter amplification). */
+export const MIN_STD_FRACTION = 0.25
+
 export class RunningNorm {
   count = 0
   mean: Float64Array
@@ -14,11 +19,25 @@ export class RunningNorm {
   readonly mask: readonly boolean[]
 
   readonly size: number
-  constructor(size: number, mask?: readonly boolean[]) {
+  readonly prior: NormPrior | null
+  constructor(size: number, mask?: readonly boolean[], prior?: NormPrior) {
     this.size = size
     this.mean = new Float64Array(size)
     this.m2 = new Float64Array(size)
     this.mask = mask ?? new Array(size).fill(true)
+    this.prior = prior ?? null
+    this.seed()
+  }
+
+  private seed(): void {
+    const p = this.prior
+    if (!p) return
+    this.count = p.weight
+    for (let i = 0; i < this.size; i++) {
+      if (!this.mask[i]) continue
+      this.mean[i] = p.mean[i]
+      this.m2[i] = p.std[i] * p.std[i] * Math.max(1, p.weight - 1)
+    }
   }
 
   update(x: ArrayLike<number>): void {
@@ -36,7 +55,8 @@ export class RunningNorm {
   }
 
   std(i: number): number {
-    return Math.sqrt(Math.max(this.variance(i), 1e-6))
+    const floor = this.prior ? (this.prior.std[i] * MIN_STD_FRACTION) ** 2 : 1e-6
+    return Math.sqrt(Math.max(this.variance(i), floor))
   }
 
   apply(x: ArrayLike<number>): Float32Array {
@@ -65,5 +85,6 @@ export class RunningNorm {
     this.count = 0
     this.mean.fill(0)
     this.m2.fill(0)
+    this.seed()
   }
 }

@@ -142,6 +142,12 @@ export class FeatureExtractor {
     if (this.press && this.press.upT === null) this.press.upT = t
   }
 
+  /** pointerup timestamp of the fresh press (the event that fires a press action), or null if still down / stale. */
+  lastReleaseTime(now: number, maxAge = 2000): number | null {
+    if (!this.press || this.press.upT === null) return null
+    return now - this.press.upT <= maxAge ? this.press.upT : null
+  }
+
   /** pointerdown timestamp of the press that is still "fresh" (for latency). */
   lastPressTime(now: number, maxAge = 2000): number | null {
     if (!this.press) return null

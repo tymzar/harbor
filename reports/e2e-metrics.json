@@ -1,0 +1,981 @@
+{
+  "latency_swiftshader": {
+    "definition": "pointerup -> rAF+postMessage after the React commit of the new prediction",
+    "animation": {
+      "n": 24,
+      "p50": 97.6000000089407,
+      "p95": 121.40000000596046,
+      "max": 124.79999999701977,
+      "doubleRaf": {
+        "p50": 201.20000000298023,
+        "p95": 233.59999999403954,
+        "max": 243.29999999701977
+      },
+      "samples": [
+        124.8,
+        93.9,
+        114.4,
+        118.8,
+        95.7,
+        84.2,
+        97.6,
+        119.1,
+        121.3,
+        79,
+        121.4,
+        109.1,
+        89.3,
+        88,
+        85,
+        113.7,
+        101.5,
+        96.7,
+        117.4,
+        117,
+        91.7,
+        78.1,
+        94.3,
+        106.6
+      ]
+    },
+    "recordedAt": "2026-10-22T02:13:05.065Z",
+    "calc": {
+      "n": 24,
+      "p50": 96.59999999403954,
+      "p95": 122.29999999701977,
+      "max": 146.6000000089407,
+      "doubleRaf": {
+        "p50": 193.59999999403954,
+        "p95": 229.79999999701977,
+        "max": 231.70000000298023
+      },
+      "samples": [
+        90.7,
+        25.8,
+        112.9,
+        69.3,
+        91.7,
+        83,
+        98,
+        109.7,
+        96.8,
+        146.6,
+        23.8,
+        105,
+        90.4,
+        77.8,
+        96.6,
+        107.7,
+        88.8,
+        99.1,
+        116.4,
+        111,
+        94.2,
+        75.2,
+        97,
+        122.3
+      ]
+    },
+    "hybrid": {
+      "n": 24,
+      "p50": 96.5,
+      "p95": 120,
+      "max": 141.5,
+      "doubleRaf": {
+        "p50": 198.5,
+        "p95": 232.40000000596046,
+        "max": 236.19999998807907
+      },
+      "samples": [
+        141.5,
+        29.6,
+        114.6,
+        120,
+        89.3,
+        90.5,
+        96.2,
+        113.2,
+        78.7,
+        100.3,
+        27.3,
+        109.9,
+        104.6,
+        89.6,
+        87,
+        114.9,
+        91,
+        100.4,
+        115,
+        116,
+        95.5,
+        76.7,
+        96.5,
+        118.8
+      ]
+    },
+    "gl": "SwiftShader (headless default)",
+    "platform": "darwin"
+  },
+  "guardrails": {
+    "journey": [
+      "settings",
+      "share",
+      "search",
+      "settings",
+      "share",
+      "search",
+      "settings",
+      "share",
+      "search",
+      "settings",
+      "share",
+      "search",
+      "settings",
+      "share",
+      "search",
+      "settings",
+      "share",
+      "search"
+    ],
+    "orders": [
+      [
+        "open-card",
+        "favorite",
+        "share",
+        "search",
+        "settings"
+      ],
+      [
+        "open-card",
+        "favorite",
+        "share",
+        "search",
+        "settings"
+      ],
+      [
+        "open-card",
+        "favorite",
+        "share",
+        "search",
+        "settings"
+      ],
+      [
+        "open-card",
+        "favorite",
+        "share",
+        "search",
+        "settings"
+      ],
+      [
+        "share",
+        "open-card",
+        "favorite",
+        "search",
+        "settings"
+      ],
+      [
+        "search",
+        "share",
+        "open-card",
+        "favorite",
+        "settings"
+      ],
+      [
+        "search",
+        "share",
+        "open-card",
+        "favorite",
+        "settings"
+      ],
+      [
+        "share",
+        "search",
+        "open-card",
+        "favorite",
+        "settings"
+      ],
+      [
+        "search",
+        "share",
+        "open-card",
+        "favorite",
+        "settings"
+      ],
+      [
+        "settings",
+        "search",
+        "share",
+        "open-card",
+        "favorite"
+      ],
+      [
+        "share",
+        "settings",
+        "search",
+        "open-card",
+        "favorite"
+      ],
+      [
+        "search",
+        "share",
+        "settings",
+        "open-card",
+        "favorite"
+      ],
+      [
+        "settings",
+        "search",
+        "share",
+        "open-card",
+        "favorite"
+      ],
+      [
+        "share",
+        "settings",
+        "search",
+        "open-card",
+        "favorite"
+      ],
+      [
+        "search",
+        "share",
+        "settings",
+        "open-card",
+        "favorite"
+      ],
+      [
+        "settings",
+        "search",
+        "share",
+        "open-card",
+        "favorite"
+      ],
+      [
+        "share",
+        "settings",
+        "search",
+        "open-card",
+        "favorite"
+      ],
+      [
+        "search",
+        "share",
+        "settings",
+        "open-card",
+        "favorite"
+      ],
+      [
+        "settings",
+        "search",
+        "share",
+        "open-card",
+        "favorite"
+      ]
+    ],
+    "movedPerInteraction": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "gl": "ANGLE Metal (headless, --use-angle=metal)",
+    "platform": "darwin",
+    "recordedAt": "2026-10-22T02:13:48.479Z"
+  },
+  "intensity_twoJourneys": {
+    "outputsL1": {
+      "calmVsRushed": 0.4659026004374027,
+      "calmVsCalmControl": 0.003917064517736435
+    },
+    "weightsL1": {
+      "calmVsRushed": 18.955941770458594,
+      "calmVsCalmControl": 0.045095829758793116
+    },
+    "features": {
+      "calm": [
+        0.753397524356842,
+        -0.545016884803772,
+        -0.2617640793323517,
+        0.4678070545196533,
+        -0.545016884803772,
+        1.0882586240768433,
+        -0.16796505451202393,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "calm2": [
+        0.7699821591377258,
+        -0.545016884803772,
+        -0.2617640793323517,
+        0.4678070545196533,
+        -0.545016884803772,
+        1.0852619409561157,
+        -0.16796505451202393,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "rushed": [
+        -0.7025953531265259,
+        0.9237321615219116,
+        -0.9946831464767456,
+        -0.5615158081054688,
+        1.0523194074630737,
+        0.015372708439826965,
+        1.0505908727645874,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    "mlp": {
+      "calm": [
+        0.2011963576078415,
+        0.18044599890708923,
+        0.05380033329129219,
+        0.05303826183080673,
+        0.1980128288269043,
+        0.21779659390449524,
+        0.042274318635463715,
+        0.05343574285507202
+      ],
+      "calm2": [
+        0.20228073000907898,
+        0.18013311922550201,
+        0.05351370573043823,
+        0.052763231098651886,
+        0.19736720621585846,
+        0.2186705321073532,
+        0.0421023853123188,
+        0.05316908285021782
+      ],
+      "rushed": [
+        0.28992053866386414,
+        0.3246721625328064,
+        0.03233832120895386,
+        0.03174556791782379,
+        0.16322892904281616,
+        0.09864351898431778,
+        0.02744223177433014,
+        0.03200725466012955
+      ]
+    },
+    "stats": {
+      "calm": {
+        "examples": 24,
+        "markovAcc": 0.95,
+        "mlpAcc": 0.35,
+        "mode": "calc"
+      },
+      "calm2": {
+        "examples": 24,
+        "markovAcc": 0.95,
+        "mlpAcc": 0.35,
+        "mode": "calc"
+      },
+      "rushed": {
+        "examples": 24,
+        "markovAcc": 0.95,
+        "mlpAcc": 0.3,
+        "mode": "calc"
+      }
+    },
+    "gl": "ANGLE Metal (headless, --use-angle=metal)",
+    "platform": "darwin",
+    "recordedAt": "2026-10-22T02:15:39.702Z"
+  },
+  "intensity_branching": {
+    "history": [
+      {
+        "k": 1,
+        "calmFavMinusShare": 0.00671444833278656,
+        "rushedShareMinusFav": -0.026130065321922302,
+        "markovCalmFav": 0.10000000149011612,
+        "markovRushedFav": 0.550000011920929
+      },
+      {
+        "k": 2,
+        "calmFavMinusShare": 0.0708157941699028,
+        "rushedShareMinusFav": 0.004973366856575012,
+        "markovCalmFav": 0.36026936769485474,
+        "markovRushedFav": 0.5218492150306702
+      },
+      {
+        "k": 3,
+        "calmFavMinusShare": 0.131018228828907,
+        "rushedShareMinusFav": 0.09624416381120682,
+        "markovCalmFav": 0.41103824973106384,
+        "markovRushedFav": 0.5125699043273926
+      },
+      {
+        "k": 4,
+        "calmFavMinusShare": 0.20152085274457932,
+        "rushedShareMinusFav": 0.2077074646949768,
+        "markovCalmFav": 0.43264010548591614,
+        "markovRushedFav": 0.5079559683799744
+      },
+      {
+        "k": 5,
+        "calmFavMinusShare": 0.27830855920910835,
+        "rushedShareMinusFav": 0.20632445067167282,
+        "markovCalmFav": 0.4445837438106537,
+        "markovRushedFav": 0.5051999092102051
+      },
+      {
+        "k": 6,
+        "calmFavMinusShare": 0.35438205301761627,
+        "rushedShareMinusFav": 0.5007893554866314,
+        "markovCalmFav": 0.4521515369415283,
+        "markovRushedFav": 0.5033704042434692
+      },
+      {
+        "k": 7,
+        "calmFavMinusShare": 0.435611367225647,
+        "rushedShareMinusFav": 0.6437966618686914,
+        "markovCalmFav": 0.45736777782440186,
+        "markovRushedFav": 0.5020695924758911
+      },
+      {
+        "k": 8,
+        "calmFavMinusShare": 0.5135643780231476,
+        "rushedShareMinusFav": 0.7595487777143717,
+        "markovCalmFav": 0.46117499470710754,
+        "markovRushedFav": 0.5010987520217896
+      },
+      {
+        "k": 9,
+        "calmFavMinusShare": 0.595651475712657,
+        "rushedShareMinusFav": 0.532413013279438,
+        "markovCalmFav": 0.46407148241996765,
+        "markovRushedFav": 0.5003476738929749
+      },
+      {
+        "k": 10,
+        "calmFavMinusShare": 0.6585124805569649,
+        "rushedShareMinusFav": 0.908392465673387,
+        "markovCalmFav": 0.46634528040885925,
+        "markovRushedFav": 0.49975040555000305
+      },
+      {
+        "k": 11,
+        "calmFavMinusShare": 0.7211097367107868,
+        "rushedShareMinusFav": 0.5857601277530193,
+        "markovCalmFav": 0.46817469596862793,
+        "markovRushedFav": 0.49926483631134033
+      },
+      {
+        "k": 12,
+        "calmFavMinusShare": 0.7697360031306744,
+        "rushedShareMinusFav": 0.8009050730615854,
+        "markovCalmFav": 0.46967580914497375,
+        "markovRushedFav": 0.49886301159858704
+      }
+    ],
+    "final": {
+      "afterCalm": {
+        "mlp": [
+          0.0056586116552352905,
+          0.09772523492574692,
+          0.00561358081176877,
+          0.005766237620264292,
+          0.07389175891876221,
+          0.7876620888710022,
+          0.017926085740327835,
+          0.005757990758866072
+        ],
+        "markov": [
+          0.008681494742631912,
+          0.008681494742631912,
+          0.006945196073502302,
+          0.006945196073502302,
+          0.009260261431336403,
+          0.46967580914497375,
+          0.4828653335571289,
+          0.006945196073502302
+        ]
+      },
+      "afterRushed": {
+        "mlp": [
+          0.009348144754767418,
+          0.07398098707199097,
+          0.00848869513720274,
+          0.008810609579086304,
+          0.053773391991853714,
+          0.01800856553018093,
+          0.8189136385917664,
+          0.00867467001080513
+        ],
+        "markov": [
+          0.008431804366409779,
+          0.008431804366409779,
+          0.006745443679392338,
+          0.006745443679392338,
+          0.008993924595415592,
+          0.49886301159858704,
+          0.45504313707351685,
+          0.006745443679392338
+        ]
+      }
+    },
+    "gl": "ANGLE Metal (headless, --use-angle=metal)",
+    "platform": "darwin",
+    "recordedAt": "2026-10-22T02:17:08.616Z"
+  },
+  "latency": {
+    "definition": "pointerup -> rAF+postMessage after the React commit of the new prediction",
+    "calc": {
+      "n": 24,
+      "p50": 31.200000002980232,
+      "p95": 33.79999999701977,
+      "max": 52.5,
+      "doubleRaf": {
+        "p50": 42.20000000298023,
+        "p95": 46.20000000298023,
+        "max": 66.20000000298023
+      },
+      "samples": [
+        52.5,
+        33.2,
+        31.5,
+        33.4,
+        31.4,
+        31,
+        33.8,
+        32.2,
+        27.5,
+        26,
+        28.9,
+        29.9,
+        29.6,
+        31.1,
+        31.3,
+        30.8,
+        31.7,
+        30.6,
+        30.2,
+        31.5,
+        27.4,
+        31.2,
+        32.6,
+        31.2
+      ]
+    },
+    "gl": "ANGLE Metal (headless, --use-angle=metal)",
+    "platform": "darwin",
+    "recordedAt": "2026-10-22T02:17:47.762Z",
+    "hybrid": {
+      "n": 24,
+      "p50": 35.29999999701977,
+      "p95": 46.70000000298023,
+      "max": 59.599999994039536,
+      "doubleRaf": {
+        "p50": 45.70000000298023,
+        "p95": 50.19999998807907,
+        "max": 73.20000000298023
+      },
+      "samples": [
+        59.6,
+        37.8,
+        37,
+        37.1,
+        29.7,
+        37.5,
+        37.3,
+        39,
+        37.4,
+        39.1,
+        33.2,
+        33.4,
+        31.8,
+        35.3,
+        46.7,
+        37.2,
+        34.9,
+        34.8,
+        28.3,
+        35.3,
+        30.5,
+        33.2,
+        34.3,
+        34.4
+      ]
+    },
+    "animation": {
+      "n": 24,
+      "p50": 36.099999994039536,
+      "p95": 46,
+      "max": 57.599999994039536,
+      "doubleRaf": {
+        "p50": 46.400000005960464,
+        "p95": 52.69999998807907,
+        "max": 71.8999999910593
+      },
+      "samples": [
+        57.6,
+        35.7,
+        35.8,
+        35,
+        38.4,
+        39.9,
+        41,
+        39.9,
+        36.8,
+        37.6,
+        36.1,
+        37,
+        35.4,
+        46,
+        36.8,
+        33.6,
+        36,
+        34.7,
+        34.4,
+        30.5,
+        34.3,
+        38,
+        36.5,
+        29.9
+      ]
+    }
+  },
+  "learning": {
+    "journey": [
+      "nav-home",
+      "nav-explore",
+      "open-card",
+      "favorite"
+    ],
+    "perRep": [
+      {
+        "rep": 1,
+        "markovAcc": 0.25,
+        "mlpAcc": 0,
+        "examples": 4,
+        "top": "nav-explore"
+      },
+      {
+        "rep": 2,
+        "markovAcc": 0.5,
+        "mlpAcc": 0.125,
+        "examples": 8,
+        "top": "nav-home"
+      },
+      {
+        "rep": 3,
+        "markovAcc": 0.6666666666666666,
+        "mlpAcc": 0.25,
+        "examples": 12,
+        "top": "nav-home"
+      },
+      {
+        "rep": 4,
+        "markovAcc": 0.75,
+        "mlpAcc": 0.3125,
+        "examples": 16,
+        "top": "nav-home"
+      },
+      {
+        "rep": 5,
+        "markovAcc": 0.8,
+        "mlpAcc": 0.35,
+        "examples": 20,
+        "top": "nav-home"
+      },
+      {
+        "rep": 6,
+        "markovAcc": 0.95,
+        "mlpAcc": 0.45,
+        "examples": 24,
+        "top": "nav-home"
+      },
+      {
+        "rep": 7,
+        "markovAcc": 1,
+        "mlpAcc": 0.5,
+        "examples": 28,
+        "top": "nav-home"
+      },
+      {
+        "rep": 8,
+        "markovAcc": 1,
+        "mlpAcc": 0.5,
+        "examples": 32,
+        "top": "nav-home"
+      }
+    ],
+    "markovAccAbove06AtRep": 3,
+    "gl": "ANGLE Metal (headless, --use-angle=metal)",
+    "platform": "darwin",
+    "recordedAt": "2026-10-22T02:18:11.937Z"
+  },
+  "parity": {
+    "calc": {
+      "interactions": 10,
+      "maxAbsDiff": 0.0000020265579223632812,
+      "perInteraction": [
+        9.238719940185547e-7,
+        9.834766387939453e-7,
+        0.0000010281801223754883,
+        5.21540641784668e-7,
+        0.0000020265579223632812,
+        0.0000011771917343139648,
+        0.0000011473894119262695,
+        3.5762786865234375e-7,
+        0.000001296401023864746,
+        5.438923835754395e-7
+      ],
+      "tolerance": 0.001,
+      "outputSpread": 0.5199173986911774
+    },
+    "gl": "ANGLE Metal (headless, --use-angle=metal)",
+    "platform": "darwin",
+    "recordedAt": "2026-10-22T02:18:47.660Z",
+    "hybrid": {
+      "interactions": 10,
+      "maxAbsDiff": 0.0000010132789611816406,
+      "perInteraction": [
+        8.344650268554688e-7,
+        6.854534149169922e-7,
+        7.599592208862305e-7,
+        9.5367431640625e-7,
+        5.140900611877441e-7,
+        5.736947059631348e-7,
+        6.034970283508301e-7,
+        0.0000010132789611816406,
+        6.407499313354492e-7,
+        5.960464477539062e-7
+      ],
+      "tolerance": 0.0001,
+      "outputSpread": 0.4104950726032257
+    },
+    "animation": {
+      "interactions": 10,
+      "maxAbsDiff": 0.0000018477439880371094,
+      "perInteraction": [
+        3.501772880554199e-7,
+        7.152557373046875e-7,
+        5.066394805908203e-7,
+        6.854534149169922e-7,
+        4.917383193969727e-7,
+        6.705522537231445e-7,
+        8.940696716308594e-7,
+        0.0000018477439880371094,
+        6.854534149169922e-7,
+        6.183981895446777e-7
+      ],
+      "tolerance": 0.0001,
+      "outputSpread": 0.4381137937307358
+    }
+  },
+  "persistence_reload": {
+    "examplesBefore": 12,
+    "examplesAfterReload": 12,
+    "rankingAfterReload": [
+      "nav-library",
+      "open-card",
+      "nav-home",
+      "nav-explore",
+      "search",
+      "settings",
+      "favorite",
+      "share"
+    ],
+    "gl": "ANGLE Metal (headless, --use-angle=metal)",
+    "platform": "darwin",
+    "recordedAt": "2026-10-22T02:19:01.781Z"
+  },
+  "persistence_export": {
+    "fragmentChars": 706,
+    "jsonBytes": 8798,
+    "sourceRanking": [
+      "nav-library",
+      "open-card",
+      "nav-explore",
+      "nav-home",
+      "search",
+      "settings",
+      "favorite",
+      "share"
+    ],
+    "linkRanking": [
+      "nav-library",
+      "open-card",
+      "nav-home",
+      "nav-explore",
+      "search",
+      "settings",
+      "favorite",
+      "share"
+    ],
+    "jsonRanking": [
+      "nav-library",
+      "open-card",
+      "nav-explore",
+      "nav-home",
+      "search",
+      "settings",
+      "favorite",
+      "share"
+    ],
+    "linkMaxWeightError": 0.00932002067565918,
+    "linkMaxScoreError": 0.00032275915145874023,
+    "linkInversions": [
+      {
+        "a": "nav-explore",
+        "b": "nav-home",
+        "gap": 9.685754776000977e-8
+      }
+    ],
+    "linkRankingFullMatch": false,
+    "gl": "ANGLE Metal (headless, --use-angle=metal)",
+    "platform": "darwin",
+    "recordedAt": "2026-10-22T02:19:15.300Z"
+  },
+  "visuals": {
+    "patternBefore": {
+      "baseFilter": "hue-rotate(0deg) saturate(0.7) contrast(0.85) brightness(0.75) blur(43.6398px)",
+      "baseTransform": "matrix(0.542792, 0.803358, -0.803358, 0.542792, -49.2639, -26.6237)",
+      "glowOpacity": "0.25",
+      "glowTransform": "matrix(1.25892, 0, 0, 1.25892, 132.562, -22.2893)",
+      "glowFilter": "hue-rotate(8.58322deg) blur(26.1712px)",
+      "grainOpacity": "0.39289"
+    },
+    "patternAfter": {
+      "baseFilter": "hue-rotate(0deg) saturate(1.08518) contrast(1.13629) brightness(0.864402) blur(28px)",
+      "baseTransform": "matrix(0.874207, -0.504724, 0.504724, 0.874207, -52.4726, -29.3841)",
+      "glowOpacity": "0.25",
+      "glowTransform": "matrix(1.01698, 0, 0, 1.01698, -320, -320)",
+      "glowFilter": "hue-rotate(76.0342deg) blur(10px)",
+      "grainOpacity": "0.15"
+    },
+    "patternChangedProps": [
+      "baseFilter",
+      "baseTransform",
+      "glowTransform",
+      "glowFilter",
+      "grainOpacity"
+    ],
+    "dotPointsBefore": [
+      [
+        977.3543701171875,
+        451.6396789550781
+      ],
+      [
+        1233.02001953125,
+        339.82574462890625
+      ],
+      [
+        884.2026977539062,
+        740.697265625
+      ],
+      [
+        1094.9595947265625,
+        739.1212158203125
+      ],
+      [
+        1028,
+        575.4409790039062
+      ]
+    ],
+    "dotPointsAfter": [
+      [
+        902.972412109375,
+        455.1725158691406
+      ],
+      [
+        1134.62353515625,
+        447.7941589355469
+      ],
+      [
+        852.5108032226562,
+        726.1351318359375
+      ],
+      [
+        1151.2022705078125,
+        622.6643676757812
+      ],
+      [
+        1036.1004638671875,
+        545
+      ]
+    ],
+    "dotMaxShiftPx": 146.0789054766294,
+    "weightsL1Change": 7.968603437240745,
+    "hiddenBefore": [
+      0,
+      0,
+      0,
+      0,
+      2.524735450744629,
+      0.30174240469932556,
+      0,
+      3.1845340728759766,
+      0,
+      2.414463758468628,
+      0.8697624802589417,
+      1.0891120433807373,
+      0.04484054073691368,
+      4.223544597625732,
+      1.903629183769226,
+      2.2676846981048584
+    ],
+    "hiddenAfter": [
+      0,
+      0.5388451814651489,
+      0.9126150012016296,
+      0.235590398311615,
+      0,
+      0.5743690729141235,
+      0.2539380192756653,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.6133490204811096,
+      0,
+      0.44921767711639404,
+      0
+    ],
+    "screenshots": [
+      "visuals-before.png",
+      "visuals-after.png",
+      "dot-grid-before.png",
+      "dot-grid-after.png",
+      "pattern-layer-after.png"
+    ],
+    "gl": "ANGLE Metal (headless, --use-angle=metal)",
+    "platform": "darwin",
+    "recordedAt": "2026-10-22T02:19:24.592Z"
+  }
+}

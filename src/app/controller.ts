@@ -5,12 +5,32 @@ import { fragmentParam } from '../model/quantize'
 import type { ModelSnapshot, PersistedModel } from '../model/types'
 import { FeatureExtractor, attachDomListeners } from '../signals/extractor'
 import { selectModelFeatures } from '../signals/features'
-import { GRID_ACTIONS, blend, nextGridOrder, rank } from './adaptive'
+import { COLD_START, GRID_ACTIONS, blend, emaScores, nextGridOrder, rank } from './adaptive'
 import { isProbVector, loadCssNetModule, mountNet, type CssNetModule } from './cssnetBridge'
 import { generateJourney, synthesizeStep } from './replay'
 
 export type View = 'nav-home' | 'nav-explore' | 'nav-library'
 const LATENCY_KEEP = 100
+
+/**
+ * Test-only extras on window.__smartweb, beyond the contract's SmartWebTestHook.
+ * Read-only views of controller state used by the Playwright suite.
+ */
+export interface SmartWebTestExtras {
+  netSource(): 'cssnet' | 'fallback' | 'none'
+  /** Hidden activations read back from the CSS net. */
+  hidden(): number[]
+  /** Current MLP weights (row-major, as the contract's NetWeights). */
+  weights(): { W1: number[]; b1: number[]; W2: number[]; b2: number[] } | null
+  markov(): number[]
+  blended(): number[]
+  alpha(): number
+  gridOrder(): ActionId[]
+  /** Double-rAF latencies (ms, same t0 as latencies()); an upper bound kept for comparison. */
+  latenciesDoubleRaf(): number[]
+  /** Resolves when all queued model work has been applied. */
+  idle(): Promise<void>
+}
 
 export interface AppState {
   ready: boolean
@@ -32,6 +52,8 @@ export interface AppState {
   raw: number[]
   stats: { examples: number; markovAcc: number; mlpAcc: number; accN: number }
   gridOrder: ActionId[]
+  /** EMA of blended scores that orders the grid (see GRID_EMA). */
+  gridScores: number[]
   lastMoved: ActionId | null
   lastAction: ActionId | null
   view: View
@@ -41,6 +63,7 @@ export interface AppState {
   compact: boolean
   query: string
   latencies: number[]
+  latenciesDoubleRaf: number[]
   replaying: boolean
   messages: string[]
   shareLink: string | null
@@ -55,8 +78,8 @@ function initialState(): AppState {
     ranking: rank(PRIOR), blended: [...PRIOR], markov: [...PRIOR], mlpWorker: [...PRIOR], css: [...PRIOR], js: [...PRIOR],
     hidden: zeros(SHAPE.hidden), cssJsMaxDiff: 0, cssValid: true, alpha: 0,
     x: zeros(SHAPE.inputs), raw: [], stats: { examples: 0, markovAcc: 0, mlpAcc: 0, accN: 0 },
-    gridOrder: [...GRID_ACTIONS], lastMoved: null, lastAction: null, view: 'nav-home',
-    favorites: 0, shares: 0, opened: 0, compact: false, query: '', latencies: [], replaying: false,
+    gridOrder: [...GRID_ACTIONS], gridScores: [...PRIOR], lastMoved: null, lastAction: null, view: 'nav-home',
+    favorites: 0, shares: 0, opened: 0, compact: false, query: '', latencies: [], latenciesDoubleRaf: [], replaying: false,
     messages: [], shareLink: null, version: 0,
   }
 }
@@ -155,11 +178,13 @@ export class SmartWebController {
     const blended = blend(s.markov, mlpForRanking, s.alpha)
     let maxDiff = 0
     for (let i = 0; i < SHAPE.outputs; i++) maxDiff = Math.max(maxDiff, Math.abs((css[i] ?? NaN) - js[i]))
-    const grid = adapt ? nextGridOrder(this.state.gridOrder, blended, PRIOR) : { order: this.state.gridOrder, moved: null }
+    // Guardrail: no realignment during the cold start (first COLD_START interactions).
+    const gridScores = adapt ? emaScores(this.state.gridScores, blended) : this.state.gridScores
+    const grid = adapt && s.stats.examples > COLD_START ? nextGridOrder(this.state.gridOrder, gridScores, PRIOR) : { order: this.state.gridOrder, moved: null }
     this.set({
       ranking: rank(blended), blended: Array.from(blended), markov: Array.from(s.markov), mlpWorker: Array.from(s.mlp),
       css: Array.from(css), js: Array.from(js), hidden: Array.from(hidden), cssJsMaxDiff: maxDiff, cssValid,
-      alpha: s.alpha, x: Array.from(s.x), stats: s.stats, gridOrder: grid.order, lastMoved: grid.moved,
+      alpha: s.alpha, x: Array.from(s.x), stats: s.stats, gridOrder: grid.order, gridScores, lastMoved: grid.moved,
     })
   }
 
@@ -167,7 +192,9 @@ export class SmartWebController {
   act(action: ActionId, opts: { t?: number; t0?: number } = {}): Promise<void> {
     const now = performance.now()
     const t = opts.t ?? now
-    const t0 = opts.t0 ?? this.fx.lastPressTime(now) ?? now
+    // Click-to-pixel starts at the event that fires the action: pointerup for presses
+    // (HeroUI/react-aria onPress fires on release), else now (keyboard, programmatic).
+    const t0 = opts.t0 ?? this.fx.lastReleaseTime(now) ?? now
     const raw = this.fx.snapshot(action, t)
     this.applyActionEffect(action)
     return this.enqueue(async () => {
@@ -193,15 +220,30 @@ export class SmartWebController {
 
   setQuery(q: string): void { this.set({ query: q }) }
 
-  /** Called by the UI after React committed a state version: measures click-to-pixel via double rAF. */
+  /**
+   * Called by the UI after React committed a state version. Click-to-pixel ends when the
+   * frame containing that commit has been produced: a rAF callback runs just before the
+   * frame's paint, and a message posted from it runs right after that frame (standard
+   * "next paint" approximation). The double-rAF number (one frame later) is kept as an
+   * upper bound in latenciesDoubleRaf.
+   */
   committed(): void {
     const t0 = this.pendingLatencyT0
     if (t0 === null) return
     this.pendingLatencyT0 = null
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      const ms = performance.now() - t0
-      this.set({ latencies: [...this.state.latencies, ms].slice(-LATENCY_KEEP) })
-    }))
+    requestAnimationFrame(() => {
+      const ch = new MessageChannel()
+      ch.port1.onmessage = () => {
+        const ms = performance.now() - t0
+        this.set({ latencies: [...this.state.latencies, ms].slice(-LATENCY_KEEP) })
+        ch.port1.close()
+      }
+      ch.port2.postMessage(0)
+      requestAnimationFrame(() => {
+        const ms = performance.now() - t0
+        this.set({ latenciesDoubleRaf: [...this.state.latenciesDoubleRaf, ms].slice(-LATENCY_KEEP) })
+      })
+    })
   }
 
   setMode(mode: CssNetMode): void {
@@ -220,7 +262,7 @@ export class SmartWebController {
     return this.enqueue(async () => {
       if (!this.client) return
       const s = await this.client.reset(selectModelFeatures(this.fx.idle()))
-      this.set({ gridOrder: [...GRID_ACTIONS], lastMoved: null, latencies: [], lastAction: null })
+      this.set({ gridOrder: [...GRID_ACTIONS], gridScores: [...PRIOR], lastMoved: null, latencies: [], latenciesDoubleRaf: [], lastAction: null })
       this.apply(s, false)
       this.log('model reset to prior')
     })
@@ -294,7 +336,7 @@ export class SmartWebController {
   }
 
   private installHook(): void {
-    const hook: SmartWebTestHook = {
+    const hook: SmartWebTestHook & SmartWebTestExtras = {
       cssOutputs: () => (this.net ? Array.from(this.net.readOutputs()) : []),
       jsOutputs: () => (this.snap && this.mod ? Array.from(this.mod.jsForward(SHAPE, this.snap.weights, this.snap.x).out) : []),
       features: () => [...this.state.x],
@@ -303,8 +345,20 @@ export class SmartWebController {
       latencies: () => [...this.state.latencies],
       setMode: (m) => this.setMode(m),
       reset: () => this.reset(),
+      netSource: () => this.state.netSource,
+      hidden: () => (this.net ? Array.from(this.net.readHidden()) : []),
+      weights: () => {
+        const w = this.snap?.weights
+        return w ? { W1: Array.from(w.W1), b1: Array.from(w.b1), W2: Array.from(w.W2), b2: Array.from(w.b2) } : null
+      },
+      markov: () => [...this.state.markov],
+      blended: () => [...this.state.blended],
+      alpha: () => this.state.alpha,
+      gridOrder: () => [...this.state.gridOrder],
+      latenciesDoubleRaf: () => [...this.state.latenciesDoubleRaf],
+      idle: () => this.enqueue(async () => undefined),
     }
-    ;(window as unknown as { __smartweb: SmartWebTestHook }).__smartweb = hook
+    ;(window as unknown as { __smartweb: SmartWebTestHook & SmartWebTestExtras }).__smartweb = hook
   }
 }
 

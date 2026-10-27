@@ -66,6 +66,14 @@ export interface ModelFeatureSpec {
   normalise: boolean
   /** Applied before normalisation (heavy-tailed ms values -> log1p). */
   transform: Transform
+  /**
+   * Population prior for the running normaliser, in transformed units (assumed typical
+   * desktop-mouse values, not fitted to data). Seeds the Welford stats with NORM_PRIOR_WEIGHT
+   * pseudo-observations so that (a) absolute intensity means something before a user's own
+   * statistics exist, and (b) a feature that is nearly constant for one user does not get
+   * a near-zero std that turns timer jitter into |z| ~ 3 (measured in e2e before this prior).
+   */
+  prior?: { mean: number; std: number }
 }
 
 /**
@@ -74,13 +82,13 @@ export interface ModelFeatureSpec {
  * Change this constant to change the network input width.
  */
 export const MODEL_FEATURES: readonly ModelFeatureSpec[] = [
-  { name: 'pressDuration', normalise: true, transform: 'log1p' },
-  { name: 'approachVelocity', normalise: true, transform: 'none' },
-  { name: 'deceleration', normalise: true, transform: 'none' },
-  { name: 'pathStraightness', normalise: true, transform: 'none' },
-  { name: 'tremor', normalise: true, transform: 'log1p' },
-  { name: 'hoverDwell', normalise: true, transform: 'log1p' },
-  { name: 'burstCount2s', normalise: true, transform: 'none' },
+  { name: 'pressDuration', normalise: true, transform: 'log1p', prior: { mean: 4.6, std: 0.7 } },  // ~100 ms
+  { name: 'approachVelocity', normalise: true, transform: 'none', prior: { mean: 0.5, std: 0.5 } }, // px/ms
+  { name: 'deceleration', normalise: true, transform: 'none', prior: { mean: 0.2, std: 0.5 } },     // px/ms
+  { name: 'pathStraightness', normalise: true, transform: 'none', prior: { mean: 0.8, std: 0.25 } },
+  { name: 'tremor', normalise: true, transform: 'log1p', prior: { mean: 0.5, std: 0.5 } },         // ~0.6 px
+  { name: 'hoverDwell', normalise: true, transform: 'log1p', prior: { mean: 4.5, std: 1.5 } },     // ~90 ms
+  { name: 'burstCount2s', normalise: true, transform: 'none', prior: { mean: 1.2, std: 0.8 } },
   ...ACTIONS.map((a) => ({ name: `last1:${a}`, normalise: false, transform: 'none' as Transform })),
 ]
 
@@ -93,6 +101,14 @@ export const MODEL_FEATURE_INDEX = MODEL_FEATURES.map((f) => {
   return i
 })
 export const NORMALISE_MASK = MODEL_FEATURES.map((f) => f.normalise)
+
+/** Pseudo-observations the normaliser prior is worth (the user's own stats dominate after ~this many actions). */
+export const NORM_PRIOR_WEIGHT = 20
+export const NORM_PRIOR = {
+  mean: MODEL_FEATURES.map((f) => f.prior?.mean ?? 0),
+  std: MODEL_FEATURES.map((f) => f.prior?.std ?? 1),
+  weight: NORM_PRIOR_WEIGHT,
+}
 
 /** Pick the model subset from a raw vector and apply per-feature transforms. */
 export function selectModelFeatures(raw: Float32Array): Float32Array {

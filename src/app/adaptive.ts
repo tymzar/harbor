@@ -3,6 +3,24 @@ import { ACTIONS, type ActionId } from '../cssnet/contract'
 /** Controls that live in the adaptive grid (nav buttons stay fixed in the top bar). */
 export const GRID_ACTIONS: readonly ActionId[] = ['open-card', 'favorite', 'share', 'search', 'settings']
 
+/**
+ * Cold start: the grid never moves while fewer than this many training examples
+ * exist (the first COLD_START interactions only teach the model).
+ */
+export const COLD_START = 3
+
+/**
+ * The grid is ordered by an exponential moving average of the blended next-action
+ * probabilities, not by the instantaneous prediction. Measured in e2e: with the raw
+ * prediction a 4-step cycle (home, explore, open-card, favorite) swapped open-card and
+ * favorite on every interaction, so targets moved under the pointer and clicks missed.
+ */
+export const GRID_EMA = 0.25
+
+export function emaScores(prev: ArrayLike<number>, next: ArrayLike<number>, k = GRID_EMA): number[] {
+  return Array.from(next, (v, i) => (1 - k) * prev[i] + k * v)
+}
+
 export const ADAPT = {
   /** The moving element's probability must beat its prior by this much. */
   priorMargin: 0.06,

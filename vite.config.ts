@@ -6,6 +6,11 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   worker: { format: 'es' },
-  server: { host: '127.0.0.1', port: 5173, strictPort: true },
+  server: {
+    host: '127.0.0.1', port: 5173, strictPort: true,
+    // Playwright writes reports/ and test-results/ while tests run; without this Vite
+    // full-reloads the page under test whenever reports/e2e-metrics.json changes (observed).
+    watch: { ignored: ['**/reports/**', '**/test-results/**', '**/research/experiments/out/**'] },
+  },
   test: { environment: 'jsdom', include: ['src/**/*.test.ts', 'src/**/*.test.tsx'] },
 })
