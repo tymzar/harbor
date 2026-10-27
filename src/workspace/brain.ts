@@ -110,13 +110,28 @@ export class CoveBrain {
   }
 
   /** A press: train, then re-rank that item's group (the other groups' context moved too, so refresh all). */
+  /** Duration of the last engage() (train + CSS passes + re-rank), for the test hook. */
+  lastEngageMs = 0
   engage(group: Group, item: string, verb: CoveVerb): void {
     if (!this.state.ready) return
     const t = performance.now()
     const raw = this.fx.snapshot(AS_ACTION[verb], t)
     const s = this.ranker.step(selectModelFeatures(raw), item, verb, group, t)
-    this.apply(s, true)
+    // The engaged group's CSS pass runs now; the other two groups are refreshed when idle (their
+    // scores meanwhile come from the JS forward pass, which matches CSS to ~1e-6).
+    this.apply(s, true, [group])
     this.scheduleSave()
+    this.lastEngageMs = performance.now() - t
+    this.scheduleRefresh()
+  }
+
+  private refreshPending = false
+  private scheduleRefresh() {
+    if (this.refreshPending) return
+    this.refreshPending = true
+    const run = () => { this.refreshPending = false; this.apply(this.ranker.snapshot(), true) }
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout: 1000 })
+    else setTimeout(run, 200)
   }
 
   /**
@@ -124,11 +139,11 @@ export class CoveBrain {
    * group's CSS net (validated; JS forward pass if the CSS read is not a probability vector).
    * Orders move only past the hysteresis margin, and only once a group has some evidence.
    */
-  private apply(s: RankerSnapshot, adapt: boolean) {
+  private apply(s: RankerSnapshot, adapt: boolean, cssGroups: readonly string[] = COVE_CATALOG.groups.map((g) => g.id)) {
     const idx = this.ranker.index
     const mlp = Array.from(s.mlp)
     const parity: Record<string, number> = {}
-    for (const g of COVE_CATALOG.groups) {
+    for (const g of COVE_CATALOG.groups.filter((x) => cssGroups.includes(x.id))) {
       const net = this.nets[g.id as Group]
       if (!net) continue
       const mask = idx.mask(g.id)
@@ -157,7 +172,7 @@ export class CoveBrain {
     this.set({
       orders: changed ? orders : this.state.orders,
       scores: Object.fromEntries(idx.ids.map((id, i) => [id, scores[i]])),
-      alpha: s.alpha, examples: s.stats.examples, evidence: s.evidence, parity,
+      alpha: s.alpha, examples: s.stats.examples, evidence: s.evidence, parity: { ...this.state.parity, ...parity },
     })
   }
 
@@ -183,7 +198,7 @@ export class CoveBrain {
     return {
       ready: () => this.state.ready,
       orders: () => this.state.orders,
-      stats: () => ({ examples: this.state.examples, alpha: this.state.alpha, netSource: this.state.netSource, parity: this.state.parity }),
+      stats: () => ({ examples: this.state.examples, alpha: this.state.alpha, netSource: this.state.netSource, parity: this.state.parity, lastEngageMs: this.lastEngageMs }),
       scores: () => this.state.scores,
       reset: () => this.reset(),
     }

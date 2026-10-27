@@ -30,10 +30,9 @@ async function park(page: Page) {
 }
 const sidebarChannels = (page: Page) =>
   page.evaluate(() => [...document.querySelectorAll('[data-testid=section-channels] [data-testid^=ch-]')].map((e) => e.getAttribute('data-testid')!.slice(3)))
+/** Actions in the (single) mounted hover toolbar, in display order. */
 const toolbar = (page: Page) =>
-  page.evaluate(() => [...document.querySelectorAll('[data-testid=message] [data-testid=msg-toolbar]')][0]
-    ? [...document.querySelectorAll('[data-testid=message]')[0].querySelectorAll('[data-action]')].map((e) => e.getAttribute('data-action')!)
-    : [])
+  page.evaluate(() => [...(document.querySelector('[data-testid=msg-toolbar]')?.querySelectorAll('[data-action]') ?? [])].map((e) => e.getAttribute('data-action')!))
 
 test.beforeEach(() => { errors.length = 0 })
 test.afterEach(() => { expect(errors, errors.join('\n')).toEqual([]) })
@@ -79,6 +78,7 @@ test('the message toolbar learns your actions: Save moves into the top three', a
   for (let k = 0; k < 5; k++) {
     const m = msgs.nth(2 + k)
     await m.hover()
+    await expect(m.getByTestId('msg-toolbar')).toBeVisible() // mounted on hover
     // Save is in the visible three or under More, depending on what has been learned so far.
     const direct = m.locator('[data-testid=msg-toolbar] > [data-action=save]')
     if (await direct.count()) await direct.click()
@@ -92,6 +92,7 @@ test('the message toolbar learns your actions: Save moves into the top three', a
   const after = await page.evaluate(() => window.__cove.orders().actions)
   expect(after.slice(0, 3), JSON.stringify(after)).toContain('save')
   await msgs.nth(1).hover()
+  await expect(msgs.nth(1).getByTestId('msg-toolbar')).toBeVisible()
   expect((await toolbar(page)).slice(0, 3)).toContain('save')
   await page.getByTestId('view-saved').click()
   await expect(page.locator('[data-testid=saved-list] li')).toHaveCount(5)

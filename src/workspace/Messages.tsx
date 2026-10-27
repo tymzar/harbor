@@ -1,4 +1,4 @@
-import { Fragment, memo, useEffect, useLayoutEffect, useRef } from 'react'
+import { Fragment, memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Button, Dropdown, Tooltip, toast } from '@heroui/react'
 import { ArrowShapeTurnUpLeft, Bookmark, BookmarkFill, Ellipsis, Link as LinkIcon, PinFill } from '@gravity-ui/icons'
 import { useHeldOrder } from '../app/hold'
@@ -50,10 +50,15 @@ function ActionIcon({ k, saved }: { k: ActionKey; saved: boolean }) {
 }
 
 /** The hover toolbar: your three most-used actions, the rest under More, all in learned order. */
-function Toolbar({ m, order, saved, run }: { m: Message; order: readonly ActionKey[]; saved: boolean; run: (k: ActionKey, m: Message) => void }) {
+function Toolbar({ m, order: live, saved, run, onMenu }: { m: Message; order: readonly ActionKey[]; saved: boolean; run: (k: ActionKey, m: Message) => void; onMenu: (open: boolean) => void }) {
+  // Frozen while More is open: the menu renders outside the list, so moving into it releases the
+  // list's hold, and a re-rank would otherwise move items in or out of the menu you are reading.
+  const frozen = useRef<readonly ActionKey[] | null>(null)
+  const [, rerender] = useState(0)
+  const order = frozen.current ?? live
   const top = order.slice(0, 3), rest = order.slice(3)
   return (
-    <div data-testid="msg-toolbar" className="absolute -top-4 right-4 z-10 hidden items-center gap-0.5 rounded-xl border border-separator bg-surface p-0.5 shadow-md group-hover:flex group-focus-within:flex">
+    <div data-testid="msg-toolbar" className="absolute -top-4 right-4 z-10 flex items-center gap-0.5 rounded-xl border border-separator bg-surface p-0.5 shadow-md">
       {top.map((k) => (
         <Tooltip key={k} delay={250}>
           <Button data-testid={`act-${k}`} data-action={k} isIconOnly size="sm" variant="ghost" aria-label={ACTION_META[k].label} className="size-8 min-w-8 rounded-lg" onPress={() => run(k, m)}>
@@ -62,7 +67,11 @@ function Toolbar({ m, order, saved, run }: { m: Message; order: readonly ActionK
           <Tooltip.Content>{k === 'save' && saved ? 'Remove from Saved' : ACTION_META[k].label}</Tooltip.Content>
         </Tooltip>
       ))}
-      <Dropdown>
+      <Dropdown onOpenChange={(open) => {
+        frozen.current = open ? order : null
+        if (!open) rerender((n) => n + 1)
+        onMenu(open)
+      }}>
         <Button data-testid="act-more" isIconOnly size="sm" variant="ghost" aria-label="More actions" className="size-8 min-w-8 rounded-lg"><Ellipsis className="size-4" /></Button>
         <Dropdown.Popover placement="bottom end">
           <Dropdown.Menu aria-label="More actions" onAction={(key) => run(key as ActionKey, m)}>
@@ -104,10 +113,17 @@ export const MessageRow = memo(function MessageRow({ m, compact, people, order, 
   m: Message; compact: boolean; people: Record<string, Person>; order: readonly ActionKey[]; saved: boolean; handlers: MessageHandlers; inThread?: boolean
 }) {
   const run = useAction(handlers)
+  // The toolbar is mounted only for the row under the pointer or keyboard focus (and while its
+  // More menu is open): one toolbar instead of one per message. Measured: a channel switch
+  // rendered ~4 buttons + tooltips + a menu for every message.
+  const [hot, setHot] = useState(false)
+  const [menu, setMenu] = useState(false)
   const p = people[m.author]
   const replies = m.replies ?? []
   return (
-    <div data-testid="message" data-id={m.id} className={`group relative flex gap-3 px-5 hover:bg-surface-secondary/60 ${compact ? 'py-0.5' : 'pt-2 pb-0.5'}`}>
+    <div data-testid="message" data-id={m.id} className={`group relative flex gap-3 px-5 hover:bg-surface-secondary/60 ${compact ? 'py-0.5' : 'pt-2 pb-0.5'}`}
+      onPointerEnter={() => setHot(true)} onPointerLeave={() => setHot(false)}
+      onFocus={() => setHot(true)} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHot(false) }}>
       <div className="w-9 shrink-0">
         {compact
           ? <span className="invisible block pt-1 text-right text-[10px] tabular-nums text-muted group-hover:visible">{clockTime(m.at)}</span>
@@ -134,7 +150,7 @@ export const MessageRow = memo(function MessageRow({ m, compact, people, order, 
           </Button>
         )}
       </div>
-      <Toolbar m={m} order={order} saved={saved} run={run} />
+      {(hot || menu) && <Toolbar m={m} order={order} saved={saved} run={run} onMenu={setMenu} />}
     </div>
   )
 })
