@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS Net Visuals</title>
+<style>
+  /* ---------- page chrome ---------- */
+  :root {
+    --bg: #0b0d12; --panel: #12151d; --line: #1f2430; --fg: #e8ecf3; --mute: #8b93a7;
+    --c-in: #7dd3fc; --c-hid: #c084fc; --c-out: #fbbf24; --pos: #22d3ee; --neg: #f472b6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.4 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { padding: 18px 24px 8px; display: flex; gap: 24px; align-items: baseline; flex-wrap: wrap; }
+  header h1 { font-size: 18px; margin: 0; font-weight: 600; letter-spacing: .01em; }
+  header .stat { color: var(--mute); font-variant-numeric: tabular-nums; }
+  header .stat b { color: var(--fg); font-weight: 600; }
+  main { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; padding: 8px 24px 24px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px 16px; position: relative; overflow: hidden; }
+  .panel h2 { font-size: 13px; margin: 0 0 10px; font-weight: 600; color: var(--mute); text-transform: uppercase; letter-spacing: .08em; display: flex; gap: 8px; align-items: center; }
+  .tag { font-size: 10px; padding: 2px 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--mute); letter-spacing: .04em; }
+  .tag.gpu { color: #34d399; border-color: #14532d; }
+  .tag.cpu { color: #fb923c; border-color: #7c2d12; }
+  .wide { grid-column: 1 / -1; }
+
+  /* ---------- (a) the network you can see ---------- */
+  .netviz { position: relative; height: 420px; }
+  .neuron { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%;
+    background: var(--c); box-shadow: 0 0 10px 1px var(--c);
+    will-change: transform, opacity, filter;
+    transform: scale(calc(0.45 + clamp(0, var(--a), 1.6) * 0.6));
+    opacity: calc(0.25 + clamp(0, var(--a), 1) * 0.75);
+    filter: hue-rotate(calc(clamp(0, var(--a), 1.6) * -40deg)); }
+  .neuron.in  { --c: var(--c-in); }
+  .neuron.hid { --c: var(--c-hid); }
+  .neuron.out { --c: var(--c-out); }
+  .edge { position: absolute; height: 2px; margin-top: -1px; transform-origin: 0 50%; border-radius: 1px;
+    /* no color-mix() here: it is re-resolved on every style recalc (+1.5us/edge measured) */
+    background: linear-gradient(90deg, var(--ec) 0%, var(--ec2) 100%);
+    will-change: opacity;
+    opacity: clamp(0, var(--a-src) * var(--wabs) * 1.4, 1); }
+  .edge.pos { --ec: var(--pos); --ec2: #9beef7; } .edge.neg { --ec: var(--neg); --ec2: #fbb9db; }
+  .lbl { position: absolute; color: var(--mute); font-size: 10px; transform: translate(-50%, -50%); letter-spacing: .04em; }
+
+  /* ---------- (b) nested matrix3d dot grid ---------- */
+  .dotstage { height: 300px; perspective: 700px; display: grid; place-items: center; overflow: hidden; }
+  .m { width: 220px; height: 220px; will-change: transform; } /* transform-style: flat (default) => projective divide at every level */
+  .m1 { transform: matrix3d(
+      calc(1 + var(--h0)*0.25), calc(var(--h1)*0.3), 0, calc(var(--h2)*0.0015),
+      calc(var(--h3)*0.3), calc(1 + var(--h4)*0.25), 0, calc(var(--h5)*0.0015),
+      0, 0, 1, 0,
+      calc(var(--h6)*20), calc(var(--h7)*20), 0, 1); }
+  .m2 { transform: matrix3d(
+      calc(1 - var(--h8)*0.2), calc(var(--h9)*-0.3), 0, calc(var(--h10)*-0.0012),
+      calc(var(--h11)*0.3), calc(1 - var(--h12)*0.2), 0, calc(var(--h13)*0.0012),
+      0, 0, 1, 0,
+      0, 0, calc(var(--h14)*-60), 1); }
+  .m3 { transform: rotate(calc(var(--h15)*25deg)); }
+  .dots { width: 100%; height: 100%; border-radius: 12px;
+    background-image: radial-gradient(circle, #e0e7ff 1.6px, transparent 2.2px);
+    background-size: 14px 14px; background-position: 7px 7px; }
+
+  /* ---------- (c) gradient fingerprint ---------- */
+  .fp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fp { aspect-ratio: 1; border-radius: 14px; }
+  .fp.cpu { background:
+      radial-gradient(circle at calc(50% + var(--h1)*25%) calc(50% + var(--h2)*25%), oklch(80% 0.18 calc(200 + var(--h3)*120)) 0, transparent calc(30% + var(--h4)*20%)),
+      conic-gradient(from calc(var(--h0)*180deg), oklch(55% 0.2 calc(280 + var(--h5)*90)), oklch(45% 0.22 calc(330 + var(--h6)*60)), oklch(60% 0.2 calc(200 + var(--h7)*100)), oklch(55% 0.2 calc(280 + var(--h5)*90)));
+    transition: --h0 .4s, --h1 .4s, --h2 .4s, --h3 .4s, --h4 .4s, --h5 .4s, --h6 .4s, --h7 .4s; }
+  .fp.gpu { background: conic-gradient(from 0deg, #7c3aed, #06b6d4, #f59e0b, #ec4899, #7c3aed); will-change: filter, transform;
+    filter: hue-rotate(calc(var(--h8)*140deg)) saturate(calc(0.6 + var(--h9)*1.2)) contrast(calc(0.8 + var(--h10)*0.8)) brightness(calc(0.8 + var(--h11)*0.5));
+    transform: rotate(calc(var(--h12)*90deg)) scale(calc(1 + var(--h13)*0.08)); }
+
+  /* ---------- (d) softmax ring + flex softmax bar + css argmax ---------- */
+  .ring-row { display: grid; grid-template-columns: 180px 1fr; gap: 14px; align-items: center; }
+  .ring { width: 170px; height: 170px; border-radius: 50%; display: grid; place-items: center;
+    background: conic-gradient(
+      var(--k0) 0 calc(var(--c0)*360deg), var(--k1) 0 calc(var(--c1)*360deg), var(--k2) 0 calc(var(--c2)*360deg), var(--k3) 0 calc(var(--c3)*360deg),
+      var(--k4) 0 calc(var(--c4)*360deg), var(--k5) 0 calc(var(--c5)*360deg), var(--k6) 0 calc(var(--c6)*360deg), var(--k7) 0 360deg); }
+  .ring::after { content: ""; width: 110px; height: 110px; border-radius: 50%; background: var(--panel); }
+  .bar { display: flex; height: 26px; border-radius: 8px; overflow: hidden; gap: 1px; }
+  .bar div { flex: 1 1 0px; min-width: 0; background: var(--k); display: grid; place-items: center; font-size: 10px; color: #0b0d12; font-weight: 600; overflow: hidden; white-space: nowrap;
+    outline: 2px solid transparent; outline-offset: -2px;
+    opacity: calc(0.55 + var(--is-max) * 0.45); }
+  .bar div::after { content: attr(data-l); }
+  .legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px 10px; margin-top: 10px; font-size: 11px; color: var(--mute); font-variant-numeric: tabular-nums; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 8px; height: 8px; border-radius: 2px; background: var(--k); display: inline-block; }
+  .legend b { color: var(--fg); font-weight: 500; min-width: 48px; text-align: right; display: inline-block; }
+  .legend span[data-max="1"] b { color: #34d399; }
+  .readout { font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--mute); white-space: pre; margin-top: 10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Stylesheet-as-network: readback & visuals</h1>
+  <span class="stat">forward pass: <b id="s-fwd">-</b> µs</span>
+  <span class="stat">readback (8 probs): <b id="s-read">-</b> µs</span>
+  <span class="stat">|css − js| max: <b id="s-err">-</b></span>
+  <span class="stat">frame: <b id="s-fps">-</b> fps</span>
+  <span class="stat">argmax: <b id="s-arg">-</b></span>
+</header>
+
+<div class="net" id="net">
+<main>
+  <section class="panel wide">
+    <h2>(a) the network you can see <span class="tag gpu">transform · opacity · filter</span><span class="tag cpu">edge gradients painted once</span></h2>
+    <div class="netviz" id="netviz"></div>
+  </section>
+
+  <section class="panel">
+    <h2>(b) nested matrix3d dot grid <span class="tag gpu">transform (3 nested, flat ⇒ projective at each level)</span></h2>
+    <div class="dotstage"><div class="m m1"><div class="m m2"><div class="m m3"><div class="dots"></div></div></div></div></div>
+  </section>
+
+  <section class="panel">
+    <h2>(c) gradient fingerprint <span class="tag cpu">left: conic/radial repaint</span><span class="tag gpu">right: static gradient + filter chain</span></h2>
+    <div class="fp-row"><div class="fp cpu"></div><div class="fp gpu"></div></div>
+  </section>
+
+  <section class="panel wide">
+    <h2>(d) softmax ring, flex-softmax bar, CSS argmax <span class="tag cpu">conic repaint</span><span class="tag cpu">flex layout = normalisation</span></h2>
+    <div class="ring-row">
+      <div class="ring" id="ring"></div>
+      <div>
+        <div class="bar" id="bar"></div>
+        <div class="legend" id="legend"></div>
+        <div class="readout" id="readout"></div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script>
+// ---------- tiny calc()-net generator (copy of research/experiments/r2-net.mjs) ----------
+const ACTIONS = ['nav-home','nav-explore','nav-library','search','open-card','favorite','share','settings']
+const KCOL = ['#7dd3fc','#c084fc','#fbbf24','#34d399','#f472b6','#fb923c','#a3e635','#22d3ee']
+const shape = { inputs: 16, hidden: 16, outputs: 8 }
+function rand(seed){ let a=seed>>>0; return ()=>{ a|=0; a=(a+0x6D2B79F5)|0; let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296 } }
+const R = rand(7), g = () => R()*2-1
+const w = {
+  W1: Float32Array.from({length: shape.hidden*shape.inputs}, () => g()*0.8),
+  b1: Float32Array.from({length: shape.hidden}, () => g()*0.2),
+  W2: Float32Array.from({length: shape.outputs*shape.hidden}, () => g()*0.8),
+  b2: Float32Array.from({length: shape.outputs}, () => g()*0.2),
+}
+const f = n => Number(n).toPrecision(7)
+function netCss() {
+  const P = [], D = []
+  for (let i=0;i<shape.inputs;i++) P.push(`@property --x${i}{syntax:'<number>';inherits:true;initial-value:0}`)
+  for (let h=0;h<shape.hidden;h++) { P.push(`@property --h${h}{syntax:'<number>';inherits:true;initial-value:0}`)
+    const t=[f(w.b1[h])]; for (let i=0;i<shape.inputs;i++) t.push(`${f(w.W1[h*shape.inputs+i])}*var(--x${i})`); D.push(`--h${h}:max(0, ${t.join(' + ')});`) }
+  for (let o=0;o<shape.outputs;o++) { for (const k of ['z','e','p','c','is']) P.push(`@property --${k}${o}{syntax:'<number>';inherits:true;initial-value:0}`)
+    const t=[f(w.b2[o])]; for (let h=0;h<shape.hidden;h++) t.push(`${f(w.W2[o*shape.hidden+h])}*var(--h${h})`); D.push(`--z${o}:calc(${t.join(' + ')});`) }
+  // stable softmax: shift by max (CSS max()) so exp() cannot overflow float32
+  P.push(`@property --zmax{syntax:'<number>';inherits:true;initial-value:0}`, `@property --esum{syntax:'<number>';inherits:true;initial-value:1}`, `@property --pmax{syntax:'<number>';inherits:true;initial-value:0}`)
+  D.push(`--zmax:max(${Array.from({length:shape.outputs},(_,o)=>`var(--z${o})`).join(',')});`)
+  for (let o=0;o<shape.outputs;o++) D.push(`--e${o}:exp(var(--z${o}) - var(--zmax));`)
+  D.push(`--esum:calc(${Array.from({length:shape.outputs},(_,o)=>`var(--e${o})`).join(' + ')});`)
+  for (let o=0;o<shape.outputs;o++) D.push(`--p${o}:calc(var(--e${o}) / var(--esum));`)
+  // cumulative probs for the conic ring
+  let acc = '0'; for (let o=0;o<shape.outputs;o++) { acc = `${acc} + var(--p${o})`; D.push(`--c${o}:calc(${acc});`) }
+  // CSS argmax flag: --is_o = 1 iff p_o == max(p)  (step function via clamp)
+  D.push(`--pmax:max(${Array.from({length:shape.outputs},(_,o)=>`var(--p${o})`).join(',')});`)
+  for (let o=0;o<shape.outputs;o++) D.push(`--is${o}:calc(1 - clamp(0, (var(--pmax) - var(--p${o})) * 1e6, 1));`)
+  return `${P.join('\n')}\n.net{${D.join('')}}`
+}
+const style = document.createElement('style'); style.textContent = netCss(); document.head.appendChild(style)
+
+function jsForward(x) {
+  const hidden = new Float32Array(shape.hidden)
+  for (let h=0;h<shape.hidden;h++){ let s=w.b1[h]; for (let i=0;i<shape.inputs;i++) s+=w.W1[h*shape.inputs+i]*x[i]; hidden[h]=Math.max(0,s) }
+  const z = new Float32Array(shape.outputs)
+  for (let o=0;o<shape.outputs;o++){ let s=w.b2[o]; for (let h=0;h<shape.hidden;h++) s+=w.W2[o*shape.hidden+h]*hidden[h]; z[o]=s }
+  const m=Math.max(...z), e=z.map(v=>Math.exp(v-m)), sum=e.reduce((a,b)=>a+b,0)
+  return { hidden, out: e.map(v=>v/sum) }
+}
+
+// ---------- (a) build the visible network ----------
+const viz = document.getElementById('netviz')
+;(function buildViz(){
+  const W = viz.clientWidth || 1100, H = 420
+  const cols = [ {n: shape.inputs, x: 60, cls:'in', v: i=>`var(--x${i})`, lbl:'inputs (intensity + journey)'},
+                 {n: shape.hidden, x: W/2, cls:'hid', v: i=>`var(--h${i})`, lbl:'hidden (relu, calc())'},
+                 {n: shape.outputs, x: W-60, cls:'out', v: i=>`calc(var(--p${i}) * 2.5)`, lbl:'softmax outputs'} ]
+  const pos = cols.map(c => Array.from({length:c.n}, (_,i) => ({ x: c.x, y: 30 + (H-60) * (i + 0.5) / c.n })))
+  const frag = document.createDocumentFragment()
+  const edges = (a, b, Wm, nIn) => {
+    for (let j=0;j<pos[b].length;j++) for (let i=0;i<pos[a].length;i++) {
+      const wv = Wm[j*nIn+i]; if (Math.abs(wv) < 0.35) continue
+      const p = pos[a][i], q = pos[b][j], dx=q.x-p.x, dy=q.y-p.y
+      const e = document.createElement('div'); e.className = 'edge ' + (wv>0?'pos':'neg')
+      e.style.cssText = `left:${p.x}px;top:${p.y}px;width:${Math.hypot(dx,dy)}px;transform:rotate(${Math.atan2(dy,dx)}rad);--wabs:${Math.abs(wv).toFixed(3)};--a-src:${cols[a].v(i)};height:${(1+Math.abs(wv)*2).toFixed(1)}px`
+      frag.appendChild(e)
+    }
+  }
+  edges(0,1,w.W1,shape.inputs); edges(1,2,w.W2,shape.hidden)
+  cols.forEach((c,ci) => { pos[ci].forEach((p,i) => { const n=document.createElement('div'); n.className='neuron '+c.cls; n.style.cssText=`left:${p.x}px;top:${p.y}px;--a:${c.v(i)}`; frag.appendChild(n) })
+    const l=document.createElement('div'); l.className='lbl'; l.textContent=c.lbl; l.style.cssText=`left:${c.x}px;top:12px`; frag.appendChild(l) })
+  viz.appendChild(frag)
+})()
+
+// ---------- (d) ring colours, bar, legend ----------
+const ring = document.getElementById('ring'), bar = document.getElementById('bar'), legend = document.getElementById('legend')
+KCOL.forEach((k,o) => { ring.style.setProperty(`--k${o}`, k)
+  const d=document.createElement('div'); d.dataset.l=ACTIONS[o]; d.style.cssText=`--k:${k};flex-grow:calc(exp(var(--z${o}) - var(--zmax)));--is-max:var(--is${o})`; bar.appendChild(d)
+  const s=document.createElement('span'); s.innerHTML=`<i style="--k:${k}"></i>${ACTIONS[o]} <b></b>`; legend.appendChild(s) })
+
+// ---------- drive inputs; read back ----------
+const net = document.getElementById('net'), probe = document.getElementById('readout')
+const x = new Float32Array(shape.inputs)
+let t0 = performance.now(), frames = 0, fpsEl = document.getElementById('s-fps')
+const legendB = legend.querySelectorAll('b'), legendS = legend.querySelectorAll('span')
+function readOutputs() { const cs = getComputedStyle(probe); const r = new Float32Array(shape.outputs); for (let o=0;o<shape.outputs;o++) r[o]=parseFloat(cs.getPropertyValue('--p'+o)); return r }
+function readArgmaxFlags() { const cs = getComputedStyle(probe); return Array.from({length:shape.outputs},(_,o)=>parseFloat(cs.getPropertyValue('--is'+o))) }
+let pulse = 0
+document.addEventListener('pointerdown', () => { pulse = 1 })
+function frame(now) {
+  const t = now / 1000
+  for (let i=0;i<shape.inputs;i++) x[i] = 0.5 + 0.5*Math.sin(t*(0.3+i*0.07) + i) * (i<8 ? 1 : 0.6) + (i===3 ? pulse : 0)
+  pulse *= 0.9
+  const a = performance.now()
+  for (let i=0;i<shape.inputs;i++) net.style.setProperty('--x'+i, x[i].toFixed(5))
+  const css = readOutputs()                     // forces style recalc = the forward pass
+  const b = performance.now()
+  const css2 = readOutputs()                    // second read: pure readback cost
+  const c = performance.now()
+  const ref = jsForward(x)
+  let err = 0; for (let o=0;o<shape.outputs;o++) err = Math.max(err, Math.abs(css[o]-ref.out[o]))
+  const flags = readArgmaxFlags(), arg = flags.indexOf(1)
+  if (frames % 10 === 0) {
+    document.getElementById('s-fwd').textContent = ((b-a)*1000).toFixed(0)
+    document.getElementById('s-read').textContent = ((c-b)*1000).toFixed(1)
+    document.getElementById('s-err').textContent = err.toExponential(1)
+    document.getElementById('s-arg').textContent = arg >= 0 ? ACTIONS[arg] : '?'
+    css.forEach((p,o) => { legendB[o].textContent = (p*100).toFixed(1)+'%'; legendS[o].dataset.max = flags[o] })
+    probe.textContent = 'css ' + Array.from(css, v=>v.toFixed(4)).join(' ') + '\n js ' + Array.from(ref.out, v=>v.toFixed(4)).join(' ')
+  }
+  frames++
+  if (now - t0 > 1000) { fpsEl.textContent = (frames * 1000 / (now - t0)).toFixed(0); frames = 0; t0 = now }
+  requestAnimationFrame(frame)
+}
+requestAnimationFrame(frame)
+window.__r2 = { shape, w, x, readOutputs, readArgmaxFlags, jsForward }
+</script>
+</body>
+</html>
