@@ -49,7 +49,7 @@ describe('journey replay', () => {
     const card = j1.find((s) => s.target.kind === 'card')!
     expect(stepTestId(card.target)).toMatch(/^card-[a-z]+-(open|favorite|share)$/)
     const out = synthesizeStep(fx, { ...card, rage: 0 }, { x: 0, y: 0 }, { left: 400, top: 300, width: 100, height: 40 }, 'card-x', 1000, 1)
-    const v = fx.snapshot(card.target.kind === 'card' ? card.target.verb : 'open', out.t)
+    const v = fx.snapshot(card.target.kind === 'card' ? (card.target.verb as 'open' | 'favorite' | 'share') : 'open', out.t)
     const at = (n: string) => v[RAW_FEATURE_NAMES.indexOf(n)]
     expect(at('deceleration')).toBeGreaterThan(0)
     expect(at('pathStraightness')).toBeGreaterThan(0.8)

@@ -7,7 +7,7 @@ import type { AppState } from './controller'
 import { percentile } from './ui'
 
 const pct = (v: number) => `${Math.round(v * 100)}%`
-const VERB_LABEL: Record<string, string> = { open: 'Open', favorite: 'Favorite', share: 'Share', search: 'Search pick', query: 'Searched, no pick' }
+const VERB_LABEL: Record<string, string> = { open: 'Open', favorite: 'Favorite', unfavorite: 'Unfavorite', share: 'Share', search: 'Search pick', query: 'Searched, no pick' }
 
 function Kpi({ title, value, caption }: { title: string; value: string; caption: string }) {
   return (

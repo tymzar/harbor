@@ -115,14 +115,17 @@ export class ModelEngine {
    * clicking, in this category, at this time), weighted by verb and deliberation. Then fold
    * this click's intensity into the running context. A repeat press on the same card within
    * DEDUPE_MS with the same verb is not a new preference signal (rage bursts collapse to one event).
+   * A zero-weight verb (unfavorite: undoing a favorite) teaches nothing and leaves the dedupe window
+   * alone, so favorite → unfavorite → favorite within DEDUPE_MS still counts one favorite.
    */
   step(raw: ArrayLike<number>, card: CardId, verb: Verb, category: Category, t: number): ModelSnapshot {
     const k = CARD_IDS.indexOf(card)
     if (k < 0) throw new Error(`unknown card ${card}`)
     this.observeTime(raw)
     this.category = category
-    const dup = !!this.last && this.last.card === k && this.last.verb === verb && t - this.last.t < DEDUPE_MS
-    this.last = { card: k, verb, t }
+    const silent = VERB_WEIGHT[verb] === 0
+    const dup = silent || (!!this.last && this.last.card === k && this.last.verb === verb && t - this.last.t < DEDUPE_MS)
+    if (!silent) this.last = { card: k, verb, t }
     let event: ModelEvent = { card, verb, category, weight: 0, counted: false, hit: false }
     if (!dup) {
       const z = this.norm.apply(raw)

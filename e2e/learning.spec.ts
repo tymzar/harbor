@@ -51,7 +51,15 @@ test('replay journey teaches clear per-category preferences', async ({ page }) =
   // Expected leaders come from the journey that was replayed (seed 42, 48 steps), by weighted
   // engagement; decay can reorder near-ties, so only clear leaders are asserted.
   const w: Record<string, number> = {}
-  for (const s of generateJourney(42, 48)) if (s.target.kind === 'card') w[s.target.card] = (w[s.target.card] ?? 0) + VERB_WEIGHT[s.target.verb]
+  // The heart toggles: pressing it while on is an unfavorite, which teaches nothing.
+  const fav: Record<string, boolean> = {}
+  for (const s of generateJourney(42, 48)) {
+    if (s.target.kind !== 'card') continue
+    const { card } = s.target
+    let verb = s.target.verb
+    if (verb === 'favorite') { if (fav[card]) verb = 'unfavorite'; fav[card] = !fav[card] }
+    w[card] = (w[card] ?? 0) + VERB_WEIGHT[verb]
+  }
   const checks: Record<string, unknown> = {}
   for (const c of ['home', 'explore', 'library'] as Category[]) {
     const ranked = CARDS.filter((k) => k.category === c).map((k) => k.id).sort((a, b) => (w[b] ?? 0) - (w[a] ?? 0))

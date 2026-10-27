@@ -9,7 +9,7 @@ import { PHOTOS } from './photos'
 
 const ICON: Record<Category, ComponentType<{ className?: string }>> = { home: House, explore: Compass, library: BookOpen }
 const categoryOf = (id: CardId) => CARDS[CARD_IDS.indexOf(id)].category as Category
-const VERB_TEXT: Record<string, string> = { open: 'Opened', favorite: 'Favorited', share: 'Shared', search: 'Found', query: 'Searched for' }
+const VERB_TEXT: Record<string, string> = { open: 'Opened', favorite: 'Favorited', unfavorite: 'Unfavorited', share: 'Shared', search: 'Found', query: 'Searched for' }
 
 function Thumb({ id }: { id: CardId }) {
   const Icon = ICON[categoryOf(id)]

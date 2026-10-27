@@ -118,6 +118,24 @@ describe('ModelEngine (per-category ranking)', () => {
     expect(e.examples).toBe(3)
   })
 
+  it('unfavorite teaches nothing, and does not reopen the dedupe window for a quick re-favorite', () => {
+    const e = new ModelEngine(() => 0)
+    e.predict(NEUTRAL, 'home')
+    e.step(NEUTRAL, 'notes', 'favorite', 'home', 1000)
+    const after = e.snapshot()
+    const un = e.step(NEUTRAL, 'notes', 'unfavorite', 'home', 1400)
+    expect(un.lastEvent).toMatchObject({ verb: 'unfavorite', weight: 0, counted: false })
+    expect(Array.from(un.affinity)).toEqual(Array.from(after.affinity))
+    expect(Array.from(un.weights.W2)).toEqual(Array.from(after.weights.W2))
+    // favorite → unfavorite → favorite inside DEDUPE_MS: still one favorite.
+    e.step(NEUTRAL, 'notes', 'favorite', 'home', 1800)
+    expect(e.examples).toBe(1)
+    // A slow unfavorite/re-favorite counts the favorite again.
+    e.step(NEUTRAL, 'notes', 'unfavorite', 'home', 6000)
+    e.step(NEUTRAL, 'notes', 'favorite', 'home', 9000)
+    expect(e.examples).toBe(2)
+  })
+
   it('learns that intensity changes the preferred card (MLP), where affinity alone cannot', () => {
     const e = new ModelEngine(() => 0)
     e.predict(NEUTRAL, 'library')

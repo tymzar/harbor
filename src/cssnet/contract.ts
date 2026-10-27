@@ -14,7 +14,8 @@ export type ActionId = (typeof ACTIONS)[number]
  * What you did to a card. search = picked it from the search palette (explicit intent);
  * query = typed a search it topped but closed without picking (weak interest).
  */
-export type Verb = 'open' | 'favorite' | 'share' | 'search' | 'query'
+/** 'unfavorite' is the heart pressed while on: shares the favorite button (and its pointer features) but teaches nothing. */
+export type Verb = 'open' | 'favorite' | 'unfavorite' | 'share' | 'search' | 'query'
 
 /** Categories: each is a scope whose cards are ranked independently. */
 export const CATEGORIES = ['home', 'explore', 'library'] as const
