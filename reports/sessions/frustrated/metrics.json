@@ -1,0 +1,500 @@
+{
+  "metrics": {
+    "seed": 1337,
+    "cycles": 24,
+    "netSource": "cssnet",
+    "glRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Pro, Unspecified Version)",
+    "durationS": 161.677,
+    "interactions": 169,
+    "learnedInteractions": 164,
+    "finalExamples": 166,
+    "firstCorrectIdx": 3,
+    "firstLearnedCorrectIdx": 3,
+    "firstGridMoveIdx": 31,
+    "firstAdaptationAtInteraction": 3,
+    "finalAppStats": {
+      "examples": 166,
+      "markovAcc": 0.6,
+      "mlpAcc": 0.55,
+      "mode": "animation"
+    },
+    "finalAlpha": 0.7387434554973822,
+    "accuracyWindows25": [
+      {
+        "from": 0,
+        "to": 25,
+        "n": 25,
+        "top": 0.4,
+        "markov": 0.52,
+        "mlp": 0.36
+      },
+      {
+        "from": 26,
+        "to": 50,
+        "n": 25,
+        "top": 0.68,
+        "markov": 0.68,
+        "mlp": 0.48
+      },
+      {
+        "from": 51,
+        "to": 75,
+        "n": 25,
+        "top": 0.72,
+        "markov": 0.72,
+        "mlp": 0.56
+      },
+      {
+        "from": 76,
+        "to": 100,
+        "n": 25,
+        "top": 0.68,
+        "markov": 0.64,
+        "mlp": 0.52
+      },
+      {
+        "from": 101,
+        "to": 125,
+        "n": 25,
+        "top": 0.8,
+        "markov": 0.72,
+        "mlp": 0.6
+      },
+      {
+        "from": 126,
+        "to": 153,
+        "n": 25,
+        "top": 0.72,
+        "markov": 0.72,
+        "mlp": 0.68
+      },
+      {
+        "from": 154,
+        "to": 168,
+        "n": 14,
+        "top": 0.6428571428571429,
+        "markov": 0.5714285714285714,
+        "mlp": 0.5
+      }
+    ],
+    "overallTop1": {
+      "top": 0.6646341463414634,
+      "markov": 0.6585365853658537,
+      "mlp": 0.5304878048780488
+    },
+    "lastHalfTop1": {
+      "top": 0.7283950617283951,
+      "markov": 0.691358024691358,
+      "mlp": 0.5925925925925926,
+      "n": 81
+    },
+    "intensityAfterOpenCard": {
+      "all": {
+        "calm": {
+          "n": 14,
+          "nextCounts": {
+            "favorite": 14
+          },
+          "topAcc": 0.5,
+          "markovAcc": 0,
+          "mlpAcc": 0.5714285714285714,
+          "meanMlp": {
+            "favorite": 0.39064079576304983,
+            "openCard": 0.19117250240274838,
+            "settings": 0.11746706653918539
+          },
+          "meanMarkov": {
+            "favorite": 0.18282374287290232,
+            "openCard": 0.5826322947229657,
+            "settings": 0.19268389365502767
+          },
+          "topCounts": {
+            "open-card": 7,
+            "favorite": 7
+          },
+          "mlpTopCounts": {
+            "open-card": 6,
+            "favorite": 8
+          },
+          "burstFeatureMean": -0.48402622448546545,
+          "pressFeatureMean": 0.9474616801100118
+        },
+        "rage": {
+          "n": 46,
+          "nextCounts": {
+            "open-card": 36,
+            "settings": 10
+          },
+          "topAcc": 0.7608695652173914,
+          "markovAcc": 0.782608695652174,
+          "mlpAcc": 0.7608695652173914,
+          "meanMlp": {
+            "favorite": 0.054087800371116435,
+            "openCard": 0.6047373122495153,
+            "settings": 0.10557889752089977
+          },
+          "meanMarkov": {
+            "favorite": 0.1971736006114794,
+            "openCard": 0.5848607777253442,
+            "settings": 0.15620527627027553
+          },
+          "topCounts": {
+            "nav-library": 1,
+            "open-card": 45
+          },
+          "mlpTopCounts": {
+            "nav-library": 1,
+            "open-card": 45
+          },
+          "burstFeatureMean": 0.7200817311506557,
+          "pressFeatureMean": -0.8856765145192975
+        }
+      },
+      "lastHalf": {
+        "calm": {
+          "n": 9,
+          "nextCounts": {
+            "favorite": 9
+          },
+          "topAcc": 0.7777777777777778,
+          "markovAcc": 0,
+          "mlpAcc": 0.8888888888888888,
+          "meanMlp": {
+            "favorite": 0.5501425282822715,
+            "openCard": 0.15062368330028322,
+            "settings": 0.0914428441060914
+          },
+          "meanMarkov": {
+            "favorite": 0.2150978586739964,
+            "openCard": 0.5844772524303861,
+            "settings": 0.17572193178865644
+          },
+          "topCounts": {
+            "open-card": 2,
+            "favorite": 7
+          },
+          "mlpTopCounts": {
+            "open-card": 1,
+            "favorite": 8
+          },
+          "burstFeatureMean": -0.6365618738863204,
+          "pressFeatureMean": 1.2231987516085308
+        },
+        "rage": {
+          "n": 19,
+          "nextCounts": {
+            "open-card": 15,
+            "settings": 4
+          },
+          "topAcc": 0.7894736842105263,
+          "markovAcc": 0.7894736842105263,
+          "mlpAcc": 0.7894736842105263,
+          "meanMlp": {
+            "favorite": 0.04744994756152952,
+            "openCard": 0.7084175081629502,
+            "settings": 0.10418441940687205
+          },
+          "meanMarkov": {
+            "favorite": 0.23689335192504682,
+            "openCard": 0.586999585753993,
+            "settings": 0.1520692925704153
+          },
+          "topCounts": {
+            "open-card": 19
+          },
+          "mlpTopCounts": {
+            "open-card": 19
+          },
+          "burstFeatureMean": 0.4905252526269147,
+          "pressFeatureMean": -0.8552989402883932
+        }
+      }
+    },
+    "latency": {
+      "n": 165,
+      "p50": 27.80000001192093,
+      "p95": 34.400000005960464,
+      "max": 1906.2000000029802,
+      "byMode": {
+        "calc": {
+          "n": 96,
+          "p50": 27.200000002980232,
+          "p95": 34.70000000298023,
+          "max": 67.80000001192093
+        },
+        "hybrid": {
+          "n": 35,
+          "p50": 28,
+          "p95": 48.70000000298023,
+          "max": 1812.7000000029802
+        },
+        "animation": {
+          "n": 34,
+          "p50": 27.5,
+          "p95": 33.599999994039536,
+          "max": 1906.2000000029802
+        }
+      }
+    },
+    "latencyDoubleRafLast100": {
+      "p50": 42.5,
+      "p95": 50.400000005960464
+    },
+    "cssJsMaxAbsDiff": 0.0000040531158447265625,
+    "cssJsMaxAbsDiffByMode": {
+      "calc": 0.000003814697265625,
+      "hybrid": 0.0000035762786865234375,
+      "animation": 0.0000040531158447265625
+    },
+    "layout": {
+      "gridMoves": 8,
+      "displacedSlotsTotal": 19,
+      "gridMovesDuringBursts": 4,
+      "gridMovesByKind": {
+        "calm": 2,
+        "angry-toggle": 4,
+        "nav-bounce": 2
+      },
+      "maxMovesInAnyWindow10": 2,
+      "medianGapBetweenMoves": 9,
+      "moreThanOneElementMovedPerInteraction": 0,
+      "targetMovedDuringApproach": 0,
+      "compactResizeShifts": 10
+    },
+    "misclicks": [
+      {
+        "i": 8,
+        "kind": "angry-toggle",
+        "intended": "settings",
+        "hit": "other:div",
+        "actual": null
+      },
+      {
+        "i": 41,
+        "kind": "angry-toggle",
+        "intended": "settings",
+        "hit": "other:div",
+        "actual": "search"
+      },
+      {
+        "i": 130,
+        "kind": "angry-toggle",
+        "intended": "settings",
+        "hit": "other:div",
+        "actual": null
+      },
+      {
+        "i": 131,
+        "kind": "angry-toggle",
+        "intended": "settings",
+        "hit": "other:div",
+        "actual": null
+      },
+      {
+        "i": 147,
+        "kind": "angry-toggle",
+        "intended": "settings",
+        "hit": "other:div",
+        "actual": null
+      },
+      {
+        "i": 162,
+        "kind": "angry-toggle",
+        "intended": "settings",
+        "hit": "other:div",
+        "actual": null
+      }
+    ],
+    "wrongActionLearned": [
+      {
+        "i": 41,
+        "intended": "settings",
+        "actual": "search",
+        "kind": "angry-toggle"
+      }
+    ],
+    "unlearnedPresses": [
+      {
+        "i": 8,
+        "intended": "settings",
+        "hit": "other:div",
+        "kind": "angry-toggle"
+      },
+      {
+        "i": 130,
+        "intended": "settings",
+        "hit": "other:div",
+        "kind": "angry-toggle"
+      },
+      {
+        "i": 131,
+        "intended": "settings",
+        "hit": "other:div",
+        "kind": "angry-toggle"
+      },
+      {
+        "i": 147,
+        "intended": "settings",
+        "hit": "other:div",
+        "kind": "angry-toggle"
+      },
+      {
+        "i": 162,
+        "intended": "settings",
+        "hit": "other:div",
+        "kind": "angry-toggle"
+      }
+    ],
+    "kinds": {
+      "nav-bounce": 14,
+      "rage": 46,
+      "angry-toggle": 25,
+      "bail": 10,
+      "normal": 46,
+      "calm": 28
+    },
+    "consoleErrors": []
+  },
+  "notes": [
+    {
+      "i": 3,
+      "what": "first learned correct top suggestion: predicted nav-explore and the persona did nav-explore",
+      "shot": "01-first-correct-suggestion.png"
+    },
+    {
+      "i": 6,
+      "what": "first rage burst (3 presses on Open)",
+      "shot": "02-first-rage-burst.png"
+    },
+    {
+      "i": 8,
+      "what": "misclick: aimed at settings, pointer was over other:div, model learned null",
+      "shot": "03-misclick-8.png"
+    },
+    {
+      "i": 31,
+      "what": "first grid reorder: open-card,favorite,share,search,settings -> open-card,share,favorite,search,settings",
+      "shot": "04-first-grid-move.png"
+    },
+    {
+      "i": 40,
+      "what": "grid reordered during a rage burst (open-card,share,favorite,search,settings -> open-card,settings,share,favorite,search); next in-place click lands on whatever is now under the pointer",
+      "shot": "05-burst-grid-move-40.png"
+    },
+    {
+      "i": 41,
+      "what": "misclick: aimed at settings, pointer was over other:div, model learned search",
+      "shot": "06-misclick-41.png"
+    },
+    {
+      "i": 80,
+      "what": "grid reordered during a rage burst (open-card,settings,share,favorite,search -> settings,open-card,share,favorite,search); next in-place click lands on whatever is now under the pointer",
+      "shot": "07-burst-grid-move-80.png"
+    },
+    {
+      "i": 90,
+      "what": "grid reordered during a rage burst (open-card,settings,share,favorite,search -> settings,open-card,share,favorite,search); next in-place click lands on whatever is now under the pointer"
+    },
+    {
+      "i": 97,
+      "what": "mid-session",
+      "shot": "08-mid-session.png"
+    },
+    {
+      "i": 98,
+      "what": "persona switched Engine to hybrid (netSource cssnet)"
+    },
+    {
+      "i": 130,
+      "what": "misclick: aimed at settings, pointer was over other:div, model learned null",
+      "shot": "09-misclick-130.png"
+    },
+    {
+      "i": 131,
+      "what": "misclick: aimed at settings, pointer was over other:div, model learned null"
+    },
+    {
+      "i": 133,
+      "what": "persona switched Engine to animation (netSource cssnet)"
+    },
+    {
+      "i": 147,
+      "what": "misclick: aimed at settings, pointer was over other:div, model learned null"
+    },
+    {
+      "i": 161,
+      "what": "grid reordered during a rage burst (open-card,favorite,settings,share,search -> open-card,settings,favorite,share,search); next in-place click lands on whatever is now under the pointer"
+    },
+    {
+      "i": 162,
+      "what": "misclick: aimed at settings, pointer was over other:div, model learned null"
+    },
+    {
+      "i": 168,
+      "what": "end of session",
+      "shot": "10-end.png"
+    }
+  ],
+  "shots": [
+    {
+      "file": "00-cold-start.png",
+      "why": "after reset, before any interaction",
+      "at": 0
+    },
+    {
+      "file": "01-first-correct-suggestion.png",
+      "why": "first time the top suggestion (from a learned Markov row) matched the next action",
+      "at": 4
+    },
+    {
+      "file": "02-first-rage-burst.png",
+      "why": "right after the first rage burst",
+      "at": 7
+    },
+    {
+      "file": "03-misclick-8.png",
+      "why": "misclick: aimed at settings, pointer was over other:div, model learned null",
+      "at": 9
+    },
+    {
+      "file": "04-first-grid-move.png",
+      "why": "first adaptive-grid reorder",
+      "at": 32
+    },
+    {
+      "file": "05-burst-grid-move-40.png",
+      "why": "grid reordered during a rage burst (open-card,share,favorite,search,settings -> open-card,settings,share,favorite,search); next in-place click lands on whatever is now under the pointer",
+      "at": 41
+    },
+    {
+      "file": "06-misclick-41.png",
+      "why": "misclick: aimed at settings, pointer was over other:div, model learned search",
+      "at": 42
+    },
+    {
+      "file": "07-burst-grid-move-80.png",
+      "why": "grid reordered during a rage burst (open-card,settings,share,favorite,search -> settings,open-card,share,favorite,search); next in-place click lands on whatever is now under the pointer",
+      "at": 81
+    },
+    {
+      "file": "08-mid-session.png",
+      "why": "half way, calc engine",
+      "at": 98
+    },
+    {
+      "file": "09-misclick-130.png",
+      "why": "misclick: aimed at settings, pointer was over other:div, model learned null",
+      "at": 131
+    },
+    {
+      "file": "10-end.png",
+      "why": "end of session with debug drawer open",
+      "at": 169
+    },
+    {
+      "file": "11-end-full.png",
+      "why": "end, full page",
+      "at": 169
+    }
+  ]
+}
