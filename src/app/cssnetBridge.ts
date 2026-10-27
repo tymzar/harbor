@@ -82,7 +82,7 @@ export async function loadCssNetModule(): Promise<CssNetModule> {
     if (!m) errors.push('src/cssnet/index.ts not found; using JS fallback net')
     else {
       const fn = (m.mountCssNet ?? m.default) as MountCssNet | undefined
-      if (typeof fn === 'function') mount = fn
+      if (typeof fn === 'function') mount = ((h, sh, md) => (fn as (...a: unknown[]) => ReturnType<MountCssNet>)(h, sh, md, { nodes: true })) as MountCssNet
       else errors.push('src/cssnet/index.ts has no mountCssNet export')
       if (typeof m.jsForward === 'function') { jsForward = m.jsForward as JsForward; jsForwardSource = 'cssnet/reference' }
     }

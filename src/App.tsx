@@ -60,19 +60,14 @@ export default function App({ controller: c }: { controller: SmartWebController 
                   inputs={SHAPE.inputs}
                   hiddenN={SHAPE.hidden}
                   outputs={SHAPE.outputs}
+                  hostRef={hostRef}
+                  cssNodes={state.netSource === 'cssnet'}
                 />
               </VisualBoundary>
             </section>
             {debugOpen && <DebugDrawer state={state} />}
           </main>
         </div>
-        {/* The CSS network lives here. Rendered (not display:none) so styles and animations compute. */}
-        <div
-          ref={hostRef}
-          data-testid="cssnet-host"
-          aria-hidden
-          style={{ position: 'fixed', left: 0, top: 0, width: 1, height: 1, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }}
-        />
       </div>
     </MotionConfig>
   )

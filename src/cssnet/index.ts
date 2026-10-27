@@ -1,4 +1,5 @@
 import type { CssNet, CssNetMode, MountCssNet, NetShape, NetWeights } from './contract'
+import { buildNodes, nodeStylesheet } from './nodes'
 import { animationStylesheet, buildAnimationDom, calcStylesheet, hybridStylesheet, inputsStyle, prop, weightsRule, X_MAX, X_MIN, H_MAX } from './generate'
 import { jsForward, zeroWeights } from './reference'
 
@@ -60,6 +61,11 @@ export interface MountOptions {
    * caller can fall back to JS. Default true.
    */
   probe?: boolean
+  /**
+   * Render visible CSS-driven neurons inside the computing elements (see nodes.ts). The host
+   * supplies positions and labels via --nv-* custom properties. Default false.
+   */
+  nodes?: boolean
 }
 
 let seq = 0
@@ -90,15 +96,25 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
   root.setAttribute('aria-hidden', 'true')
 
   let outEl: HTMLElement = root
+  let fEls: HTMLElement[] | null = null
   let hiddenReaders: { el: HTMLElement; names: string[] }[]
   const pNames = range(shape.outputs).map(prop.p)
   if (mode === 'animation') {
     const dom = buildAnimationDom(doc, shape, cls, root)
     outEl = dom.out
+    fEls = dom.f
     hiddenReaders = dom.f.map((el) => ({ el, names: [prop.aAnim] }))
   } else {
     const names = range(shape.hidden).map(mode === 'calc' ? prop.h : prop.a)
     hiddenReaders = [{ el: root, names }]
+  }
+  let nodeSheet: HTMLStyleElement | null = null
+  if (opts.nodes) {
+    nodeSheet = doc.createElement('style')
+    nodeSheet.dataset.cssnet = `${cls}-nodes`
+    nodeSheet.textContent = nodeStylesheet(shape, cls, mode)
+    doc.head.appendChild(nodeSheet)
+    buildNodes(doc, shape, cls, root, outEl, fEls)
   }
   root.style.cssText = inputsStyle(shape, new Float32Array(shape.inputs))
   host.appendChild(root)
@@ -109,7 +125,7 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
     const expected = 1 / shape.outputs
     const ok = Array.from(p).every((v) => Number.isFinite(v) && Math.abs(v - expected) < 1e-4)
     if (!ok) {
-      root.remove(); sheet.remove(); weightSheet?.remove()
+      root.remove(); sheet.remove(); weightSheet?.remove(); nodeSheet?.remove()
       throw new Error(`cssnet: CSS compute unavailable in this environment (probe read [${Array.from(p).join(', ')}], expected ${expected} each)`)
     }
   }
@@ -141,7 +157,7 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
     },
     destroy() {
       destroyed = true
-      root.remove(); sheet.remove(); weightSheet?.remove()
+      root.remove(); sheet.remove(); weightSheet?.remove(); nodeSheet?.remove()
     },
   }
 }

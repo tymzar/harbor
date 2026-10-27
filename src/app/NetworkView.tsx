@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type Ref } from 'react'
 import { ACTIONS, type ActionId } from '../cssnet/contract'
 
 /**
@@ -25,6 +25,10 @@ export interface NetworkViewProps {
   hiddenN: number
   outputs: number
   height?: number
+  /** Where the CSS network mounts. Its nodes are drawn by the stylesheet itself. */
+  hostRef?: Ref<HTMLDivElement>
+  /** True when the CSS engine (not the JS fallback) is live, so nodes come from CSS. */
+  cssNodes?: boolean
 }
 
 interface Signal { layer: 1 | 2; from: number; to: number; start: number; dur: number; s: number }
@@ -66,6 +70,15 @@ function bez(x0: number, y0: number, x1: number, y1: number, t: number): [number
   const px = u * u * u * x0 + 3 * u * u * t * (x0 + dx) + 3 * u * t * t * (x1 - dx) + t * t * t * x1
   const py = u * u * u * y0 + 3 * u * u * t * y0 + 3 * u * t * t * y1 + t * t * t * y1
   return [px, py]
+}
+
+/** Node positions and output names for the CSS-driven nodes, as inherited custom properties. */
+function hostVars(geo: ReturnType<typeof geometry>, labels: Record<ActionId, string>, I: number, H: number, O: number): CSSProperties {
+  const v: Record<string, string> = { '--nv-in-x': `${geo.xs[0]}px`, '--nv-h-x': `${geo.xs[1]}px`, '--nv-o-x': `${geo.xs[2]}px` }
+  for (let i = 0; i < I; i++) v[`--nv-in-y${i}`] = `${geo.ys[0][i]}px`
+  for (let j = 0; j < H; j++) v[`--nv-h-y${j}`] = `${geo.ys[1][j]}px`
+  for (let k = 0; k < O; k++) { v[`--nv-o-y${k}`] = `${geo.ys[2][k]}px`; v[`--nv-label${k}`] = JSON.stringify(labels[ACTIONS[k]]) }
+  return v as CSSProperties
 }
 
 export function NetworkView(props: NetworkViewProps) {
@@ -256,7 +269,8 @@ export function NetworkView(props: NetworkViewProps) {
       }
       ctx.globalCompositeOperation = 'source-over'
 
-      // Nodes.
+      // Nodes: drawn by the CSS engine's own elements when it is live; canvas only as fallback.
+      if (live.current.cssNodes) return
       let hMax = 1e-6, oMax = 1e-6, top = 0
       for (let j = 0; j < H; j++) hMax = Math.max(hMax, d.h[j])
       for (let o = 0; o < O; o++) { if (d.o[o] > oMax) { oMax = d.o[o]; top = o } }
@@ -311,6 +325,13 @@ export function NetworkView(props: NetworkViewProps) {
       aria-label={`Network: ${I} inputs, ${H} hidden, ${O} outputs. Top output ${props.labels[ACTIONS[top]]}.`}
     >
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+      <div
+        ref={props.hostRef}
+        data-testid="cssnet-host"
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={geo ? hostVars(geo, props.labels, I, H, O) : undefined}
+      />
       {geo && width >= 560 && (props.inputLabels ?? []).slice(0, I).map((l, i) => (
         <div
           key={i}
@@ -320,7 +341,7 @@ export function NetworkView(props: NetworkViewProps) {
           {l}
         </div>
       ))}
-      {geo && ACTIONS.slice(0, O).map((a, k) => (
+      {geo && !props.cssNodes && ACTIONS.slice(0, O).map((a, k) => (
         <div
           key={a}
           data-testid="network-output"

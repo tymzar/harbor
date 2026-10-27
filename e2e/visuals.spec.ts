@@ -23,7 +23,12 @@ const netProbe = (page: Page) => page.evaluate(() => {
   for (let i = 3; i < d.length; i += 4 * 7) if (d[i] > 0) lit++
   return {
     top: el.dataset.top!, weights: el.dataset.weights!, lit, w: cv.width, h: cv.height,
-    outputs: [...el.querySelectorAll<HTMLElement>('[data-testid=network-output]')].map((o) => [o.dataset.action!, o.textContent!] as [string, string]),
+    // CSS-driven nodes: values live in the computing elements' own styles.
+    outputs: [...el.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=output]')]
+      .sort((a, b) => +a.dataset.k! - +b.dataset.k!)
+      .map((o) => ({ pct: Number(o.computedStyleMap().get('--cn-pct')!.toString()), top: Number(o.computedStyleMap().get('--nv-top')!.toString()) })),
+    hiddenW: [...el.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=hidden]')]
+      .sort((a, b) => +a.dataset.j! - +b.dataset.j!).map((h) => parseFloat(getComputedStyle(h).width)),
   }
 })
 const flatW = (w: { W1: number[]; b1: number[]; W2: number[]; b2: number[] } | null) => (w ? [...w.W1, ...w.b1, ...w.W2, ...w.b2] : [])
@@ -70,5 +75,34 @@ test('pattern layer and network view respond to the network', async ({ page }) =
   expect(d1.outputs).toHaveLength(8)
   const top = css.indexOf(Math.max(...css))
   expect(d1.top, 'network view top output = CSS argmax').toBe(['nav-home', 'nav-explore', 'nav-library', 'search', 'open-card', 'favorite', 'share', 'settings'][top])
-  for (const [k, [, text]] of d1.outputs.entries()) expect(text).toContain(`${(css[k] * 100).toFixed(0)}%`)
+  // Nodes are drawn by CSS: printed percentages, argmax flag and hidden sizes come from the stylesheet.
+  for (const [k, o] of d1.outputs.entries()) expect(o.pct, `output ${k} pct`).toBe(Math.round(css[k] * 100))
+  expect(d1.outputs.map((o) => o.top).indexOf(1), 'CSS argmax flag').toBe(top)
+  await checkNodes(page, 'calc')
+})
+
+/** After transitions settle, every hidden node's CSS width equals 5 + 8 * a/(a+1) for the CSS activation a. */
+async function checkNodes(page: Page, mode: string) {
+  await page.waitForTimeout(2000)
+  const r = await page.evaluate(() => {
+    const els = [...document.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=hidden]')].sort((a, b) => +a.dataset.j! - +b.dataset.j!)
+    const h = window.__smartweb.hidden()
+    return { n: els.length, diff: Math.max(...els.map((el, j) => { const a = Math.max(0, h[j]); return Math.abs(parseFloat(getComputedStyle(el).width) - (5 + 8 * a / (a + 1))) })) }
+  })
+  expect(r.n, `${mode}: hidden nodes`).toBe(16)
+  expect(r.diff, `${mode}: hidden node size matches CSS activation`).toBeLessThan(0.05)
+}
+
+test('CSS-driven nodes track the network in every engine mode', async ({ page }) => {
+  await openFresh(page); resetMouse()
+  for (const a of ['nav-explore', 'open-card', 'favorite', 'share'] as ActionId[]) await humanClick(page, a, NORMAL)
+  for (const mode of ['calc', 'hybrid', 'animation']) {
+    await page.getByTestId('mode-select').selectOption(mode)
+    await humanClick(page, 'open-card', NORMAL)
+    await checkNodes(page, mode)
+    const pcts = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=output]')]
+      .sort((a, b) => +a.dataset.k! - +b.dataset.k!).map((o) => Number(o.computedStyleMap().get('--cn-pct')!.toString())))
+    const css = await page.evaluate(() => window.__smartweb.cssOutputs())
+    expect(pcts, `${mode}: CSS counter percentages`).toEqual(css.map((v) => Math.round(v * 100)))
+  }
 })
