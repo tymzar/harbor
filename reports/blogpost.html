@@ -62,7 +62,7 @@ figcaption{font-size:.85rem;color:var(--muted);margin-top:.5em;font-family:ui-sa
 <blockquote>
 <p>If a CSS custom property can hold a number, and <code>calc()</code> can multiply and add, and <code>@property</code> can register <code>&lt;number&gt;</code> types, and <code>exp()</code> and <code>max()</code> are now in CSS... is the stylesheet a neural network? And if it is, can the browser <em>run</em> it, not just describe it?</p>
 </blockquote>
-<p>The honest answer after one night: <strong>yes, it is, and it runs</strong>, synchronously, to float32 precision, in under half a millisecond for a 15-16-8 multi-layer perceptron, with no JavaScript between the layers. The part everyone assumes, that it would run on the GPU, is false. The part nobody assumes, that the <em>CSS animation engine</em> can be the matrix multiply, is true, and it took a laundering trick with <code>font-size</code> to get there.</p>
+<p>The honest answer after one night: <strong>yes, it is, and it runs</strong>, synchronously, to float32 precision, for a 15-16-8 multi-layer perceptron: about 0.4 ms with <code>calc()</code>, and about 1.2 ms with both layers running in the animation engine and no JavaScript between them. The part everyone assumes, that it would run on the GPU, is false. The part nobody assumes, that the <em>CSS animation engine</em> can be the matrix multiply, is true, and it took a laundering trick with <code>font-size</code> to get there.</p>
 <p>It also turns out that an app that learns from your clicks and moves buttons around is a jumpy thing to use, and the four personas had a lot to say about it. Those findings are the second half of this post.</p>
 <hr />
 <h2 id="the-idea">The idea</h2>
@@ -604,7 +604,7 @@ src/cssnet/contract.ts   the shared contract (ACTIONS, NetShape, CssNet, test ho
 <li><strong>Intensity signals leak into the UI in ways the designers did not intend:</strong> rage on Open teaches the app to suggest Open; angry toggling of Compact mode promotes Settings. The model is doing exactly what it was asked; what it was asked is the problem.</li>
 <li><strong>A click on the search field counts as a search, and so does pressing Enter</strong>, 1.5 s later. Four independent sessions found this on their first typed query.</li>
 <li><strong>Replay feeds synthetic pointer data straight into the extractor</strong> rather than dispatching DOM events; rage bursts in the replay collapse to one action. Real input during a replay mixes into the same timeline.</li>
-<li><strong>Two agents hit a harness limit</strong> on writing their <code>report.md</code> and returned the content as text instead; those reports exist only as the findings quoted here and their committed data. One agent also noted that <code>*.log</code> is gitignored, so its <code>run.log</code> link only works locally. The commit trailer model name also varies between commits because two instructions disagreed.</li>
+<li><strong>Three of the four persona agents hit a harness limit</strong> on writing their <code>report.md</code> and returned the content as text instead; the orchestrator wrote those three reports afterwards from the returned findings. One agent also noted that <code>*.log</code> is gitignored, so its <code>run.log</code> link only works locally. The commit trailer model name also varies between commits because two instructions disagreed.</li>
 </ul>
 <hr />
 <h2 id="what-to-try-next">What to try next</h2>

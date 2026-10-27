@@ -14,7 +14,7 @@ Between 02:43 and 04:43 on 22 October 2026 a git repository went from an empty V
 
 > If a CSS custom property can hold a number, and `calc()` can multiply and add, and `@property` can register `<number>` types, and `exp()` and `max()` are now in CSS... is the stylesheet a neural network? And if it is, can the browser *run* it, not just describe it?
 
-The honest answer after one night: **yes, it is, and it runs**, synchronously, to float32 precision, in under half a millisecond for a 15-16-8 multi-layer perceptron, with no JavaScript between the layers. The part everyone assumes, that it would run on the GPU, is false. The part nobody assumes, that the *CSS animation engine* can be the matrix multiply, is true, and it took a laundering trick with `font-size` to get there.
+The honest answer after one night: **yes, it is, and it runs**, synchronously, to float32 precision, for a 15-16-8 multi-layer perceptron: about 0.4 ms with `calc()`, and about 1.2 ms with both layers running in the animation engine and no JavaScript between them. The part everyone assumes, that it would run on the GPU, is false. The part nobody assumes, that the *CSS animation engine* can be the matrix multiply, is true, and it took a laundering trick with `font-size` to get there.
 
 It also turns out that an app that learns from your clicks and moves buttons around is a jumpy thing to use, and the four personas had a lot to say about it. Those findings are the second half of this post.
 
@@ -353,7 +353,7 @@ One persistent profile: S1 (calc) learns `Home → Search (typed) → Open → F
 - **Intensity signals leak into the UI in ways the designers did not intend:** rage on Open teaches the app to suggest Open; angry toggling of Compact mode promotes Settings. The model is doing exactly what it was asked; what it was asked is the problem.
 - **A click on the search field counts as a search, and so does pressing Enter**, 1.5 s later. Four independent sessions found this on their first typed query.
 - **Replay feeds synthetic pointer data straight into the extractor** rather than dispatching DOM events; rage bursts in the replay collapse to one action. Real input during a replay mixes into the same timeline.
-- **Two agents hit a harness limit** on writing their `report.md` and returned the content as text instead; those reports exist only as the findings quoted here and their committed data. One agent also noted that `*.log` is gitignored, so its `run.log` link only works locally. The commit trailer model name also varies between commits because two instructions disagreed.
+- **Three of the four persona agents hit a harness limit** on writing their `report.md` and returned the content as text instead; the orchestrator wrote those three reports afterwards from the returned findings. One agent also noted that `*.log` is gitignored, so its `run.log` link only works locally. The commit trailer model name also varies between commits because two instructions disagreed.
 
 ---
 
