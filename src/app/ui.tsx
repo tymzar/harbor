@@ -1,7 +1,7 @@
-import { Component, memo, type ReactNode } from 'react'
+import { Component, memo, useMemo, type ReactNode } from 'react'
 import { Button, Card, Tooltip } from '@heroui/react'
 import { motion } from 'motion/react'
-import { CARD_IDS, CATEGORIES, type CardId, type CssNetMode } from '../cssnet/contract'
+import { CARD_IDS, CATEGORIES, type CardId, type Category, type CssNetMode } from '../cssnet/contract'
 import { RAW_FEATURE_NAMES, INPUT_NAMES } from '../signals/features'
 import { CARD_INFO, CATEGORY_INFO } from './catalog'
 import type { AppState, SmartWebController } from './controller'
@@ -29,46 +29,61 @@ function ShareIcon() {
   )
 }
 
-/** Memoised: a press re-renders only the card whose own data changed (latency, see e2e). */
+/**
+ * Memoised: a press re-renders only the card whose own data changed (latency, see e2e).
+ * Inside, everything but the visit count is a memoised element, so a press that only bumps
+ * the count reconciles the card shell and that span, not the three buttons and two tooltips.
+ */
 const FeatureCard = memo(function FeatureCard({ id, n, fav, c }: { id: CardId; n: number; fav: boolean; c: SmartWebController }) {
   const info = CARD_INFO[id]
+  const header = useMemo(() => (
+    <Card.Header className="gap-1">
+      <Card.Title className="text-base font-medium tracking-tight">{info.title}</Card.Title>
+      <Card.Description className="text-sm text-muted">{info.desc}</Card.Description>
+    </Card.Header>
+  ), [info])
+  const open = useMemo(() => (
+    <Button data-testid={`card-${id}-open`} size="sm" className="rounded-full" onPress={() => c.engage(id, 'open')}>Open</Button>
+  ), [id, c])
+  const actions = useMemo(() => (
+    <span className="ml-auto flex items-center gap-1">
+      <Tooltip delay={400}>
+        <Button data-testid={`card-${id}-favorite`} isIconOnly size="sm" variant="ghost" aria-label={fav ? 'Unfavorite' : 'Favorite'} aria-pressed={fav}
+          className={`rounded-full ${fav ? 'text-accent' : 'text-muted'}`} onPress={() => c.engage(id, 'favorite')}>
+          <HeartIcon filled={fav} />
+        </Button>
+        <Tooltip.Content>{fav ? 'Unfavorite' : 'Favorite'}</Tooltip.Content>
+      </Tooltip>
+      <Tooltip delay={400}>
+        <Button data-testid={`card-${id}-share`} isIconOnly size="sm" variant="ghost" aria-label="Share" className="rounded-full text-muted" onPress={() => c.engage(id, 'share')}>
+          <ShareIcon />
+        </Button>
+        <Tooltip.Content>Share</Tooltip.Content>
+      </Tooltip>
+    </span>
+  ), [id, fav, c])
   return (
     <Card data-testid={`card-${id}`} className="h-44 justify-between rounded-2xl p-5">
-      <Card.Header className="gap-1">
-        <Card.Title className="text-base font-medium tracking-tight">{info.title}</Card.Title>
-        <Card.Description className="text-sm text-muted">{info.desc}</Card.Description>
-      </Card.Header>
+      {header}
       <Card.Footer className="flex items-center gap-1">
-        <Button data-testid={`card-${id}-open`} size="sm" className="rounded-full" onPress={() => c.engage(id, 'open')}>Open</Button>
+        {open}
         {n > 0 && <span className="ml-2 text-xs tabular-nums text-muted">{n} {n === 1 ? 'visit' : 'visits'}</span>}
-        <span className="ml-auto flex items-center gap-1">
-          <Tooltip delay={400}>
-            <Button data-testid={`card-${id}-favorite`} isIconOnly size="sm" variant="ghost" aria-label={fav ? 'Unfavorite' : 'Favorite'} aria-pressed={fav}
-              className={`rounded-full ${fav ? 'text-accent' : 'text-muted'}`} onPress={() => c.engage(id, 'favorite')}>
-              <HeartIcon filled={fav} />
-            </Button>
-            <Tooltip.Content>{fav ? 'Unfavorite' : 'Favorite'}</Tooltip.Content>
-          </Tooltip>
-          <Tooltip delay={400}>
-            <Button data-testid={`card-${id}-share`} isIconOnly size="sm" variant="ghost" aria-label="Share" className="rounded-full text-muted" onPress={() => c.engage(id, 'share')}>
-              <ShareIcon />
-            </Button>
-            <Tooltip.Content>Share</Tooltip.Content>
-          </Tooltip>
-        </span>
+        {actions}
       </Card.Footer>
     </Card>
   )
 })
 
-const GridItem = memo(function GridItem({ id, n, fav, flash, c }: { id: CardId; n: number; fav: boolean; flash: number | null; c: SmartWebController }) {
+const GridItem = memo(function GridItem({ id, n, fav, flash, live, c }: { id: CardId; n: number; fav: boolean; flash: number | null; live: boolean; c: SmartWebController }) {
   return (
+    // Layout animation only in the shown grid: hidden grids (display:none) measure as empty boxes.
+    // layoutDependency: only a card that moved (its flash changed) takes a layout snapshot; a
+    // press that only updates its visit count does not force a measure during the commit.
     <motion.div
-      layout
+      layout={live}
+      layoutDependency={flash}
       data-card={id}
       transition={{ type: 'spring', stiffness: 260, damping: 32 }}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
       className="relative rounded-2xl"
     >
       <FeatureCard id={id} n={n} fav={fav} c={c} />
@@ -86,16 +101,37 @@ const GridItem = memo(function GridItem({ id, n, fav, flash, c }: { id: CardId; 
   )
 })
 
-/** The current category's cards, in the model's order. Re-sorts live and on entry. */
-export function AdaptiveGrid({ state, c }: { state: AppState; c: SmartWebController }) {
-  const order = state.orders[state.category]
+/**
+ * One category's cards, in the model's order. Re-sorts live and on entry.
+ *
+ * All three categories' grids stay mounted; only the current one is shown (the others are
+ * `hidden`, without the test id). Measured: remounting six cards (buttons, tooltips, motion)
+ * on every category switch cost ~20 ms of the click (React dev build); showing a mounted grid
+ * costs a re-render of its six memoised items.
+ */
+function CategoryGrid({ category, shown, state, c }: { category: Category; shown: boolean; state: AppState; c: SmartWebController }) {
+  const order = state.orders[category]
+  const current = shown && state.category === category
   return (
-    <div data-testid="adaptive-grid" data-category={state.category} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      data-testid={current ? 'adaptive-grid' : undefined}
+      data-category={current ? category : undefined}
+      hidden={!current}
+      // Entry fade (was motion initial/animate on each card): a CSS animation on the grid, which
+      // replays whenever the grid is shown again. On the grid, not the cards: a card that React
+      // moves in the DOM would restart its own animation.
+      className="grid-enter grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+    >
       {order.map((id) => (
-        <GridItem key={id} id={id} n={state.engaged[id] ?? 0} fav={!!state.favorites[id]} flash={state.moved.includes(id) ? state.orderVersion : null} c={c} />
+        <GridItem key={id} id={id} n={state.engaged[id] ?? 0} fav={!!state.favorites[id]} flash={current && state.moved.includes(id) ? state.orderVersion : null} live={current} c={c} />
       ))}
     </div>
   )
+}
+
+/** The current category's cards (all categories stay mounted; see CategoryGrid). */
+export function AdaptiveGrid({ state, c, shown }: { state: AppState; c: SmartWebController; shown: boolean }) {
+  return <>{CATEGORIES.map((cat) => <CategoryGrid key={cat} category={cat} shown={shown} state={state} c={c} />)}</>
 }
 
 const MODE_LABEL: Record<CssNetMode, string> = { calc: 'calc()', hybrid: 'Hybrid', animation: 'Animation' }

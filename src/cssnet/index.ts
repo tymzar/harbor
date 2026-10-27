@@ -80,9 +80,28 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
   const wcls = `${cls}-w`
   const mainSheet = (w?: NetWeights) => mode === 'calc' ? calcStylesheet(shape, cls, w) : mode === 'hybrid' ? hybridStylesheet(shape, cls, w) : animationStylesheet(shape, cls, w)
 
+  // The @property registrations go in their own sheet, written once. Literal-weight modes rewrite
+  // the main sheet on every setWeights(); with the registrations inside it, Blink treated each
+  // rewrite as a property-registry change and restyled the whole document (measured in the app:
+  // ~560-710 elements, 10-19 ms per update in hybrid/animation, vs. the net's own elements).
+  // (Only literal modes rewrite it; calc keeps one main sheet and writes weights to weightSheet.)
+  const split = (css: string) => {
+    if (!literal) return { regs: '', rest: css }
+    const regs: string[] = [], rest: string[] = []
+    for (const line of css.split('\n')) (line.startsWith('@property') ? regs : rest).push(line)
+    return { regs: regs.join('\n'), rest: rest.join('\n') }
+  }
+  const first = split(mainSheet(literal ? zeroWeights(shape) : undefined))
+  let regSheet: HTMLStyleElement | null = null
+  if (literal) {
+    regSheet = doc.createElement('style')
+    regSheet.dataset.cssnet = `${cls}-registrations`
+    regSheet.textContent = first.regs
+    doc.head.appendChild(regSheet)
+  }
   const sheet = doc.createElement('style')
   sheet.dataset.cssnet = `${cls}-${mode}`
-  sheet.textContent = mainSheet(literal ? zeroWeights(shape) : undefined)
+  sheet.textContent = first.rest
   doc.head.appendChild(sheet)
   let weightSheet: HTMLStyleElement | null = null
   if (!literal) {
@@ -127,7 +146,7 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
     const expected = 1 / shape.outputs
     const ok = Array.from(p).every((v) => Number.isFinite(v) && Math.abs(v - expected) < 1e-4)
     if (!ok) {
-      root.remove(); sheet.remove(); weightSheet?.remove(); nodeSheet?.remove()
+      root.remove(); sheet.remove(); regSheet?.remove(); weightSheet?.remove(); nodeSheet?.remove()
       throw new Error(`cssnet: CSS compute unavailable in this environment (probe read [${Array.from(p).join(', ')}], expected ${expected} each)`)
     }
   }
@@ -140,7 +159,7 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
     setWeights(w: NetWeights) {
       if (destroyed) return
       if (weightSheet) weightSheet.textContent = weightsRule(shape, wcls, w)
-      else sheet.textContent = mainSheet(w)
+      else sheet.textContent = split(mainSheet(w)).rest
     },
     setInputs(x: Float32Array, m?: Float32Array) {
       if (destroyed) return
@@ -161,7 +180,7 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
     },
     destroy() {
       destroyed = true
-      root.remove(); sheet.remove(); weightSheet?.remove(); nodeSheet?.remove()
+      root.remove(); sheet.remove(); regSheet?.remove(); weightSheet?.remove(); nodeSheet?.remove()
     },
   }
 }

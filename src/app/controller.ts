@@ -125,6 +125,9 @@ export class SmartWebController {
   private get net(): CssNet | null { return this.nets[this.state.category] ?? null }
   private host: HTMLElement | null = null
   private idleHandle: number | null = null
+  /** A press is down, or (since this time) an interaction's update has not reached a frame yet. */
+  private pressing = false
+  private awaitingFrameSince: number | null = null
   /** Latency samples live outside React state: recording one must not cause a render. */
   private lat: number[] = []
   private latDbl: number[] = []
@@ -167,7 +170,13 @@ export class SmartWebController {
     if (this.started) return
     this.started = true
     this.host = host
-    this.detach = attachDomListeners(this.fx)
+    const detachFx = attachDomListeners(this.fx)
+    const down = () => { this.pressing = true }
+    const up = () => { this.pressing = false }
+    addEventListener('pointerdown', down, true)
+    addEventListener('pointerup', up, true)
+    addEventListener('pointercancel', up, true)
+    this.detach = () => { detachFx(); removeEventListener('pointerdown', down, true); removeEventListener('pointerup', up, true); removeEventListener('pointercancel', up, true) }
     this.installHook()
     if (navigator.storage?.persist) {
       navigator.storage.persist().then((ok) => this.log(`storage.persist(): ${ok}`)).catch(() => undefined)
@@ -209,7 +218,10 @@ export class SmartWebController {
         this.host.appendChild(scope)
         this.scopes[c] = scope
       }
+      // Rendered while mounting: the mount probe reads computed values (see refreshOthers).
+      scope.toggleAttribute('data-refreshing', true)
       const m = mountNet(this.mod, scope, SHAPE, mode, { nodeOutputs: CARD_IDS.map((_, i) => i).filter((i) => categoryMask(c)[i]) })
+      scope.toggleAttribute('data-refreshing', false)
       if (m.error) this.log(m.error)
       if (m.source === 'fallback') source = 'fallback'
       this.nets[c] = m.net
@@ -226,18 +238,29 @@ export class SmartWebController {
   private refreshOthers(s: ModelSnapshot) {
     const run = () => {
       this.idleHandle = null
+      // Never between a press and the frame that shows its result: an idle callback can run in
+      // the gap while the click waits for the worker, and this refresh (two forced style passes
+      // plus a re-render) would land on the click path. Wait for the press to finish and its
+      // frame to be produced (bounded, in case an interaction never commits).
+      const waiting = this.awaitingFrameSince !== null && performance.now() - this.awaitingFrameSince < 1000
+      if (this.pressing || waiting) { this.idleHandle = idle(run); return }
       const all = [...this.state.cssAll]
       for (const c of CATEGORIES) {
         if (c === this.state.category) continue
         const net = this.nets[c]
         if (!net) continue
         const mask = categoryMask(c)
+        // Shown for the duration of the read: idle scopes are display:none while the model card
+        // is offscreen (see index.css), and CSS animations only run on rendered elements.
+        const scope = this.scopes[c]
+        scope?.toggleAttribute('data-refreshing', true)
         try {
           net.setWeights(s.weights)
           net.setInputs(Float32Array.from(s.xByCategory[c]), mask)
           const out = net.readOutputs()
           CARD_IDS.forEach((_, i) => { if (mask[i]) all[i] = out[i] })
         } catch (e) { this.log(`css net error: ${(e as Error).message}`) }
+        finally { scope?.toggleAttribute('data-refreshing', false) }
       }
       this.set({ cssAll: all })
     }
@@ -329,6 +352,7 @@ export class SmartWebController {
     const now = performance.now()
     const t = opts.t ?? now
     const t0 = this.latencyStart(now, opts.t0)
+    this.awaitingFrameSince = now
     const raw = this.fx.snapshot(NAV_ACTION[category], t)
     this.set({ category, moved: [] })
     this.markActiveScope()
@@ -345,6 +369,7 @@ export class SmartWebController {
     const now = performance.now()
     const t = opts.t ?? now
     const t0 = this.latencyStart(now, opts.t0)
+    this.awaitingFrameSince = now
     const raw = this.fx.snapshot(verb as ActionId, t)
     const category = opts.category ?? this.state.category
     const engaged = { ...this.state.engaged, [card]: (this.state.engaged[card] ?? 0) + 1 }
@@ -388,6 +413,7 @@ export class SmartWebController {
       ch.port1.onmessage = () => {
         const ms = performance.now() - t0
         this.lat = [...this.lat, ms].slice(-LATENCY_KEEP)
+        this.awaitingFrameSince = null
         ch.port1.close()
       }
       ch.port2.postMessage(0)

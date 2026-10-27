@@ -1,4 +1,4 @@
-import { memo, useCallback, useDeferredValue, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { MotionConfig } from 'motion/react'
 import { Card, Tabs } from '@heroui/react'
 import type { AppState, SmartWebController } from './app/controller'
@@ -10,6 +10,7 @@ import { ActivityTable, KpiStrip, RankingQualityCard, ScoreBreakdownCard, UsageC
 import { EngineCard, LiveSignalsCard, OrdersOverview } from './app/overview'
 import { ModelBar } from './app/modelbar'
 import { SearchPalette } from './app/search'
+import { useAfterPaint } from './app/afterPaint'
 import { NetworkView } from './app/NetworkView'
 import { loadCssNetModule, type CssNetVisuals } from './app/cssnetBridge'
 import { SHAPE } from './model/config'
@@ -25,9 +26,9 @@ const OUT_LABELS = CARD_IDS.map((id) => CARD_INFO[id].title)
 
 type ModelTab = 'network' | 'learning' | 'engine'
 
-/** Everything below the fold renders from a deferred state, after the reorder has been committed. */
+/** Everything below the fold renders from a lagging copy of the state that catches up after the reorder has been painted. */
 const OverviewPage = memo(function OverviewPage({ state, c, onOpen }: { state: AppState; c: SmartWebController; onOpen: (cat: Category) => void }) {
-  const d = useDeferredValue(state)
+  const d = useAfterPaint(state)
   return (
     <>
       <KpiStrip state={d} />
@@ -46,7 +47,7 @@ const OverviewPage = memo(function OverviewPage({ state, c, onOpen }: { state: A
 })
 
 const CategoryExtras = memo(function CategoryExtras({ state }: { state: AppState }) {
-  const d = useDeferredValue(state)
+  const d = useAfterPaint(state)
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       <ScoreBreakdownCard state={d} />
@@ -56,7 +57,7 @@ const CategoryExtras = memo(function CategoryExtras({ state }: { state: AppState
 })
 
 const LearningTab = memo(function LearningTab({ state }: { state: AppState }) {
-  const d = useDeferredValue(state)
+  const d = useAfterPaint(state)
   return (
     <>
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
@@ -120,12 +121,8 @@ export default function App({ controller: c }: { controller: SmartWebController 
           <div className="flex min-w-0 flex-1 flex-col">
             <Navbar state={state} c={c} page={page} onPage={setPage} debugOpen={debugOpen} onToggleDebug={toggleDebug} onSearch={openSearch} />
             <main className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 pb-12 pt-4 sm:px-6 lg:px-8">
-              {page === 'category' && (
-                <>
-                  <AdaptiveGrid state={state} c={c} />
-                  <CategoryExtras state={state} />
-                </>
-              )}
+              <AdaptiveGrid state={state} c={c} shown={page === 'category'} />
+              {page === 'category' && <CategoryExtras state={state} />}
               {page === 'overview' && <OverviewPage state={state} c={c} onOpen={openCategory} />}
               {page === 'model' && <ModelBar state={state} c={c} />}
               {page === 'model' && (
@@ -142,7 +139,7 @@ export default function App({ controller: c }: { controller: SmartWebController 
               {page === 'model' && tab === 'learning' && <LearningTab state={state} />}
               {page === 'model' && tab === 'engine' && <EngineCard state={state} c={c} />}
               {/* Always mounted: the CSS nets live in this card. Offscreen (not display:none) when not shown. */}
-              <div className={showNetwork ? '' : 'pointer-events-none fixed top-0 -left-[10000px] w-[1100px]'} aria-hidden={!showNetwork}>
+              <div className={showNetwork ? '' : 'pointer-events-none fixed top-0 -left-[10000px] w-[1100px]'} aria-hidden={!showNetwork} data-offscreen={showNetwork ? undefined : ''}>
                 <Card className="gap-6 rounded-2xl p-6" aria-label="Model network">
                   <NetworkHeader state={state} c={c} />
                   <VisualBoundary name="NetworkView">
