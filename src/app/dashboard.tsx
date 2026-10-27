@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Card, Chip, Table } from '@heroui/react'
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { CARD_IDS, CATEGORIES, type Category } from '../cssnet/contract'
+import { CARD_IDS, CATEGORIES, cardsOf, type Category } from '../cssnet/contract'
 import { CARD_INFO, CATEGORY_INFO } from './catalog'
 import type { AppState } from './controller'
 import { percentile } from './ui'
@@ -68,7 +68,13 @@ export const ScoreBreakdownCard = memo(function ScoreBreakdownCard({ state, cate
       </Card.Content>
     </Card>
   )
-}, (a, b) => a.category === b.category && a.state.category === b.state.category && a.state.orders === b.state.orders && a.state.alpha === b.state.alpha && a.state.affinity === b.state.affinity && a.state.cssAll === b.state.cssAll)
+}, (a, b) => {
+  // Only this category's entries are drawn: the idle refresh of the other categories' nets
+  // (a new cssAll that differs elsewhere) must not re-render the chart.
+  const cat = a.category ?? a.state.category
+  if (a.category !== b.category || a.state.category !== b.state.category || a.state.alpha !== b.state.alpha || a.state.orders[cat].join() !== b.state.orders[cat].join()) return false
+  return cardsOf(cat).every((id) => { const i = CARD_IDS.indexOf(id); return a.state.affinity[i] === b.state.affinity[i] && a.state.cssAll[i] === b.state.cssAll[i] })
+})
 
 /** Rolling top-3 hit rate after each counted press, per predictor and for the shown order. */
 export const RankingQualityCard = memo(function RankingQualityCard({ state }: { state: AppState }) {

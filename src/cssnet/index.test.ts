@@ -70,10 +70,16 @@ describe('mountCssNet', () => {
   })
   it('literal modes register no weight properties and add no weights sheet', () => {
     mount('animation')
-    expect(document.head.querySelectorAll('style[data-cssnet]').length).toBe(1)
+    // Main sheet (rewritten by setWeights) plus the static @property registrations; no weights sheet.
+    expect(document.head.querySelectorAll('style[data-cssnet]').length).toBe(2)
+    expect(document.head.querySelectorAll('style[data-cssnet$="-weights"]').length).toBe(0)
     const main = document.head.querySelector('style[data-cssnet$="-animation"]') as HTMLStyleElement
-    expect(main.textContent).not.toContain('--cn-w1-')
-    expect(main.textContent).not.toContain('--cn-b1-')
+    const regs = document.head.querySelector('style[data-cssnet$="-registrations"]') as HTMLStyleElement
+    expect(main.textContent).not.toContain('@property')
+    for (const s of [main, regs]) {
+      expect(s.textContent).not.toContain('--cn-w1-')
+      expect(s.textContent).not.toContain('--cn-b1-')
+    }
   })
   it('animation: nested chain root > (n > f > p) x H > out', () => {
     const { host, net } = mount('animation')

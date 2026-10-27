@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type Ref } from 'react'
+import { memo, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type Ref } from 'react'
 
 /**
  * Live picture of the 15-16-8 network.
@@ -102,7 +102,7 @@ function hostVars(geo: ReturnType<typeof geometry>, labels: readonly string[], v
   return v as CSSProperties
 }
 
-export function NetworkView(props: NetworkViewProps) {
+function NetworkViewImpl(props: NetworkViewProps) {
   const { inputs: I, hiddenN: H, height = 340 } = props
   const vis = props.visible
   const groupSizes = (props.groups ?? [{ title: '', size: vis.length, active: true }]).map((g) => g.size)
@@ -393,3 +393,21 @@ export function NetworkView(props: NetworkViewProps) {
     </div>
   )
 }
+
+const sameList = <T,>(a: readonly T[] | undefined, b: readonly T[] | undefined, eq: (x: T, y: T) => boolean = Object.is) =>
+  a === b || (!!a && !!b && a.length === b.length && a.every((v, i) => eq(v, b[i])))
+
+/**
+ * Memoised. While paused (the card is offscreen) only what positions the CSS nodes is kept
+ * current (output order, groups, shape), so the nodes are already in place when the card is
+ * shown; per-pass values (x, hidden, out, weights, version) catch up on the render that
+ * unpauses it. Measured: re-rendering the offscreen card on every click re-set the host's
+ * --nv-* properties and restyled every node of all three nets (~300 elements, 3-9 ms).
+ */
+export const NetworkView = memo(NetworkViewImpl, (a, b) => {
+  if (a.paused !== b.paused || a.cssNodes !== b.cssNodes || a.hostRef !== b.hostRef || a.height !== b.height || a.inputs !== b.inputs || a.hiddenN !== b.hiddenN || a.outputs !== b.outputs) return false
+  if (!sameList(a.outIds, b.outIds) || !sameList(a.outLabels, b.outLabels) || !sameList(a.inputLabels, b.inputLabels) || !sameList(a.visible, b.visible)) return false
+  if (!sameList(a.groups, b.groups, (x, y) => x.title === y.title && x.size === y.size && x.active === y.active)) return false
+  if (b.paused) return true
+  return a.x === b.x && a.hidden === b.hidden && a.out === b.out && a.weights === b.weights && a.version === b.version
+})

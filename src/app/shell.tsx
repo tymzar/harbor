@@ -26,7 +26,12 @@ function Mark() {
   )
 }
 
-function NavItem({ icon: Icon, label, active, trailing, onPress, testId, tone }: {
+/**
+ * Memoised without comparing `onPress`: every caller's handler closes over values that are
+ * stable for a given item (the controller, the page setter, the item's category), so a skipped
+ * render keeps an equivalent handler. A card press re-renders only the item whose count changed.
+ */
+const NavItem = memo(function NavItem({ icon: Icon, label, active, trailing, onPress, testId, tone }: {
   icon: ComponentType<{ className?: string }>; label: string; active?: boolean; trailing?: ReactNode; onPress: () => void; testId: string; tone?: 'danger'
 }) {
   return (
@@ -43,7 +48,7 @@ function NavItem({ icon: Icon, label, active, trailing, onPress, testId, tone }:
       {trailing ? <span className="ml-auto text-xs tabular-nums text-muted">{trailing}</span> : null}
     </Button>
   )
-}
+}, (a, b) => a.icon === b.icon && a.label === b.label && a.active === b.active && a.trailing === b.trailing && a.testId === b.testId && a.tone === b.tone)
 
 export function SidebarContents({ state, c, page, onPage, onNavigate }: { state: AppState; c: SmartWebController; page: Page; onPage: (p: Page) => void; onNavigate?: () => void }) {
   const visits = (cat: Category) => cardsOf(cat).reduce((n, id) => n + (state.engaged[id] ?? 0), 0)
@@ -62,8 +67,9 @@ export function SidebarContents({ state, c, page, onPage, onNavigate }: { state:
       <nav className="flex flex-col gap-0.5" aria-label="Categories" data-testid="nav-categories">
         <span className="px-2.5 pb-1 text-xs text-muted">Categories</span>
         {/* Learned order: the categories you use most move up (same model, same hysteresis as the cards). */}
-        {state.navOrder.map((cat) => (
-          <motion.div key={cat} layout data-nav={cat} transition={{ type: 'spring', stiffness: 300, damping: 32 }}>
+        {/* layoutDependency: measure only when the order changes, not on every visit count update. */}
+        {state.navOrder.map((cat, i) => (
+          <motion.div key={cat} layout layoutDependency={i} data-nav={cat} transition={{ type: 'spring', stiffness: 300, damping: 32 }}>
             <NavItem
               testId={`nav-${cat}`}
               icon={CATEGORY_ICON[cat]}
