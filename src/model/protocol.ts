@@ -59,7 +59,7 @@ export function createHandler(store: ModelStore, engine = new ModelEngine()) {
       case 'reset':
         saver.cancel()
         engine.reset()
-        await store.clear()
+        try { await store.clear() } catch { /* storage unavailable */ }
         return { type: 'snapshot', snapshot: engine.predict(req.raw) }
       case 'export':
         return { type: 'model', model: engine.toPersisted() }

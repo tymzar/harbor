@@ -119,3 +119,15 @@ describe('RunningNorm', () => {
     expect(NORMALISE_MASK.filter(Boolean).length).toBe(7)
   })
 })
+
+describe('FeatureExtractor.rebase', () => {
+  it('shifts stored times so a virtual-clock replay does not skew real events', () => {
+    const fx = new FeatureExtractor(0)
+    fx.pointerDown({ t: 50_000, x: 0, y: 0 })
+    fx.snapshot('share', 50_100)
+    fx.rebase(40_000)
+    fx.pointerDown({ t: 10_500, x: 0, y: 0 })
+    const v = fx.snapshot('favorite', 10_600)
+    expect(v[RAW_FEATURE_NAMES.indexOf('timeSinceLastClick')]).toBe(500)
+  })
+})

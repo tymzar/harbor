@@ -68,7 +68,7 @@ export class FeatureExtractor {
   /** Last raw vector produced by snapshot(). */
   last: Float32Array = new Float32Array(RAW_FEATURE_COUNT)
 
-  private readonly sessionStart: number
+  private sessionStart: number
   private viewport: { width: number }
   private readonly now: () => Date
 
@@ -171,6 +171,24 @@ export class FeatureExtractor {
     this.keyHist.push(k.key === 'Backspace')
     if (this.keyHist.length > 50) this.keyHist.shift()
     if (k.ctrl || k.meta || k.alt) this.shortcuts++
+  }
+
+  /**
+   * Shift every stored timestamp by -delta. Used after a replay that ran on a
+   * virtual clock ahead of real time, so later real events stay consistent.
+   */
+  rebase(delta: number): void {
+    if (!delta) return
+    this.moves = this.moves.map((m) => ({ ...m, t: m.t - delta }))
+    this.downs = this.downs.map((d) => d - delta)
+    if (this.press) this.press = { ...this.press, down: { ...this.press.down, t: this.press.down.t - delta }, upT: this.press.upT === null ? null : this.press.upT - delta }
+    this.hoverSince -= delta
+    if (this.lastDownT !== null) this.lastDownT -= delta
+    if (this.scrollLastT !== null) this.scrollLastT -= delta
+    this.scrollReversalTs = this.scrollReversalTs.map((r) => r - delta)
+    this.keyTs = this.keyTs.map((k) => k - delta)
+    this.viewSince -= delta
+    this.sessionStart -= delta
   }
 
   // ---------------- session ----------------

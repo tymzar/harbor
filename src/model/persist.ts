@@ -26,16 +26,20 @@ export function memoryStore(): ModelStore & { data: PersistedModel | undefined; 
 }
 
 /** Trailing-edge debounce: many calls within `ms` cause one save of the latest value. */
-export function debouncedSaver(store: ModelStore, getValue: () => PersistedModel, ms = SAVE_DEBOUNCE_MS) {
+export function debouncedSaver(
+  store: ModelStore, getValue: () => PersistedModel, ms = SAVE_DEBOUNCE_MS,
+  onError: (e: unknown) => void = (e) => console.warn('model save failed', e),
+) {
   let timer: ReturnType<typeof setTimeout> | null = null
+  const save = async () => { try { await store.save(getValue()) } catch (e) { onError(e) } }
   const flush = async () => {
     if (timer) { clearTimeout(timer); timer = null }
-    await store.save(getValue())
+    await save()
   }
   return {
     schedule(): void {
       if (timer) clearTimeout(timer)
-      timer = setTimeout(() => { timer = null; void store.save(getValue()) }, ms)
+      timer = setTimeout(() => { timer = null; void save() }, ms)
     },
     flush,
     cancel(): void { if (timer) { clearTimeout(timer); timer = null } },
