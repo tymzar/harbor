@@ -1,0 +1,55 @@
+{
+ "base": "http://127.0.0.1:5184/",
+ "at": "2026-10-22T02:32:31.108Z",
+ "results": [
+  {
+   "closeAfterMs": 100,
+   "gapMs": 400,
+   "atClose": 6,
+   "restored": 5,
+   "lost": 1
+  },
+  {
+   "closeAfterMs": 400,
+   "gapMs": 400,
+   "atClose": 6,
+   "restored": 5,
+   "lost": 1
+  },
+  {
+   "closeAfterMs": 800,
+   "gapMs": 400,
+   "atClose": 6,
+   "restored": 5,
+   "lost": 1
+  },
+  {
+   "closeAfterMs": 1500,
+   "gapMs": 400,
+   "atClose": 6,
+   "restored": 6,
+   "lost": 0
+  },
+  {
+   "closeAfterMs": 3000,
+   "gapMs": 400,
+   "atClose": 6,
+   "restored": 6,
+   "lost": 0
+  },
+  {
+   "closeAfterMs": 100,
+   "gapMs": 0,
+   "atClose": 6,
+   "restored": 3,
+   "lost": 3
+  },
+  {
+   "closeAfterMs": 100,
+   "gapMs": 1500,
+   "atClose": 6,
+   "restored": 5,
+   "lost": 1
+  }
+ ]
+}
