@@ -1,27 +1,47 @@
-import { ACTIONS, type ActionId, type NetWeights } from '../cssnet/contract'
-import { NORMALISE_MASK, NORM_PRIOR } from '../signals/features'
+import { CARDS, CARD_IDS, CATEGORIES, categoryMask, type CardId, type Category, type NetWeights, type Verb } from '../cssnet/contract'
+import { NORMALISE_MASK, NORM_PRIOR, POINTER_INPUTS, RAW_MODEL_FEATURES } from '../signals/features'
 import { RunningNorm } from '../signals/normalizer'
 import { RollingAccuracy } from './accuracy'
+import { Affinity } from './affinity'
 import {
-  ACC_WINDOW, INIT_SEED, MARKOV_DECAY, MARKOV_PRIOR_STRENGTH, PRIOR, SCHEMA_VERSION, SGD, SHAPE, blendAlpha,
+  ACC_WINDOW, AFFINITY_DECAY, AFFINITY_PRIOR, DEDUPE_MS, INIT_SEED, INTENSITY_EMA, PRIOR, SCHEMA_VERSION, SGD, SHAPE, VERB_WEIGHT, blendAlpha,
 } from './config'
-import { Markov } from './markov'
-import { argmax, cloneWeights, forward, initWeights, sgdStep } from './mlp'
-import { deserialWeights, serialWeights, type ModelSnapshot, type PersistedModel } from './types'
+import { cloneWeights, forward, initWeights, sgdStep } from './mlp'
+import { deserialWeights, serialWeights, type ModelSnapshot, type Orders, type PersistedModel } from './types'
 
-interface Pending { x: Float32Array; markov: Float32Array; mlp: Float32Array }
+const HOVER = 5 // index of hoverDwell in MODEL_FEATURES
+
+/** Hit rate that matters for a sorted page: the engaged card was in the top `k` of its category. */
+export const HIT_AT = 3
+export function inTopK(p: ArrayLike<number>, c: Category, card: number, k = HIT_AT): boolean {
+  const ids = CARDS.map((x, i) => ({ i, c: x.category })).filter((x) => x.c === c).map((x) => x.i)
+  ids.sort((a, b) => p[b] - p[a] || a - b)
+  return ids.slice(0, k).includes(card)
+}
+
+export function argmaxIn(p: ArrayLike<number>, c: Category): number {
+  let best = -1
+  CARDS.forEach((k, i) => { if (k.category === c && (best < 0 || p[i] > p[best])) best = i })
+  return best
+}
 
 /** Pure model logic (no I/O). Runs inside the worker, or in-thread as a fallback. */
 export class ModelEngine {
   weights: NetWeights
-  norm = new RunningNorm(SHAPE.inputs, NORMALISE_MASK, NORM_PRIOR)
-  markov = new Markov(SHAPE.outputs, PRIOR, MARKOV_DECAY, MARKOV_PRIOR_STRENGTH)
-  accMarkov = new RollingAccuracy(ACC_WINDOW)
+  norm = new RunningNorm(RAW_MODEL_FEATURES, NORMALISE_MASK, NORM_PRIOR)
+  affinity = new Affinity(AFFINITY_DECAY, AFFINITY_PRIOR)
+  accAffinity = new RollingAccuracy(ACC_WINDOW)
   accMlp = new RollingAccuracy(ACC_WINDOW)
+  /** Hit rate of the blended score, i.e. of the order the user actually sees. */
+  accBlend = new RollingAccuracy(ACC_WINDOW)
+  /** Running pointer intensity in normalised units (0 = typical). */
+  intensity = new Float32Array(POINTER_INPUTS)
+  tod = new Float32Array(2)
   examples = 0
-  lastAction: number | null = null
   updatedAt = 0
-  private pending: Pending | null = null
+  orders: Orders | null = null
+  category: Category = 'home'
+  private last: { card: number; verb: Verb; t: number } | null = null
 
   private readonly clock: () => number
   constructor(clock: () => number = () => Date.now()) {
@@ -32,58 +52,96 @@ export class ModelEngine {
   reset(): void {
     this.weights = initWeights(SHAPE, PRIOR, INIT_SEED)
     this.norm.reset()
-    this.markov.reset()
-    this.accMarkov.reset()
+    this.affinity.reset()
+    this.accAffinity.reset()
     this.accMlp.reset()
+    this.accBlend.reset()
+    this.intensity.fill(0)
     this.examples = 0
-    this.lastAction = null
-    this.pending = null
+    this.orders = null
+    this.last = null
     this.updatedAt = this.clock()
   }
 
-  /** Predict from features without an action (initial page load). Sets the pending example. */
-  predict(raw: ArrayLike<number>): ModelSnapshot {
-    const x = this.norm.apply(raw)
-    return this.makePending(x)
+  /** Network input for a category: running intensity, time of day, category one-hot. */
+  context(c: Category): Float32Array {
+    const x = new Float32Array(SHAPE.inputs)
+    x.set(this.intensity, 0)
+    x.set(this.tod, POINTER_INPUTS)
+    x[POINTER_INPUTS + 2 + CATEGORIES.indexOf(c)] = 1
+    return x
   }
 
-  /**
-   * An action happened. Label-delayed training: the features that produced
-   * the previous prediction are trained against this action. Then `raw`
-   * (features describing this action's interaction) produces the next prediction.
-   */
-  step(raw: ArrayLike<number>, action: ActionId): ModelSnapshot {
-    const label = ACTIONS.indexOf(action)
-    if (label < 0) throw new Error(`unknown action ${action}`)
-    if (this.pending) {
-      this.accMarkov.push(argmax(this.pending.markov) === label)
-      this.accMlp.push(argmax(this.pending.mlp) === label)
-      sgdStep(SHAPE, this.weights, this.pending.x, label, SGD)
-      this.examples++
-    }
-    this.markov.update(this.lastAction, label)
-    this.lastAction = label
-    this.norm.update(raw)
-    this.updatedAt = this.clock()
-    return this.makePending(this.norm.apply(raw))
+  private observeTime(raw: ArrayLike<number>) {
+    this.tod[0] = raw[POINTER_INPUTS] ?? 0
+    this.tod[1] = raw[POINTER_INPUTS + 1] ?? 0
   }
 
-  private makePending(x: Float32Array): ModelSnapshot {
-    const markov = this.markov.predict(this.lastAction)
-    const mlp = forward(SHAPE, this.weights, x).out
-    this.pending = { x, markov, mlp }
+  /** No interaction (page load, category switch): just report the current scores. */
+  predict(raw: ArrayLike<number>, category: Category): ModelSnapshot {
+    this.observeTime(raw)
+    this.category = category
     return this.snapshot()
   }
 
+  /**
+   * The user engaged a card. Train on the context BEFORE this click (how they had been
+   * clicking, in this category, at this time), weighted by verb and deliberation. Then fold
+   * this click's intensity into the running context. A repeat press on the same card within
+   * DEDUPE_MS with the same verb is not a new preference signal (rage bursts collapse to one event).
+   */
+  step(raw: ArrayLike<number>, card: CardId, verb: Verb, category: Category, t: number): ModelSnapshot {
+    const k = CARD_IDS.indexOf(card)
+    if (k < 0) throw new Error(`unknown card ${card}`)
+    this.observeTime(raw)
+    this.category = category
+    const dup = !!this.last && this.last.card === k && this.last.verb === verb && t - this.last.t < DEDUPE_MS
+    this.last = { card: k, verb, t }
+    if (!dup) {
+      const z = this.norm.apply(raw)
+      const x = this.context(category)
+      const mask = categoryMask(category)
+      const aff = this.affinity.probs()
+      const mlp = forward(SHAPE, this.weights, x, mask).out
+      const alpha = blendAlpha(this.examples, this.accAffinity.value, this.accMlp.value)
+      this.accAffinity.push(inTopK(aff, category, k))
+      this.accMlp.push(inTopK(mlp, category, k))
+      this.accBlend.push(inTopK(aff.map((a, i) => (1 - alpha) * a + alpha * mlp[i]), category, k))
+      const deliberate = Math.max(0.7, Math.min(1.3, 1 + 0.15 * z[HOVER]))
+      const w = VERB_WEIGHT[verb] * deliberate
+      sgdStep(SHAPE, this.weights, x, k, SGD, mask, w)
+      this.affinity.update(k, w)
+      this.examples++
+    }
+    this.norm.update(raw)
+    const z = this.norm.apply(raw)
+    for (let i = 0; i < POINTER_INPUTS; i++) this.intensity[i] = (1 - INTENSITY_EMA) * this.intensity[i] + INTENSITY_EMA * z[i]
+    this.updatedAt = this.clock()
+    return this.snapshot()
+  }
+
+  setOrders(o: Orders): void { this.orders = o }
+
   snapshot(): ModelSnapshot {
-    const p = this.pending ?? { x: new Float32Array(SHAPE.inputs), markov: this.markov.predict(this.lastAction), mlp: forward(SHAPE, this.weights, new Float32Array(SHAPE.inputs)).out }
+    const mlp = new Float32Array(SHAPE.outputs)
+    const xByCategory = {} as Record<Category, number[]>
+    for (const c of CATEGORIES) {
+      const x = this.context(c)
+      xByCategory[c] = Array.from(x)
+      const out = forward(SHAPE, this.weights, x, categoryMask(c)).out
+      CARDS.forEach((k, i) => { if (k.category === c) mlp[i] = out[i] })
+    }
     return {
       weights: cloneWeights(this.weights),
-      x: p.x.slice(),
-      markov: p.markov.slice(),
-      mlp: p.mlp.slice(),
-      alpha: blendAlpha(this.examples),
-      stats: { examples: this.examples, markovAcc: this.accMarkov.value, mlpAcc: this.accMlp.value, accN: this.accMlp.size },
+      x: Float32Array.from(xByCategory[this.category]),
+      category: this.category,
+      xByCategory,
+      affinity: this.affinity.probs(),
+      mlp,
+      evidence: Object.fromEntries(CATEGORIES.map((c) => [c, CARDS.reduce((e, k, i) => e + (k.category === c ? this.affinity.counts[i] : 0), 0)])) as Record<Category, number>,
+      alpha: blendAlpha(this.examples, this.accAffinity.value, this.accMlp.value),
+      stats: { examples: this.examples, affinityAcc: this.accAffinity.value, mlpAcc: this.accMlp.value, blendAcc: this.accBlend.value, accN: this.accMlp.size },
+      orders: this.orders,
       updatedAt: this.updatedAt,
     }
   }
@@ -93,11 +151,12 @@ export class ModelEngine {
       schemaVersion: SCHEMA_VERSION,
       weights: serialWeights(this.weights),
       normStats: this.norm.toJSON(),
-      markov: this.markov.toJSON(),
+      affinity: this.affinity.toJSON(),
+      intensity: Array.from(this.intensity),
+      orders: this.orders,
       updatedAt: this.updatedAt,
       examples: this.examples,
-      lastAction: this.lastAction,
-      acc: { markov: this.accMarkov.toJSON(), mlp: this.accMlp.toJSON() },
+      acc: { affinity: this.accAffinity.toJSON(), mlp: this.accMlp.toJSON(), blend: this.accBlend.toJSON() },
     }
   }
 
@@ -105,13 +164,15 @@ export class ModelEngine {
     validatePersisted(m)
     this.weights = deserialWeights(m.weights)
     this.norm.load(m.normStats)
-    this.markov.load(m.markov)
+    this.affinity.load(m.affinity)
+    this.intensity = Float32Array.from(m.intensity)
+    this.orders = m.orders ?? null
     this.examples = m.examples
-    this.lastAction = m.lastAction
     this.updatedAt = m.updatedAt
-    this.accMarkov.load(m.acc?.markov ?? [])
+    this.accAffinity.load(m.acc?.affinity ?? [])
     this.accMlp.load(m.acc?.mlp ?? [])
-    this.pending = null
+    this.accBlend.load(m.acc?.blend ?? [])
+    this.last = null
   }
 }
 
@@ -124,8 +185,16 @@ export function validatePersisted(m: unknown): asserts m is PersistedModel {
   if (!w || w.W1?.length !== H * I || w.b1?.length !== H || w.W2?.length !== O * H || w.b2?.length !== O) {
     throw new Error('model: weight shapes do not match')
   }
-  if (!o.normStats || o.normStats.mean?.length !== I) throw new Error('model: normStats shape')
-  if (!o.markov || o.markov.counts?.length !== O * O) throw new Error('model: markov shape')
-  const all = [...w.W1, ...w.b1, ...w.W2, ...w.b2, ...o.normStats.mean, ...o.normStats.m2, ...o.markov.counts]
+  if (!o.normStats || o.normStats.mean?.length !== RAW_MODEL_FEATURES) throw new Error('model: normStats shape')
+  if (!o.affinity || o.affinity.counts?.length !== O) throw new Error('model: affinity shape')
+  if (!Array.isArray(o.intensity) || o.intensity.length !== POINTER_INPUTS) throw new Error('model: intensity shape')
+  if (o.orders) {
+    for (const c of CATEGORIES) {
+      const ids = o.orders[c]
+      const want = CARDS.filter((k) => k.category === c).map((k) => k.id as string).sort().join()
+      if (!Array.isArray(ids) || [...ids].sort().join() !== want) throw new Error(`model: orders.${c} invalid`)
+    }
+  }
+  const all = [...w.W1, ...w.b1, ...w.W2, ...w.b2, ...o.normStats.mean, ...o.normStats.m2, ...o.affinity.counts, ...o.intensity]
   if (!all.every((v) => typeof v === 'number' && Number.isFinite(v))) throw new Error('model: non-finite values')
 }

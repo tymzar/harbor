@@ -1,14 +1,13 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { expect, type Page } from '@playwright/test'
-import type { ActionId, SmartWebTestHook } from '../src/cssnet/contract'
+import { type Page } from '@playwright/test'
+import type { CardId, Category, SmartWebTestHook, Verb } from '../src/cssnet/contract'
 import type { SmartWebTestExtras } from '../src/app/controller'
 
 export type Hook = SmartWebTestHook & SmartWebTestExtras
 declare global { interface Window { __smartweb: Hook } }
 
-export const ALL_ACTIONS: ActionId[] = ['nav-home', 'nav-explore', 'nav-library', 'search', 'open-card', 'favorite', 'share', 'settings']
 
 export async function ready(page: Page) {
   await page.waitForFunction(() => {
@@ -68,11 +67,10 @@ let mousePos = { x: 640, y: 360 }
 /**
  * A human-ish press on a control via page.mouse: approach in `steps` timed moves,
  * hover (optionally with tremor), press for pressMs, release. Returns when the
- * model has applied the resulting training step.
+ * model has applied everything the press queued.
  */
-export async function humanClick(page: Page, action: ActionId, it: Intensity, offset = { dx: 0, dy: 0 }) {
-  const before = (await stats(page)).examples
-  const b = await stableBox(page, `action-${action}`)
+export async function humanClick(page: Page, testId: string, it: Intensity, offset = { dx: 0, dy: 0 }) {
+  const b = await stableBox(page, testId)
   const tx = b.x + b.width / 2 + offset.dx
   const ty = b.y + b.height / 2 + offset.dy
   const sx = mousePos.x, sy = mousePos.y
@@ -90,9 +88,14 @@ export async function humanClick(page: Page, action: ActionId, it: Intensity, of
   await page.mouse.down()
   if (it.pressMs) await page.waitForTimeout(it.pressMs)
   await page.mouse.up()
-  await expect.poll(async () => (await stats(page)).examples, { timeout: 5000 }).toBeGreaterThan(before)
+  await page.evaluate(() => window.__smartweb.idle())
   if (it.gapMs) await page.waitForTimeout(it.gapMs)
 }
+
+/** Press a card's control (open / favorite / share) like a person would. */
+export const engage = (page: Page, card: CardId, verb: Verb, it: Intensity) => humanClick(page, `card-${card}-${verb}`, it)
+/** Switch category through the nav pill. */
+export const enter = (page: Page, c: Category, it: Intensity) => humanClick(page, `nav-${c}`, it)
 
 export function resetMouse() { mousePos = { x: 640, y: 360 } }
 
@@ -122,18 +125,6 @@ export function percentile(xs: number[], p: number): number {
   return s[Math.min(s.length - 1, Math.ceil((p / 100) * s.length) - 1)]
 }
 
-export const domGridOrder = (page: Page) =>
-  page.evaluate(() => [...document.querySelectorAll('[data-testid=adaptive-grid] > [data-grid-action]')].map((e) => e.getAttribute('data-grid-action')!))
-
-export const topSuggestion = (page: Page) =>
-  page.getByTestId('suggestion-item').first().getAttribute('data-action')
-
-/** True when `b` is `a` with at most one element moved to another position. */
-export function atMostOneMoved(a: string[], b: string[]): boolean {
-  if (a.length !== b.length) return false
-  if (a.every((v, i) => v === b[i])) return true
-  return a.some((m) => {
-    const ra = a.filter((v) => v !== m), rb = b.filter((v) => v !== m)
-    return ra.every((v, i) => v === rb[i])
-  })
-}
+/** Card order as rendered in the grid (DOM order). */
+export const domOrder = (page: Page) =>
+  page.evaluate(() => [...document.querySelectorAll('[data-testid=adaptive-grid] > [data-card]')].map((e) => e.getAttribute('data-card')!))

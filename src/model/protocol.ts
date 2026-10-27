@@ -1,18 +1,19 @@
-import type { ActionId } from '../cssnet/contract'
+import type { CardId, Category, Verb } from '../cssnet/contract'
 import { ModelEngine } from './engine'
 import { decodeFragment, encodeFragment } from './quantize'
 import { debouncedSaver, type ModelStore } from './persist'
-import type { ModelSnapshot, PersistedModel } from './types'
+import type { ModelSnapshot, Orders, PersistedModel } from './types'
 
 export type ModelRequest =
-  | { type: 'init'; raw: number[]; fragment?: string | null }
-  | { type: 'predict'; raw: number[] }
-  | { type: 'step'; raw: number[]; action: ActionId }
-  | { type: 'reset'; raw: number[] }
+  | { type: 'init'; raw: number[]; category: Category; fragment?: string | null }
+  | { type: 'predict'; raw: number[]; category: Category }
+  | { type: 'step'; raw: number[]; card: CardId; verb: Verb; category: Category; t: number }
+  | { type: 'setOrders'; orders: Orders }
+  | { type: 'reset'; raw: number[]; category: Category }
   | { type: 'export' }
   | { type: 'exportFragment' }
-  | { type: 'import'; model: PersistedModel; raw: number[] }
-  | { type: 'importFragment'; fragment: string; raw: number[] }
+  | { type: 'import'; model: PersistedModel; raw: number[]; category: Category }
+  | { type: 'importFragment'; fragment: string; raw: number[]; category: Category }
   | { type: 'flush' }
 
 export type ModelResponse =
@@ -47,20 +48,24 @@ export function createHandler(store: ModelStore, engine = new ModelEngine()) {
             error = `fragment ignored: ${(e as Error).message}`
           }
         }
-        return { type: 'snapshot', snapshot: engine.predict(req.raw), source, error }
+        return { type: 'snapshot', snapshot: engine.predict(req.raw, req.category), source, error }
       }
       case 'predict':
-        return { type: 'snapshot', snapshot: engine.predict(req.raw) }
+        return { type: 'snapshot', snapshot: engine.predict(req.raw, req.category) }
       case 'step': {
-        const snapshot = engine.step(req.raw, req.action)
+        const snapshot = engine.step(req.raw, req.card, req.verb, req.category, req.t)
         saver.schedule()
         return { type: 'snapshot', snapshot }
       }
+      case 'setOrders':
+        engine.setOrders(req.orders)
+        saver.schedule()
+        return { type: 'ok' }
       case 'reset':
         saver.cancel()
         engine.reset()
         try { await store.clear() } catch { /* storage unavailable */ }
-        return { type: 'snapshot', snapshot: engine.predict(req.raw) }
+        return { type: 'snapshot', snapshot: engine.predict(req.raw, req.category) }
       case 'export':
         return { type: 'model', model: engine.toPersisted() }
       case 'exportFragment':
@@ -68,11 +73,11 @@ export function createHandler(store: ModelStore, engine = new ModelEngine()) {
       case 'import':
         engine.load(req.model)
         await saver.flush()
-        return { type: 'snapshot', snapshot: engine.predict(req.raw), source: 'fresh' }
+        return { type: 'snapshot', snapshot: engine.predict(req.raw, req.category), source: 'fresh' }
       case 'importFragment':
         engine.load(decodeFragment(req.fragment, engine.toPersisted()))
         await saver.flush()
-        return { type: 'snapshot', snapshot: engine.predict(req.raw), source: 'fragment' }
+        return { type: 'snapshot', snapshot: engine.predict(req.raw, req.category), source: 'fragment' }
       case 'flush':
         await saver.flush()
         return { type: 'ok' }

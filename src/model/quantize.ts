@@ -1,12 +1,15 @@
+import { CARDS, CARD_IDS, CATEGORIES, type CardId, type Category } from '../cssnet/contract'
 import { SCHEMA_VERSION, SHAPE } from './config'
+import { POINTER_INPUTS, RAW_MODEL_FEATURES } from '../signals/features'
 import type { PersistedModel } from './types'
 
 /**
  * Compact share format for the URL fragment (#m=...): per-tensor symmetric
  * int8 quantisation (scale = max|v| / 127), base64url encoded.
- * Layout: 'S' 'W' version I H O | u32 examples | u32 normCount | i8 lastAction |
+ * Layout: 'S' 'W' version I H O | u32 examples | u32 normCount | u8 hasOrders | u8[O] order ranks |
  *         then for each tensor: f32 scale, i8[n]
- * Tensors: W1, b1, W2, b2, norm mean, norm std, markov counts.
+ * Tensors: W1, b1, W2, b2, norm mean, norm std, affinity counts, intensity.
+ * Orders: for each card, its slot within its category (0..5).
  * Lossy: values are recovered to within scale/2 per element.
  */
 const MAGIC = [0x53, 0x57]
@@ -35,8 +38,8 @@ export function fromBase64Url(s: string): Uint8Array {
 export function encodeFragment(m: PersistedModel): string {
   const count = m.normStats.count
   const std = m.normStats.m2.map((v) => (count > 1 ? Math.sqrt(Math.max(0, v / (count - 1))) : 0))
-  const tensors = [m.weights.W1, m.weights.b1, m.weights.W2, m.weights.b2, m.normStats.mean, std, m.markov.counts].map(quant)
-  const size = 6 + 4 + 4 + 1 + tensors.reduce((a, t) => a + 4 + t.q.length, 0)
+  const tensors = [m.weights.W1, m.weights.b1, m.weights.W2, m.weights.b2, m.normStats.mean, std, m.affinity.counts, m.intensity].map(quant)
+  const size = 6 + 4 + 4 + 1 + SHAPE.outputs + tensors.reduce((a, t) => a + 4 + t.q.length, 0)
   const buf = new ArrayBuffer(size)
   const dv = new DataView(buf)
   const u8 = new Uint8Array(buf)
@@ -45,7 +48,8 @@ export function encodeFragment(m: PersistedModel): string {
   u8[o++] = SHAPE.inputs; u8[o++] = SHAPE.hidden; u8[o++] = SHAPE.outputs
   dv.setUint32(o, m.examples >>> 0, true); o += 4
   dv.setUint32(o, count >>> 0, true); o += 4
-  dv.setInt8(o, m.lastAction ?? -1); o += 1
+  u8[o++] = m.orders ? 1 : 0
+  for (const k of CARDS) u8[o++] = m.orders ? m.orders[k.category].indexOf(k.id) : 0
   for (const t of tensors) {
     dv.setFloat32(o, t.scale, true); o += 4
     u8.set(new Uint8Array(t.q.buffer), o); o += t.q.length
@@ -64,7 +68,8 @@ export function decodeFragment(s: string, base: PersistedModel): PersistedModel 
   if (I !== SHAPE.inputs || H !== SHAPE.hidden || O !== SHAPE.outputs) throw new Error('fragment: shape mismatch')
   const examples = dv.getUint32(o, true); o += 4
   const count = dv.getUint32(o, true); o += 4
-  const last = dv.getInt8(o); o += 1
+  const hasOrders = u8[o++] === 1
+  const slots = Array.from(u8.subarray(o, o + O)); o += O
   const read = (n: number): number[] => {
     if (o + 4 + n > u8.length) throw new Error('fragment: truncated')
     const scale = dv.getFloat32(o, true); o += 4
@@ -74,16 +79,25 @@ export function decodeFragment(s: string, base: PersistedModel): PersistedModel 
     return out
   }
   const W1 = read(H * I), b1 = read(H), W2 = read(O * H), b2 = read(O)
-  const mean = read(I), std = read(I), counts = read(O * O)
+  const mean = read(RAW_MODEL_FEATURES), std = read(RAW_MODEL_FEATURES), counts = read(O), intensity = read(POINTER_INPUTS)
+  let orders: PersistedModel['orders'] = null
+  if (hasOrders) {
+    orders = {} as Record<Category, CardId[]>
+    for (const c of CATEGORIES) {
+      const ids = CARD_IDS.filter((_, i) => CARDS[i].category === c)
+      orders[c] = [...ids].sort((a, b) => slots[CARD_IDS.indexOf(a)] - slots[CARD_IDS.indexOf(b)])
+    }
+  }
   return {
     schemaVersion: SCHEMA_VERSION,
     weights: { W1, b1, W2, b2 },
     normStats: { count, mean, m2: std.map((sd) => sd * sd * Math.max(0, count - 1)) },
-    markov: { ...base.markov, counts },
+    affinity: { ...base.affinity, counts },
+    intensity,
+    orders,
     updatedAt: Date.now(),
     examples,
-    lastAction: last < 0 ? null : last,
-    acc: { markov: [], mlp: [] },
+    acc: { affinity: [], mlp: [], blend: [] },
   }
 }
 

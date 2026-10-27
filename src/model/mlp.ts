@@ -1,4 +1,5 @@
 import type { NetShape, NetWeights } from '../cssnet/contract'
+import { MASK_PENALTY } from '../cssnet/generate'
 
 export function mulberry32(seed: number): () => number {
   let a = seed >>> 0
@@ -46,7 +47,7 @@ export function cloneWeights(w: NetWeights): NetWeights {
   return { W1: w.W1.slice(), b1: w.b1.slice(), W2: w.W2.slice(), b2: w.b2.slice() }
 }
 
-export function forward(shape: NetShape, w: NetWeights, x: ArrayLike<number>): { hidden: Float32Array; out: Float32Array; logits: Float32Array } {
+export function forward(shape: NetShape, w: NetWeights, x: ArrayLike<number>, mask?: ArrayLike<number> | null): { hidden: Float32Array; out: Float32Array; logits: Float32Array } {
   const { inputs: I, hidden: H, outputs: O } = shape
   const hidden = new Float32Array(H)
   for (let h = 0; h < H; h++) {
@@ -58,6 +59,7 @@ export function forward(shape: NetShape, w: NetWeights, x: ArrayLike<number>): {
   for (let o = 0; o < O; o++) {
     let s = w.b2[o]
     for (let h = 0; h < H; h++) s += w.W2[o * H + h] * hidden[h]
+    if (mask && !mask[o]) s -= MASK_PENALTY
     logits[o] = s
   }
   return { hidden, out: softmax(logits), logits }
@@ -65,10 +67,15 @@ export function forward(shape: NetShape, w: NetWeights, x: ArrayLike<number>): {
 
 export interface SgdOptions { lr: number; l2: number; clip?: number }
 
-/** One SGD step on softmax cross-entropy + L2 (weights only). Mutates w. Returns the loss before the step. */
-export function sgdStep(shape: NetShape, w: NetWeights, x: ArrayLike<number>, label: number, opt: SgdOptions): number {
+/**
+ * One SGD step on (masked) softmax cross-entropy + L2 (weights only), scaled by a sample
+ * weight. Mutates w. Returns the loss before the step. Masked outputs have ~0 probability,
+ * so their gradients vanish: the step only reshapes the scores inside the label's category.
+ */
+export function sgdStep(shape: NetShape, w: NetWeights, x: ArrayLike<number>, label: number, opt: SgdOptions, mask?: ArrayLike<number> | null, weight = 1): number {
   const { inputs: I, hidden: H, outputs: O } = shape
-  const { hidden, out } = forward(shape, w, x)
+  const { hidden, out } = forward(shape, w, x, mask)
+  opt = { ...opt, lr: opt.lr * weight }
   const loss = -Math.log(Math.max(out[label], 1e-9))
   const clip = opt.clip ?? 5
   const c = (g: number) => Math.max(-clip, Math.min(clip, g))

@@ -131,6 +131,7 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
   }
 
   let destroyed = false
+  let mask: Float32Array | null = null
   return {
     shape,
     mode,
@@ -139,9 +140,10 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
       if (weightSheet) weightSheet.textContent = weightsRule(shape, wcls, w)
       else sheet.textContent = mainSheet(w)
     },
-    setInputs(x: Float32Array) {
+    setInputs(x: Float32Array, m?: Float32Array) {
       if (destroyed) return
-      root.style.cssText = inputsStyle(shape, x)
+      if (m) mask = m
+      root.style.cssText = inputsStyle(shape, x, mask)
     },
     readOutputs() {
       const out = new Float32Array(shape.outputs)

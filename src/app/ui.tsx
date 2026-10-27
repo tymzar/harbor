@@ -1,15 +1,10 @@
-import { Component, type ReactNode, useRef } from 'react'
-import { Button, Card, Label, SearchField, Switch, Tooltip } from '@heroui/react'
+import { Component, memo, type ReactNode, useRef } from 'react'
+import { Button, Card, Tooltip } from '@heroui/react'
 import { motion } from 'motion/react'
-import { ACTIONS, type ActionId, type CssNetMode } from '../cssnet/contract'
-import { RAW_FEATURE_NAMES, MODEL_FEATURES } from '../signals/features'
-import { ACTION_LABELS, type AppState, type SmartWebController, type View } from './controller'
-
-const VIEW_CONTENT: Record<View, { title: string; lede: string; items: string[] }> = {
-  'nav-home': { title: 'Home', lede: 'Your day at a glance.', items: ['Morning Briefing', 'Saved Drafts', 'Team Updates'] },
-  'nav-explore': { title: 'Explore', lede: 'Places and things worth a look.', items: ['Basalt Coastlines', 'Night-Sky Timelapse', 'Moss Gardens'] },
-  'nav-library': { title: 'Library', lede: 'Everything you have kept.', items: ['Field Notes, Vol. 2', 'Typography Specimens', 'Recipe Index'] },
-}
+import { CARD_IDS, CATEGORIES, type CardId, type CssNetMode } from '../cssnet/contract'
+import { RAW_FEATURE_NAMES, INPUT_NAMES } from '../signals/features'
+import { CARD_INFO, CATEGORY_INFO } from './catalog'
+import type { AppState, SmartWebController } from './controller'
 
 export function percentile(xs: number[], p: number): number {
   if (!xs.length) return 0
@@ -43,7 +38,6 @@ function DebugIcon() {
 }
 
 export function TopNav({ state, c, debugOpen, onToggleDebug }: { state: AppState; c: SmartWebController; debugOpen: boolean; onToggleDebug: () => void }) {
-  const views: View[] = ['nav-home', 'nav-explore', 'nav-library']
   return (
     <header className="relative z-20 px-4 pt-5 sm:px-6">
       <div className="mx-auto flex max-w-6xl items-center gap-4">
@@ -51,18 +45,18 @@ export function TopNav({ state, c, debugOpen, onToggleDebug }: { state: AppState
           <Mark />
           <span className="text-sm font-semibold tracking-tight">smart-web</span>
         </div>
-        <nav className="glass mx-auto flex items-center gap-0.5 rounded-full p-1" aria-label="Primary">
-          {views.map((v) => (
+        <nav className="glass mx-auto flex items-center gap-0.5 rounded-full p-1" aria-label="Categories">
+          {CATEGORIES.map((cat) => (
             <Button
-              key={v}
-              data-testid={`action-${v}`}
+              key={cat}
+              data-testid={`nav-${cat}`}
               size="sm"
               variant="ghost"
-              aria-current={state.view === v ? 'page' : undefined}
-              className={`rounded-full px-4 ${state.view === v ? 'bg-surface text-foreground shadow-sm' : 'text-muted'}`}
-              onPress={() => c.act(v)}
+              aria-current={state.category === cat ? 'page' : undefined}
+              className={`rounded-full px-4 ${state.category === cat ? 'bg-surface text-foreground shadow-sm' : 'text-muted'}`}
+              onPress={() => c.enter(cat)}
             >
-              {ACTION_LABELS[v]}
+              {CATEGORY_INFO[cat].title}
             </Button>
           ))}
         </nav>
@@ -88,12 +82,12 @@ export function TopNav({ state, c, debugOpen, onToggleDebug }: { state: AppState
 /** Page title plus the model controls, which stay visible but quiet. */
 export function Toolbar({ state, c }: { state: AppState; c: SmartWebController }) {
   const fileRef = useRef<HTMLInputElement>(null)
-  const content = VIEW_CONTENT[state.view]
+  const content = CATEGORY_INFO[state.category]
   return (
     <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-semibold tracking-tight">{content.title}</h1>
-        <p className="text-sm text-muted">{content.lede} The layout learns from how you use it.</p>
+        <p className="text-sm text-muted">{content.lede} Ordered by how you use it.</p>
       </div>
       <div className="ml-auto flex flex-wrap items-center gap-1">
         <Button data-testid="replay-journey" size="sm" variant="secondary" className="rounded-full" isDisabled={!state.ready || state.replaying} onPress={() => c.replay()}>
@@ -116,148 +110,87 @@ export function Toolbar({ state, c }: { state: AppState; c: SmartWebController }
   )
 }
 
-function GridCard({ action, state, c }: { action: ActionId; state: AppState; c: SmartWebController }) {
-  const content = VIEW_CONTENT[state.view]
-  const recentSearch = useRef(0)
-  const doSearch = () => {
-    const now = performance.now()
-    if (now - recentSearch.current < 1500) return
-    recentSearch.current = now
-    void c.act('search')
-  }
-  const desc = state.compact ? 'text-xs' : 'text-sm'
-  const header = (title: string, d: string) => (
-    <Card.Header className="gap-1">
-      <Card.Title className="text-base font-medium tracking-tight">{title}</Card.Title>
-      <Card.Description className={`${desc} text-muted`}>{d}</Card.Description>
-    </Card.Header>
+function HeartIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">
+      <path d="M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 0 1 8 5a2.8 2.8 0 0 1 5.5 1.3C13.5 10.2 8 13.5 8 13.5Z" />
+    </svg>
   )
-  const body = (() => {
-    switch (action) {
-      case 'open-card':
-        return (
-          <>
-            {header(content.items[0], `Opened ${state.opened} ${state.opened === 1 ? 'time' : 'times'}`)}
-            <Card.Footer><Button data-testid="action-open-card" size="sm" className="rounded-full" onPress={() => c.act('open-card')}>Open</Button></Card.Footer>
-          </>
-        )
-      case 'favorite':
-        return (
-          <>
-            {header(content.items[1], state.favorites ? `${state.favorites} saved this session` : 'Keep it for later')}
-            <Card.Footer><Button data-testid="action-favorite" size="sm" variant="outline" className="rounded-full" onPress={() => c.act('favorite')}>Favorite</Button></Card.Footer>
-          </>
-        )
-      case 'share':
-        return (
-          <>
-            {header(content.items[2], state.shares ? `Shared ${state.shares} ${state.shares === 1 ? 'time' : 'times'}` : 'Send it to someone')}
-            <Card.Footer><Button data-testid="action-share" size="sm" variant="outline" className="rounded-full" onPress={() => c.act('share')}>Share</Button></Card.Footer>
-          </>
-        )
-      case 'search':
-        return (
-          <>
-            {header('Search', `Find anything in ${content.title.toLowerCase()}`)}
-            <Card.Footer>
-              <div className="w-full" onClick={(e) => { if ((e.target as Element).closest('input')) doSearch() }}>
-                <SearchField aria-label="Search" value={state.query} onChange={(q) => c.setQuery(q)} onSubmit={doSearch} fullWidth variant="secondary">
-                  <SearchField.Group>
-                    <SearchField.SearchIcon />
-                    <SearchField.Input data-testid="action-search" placeholder="Search" />
-                    <SearchField.ClearButton />
-                  </SearchField.Group>
-                </SearchField>
-              </div>
-            </Card.Footer>
-          </>
-        )
-      case 'settings':
-        return (
-          <>
-            {header('Display', 'Denser text across cards')}
-            <Card.Footer>
-              <Switch isSelected={state.compact} onChange={() => c.act('settings')} className="w-full">
-                <Switch.Content data-testid="action-settings" className="flex w-full items-center justify-between">
-                  <Label className="text-sm">Compact</Label>
-                  <Switch.Control><Switch.Thumb /></Switch.Control>
-                </Switch.Content>
-              </Switch>
-            </Card.Footer>
-          </>
-        )
-      default:
-        return null
-    }
-  })()
-  // Fixed height: toggling compact never moves the card or its controls.
-  return <Card className="glass h-44 justify-between rounded-3xl p-5">{body}</Card>
+}
+function ShareIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 10V2.5M5 5.5l3-3 3 3M3.5 9v3.5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V9" />
+    </svg>
+  )
 }
 
-export function AdaptiveGrid({ state, c }: { state: AppState; c: SmartWebController }) {
+/** Memoised: a press re-renders only the card whose own data changed (latency, see e2e). */
+const FeatureCard = memo(function FeatureCard({ id, n, fav, c }: { id: CardId; n: number; fav: boolean; c: SmartWebController }) {
+  const info = CARD_INFO[id]
   return (
-    <div data-testid="adaptive-grid" className="grid grid-flow-dense grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {state.gridOrder.map((a) => (
-        <motion.div
-          key={a}
-          layout
-          data-grid-action={a}
-          transition={{ type: 'spring', stiffness: 320, damping: 34 }}
-          animate={{ opacity: 1 }}
-          initial={{ opacity: 0 }}
-          className={`relative rounded-3xl ${a === 'search' ? 'sm:col-span-2' : ''}`}
-        >
-          <GridCard action={a} state={state} c={c} />
-          {state.lastMoved === a && (
-            <motion.span
-              key={state.version}
-              aria-hidden
-              className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-accent/50"
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 0 }}
-              transition={{ duration: 1.6, ease: 'easeOut' }}
-            />
-          )}
-        </motion.div>
+    <Card data-testid={`card-${id}`} className="glass h-44 justify-between rounded-3xl p-5">
+      <Card.Header className="gap-1">
+        <Card.Title className="text-base font-medium tracking-tight">{info.title}</Card.Title>
+        <Card.Description className="text-sm text-muted">{info.desc}</Card.Description>
+      </Card.Header>
+      <Card.Footer className="flex items-center gap-1">
+        <Button data-testid={`card-${id}-open`} size="sm" className="rounded-full" onPress={() => c.engage(id, 'open')}>Open</Button>
+        {n > 0 && <span className="ml-2 text-xs tabular-nums text-muted">{n} {n === 1 ? 'visit' : 'visits'}</span>}
+        <span className="ml-auto flex items-center gap-1">
+          <Tooltip delay={400}>
+            <Button data-testid={`card-${id}-favorite`} isIconOnly size="sm" variant="ghost" aria-label={fav ? 'Unfavorite' : 'Favorite'} aria-pressed={fav}
+              className={`rounded-full ${fav ? 'text-accent' : 'text-muted'}`} onPress={() => c.engage(id, 'favorite')}>
+              <HeartIcon filled={fav} />
+            </Button>
+            <Tooltip.Content>{fav ? 'Unfavorite' : 'Favorite'}</Tooltip.Content>
+          </Tooltip>
+          <Tooltip delay={400}>
+            <Button data-testid={`card-${id}-share`} isIconOnly size="sm" variant="ghost" aria-label="Share" className="rounded-full text-muted" onPress={() => c.engage(id, 'share')}>
+              <ShareIcon />
+            </Button>
+            <Tooltip.Content>Share</Tooltip.Content>
+          </Tooltip>
+        </span>
+      </Card.Footer>
+    </Card>
+  )
+})
+
+const GridItem = memo(function GridItem({ id, n, fav, flash, c }: { id: CardId; n: number; fav: boolean; flash: number | null; c: SmartWebController }) {
+  return (
+    <motion.div
+      layout
+      data-card={id}
+      transition={{ type: 'spring', stiffness: 260, damping: 32 }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative rounded-3xl"
+    >
+      <FeatureCard id={id} n={n} fav={fav} c={c} />
+      {flash !== null && (
+        <motion.span
+          key={flash}
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-accent/50"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 1.6, ease: 'easeOut' }}
+        />
+      )}
+    </motion.div>
+  )
+})
+
+/** The current category's cards, in the model's order. Re-sorts live and on entry. */
+export function AdaptiveGrid({ state, c }: { state: AppState; c: SmartWebController }) {
+  const order = state.orders[state.category]
+  return (
+    <div data-testid="adaptive-grid" data-category={state.category} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {order.map((id) => (
+        <GridItem key={id} id={id} n={state.engaged[id] ?? 0} fav={!!state.favorites[id]} flash={state.moved.includes(id) ? state.orderVersion : null} c={c} />
       ))}
     </div>
-  )
-}
-
-export function SuggestionPanel({ state, c }: { state: AppState; c: SmartWebController }) {
-  const top = state.ranking.slice(0, 4)
-  return (
-    <Card className="glass rounded-3xl p-5">
-      <Card.Header className="gap-1">
-        <Card.Title className="text-base font-medium tracking-tight">Suggested</Card.Title>
-        <Card.Description className="text-sm text-muted">Learned from your clicks</Card.Description>
-      </Card.Header>
-      <Card.Content>
-        <ul data-testid="suggestion-list" className="-mx-2 flex flex-col gap-0.5">
-          {top.map((a, k) => {
-            const p = state.blended[ACTIONS.indexOf(a)]
-            return (
-              <li key={a}>
-                <Button
-                  data-testid="suggestion-item"
-                  data-action={a}
-                  fullWidth
-                  variant="ghost"
-                  onPress={() => c.act(a)}
-                  className={`justify-between rounded-xl px-2 ${k === 0 ? 'text-foreground' : 'text-muted'}`}
-                >
-                  <span className="flex items-center gap-2">
-                    <span aria-hidden className={`size-1.5 rounded-full ${k === 0 ? 'bg-accent' : 'bg-transparent'}`} />
-                    {ACTION_LABELS[a]}
-                  </span>
-                  <span className="tabular-nums text-xs text-muted">{pct(p)}</span>
-                </Button>
-              </li>
-            )
-          })}
-        </ul>
-      </Card.Content>
-    </Card>
   )
 }
 
@@ -267,8 +200,8 @@ const MODE_LABEL: Record<CssNetMode, string> = { calc: 'calc()', hybrid: 'Hybrid
 export function NetworkHeader({ state, c }: { state: AppState; c: SmartWebController }) {
   const stats: [string, string][] = [
     ['Examples', String(state.stats.examples)],
-    ['Markov', pct(state.stats.markovAcc)],
-    ['MLP', pct(state.stats.mlpAcc)],
+    ['Top 3 hit', pct(state.stats.blendAcc)],
+    ['MLP share', pct(state.alpha)],
     ['Latency', `${percentile(state.latencies, 50).toFixed(0)} ms`],
   ]
   return (
@@ -276,7 +209,7 @@ export function NetworkHeader({ state, c }: { state: AppState; c: SmartWebContro
       <div className="flex flex-col gap-1">
         <h2 className="text-base font-medium tracking-tight">Network</h2>
         <p className="text-sm text-muted">
-          {state.netSource === 'cssnet' ? `Forward pass computed by the stylesheet, ${MODE_LABEL[state.mode]} engine.` : 'Forward pass in JavaScript (CSS engine unavailable).'}
+          {state.netSource === 'cssnet' ? `Ranks ${CATEGORY_INFO[state.category].title} in the stylesheet, ${MODE_LABEL[state.mode]} engine.` : 'Ranking in JavaScript (CSS engine unavailable).'}
         </p>
       </div>
       <dl className="ml-auto flex flex-wrap gap-2" data-testid="stats">
@@ -308,6 +241,7 @@ const fmt = (v: number | undefined) => (v === undefined || Number.isNaN(v) ? '鈥
 
 export function DebugDrawer({ state }: { state: AppState }) {
   const lat = state.latencies
+  const order = state.orders[state.category]
   return (
     <Card data-testid="debug-drawer" className="glass rounded-3xl p-5 text-xs">
       <Card.Header className="gap-1">
@@ -319,18 +253,19 @@ export function DebugDrawer({ state }: { state: AppState }) {
       </Card.Header>
       <Card.Content className="grid gap-6 lg:grid-cols-3">
         <section>
-          <h3 className="mb-2 font-medium">Ranking</h3>
+          <h3 className="mb-2 font-medium">Order: {CATEGORY_INFO[state.category].title}</h3>
           <table className="w-full tabular-nums">
-            <thead><tr className="text-left text-muted"><th className="font-normal">Action</th><th className="font-normal">Markov</th><th className="font-normal">MLP css</th><th className="font-normal">MLP js</th><th className="font-normal">Blend</th></tr></thead>
+            <thead><tr className="text-left text-muted"><th className="font-normal">Card</th><th className="font-normal">Affinity</th><th className="font-normal">MLP css</th><th className="font-normal">MLP js</th><th className="font-normal">Score</th></tr></thead>
             <tbody>
-              {state.ranking.map((a) => {
-                const i = ACTIONS.indexOf(a)
-                return <tr key={a}><td>{a}</td><td>{fmt(state.markov[i])}</td><td>{fmt(state.css[i])}</td><td>{fmt(state.js[i])}</td><td>{fmt(state.blended[i])}</td></tr>
+              {order.map((id) => {
+                const i = CARD_IDS.indexOf(id)
+                return <tr key={id}><td>{id}</td><td>{fmt(state.affinity[i])}</td><td>{fmt(state.css[i])}</td><td>{fmt(state.js[i])}</td><td>{fmt(state.scores[i])}</td></tr>
               })}
             </tbody>
           </table>
           <h3 className="mb-2 mt-4 font-medium">Stats</h3>
-          <p>examples {state.stats.examples} 路 Markov acc {pct(state.stats.markovAcc)} 路 MLP acc {pct(state.stats.mlpAcc)} (last {state.stats.accN})</p>
+          <p>examples {state.stats.examples} 路 top-3 hit: shown {pct(state.stats.blendAcc)} 路 affinity {pct(state.stats.affinityAcc)} 路 MLP {pct(state.stats.mlpAcc)} (last {state.stats.accN}) 路 MLP weight {pct(state.alpha)}</p>
+          <p>evidence {CATEGORIES.map((k) => `${k} ${state.evidence[k].toFixed(1)}`).join(' 路 ')}</p>
           <p>latency n={lat.length} p50 {percentile(lat, 50).toFixed(1)} ms 路 p95 {percentile(lat, 95).toFixed(1)} ms</p>
           <p className="break-all">hidden: {state.hidden.map((h) => h.toFixed(2)).join(' ')}</p>
           {state.shareLink && <p className="break-all">link: {state.shareLink}</p>}
@@ -339,7 +274,7 @@ export function DebugDrawer({ state }: { state: AppState }) {
         <section>
           <h3 className="mb-2 font-medium">Model Input</h3>
           <table className="w-full tabular-nums">
-            <tbody>{MODEL_FEATURES.map((f, i) => <tr key={f.name}><td className="text-muted">{f.name}</td><td>{fmt(state.x[i])}</td></tr>)}</tbody>
+            <tbody>{INPUT_NAMES.map((n, i) => <tr key={n}><td className="text-muted">{n}</td><td>{fmt(state.x[i])}</td></tr>)}</tbody>
           </table>
         </section>
         <section className="max-h-96 overflow-auto">

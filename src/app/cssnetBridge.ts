@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { MASK_PENALTY } from '../cssnet/generate'
 import type { CssNet, CssNetMode, JsForward, MountCssNet, NetShape, NetWeights } from '../cssnet/contract'
 
 /**
@@ -11,7 +12,7 @@ const referenceMods = import.meta.glob('../cssnet/reference.ts')
 const visualMods = import.meta.glob(['../cssnet/visual.tsx', '../cssnet/visual/index.ts', '../cssnet/visual/index.tsx'])
 
 /** Local JS forward pass (ReLU hidden, softmax out), identical math to the worker MLP. */
-export const localJsForward: JsForward = (shape, w, x) => {
+export const localJsForward: JsForward = (shape, w, x, mask) => {
   const { inputs: I, hidden: H, outputs: O } = shape
   const hidden = new Float32Array(H)
   for (let h = 0; h < H; h++) {
@@ -24,6 +25,7 @@ export const localJsForward: JsForward = (shape, w, x) => {
   for (let o = 0; o < O; o++) {
     let s = w.b2[o]
     for (let h = 0; h < H; h++) s += w.W2[o * H + h] * hidden[h]
+    if (mask && !mask[o]) s -= MASK_PENALTY
     z[o] = s
     m = Math.max(m, s)
   }
@@ -40,12 +42,13 @@ export function createFallbackNet(_host: HTMLElement, shape: NetShape, mode: Css
     W2: new Float32Array(shape.outputs * shape.hidden), b2: new Float32Array(shape.outputs),
   }
   let x = new Float32Array(shape.inputs)
+  let mask: Float32Array | null = null
   return {
     shape, mode,
     setWeights(nw) { w = nw },
-    setInputs(nx) { x = nx.slice() },
-    readOutputs() { return localJsForward(shape, w, x).out },
-    readHidden() { return localJsForward(shape, w, x).hidden },
+    setInputs(nx, m) { x = nx.slice(); if (m) mask = m },
+    readOutputs() { return localJsForward(shape, w, x, mask).out },
+    readHidden() { return localJsForward(shape, w, x, mask).hidden },
     destroy() {},
   }
 }

@@ -1,57 +1,25 @@
 import { describe, expect, it } from 'vitest'
-import { ACTIONS, type ActionId } from '../cssnet/contract'
+import { CARD_IDS, cardsOf, categoryMask } from '../cssnet/contract'
 import { PRIOR, SHAPE } from '../model/config'
 import { ModelClient } from '../model/client'
 import { forward, initWeights } from '../model/mlp'
 import { memoryStore } from '../model/persist'
 import { FeatureExtractor } from '../signals/extractor'
 import { RAW_FEATURE_NAMES } from '../signals/features'
-import { COLD_START, GRID_ACTIONS, blend, emaScores, nextGridOrder, rank } from './adaptive'
+import { MIN_EVIDENCE, blendScores, defaultOrders, movedCards, reorder } from './adaptive'
 import { SmartWebController } from './controller'
 import { createFallbackNet, isProbVector, localJsForward } from './cssnetBridge'
-import { generateJourney, synthesizeStep } from './replay'
+import { generateJourney, stepTestId, synthesizeStep } from './replay'
 
-const scores = (m: Partial<Record<ActionId, number>>) => {
-  const rest = (1 - Object.values(m).reduce((a, b) => a + b, 0)) / (ACTIONS.length - Object.keys(m).length)
-  return ACTIONS.map((a) => m[a] ?? rest)
-}
-
-describe('adaptive grid guardrails', () => {
-  it('moves at most one element per interaction', () => {
-    const cur = [...GRID_ACTIONS] // open-card, favorite, share, search, settings
-    const s = scores({ settings: 0.4, share: 0.3, 'open-card': 0.01, favorite: 0.01, search: 0.01 })
-    const r1 = nextGridOrder(cur, s, PRIOR)
-    expect(r1.moved).toBe('settings')
-    expect(r1.order).toEqual(['settings', 'open-card', 'favorite', 'share', 'search'])
-    const r2 = nextGridOrder(r1.order, s, PRIOR)
-    expect(r2.moved).toBe('share')
-    expect(r2.order).toEqual(['settings', 'share', 'open-card', 'favorite', 'search'])
-  })
-  it('does not move when confidence does not beat the prior by the margin', () => {
-    const s = [...PRIOR]
-    s[ACTIONS.indexOf('settings')] += 0.03 // above favorite/share but below the 0.06 margin
-    s[ACTIONS.indexOf('nav-home')] -= 0.03
-    expect(nextGridOrder(GRID_ACTIONS, s, PRIOR).moved).toBeNull()
-  })
-  it('emaScores smooths toward the new scores', () => {
-    expect(emaScores([1, 0], [0, 1], 0.25)).toEqual([0.75, 0.25])
-  })
-  it('controller keeps the grid still during the cold start, then moves at most one element', async () => {
-    const c = new SmartWebController({ makeClient: () => new ModelClient({ forceLocal: true, store: memoryStore() }) })
-    await c.start(document.createElement('div'))
-    const orders: ActionId[][] = []
-    for (let k = 0; k < 12; k++) {
-      await c.act((['settings', 'share'] as ActionId[])[k % 2])
-      orders.push([...c.state.gridOrder])
-    }
-    for (let k = 0; k < COLD_START; k++) expect(orders[k]).toEqual([...GRID_ACTIONS])
-    expect(orders.at(-1)).not.toEqual([...GRID_ACTIONS])
-    c.stop()
-  })
-  it('rank and blend', () => {
-    expect(rank(PRIOR)[0]).toBe('open-card')
-    const b = blend([1, 0], [0, 1], 0.25)
-    expect(Array.from(b)).toEqual([0.75, 0.25])
+describe('ordering', () => {
+  it('blends, re-sorts with hysteresis and reports what moved', () => {
+    const aff = CARD_IDS.map((id) => (id === 'notes' ? 0.5 : 0.1))
+    const mlp = CARD_IDS.map((id) => (id === 'inbox' ? 0.5 : 0.1))
+    const s = blendScores(aff, mlp, 0.25)
+    const next = reorder(defaultOrders().home, s)
+    expect(next.slice(0, 2)).toEqual(['notes', 'inbox'])
+    expect(movedCards(defaultOrders().home, next)).toContain('notes')
+    expect(MIN_EVIDENCE).toBeGreaterThan(1)
   })
 })
 
@@ -63,8 +31,10 @@ describe('cssnet bridge fallback', () => {
     const b = forward(SHAPE, w, x).out
     a.forEach((v, i) => expect(v).toBeCloseTo(b[i], 6))
     const net = createFallbackNet(document.createElement('div'), SHAPE, 'calc')
-    net.setWeights(w); net.setInputs(x)
-    expect(isProbVector(net.readOutputs(), 8)).toBe(true)
+    net.setWeights(w); net.setInputs(x, categoryMask('explore'))
+    const out = net.readOutputs()
+    expect(isProbVector(out, SHAPE.outputs)).toBe(true)
+    cardsOf('home').forEach((id) => expect(out[CARD_IDS.indexOf(id)]).toBeLessThan(1e-9))
     expect(isProbVector([NaN, 1], 2)).toBe(false)
   })
 })
@@ -76,8 +46,10 @@ describe('journey replay', () => {
     expect(generateJourney(43, 30)).not.toEqual(j1)
     expect(j1).toHaveLength(30)
     const fx = new FeatureExtractor(0)
-    const out = synthesizeStep(fx, { ...j1[0], rage: 0 }, { x: 0, y: 0 }, { left: 400, top: 300, width: 100, height: 40 }, 'action-x', 1000, 1)
-    const v = fx.snapshot(j1[0].action, out.t)
+    const card = j1.find((s) => s.target.kind === 'card')!
+    expect(stepTestId(card.target)).toMatch(/^card-[a-z]+-(open|favorite|share)$/)
+    const out = synthesizeStep(fx, { ...card, rage: 0 }, { x: 0, y: 0 }, { left: 400, top: 300, width: 100, height: 40 }, 'card-x', 1000, 1)
+    const v = fx.snapshot(card.target.kind === 'card' ? card.target.verb : 'open', out.t)
     const at = (n: string) => v[RAW_FEATURE_NAMES.indexOf(n)]
     expect(at('deceleration')).toBeGreaterThan(0)
     expect(at('pathStraightness')).toBeGreaterThan(0.8)
@@ -87,23 +59,30 @@ describe('journey replay', () => {
 })
 
 describe('SmartWebController (jsdom, in-thread model, JS net)', () => {
-  it('starts, learns from actions, exposes the test hook, resets', async () => {
+  it('learns a full category order, applies it on entry, exposes the hook, resets', async () => {
     const c = new SmartWebController({ makeClient: () => new ModelClient({ forceLocal: true, store: memoryStore() }) })
     await c.start(document.createElement('div'))
     const hook = window.__smartweb
     expect(hook.stats().examples).toBe(0)
-    for (let k = 0; k < 12; k++) await c.act((['nav-explore', 'open-card', 'favorite'] as ActionId[])[k % 3])
-    const st = hook.stats()
-    expect(st.examples).toBe(12) // the initial idle prediction is pending too
-    expect(st.markovAcc).toBeGreaterThan(0.5)
-    expect(hook.features()).toHaveLength(15)
-    expect(hook.ranking()[0]).toBe('nav-explore') // after favorite comes nav-explore
+    expect(hook.order()).toEqual(cardsOf('home'))
+    for (let k = 0; k < 6; k++) {
+      await c.engage('notes', k % 2 ? 'share' : 'open', { t: k * 4000 })
+      await c.engage('inbox', 'open', { t: k * 4000 + 2000 })
+    }
+    expect(hook.stats().examples).toBe(12)
+    expect(hook.order().slice(0, 2)).toEqual(['notes', 'inbox'])
+    expect(hook.features()).toHaveLength(12)
     const css = hook.cssOutputs(), js = hook.jsOutputs()
     css.forEach((v, i) => expect(v).toBeCloseTo(js[i], 5))
+    await c.enter('library')
+    expect(hook.category()).toBe('library')
+    expect(hook.order()).toEqual(cardsOf('library'))
+    expect(hook.order('home').slice(0, 2)).toEqual(['notes', 'inbox'])
     hook.setMode('hybrid')
     expect(hook.stats().mode).toBe('hybrid')
     await hook.reset()
     expect(hook.stats().examples).toBe(0)
+    expect(hook.order('home')).toEqual(cardsOf('home'))
     c.stop()
   })
 })

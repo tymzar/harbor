@@ -8,10 +8,11 @@ const at = (v: Float32Array, name: string) => v[RAW_FEATURE_NAMES.indexOf(name)]
 const fixedDate = () => new Date(2026, 0, 1, 6, 0) // 06:00 -> quarter day
 
 describe('feature catalogue', () => {
-  it('has 52 raw features and a 15-feature model subset', () => {
-    expect(RAW_FEATURE_COUNT).toBe(52)
-    expect(MODEL_INPUTS).toBe(15)
-    expect(MODEL_FEATURES.slice(7).map((f) => f.name)).toEqual(ACTIONS.map((a) => `last1:${a}`))
+  it('has 46 raw features, a 9-feature raw subset and 12 network inputs', () => {
+    expect(RAW_FEATURE_COUNT).toBe(46)
+    expect(MODEL_FEATURES.map((f) => f.name).slice(7)).toEqual(['todSin', 'todCos'])
+    expect(MODEL_INPUTS).toBe(12)
+    expect(ACTIONS).toHaveLength(6)
   })
 })
 
@@ -58,12 +59,12 @@ describe('FeatureExtractor', () => {
   it('keeps the last 3 actions as one-hots, most recent first', () => {
     const fx = new FeatureExtractor(0)
     fx.snapshot('nav-explore', 10)
-    fx.snapshot('open-card', 20)
+    fx.snapshot('open', 20)
     const v = fx.snapshot('favorite', 30)
     expect(at(v, 'last1:favorite')).toBe(1)
-    expect(at(v, 'last2:open-card')).toBe(1)
+    expect(at(v, 'last2:open')).toBe(1)
     expect(at(v, 'last3:nav-explore')).toBe(1)
-    expect(Array.from(v.slice(28)).reduce((a, b) => a + b, 0)).toBe(3)
+    expect(Array.from(v.slice(RAW_FEATURE_COUNT - 3 * ACTIONS.length)).reduce((a, b) => a + b, 0)).toBe(3)
     expect(at(v, 'actionCount')).toBe(3)
   })
 
@@ -91,10 +92,11 @@ describe('FeatureExtractor', () => {
     const fx = new FeatureExtractor(0)
     fx.pointerDown({ t: 0, x: 0, y: 0 })
     fx.pointerUp(100)
-    const m = selectModelFeatures(fx.snapshot('search', 120))
-    expect(m.length).toBe(15)
+    const v = fx.snapshot('open', 120)
+    const m = selectModelFeatures(v)
+    expect(m.length).toBe(9)
     expect(m[0]).toBeCloseTo(Math.log1p(100), 5)
-    expect(m[7 + ACTIONS.indexOf('search')]).toBe(1)
+    expect(m[7]).toBeCloseTo(at(v, 'todSin'), 6)
   })
 })
 

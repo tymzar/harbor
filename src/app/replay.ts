@@ -1,9 +1,11 @@
-import type { ActionId } from '../cssnet/contract'
+import { cardsOf, type CardId, type Category, type Verb } from '../cssnet/contract'
 import { mulberry32 } from '../model/mlp'
 import type { FeatureExtractor } from '../signals/extractor'
 
+export type JourneyTarget = { kind: 'nav'; category: Category } | { kind: 'card'; category: Category; card: CardId; verb: Verb }
+
 export interface JourneyStep {
-  action: ActionId
+  target: JourneyTarget
   /** ms of pointer travel to the target */
   approachMs: number
   /** ms hovering on the target before pressing */
@@ -17,37 +19,52 @@ export interface JourneyStep {
 }
 
 /**
- * A habitual journey with some noise: browse explore -> open -> favorite,
- * sometimes share, then library -> open, back home; occasional search.
- * Deterministic for a given seed.
+ * A user with clear preferences inside each category (deterministic per seed):
+ * Home: mostly Saved Drafts and Team Updates; Explore: Tide Pools then Moss Gardens;
+ * Library: Reading List. Visits a category, engages 2-4 cards there, moves on.
  */
+export const REPLAY_PREFERENCES: Record<Category, Partial<Record<CardId, number>>> = {
+  home: { drafts: 0.45, team: 0.3, calendar: 0.1 },
+  explore: { tidepools: 0.5, moss: 0.3 },
+  library: { reading: 0.6, recipes: 0.2 },
+}
+
 export function generateJourney(seed: number, length = 40): JourneyStep[] {
   const rnd = mulberry32(seed)
-  const habits: ActionId[][] = [
-    ['nav-explore', 'open-card', 'favorite', 'share'],
-    ['nav-library', 'open-card', 'favorite'],
-    ['search', 'open-card', 'share'],
-    ['nav-home', 'settings'],
-  ]
-  const weights = [0.45, 0.3, 0.15, 0.1]
   const steps: JourneyStep[] = []
+  const timing = (verb: Verb | null) => {
+    const hesitant = rnd() < 0.2
+    return {
+      approachMs: 220 + rnd() * 380,
+      dwellMs: hesitant ? 400 + rnd() * 700 : 60 + rnd() * 200,
+      pressMs: 70 + rnd() * 90,
+      thinkMs: 300 + rnd() * 900,
+      rage: verb === 'open' && rnd() < 0.15 ? 2 + Math.floor(rnd() * 3) : 0,
+    }
+  }
+  const pick = (c: Category): CardId => {
+    const prefs = REPLAY_PREFERENCES[c]
+    let r = rnd()
+    for (const [id, p] of Object.entries(prefs)) { if (r < p!) return id as CardId; r -= p! }
+    const all = cardsOf(c)
+    return all[Math.floor(rnd() * all.length)]
+  }
+  const cats: Category[] = ['home', 'explore', 'library']
   while (steps.length < length) {
-    let r = rnd(), h = 0
-    while (h < weights.length - 1 && r > weights[h]) { r -= weights[h]; h++ }
-    for (const action of habits[h]) {
-      if (steps.length >= length) break
-      const hesitant = rnd() < 0.2
-      steps.push({
-        action,
-        approachMs: 220 + rnd() * 380,
-        dwellMs: hesitant ? 400 + rnd() * 700 : 60 + rnd() * 200,
-        pressMs: 70 + rnd() * 90,
-        thinkMs: 300 + rnd() * 900,
-        rage: action === 'share' && rnd() < 0.25 ? 2 + Math.floor(rnd() * 3) : 0,
-      })
+    const c = cats[Math.floor(rnd() ** 1.5 * cats.length)]
+    steps.push({ target: { kind: 'nav', category: c }, ...timing(null) })
+    const n = 2 + Math.floor(rnd() * 3)
+    for (let k = 0; k < n && steps.length < length; k++) {
+      const verb: Verb = rnd() < 0.6 ? 'open' : rnd() < 0.5 ? 'favorite' : 'share'
+      steps.push({ target: { kind: 'card', category: c, card: pick(c), verb }, ...timing(verb) })
     }
   }
   return steps
+}
+
+/** data-testid of the control a step presses. */
+export function stepTestId(t: JourneyTarget): string {
+  return t.kind === 'nav' ? `nav-${t.category}` : `card-${t.card}-${t.verb}`
 }
 
 export interface Rect { left: number; top: number; width: number; height: number }

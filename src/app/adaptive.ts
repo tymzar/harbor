@@ -1,67 +1,63 @@
-import { ACTIONS, type ActionId } from '../cssnet/contract'
-
-/** Controls that live in the adaptive grid (nav buttons stay fixed in the top bar). */
-export const GRID_ACTIONS: readonly ActionId[] = ['open-card', 'favorite', 'share', 'search', 'settings']
+import { CARDS, CARD_IDS, CATEGORIES, cardsOf, type CardId, type Category } from '../cssnet/contract'
+import type { Orders } from '../model/types'
 
 /**
- * Cold start: the grid never moves while fewer than this many training examples
- * exist (the first COLD_START interactions only teach the model).
+ * Hysteresis: a card only passes the one above it when its score is higher by this much,
+ * so near-ties do not flip back and forth on every click. A clear preference still
+ * re-sorts the whole category in one pass.
  */
-export const COLD_START = 3
-
+export const SWAP_MARGIN = 0.01
+/** A card passes another when it leads by about this many (decayed, weighted) presses. */
+export const SWAP_PRESSES = 0.6
 /**
- * The grid is ordered by an exponential moving average of the blended next-action
- * probabilities, not by the instantaneous prediction. Measured in e2e: with the raw
- * prediction a 4-step cycle (home, explore, open-card, favorite) swapped open-card and
- * favorite on every interaction, so targets moved under the pointer and clicks missed.
+ * Affinity is (count + prior/6) / (evidence + 1), so a lead of SWAP_PRESSES presses is a score
+ * gap of SWAP_PRESSES / (evidence + 1). Two equally used favourites settle at about +-0.5 presses
+ * apart (decay 0.97), so they do not swap on every press; a single press over zero still counts.
  */
-export const GRID_EMA = 0.25
+export function swapMargin(evidence: number): number {
+  return SWAP_MARGIN + SWAP_PRESSES / (evidence + 1)
+}
+/**
+ * Evidence before a category starts reordering: the decayed engagement mass in that
+ * category must reach this (about two deliberate presses).
+ */
+export const MIN_EVIDENCE = 1.8
 
-export function emaScores(prev: ArrayLike<number>, next: ArrayLike<number>, k = GRID_EMA): number[] {
-  return Array.from(next, (v, i) => (1 - k) * prev[i] + k * v)
+export function defaultOrders(): Orders {
+  return Object.fromEntries(CATEGORIES.map((c) => [c, cardsOf(c)])) as Orders
 }
 
-export const ADAPT = {
-  /** The moving element's probability must beat its prior by this much. */
-  priorMargin: 0.06,
-  /** ...and beat the element it displaces by this much (hysteresis). */
-  swapMargin: 0.03,
-}
-
-export function rank(scores: ArrayLike<number>): ActionId[] {
-  return ACTIONS.map((a, i) => ({ a, s: scores[i], i }))
-    .sort((p, q) => q.s - p.s || p.i - q.i)
-    .map((r) => r.a)
+/** Blend per card: (1 - alpha) * affinity + alpha * mlp. */
+export function blendScores(affinity: ArrayLike<number>, mlp: ArrayLike<number>, alpha: number): number[] {
+  return Array.from(affinity, (a, i) => (1 - alpha) * a + alpha * mlp[i])
 }
 
 /**
- * Guarded reorder: compute the score-sorted order, then move at most ONE
- * element (the first out-of-place one) to its target slot, and only if its
- * probability beats its prior by priorMargin and the displaced element by swapMargin.
+ * Re-sort `prev` by score, with hysteresis: repeated adjacent passes that swap a pair only
+ * when the lower card beats the upper one by more than `margin`. Converges to an order with
+ * no adjacent pair out of place by more than `margin` (a full reorder if the evidence says so).
  */
-export function nextGridOrder(
-  current: readonly ActionId[],
-  scores: ArrayLike<number>,
-  prior: ArrayLike<number>,
-  opts = ADAPT,
-): { order: ActionId[]; moved: ActionId | null } {
-  const score = (a: ActionId) => scores[ACTIONS.indexOf(a)]
-  const desired = [...current].sort((a, b) => score(b) - score(a) || current.indexOf(a) - current.indexOf(b))
-  const i = current.findIndex((a, k) => a !== desired[k])
-  if (i < 0) return { order: [...current], moved: null }
-  const mover = desired[i]
-  const displaced = current[i]
-  const pi = ACTIONS.indexOf(mover)
-  if (score(mover) - prior[pi] < opts.priorMargin) return { order: [...current], moved: null }
-  if (score(mover) - score(displaced) < opts.swapMargin) return { order: [...current], moved: null }
-  const order = current.filter((a) => a !== mover)
-  order.splice(i, 0, mover)
-  return { order, moved: mover }
-}
-
-/** Blend Markov and MLP probabilities: (1 - alpha) * markov + alpha * mlp. */
-export function blend(markov: ArrayLike<number>, mlp: ArrayLike<number>, alpha: number): Float32Array {
-  const out = new Float32Array(markov.length)
-  for (let i = 0; i < out.length; i++) out[i] = (1 - alpha) * markov[i] + alpha * mlp[i]
+export function reorder(prev: readonly CardId[], scores: ArrayLike<number>, margin = SWAP_MARGIN): CardId[] {
+  const s = (id: CardId) => scores[CARD_IDS.indexOf(id)]
+  const out = [...prev]
+  for (let pass = 0; pass < out.length; pass++) {
+    let swapped = false
+    for (let i = 0; i + 1 < out.length; i++) {
+      if (s(out[i + 1]) - s(out[i]) > margin) { [out[i], out[i + 1]] = [out[i + 1], out[i]]; swapped = true }
+    }
+    if (!swapped) break
+  }
   return out
+}
+
+/** Decayed engagement mass per category, from the affinity probabilities' backing counts. */
+export function evidence(counts: ArrayLike<number>, c: Category): number {
+  let e = 0
+  CARDS.forEach((k, i) => { if (k.category === c) e += counts[i] })
+  return e
+}
+
+/** Cards whose slot changed between two orders. */
+export function movedCards(a: readonly CardId[], b: readonly CardId[]): CardId[] {
+  return b.filter((id, i) => a[i] !== id)
 }

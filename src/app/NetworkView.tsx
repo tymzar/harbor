@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type Ref } from 'react'
-import { ACTIONS, type ActionId } from '../cssnet/contract'
 
 /**
  * Live picture of the 15-16-8 network.
@@ -19,11 +18,15 @@ export interface NetworkViewProps {
   out: number[]
   weights: { W1: ArrayLike<number>; W2: ArrayLike<number> } | null
   version: number
-  labels: Record<ActionId, string>
+  /** Output ids and display names, indexed like the network outputs (18). */
+  outIds: readonly string[]
+  outLabels: readonly string[]
+  /** Output indices to show, top to bottom (the current category, sorted by the network's own CSS output). */
+  visible: number[]
   inputLabels?: string[]
   inputs: number
   hiddenN: number
-  outputs: number
+  outputs?: number
   height?: number
   /** Where the CSS network mounts. Its nodes are drawn by the stylesheet itself. */
   hostRef?: Ref<HTMLDivElement>
@@ -38,7 +41,7 @@ type RGB = [number, number, number]
 const L1_SIGNALS = 56
 const L2_SIGNALS = 30
 const HOP_MS = 700
-const LABEL_W = 132
+const LABEL_W = 164
 const IN_LABEL_W = 96
 
 function toRGB(css: string, fallback: RGB): RGB {
@@ -73,24 +76,30 @@ function bez(x0: number, y0: number, x1: number, y1: number, t: number): [number
 }
 
 /** Node positions and output names for the CSS-driven nodes, as inherited custom properties. */
-function hostVars(geo: ReturnType<typeof geometry>, labels: Record<ActionId, string>, I: number, H: number, O: number): CSSProperties {
+function hostVars(geo: ReturnType<typeof geometry>, labels: readonly string[], visible: number[], I: number, H: number): CSSProperties {
   const v: Record<string, string> = { '--nv-in-x': `${geo.xs[0]}px`, '--nv-h-x': `${geo.xs[1]}px`, '--nv-o-x': `${geo.xs[2]}px` }
   for (let i = 0; i < I; i++) v[`--nv-in-y${i}`] = `${geo.ys[0][i]}px`
   for (let j = 0; j < H; j++) v[`--nv-h-y${j}`] = `${geo.ys[1][j]}px`
-  for (let k = 0; k < O; k++) { v[`--nv-o-y${k}`] = `${geo.ys[2][k]}px`; v[`--nv-label${k}`] = JSON.stringify(labels[ACTIONS[k]]) }
+  // Masked outputs (other categories) are invisible; park them on the first slot.
+  labels.forEach((l, k) => { v[`--nv-o-y${k}`] = `${geo.ys[2][Math.max(0, visible.indexOf(k))]}px`; v[`--nv-label${k}`] = JSON.stringify(l) })
   return v as CSSProperties
 }
 
 export function NetworkView(props: NetworkViewProps) {
-  const { inputs: I, hiddenN: H, outputs: O, height = 340 } = props
+  const { inputs: I, hiddenN: H, height = 340 } = props
+  const vis = props.visible
+  const O = vis.length
+  const outV = vis.map((k) => props.out[k] ?? 0)
+  const weightsV = props.weights ? { W1: props.weights.W1, W2: Float32Array.from(vis.flatMap((k) => Array.from(props.weights!.W2).slice(k * H, k * H + H))) } : null
+  const visKey = vis.join(',')
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [width, setWidth] = useState(0)
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
 
   // Latest props for the render loop, without re-subscribing it.
-  const live = useRef(props)
-  live.current = props
+  const live = useRef({ ...props, out: outV, weights: weightsV, visKey })
+  live.current = { ...props, out: outV, weights: weightsV, visKey }
 
   // Displayed (animated) values and pending targets.
   const disp = useRef({ x: new Float32Array(I), h: new Float32Array(H), o: new Float32Array(O).fill(1 / O) })
@@ -117,7 +126,7 @@ export function NetworkView(props: NetworkViewProps) {
   }, [])
 
   // New forward pass (inputs or outputs changed): schedule the wave.
-  const passKey = `${props.x.map((v) => v.toFixed(4)).join(',')}|${props.out.map((v) => v.toFixed(5)).join(',')}`
+  const passKey = `${props.x.map((v) => v.toFixed(4)).join(',')}|${outV.map((v) => v.toFixed(5)).join(',')}|${visKey}`
   useEffect(() => {
     const p = live.current
     const now = performance.now()
@@ -170,7 +179,7 @@ export function NetworkView(props: NetworkViewProps) {
     }
 
     const drawEdges = (w: NetworkViewProps['weights']) => {
-      const key = w ? `${width}|${height}|${dark}|${Array.from(w.W1).reduce((a, b) => a + Math.abs(b), 0).toFixed(4)}|${Array.from(w.W2).reduce((a, b) => a + Math.abs(b), 0).toFixed(4)}` : `${width}|${height}|${dark}|none`
+      const key = w ? `${width}|${height}|${dark}|${live.current.visKey}|${Array.from(w.W1).reduce((a, b) => a + Math.abs(b), 0).toFixed(4)}|${Array.from(w.W2).reduce((a, b) => a + Math.abs(b), 0).toFixed(4)}` : `${width}|${height}|${dark}|none`
       if (cache.current.key === key && cache.current.canvas) return cache.current.canvas
       const off = cache.current.canvas ?? document.createElement('canvas')
       off.width = canvas.width; off.height = canvas.height
@@ -310,19 +319,19 @@ export function NetworkView(props: NetworkViewProps) {
   // Output labels as real text, aligned to the output nodes.
   const geo = width ? geometry(width, height, [I, H, O]) : null
   let top = 0
-  props.out.forEach((v, k) => { if (v > (props.out[top] ?? 0)) top = k })
+  outV.forEach((v, k) => { if (v > (outV[top] ?? 0)) top = k })
   const wsig = props.weights ? Array.from(props.weights.W1).reduce((a, b) => a + Math.abs(b), 0).toFixed(3) : 'none'
 
   return (
     <div
       ref={wrapRef}
       data-testid="network-view"
-      data-top={ACTIONS[top]}
+      data-top={props.outIds[vis[top]]}
       data-weights={wsig}
       className="relative w-full select-none"
       style={{ height }}
       role="img"
-      aria-label={`Network: ${I} inputs, ${H} hidden, ${O} outputs. Top output ${props.labels[ACTIONS[top]]}.`}
+      aria-label={`Network: ${I} inputs, ${H} hidden, ${props.outIds.length} outputs, ${O} in scope. Top: ${props.outLabels[vis[top]]}.`}
     >
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
       <div
@@ -330,7 +339,7 @@ export function NetworkView(props: NetworkViewProps) {
         data-testid="cssnet-host"
         aria-hidden
         className="pointer-events-none absolute inset-0"
-        style={geo ? hostVars(geo, props.labels, I, H, O) : undefined}
+        style={geo ? hostVars(geo, props.outLabels, vis, I, H) : undefined}
       />
       {geo && width >= 560 && (props.inputLabels ?? []).slice(0, I).map((l, i) => (
         <div
@@ -341,16 +350,16 @@ export function NetworkView(props: NetworkViewProps) {
           {l}
         </div>
       ))}
-      {geo && !props.cssNodes && ACTIONS.slice(0, O).map((a, k) => (
+      {geo && !props.cssNodes && vis.map((ko, k) => (
         <div
-          key={a}
+          key={ko}
           data-testid="network-output"
-          data-action={a}
+          data-action={props.outIds[ko]}
           className={`absolute flex -translate-y-1/2 items-baseline gap-2 text-xs ${k === top ? 'font-medium text-foreground' : 'text-muted'}`}
           style={{ left: geo.xs[2] + 14, top: geo.ys[2][k], width: width < 560 ? 90 : LABEL_W }}
         >
-          <span className="truncate">{props.labels[a]}</span>
-          <span className="ml-auto tabular-nums opacity-70">{((props.out[k] ?? 0) * 100).toFixed(0)}%</span>
+          <span className="truncate">{props.outLabels[ko]}</span>
+          <span className="ml-auto tabular-nums opacity-70">{((outV[k] ?? 0) * 100).toFixed(0)}%</span>
         </div>
       ))}
     </div>

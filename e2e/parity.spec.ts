@@ -1,40 +1,35 @@
 import { expect, test } from '@playwright/test'
-import type { CssNetMode } from '../src/cssnet/contract'
-import { NORMAL, RUSHED, CALM, humanClick, maxAbsDiff, openFresh, recordMetrics, resetMouse } from './helpers'
+import { CARD_IDS, CARDS, type CssNetMode } from '../src/cssnet/contract'
+import { CALM, NORMAL, RUSHED, engage, enter, maxAbsDiff, openFresh, recordMetrics, resetMouse } from './helpers'
 
-/**
- * Tolerances. calc: < 1e-3 as specified. hybrid/animation: MODE_NOTES in
- * src/cssnet/index.ts documents ~5e-6 precision (measured max |dp| 4.5e-6),
- * so 1e-4 leaves a 20x margin while still catching a real divergence.
- */
+/** calc < 1e-3 as specified; hybrid/animation documented ~5e-6, so 1e-4 is a 20x margin. */
 const TOL: Record<CssNetMode, number> = { calc: 1e-3, hybrid: 1e-4, animation: 1e-4 }
 const results: Record<string, unknown> = {}
 
 for (const mode of ['calc', 'hybrid', 'animation'] as const) {
-  test(`CSS forward pass matches the JS reference in ${mode} mode`, async ({ page }) => {
+  test(`CSS forward pass (masked to the category) matches the JS reference in ${mode} mode`, async ({ page }) => {
     await openFresh(page); resetMouse()
     await page.getByTestId('mode-select').selectOption(mode)
-    expect((await page.evaluate(() => window.__smartweb.stats())).mode).toBe(mode)
     expect(await page.evaluate(() => window.__smartweb.netSource())).toBe('cssnet')
     await expect(page.locator(`[data-testid=cssnet-host] [data-cssnet=${mode}]`)).toHaveCount(1)
-
-    const journey = ['nav-explore', 'open-card', 'favorite', 'share', 'nav-library', 'open-card', 'settings', 'nav-home', 'favorite', 'search'] as const
+    const steps = [['drafts', 'open'], ['team', 'share'], ['nav', 'explore'], ['moss', 'open'], ['tidepools', 'favorite'], ['nav', 'library'], ['reading', 'open'], ['nav', 'home'], ['drafts', 'open']] as const
     const intens = [NORMAL, RUSHED, CALM]
     const diffs: number[] = []
     const outs: number[][] = []
-    for (let k = 0; k < journey.length; k++) {
-      await humanClick(page, journey[k], intens[k % 3])
-      await page.evaluate(() => window.__smartweb.idle())
-      const { css, js } = await page.evaluate(() => ({ css: window.__smartweb.cssOutputs(), js: window.__smartweb.jsOutputs() }))
-      expect(css).toHaveLength(8)
-      expect(css.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 3)
+    for (let k = 0; k < steps.length; k++) {
+      const [a, b] = steps[k]
+      if (a === 'nav') await enter(page, b, intens[k % 3]); else await engage(page, a, b, intens[k % 3])
+      const { css, js, cat } = await page.evaluate(() => ({ css: window.__smartweb.cssOutputs(), js: window.__smartweb.jsOutputs(), cat: window.__smartweb.category() }))
+      expect(css).toHaveLength(18)
+      const inCat = CARD_IDS.map((_, i) => CARDS[i].category === cat)
+      expect(css.filter((_, i) => inCat[i]).reduce((x, y) => x + y, 0)).toBeCloseTo(1, 3)
+      for (const [i, v] of css.entries()) if (!inCat[i]) expect(v).toBeLessThan(1e-9)
       diffs.push(maxAbsDiff(css, js))
       outs.push(css)
     }
     const worst = Math.max(...diffs)
-    // The outputs must actually move with training/input (a frozen net would trivially "match").
     const spread = Math.max(...outs.slice(1).map((o) => maxAbsDiff(o, outs[0])))
-    results[mode] = { interactions: journey.length, maxAbsDiff: worst, perInteraction: diffs, tolerance: TOL[mode], outputSpread: spread }
+    results[mode] = { interactions: steps.length, maxAbsDiff: worst, perInteraction: diffs, tolerance: TOL[mode], outputSpread: spread }
     recordMetrics('parity', results)
     expect(spread).toBeGreaterThan(0.01)
     expect(worst).toBeLessThan(TOL[mode])

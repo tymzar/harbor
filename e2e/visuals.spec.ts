@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
-import type { ActionId } from '../src/cssnet/contract'
+import { CARD_IDS } from '../src/cssnet/contract'
 import { CALM, NORMAL, RUSHED, SCREENS, humanClick, l1, openFresh, recordMetrics, resetMouse } from './helpers'
 
 mkdirSync(SCREENS, { recursive: true })
@@ -45,7 +45,7 @@ test('pattern layer and network view respond to the network', async ({ page }) =
   await page.getByTestId('network-view').screenshot({ path: join(SCREENS, 'network-before.png') })
   await page.evaluate(() => scrollTo(0, 0)) // element screenshots scroll; humanClick aims in the viewport
 
-  const journey: ActionId[] = ['nav-explore', 'open-card', 'favorite', 'share', 'nav-library', 'open-card']
+  const journey = ['card-drafts-open', 'card-team-share', 'card-drafts-favorite', 'card-drafts-open', 'card-team-open', 'card-calendar-open']
   const intens = [CALM, RUSHED, NORMAL]
   for (let k = 0; k < journey.length; k++) await humanClick(page, journey[k], intens[k % 3])
   await page.waitForTimeout(TRANSITION_SETTLE)
@@ -72,9 +72,9 @@ test('pattern layer and network view respond to the network', async ({ page }) =
   // The network view draws the live weights and shows the CSS engine's own outputs.
   expect(d1.lit, 'canvas has drawn content').toBeGreaterThan(500)
   expect(d1.weights).not.toBe(d0.weights)
-  expect(d1.outputs).toHaveLength(8)
+  expect(d1.outputs).toHaveLength(18) // all outputs mounted; the stylesheet masks other categories
   const top = css.indexOf(Math.max(...css))
-  expect(d1.top, 'network view top output = CSS argmax').toBe(['nav-home', 'nav-explore', 'nav-library', 'search', 'open-card', 'favorite', 'share', 'settings'][top])
+  expect(d1.top, 'network view top output = CSS argmax').toBe(CARD_IDS[top])
   // Nodes are drawn by CSS: printed percentages, argmax flag and hidden sizes come from the stylesheet.
   for (const [k, o] of d1.outputs.entries()) expect(o.pct, `output ${k} pct`).toBe(Math.round(css[k] * 100))
   expect(d1.outputs.map((o) => o.top).indexOf(1), 'CSS argmax flag').toBe(top)
@@ -95,14 +95,18 @@ async function checkNodes(page: Page, mode: string) {
 
 test('CSS-driven nodes track the network in every engine mode', async ({ page }) => {
   await openFresh(page); resetMouse()
-  for (const a of ['nav-explore', 'open-card', 'favorite', 'share'] as ActionId[]) await humanClick(page, a, NORMAL)
+  for (const id of ['nav-explore', 'card-moss-open', 'card-tidepools-favorite', 'card-moss-share']) await humanClick(page, id, NORMAL)
   for (const mode of ['calc', 'hybrid', 'animation']) {
     await page.getByTestId('mode-select').selectOption(mode)
-    await humanClick(page, 'open-card', NORMAL)
+    await humanClick(page, 'card-tidepools-open', NORMAL)
     await checkNodes(page, mode)
     const pcts = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=output]')]
       .sort((a, b) => +a.dataset.k! - +b.dataset.k!).map((o) => Number(o.computedStyleMap().get('--cn-pct')!.toString())))
     const css = await page.evaluate(() => window.__smartweb.cssOutputs())
     expect(pcts, `${mode}: CSS counter percentages`).toEqual(css.map((v) => Math.round(v * 100)))
+    // Masked outputs (other categories) are invisible, in-scope ones visible: opacity is var(--cn-m{k}).
+    const op = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=output]')]
+      .sort((a, b) => +a.dataset.k! - +b.dataset.k!).map((o) => Number(getComputedStyle(o).opacity)))
+    expect(op.filter((v) => v === 1)).toHaveLength(6)
   }
 })

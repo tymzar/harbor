@@ -1,36 +1,40 @@
-import { type ActionId, type CssNet, type CssNetMode, type SmartWebTestHook } from '../cssnet/contract'
-import { PRIOR, SHAPE } from '../model/config'
+import {
+  CARD_IDS, CATEGORIES, categoryMask, type ActionId, type CardId, type Category, type CssNet, type CssNetMode, type SmartWebTestHook, type Verb,
+} from '../cssnet/contract'
+import { SHAPE } from '../model/config'
 import { ModelClient } from '../model/client'
 import { fragmentParam } from '../model/quantize'
-import type { ModelSnapshot, PersistedModel } from '../model/types'
+import type { ModelSnapshot, ModelStats, Orders, PersistedModel } from '../model/types'
 import { FeatureExtractor, attachDomListeners } from '../signals/extractor'
 import { selectModelFeatures } from '../signals/features'
-import { COLD_START, GRID_ACTIONS, blend, emaScores, nextGridOrder, rank } from './adaptive'
+import { MIN_EVIDENCE, blendScores, defaultOrders, movedCards, reorder, swapMargin } from './adaptive'
+import { NAV_ACTION } from './catalog'
 import { isProbVector, loadCssNetModule, mountNet, type CssNetModule } from './cssnetBridge'
-import { generateJourney, synthesizeStep } from './replay'
+import { generateJourney, stepTestId, synthesizeStep } from './replay'
 
-export type View = 'nav-home' | 'nav-explore' | 'nav-library'
 const LATENCY_KEEP = 100
 
-/**
- * Test-only extras on window.__smartweb, beyond the contract's SmartWebTestHook.
- * Read-only views of controller state used by the Playwright suite.
- */
+/** Test-only extras on window.__smartweb, beyond the contract's SmartWebTestHook. */
 export interface SmartWebTestExtras {
   netSource(): 'cssnet' | 'fallback' | 'none'
   /** Hidden activations read back from the CSS net. */
   hidden(): number[]
   /** Current MLP weights (row-major, as the contract's NetWeights). */
   weights(): { W1: number[]; b1: number[]; W2: number[]; b2: number[] } | null
-  markov(): number[]
-  blended(): number[]
+  /** Blended score per card (18). */
+  scores(): number[]
+  affinity(): number[]
+  evidence(): Record<Category, number>
   alpha(): number
-  gridOrder(): ActionId[]
+  orders(): Orders
   /** Double-rAF latencies (ms, same t0 as latencies()); an upper bound kept for comparison. */
   latenciesDoubleRaf(): number[]
   /** Resolves when all queued model work has been applied. */
   idle(): Promise<void>
 }
+
+/** How a snapshot may change the layout. */
+type Adapt = 'none' | 'live' | 'entry' | 'all'
 
 export interface AppState {
   ready: boolean
@@ -38,9 +42,15 @@ export interface AppState {
   netSource: 'cssnet' | 'fallback' | 'none'
   jsForwardSource: string
   workerKind: 'worker' | 'local'
-  ranking: ActionId[]
-  blended: number[]
-  markov: number[]
+  category: Category
+  orders: Orders
+  /** Cards that changed slot in the last reorder (for a brief highlight). */
+  moved: CardId[]
+  /** Increments whenever an order changes (keys the highlight). */
+  orderVersion: number
+  scores: number[]
+  affinity: number[]
+  evidence: Record<Category, number>
   mlpWorker: number[]
   css: number[]
   js: number[]
@@ -50,18 +60,10 @@ export interface AppState {
   alpha: number
   x: number[]
   raw: number[]
-  stats: { examples: number; markovAcc: number; mlpAcc: number; accN: number }
-  gridOrder: ActionId[]
-  /** EMA of blended scores that orders the grid (see GRID_EMA). */
-  gridScores: number[]
-  lastMoved: ActionId | null
-  lastAction: ActionId | null
-  view: View
-  favorites: number
-  shares: number
-  opened: number
-  compact: boolean
-  query: string
+  stats: ModelStats
+  /** Engagements per card this session. */
+  engaged: Partial<Record<CardId, number>>
+  favorites: Partial<Record<CardId, boolean>>
   latencies: number[]
   latenciesDoubleRaf: number[]
   replaying: boolean
@@ -71,16 +73,16 @@ export interface AppState {
 }
 
 const zeros = (n: number) => new Array(n).fill(0)
+const noEvidence = () => Object.fromEntries(CATEGORIES.map((c) => [c, 0])) as Record<Category, number>
 
 function initialState(): AppState {
   return {
     ready: false, mode: 'calc', netSource: 'none', jsForwardSource: 'local', workerKind: 'local',
-    ranking: rank(PRIOR), blended: [...PRIOR], markov: [...PRIOR], mlpWorker: [...PRIOR], css: [...PRIOR], js: [...PRIOR],
-    hidden: zeros(SHAPE.hidden), cssJsMaxDiff: 0, cssValid: true, alpha: 0,
-    x: zeros(SHAPE.inputs), raw: [], stats: { examples: 0, markovAcc: 0, mlpAcc: 0, accN: 0 },
-    gridOrder: [...GRID_ACTIONS], gridScores: [...PRIOR], lastMoved: null, lastAction: null, view: 'nav-home',
-    favorites: 0, shares: 0, opened: 0, compact: false, query: '', latencies: [], latenciesDoubleRaf: [], replaying: false,
-    messages: [], shareLink: null, version: 0,
+    category: 'home', orders: defaultOrders(), moved: [], orderVersion: 0,
+    scores: zeros(SHAPE.outputs), affinity: zeros(SHAPE.outputs), evidence: noEvidence(), mlpWorker: zeros(SHAPE.outputs),
+    css: zeros(SHAPE.outputs), js: zeros(SHAPE.outputs), hidden: zeros(SHAPE.hidden), cssJsMaxDiff: 0, cssValid: true, alpha: 0,
+    x: zeros(SHAPE.inputs), raw: [], stats: { examples: 0, affinityAcc: 0, mlpAcc: 0, blendAcc: 0, accN: 0 },
+    engaged: {}, favorites: {}, latencies: [], latenciesDoubleRaf: [], replaying: false, messages: [], shareLink: null, version: 0,
   }
 }
 
@@ -93,8 +95,6 @@ export class SmartWebController {
   private net: CssNet | null = null
   private host: HTMLElement | null = null
   private snap: ModelSnapshot | null = null
-  /** Live MLP weights for visualisation (row-major per contract). */
-  currentWeights() { return this.snap?.weights ?? null }
   private detach: (() => void) | null = null
   private chain: Promise<unknown> = Promise.resolve()
   private pendingLatencyT0: number | null = null
@@ -104,6 +104,9 @@ export class SmartWebController {
   constructor(opts: { makeClient?: () => ModelClient } = {}) {
     this.makeClient = opts.makeClient ?? (() => new ModelClient())
   }
+
+  /** Live MLP weights for visualisation (row-major per contract). */
+  currentWeights() { return this.snap?.weights ?? null }
 
   subscribe = (fn: () => void) => { this.listeners.add(fn); return () => { this.listeners.delete(fn) } }
   getState = () => this.state
@@ -133,6 +136,10 @@ export class SmartWebController {
     if (navigator.storage?.persist) {
       navigator.storage.persist().then((ok) => this.log(`storage.persist(): ${ok}`)).catch(() => undefined)
     }
+    // Never lose the last interaction to the 1 s save debounce.
+    const flush = () => { void this.client?.flush() }
+    addEventListener('pagehide', flush)
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush() })
     this.mod = await loadCssNetModule()
     this.mod.errors.forEach((e) => this.log(e))
     const mounted = mountNet(this.mod, host, SHAPE, this.state.mode)
@@ -141,14 +148,16 @@ export class SmartWebController {
     this.client = this.makeClient()
     const fragment = typeof location !== 'undefined' ? fragmentParam(location.hash) : null
     const raw = this.fx.idle()
-    const r = await this.enqueue(() => this.client!.init(selectModelFeatures(raw), fragment))
+    const r = await this.enqueue(() => this.client!.init(selectModelFeatures(raw), this.state.category, fragment))
     if (r.error) this.log(r.error)
     if (r.source === 'fragment') {
       this.log('model imported from URL fragment')
       history.replaceState(null, '', location.pathname + location.search)
     } else if (r.source === 'idb') this.log('model restored from IndexedDB')
     this.set({ ready: true, netSource: mounted.source, jsForwardSource: this.mod.jsForwardSource, workerKind: this.client.kind, raw: Array.from(raw) })
-    this.apply(r.snapshot, false)
+    // On load: restore the saved orders, then bring every category up to date.
+    if (r.snapshot.orders) this.set({ orders: r.snapshot.orders })
+    this.apply(r.snapshot, 'all')
   }
 
   stop(): void {
@@ -158,16 +167,23 @@ export class SmartWebController {
     this.started = false
   }
 
-  /** Push a model snapshot through the CSS net and recompute ranking + grid. */
-  private apply(s: ModelSnapshot, adapt: boolean): void {
+  /**
+   * Push a snapshot through the CSS net (current category, masked) and recompute the order.
+   * The current category is ordered from the CSS-computed MLP output; other categories use
+   * the worker's JS forward of their own context (the CSS net computes one category at a time).
+   */
+  private apply(s: ModelSnapshot, adapt: Adapt): void {
     this.snap = s
+    const c = this.state.category
+    const mask = categoryMask(c)
+    const x = Float32Array.from(s.xByCategory[c])
     let css: Float32Array = s.mlp
     let hidden: Float32Array = new Float32Array(SHAPE.hidden)
     let cssValid = false
     if (this.net) {
       try {
         this.net.setWeights(s.weights)
-        this.net.setInputs(s.x)
+        this.net.setInputs(x, mask)
         css = this.net.readOutputs()
         hidden = this.net.readHidden()
         cssValid = isProbVector(css, SHAPE.outputs)
@@ -175,59 +191,76 @@ export class SmartWebController {
         this.log(`css net error: ${(e as Error).message}`)
       }
     }
-    const js = this.mod ? this.mod.jsForward(SHAPE, s.weights, s.x).out : s.mlp
-    const mlpForRanking = cssValid ? css : s.mlp
-    const blended = blend(s.markov, mlpForRanking, s.alpha)
+    const js = this.mod ? this.mod.jsForward(SHAPE, s.weights, x, mask).out : s.mlp
     let maxDiff = 0
-    for (let i = 0; i < SHAPE.outputs; i++) maxDiff = Math.max(maxDiff, Math.abs((css[i] ?? NaN) - js[i]))
-    // Guardrail: no realignment during the cold start (first COLD_START interactions).
-    const gridScores = adapt ? emaScores(this.state.gridScores, blended) : this.state.gridScores
-    const grid = adapt && s.stats.examples > COLD_START ? nextGridOrder(this.state.gridOrder, gridScores, PRIOR) : { order: this.state.gridOrder, moved: null }
+    for (let i = 0; i < SHAPE.outputs; i++) if (mask[i]) maxDiff = Math.max(maxDiff, Math.abs((css[i] ?? NaN) - js[i]))
+    const mlp = Array.from(s.mlp)
+    if (cssValid) CARD_IDS.forEach((_, i) => { if (mask[i]) mlp[i] = css[i] })
+    const scores = blendScores(s.affinity, mlp, s.alpha)
+
+    const orders = { ...this.state.orders }
+    let moved: CardId[] = []
+    const cats = adapt === 'all' ? CATEGORIES : adapt === 'none' ? [] : [c]
+    for (const k of cats) {
+      if (s.evidence[k] < MIN_EVIDENCE) continue
+      const next = reorder(orders[k], scores, swapMargin(s.evidence[k]))
+      if (k === c) moved = movedCards(orders[k], next)
+      orders[k] = next
+    }
+    const changed = CATEGORIES.some((k) => orders[k].join() !== this.state.orders[k].join())
+    if (changed) void this.client?.setOrders(orders)
+
     this.set({
-      ranking: rank(blended), blended: Array.from(blended), markov: Array.from(s.markov), mlpWorker: Array.from(s.mlp),
+      orders, moved: changed ? moved : this.state.moved, orderVersion: this.state.orderVersion + (changed ? 1 : 0), scores, affinity: Array.from(s.affinity), evidence: s.evidence, mlpWorker: Array.from(s.mlp),
       css: Array.from(css), js: Array.from(js), hidden: Array.from(hidden), cssJsMaxDiff: maxDiff, cssValid,
-      alpha: s.alpha, x: Array.from(s.x), stats: s.stats, gridOrder: grid.order, gridScores, lastMoved: grid.moved,
+      alpha: s.alpha, x: Array.from(x), stats: s.stats,
     })
   }
 
-  /** A learnable action happened (user, suggestion click, or replay). */
-  act(action: ActionId, opts: { t?: number; t0?: number } = {}): Promise<void> {
+  private latencyStart(now: number, t0?: number) {
+    // Click-to-pixel starts at pointerup for presses (react-aria onPress fires on release), else now.
+    return t0 ?? this.fx.lastReleaseTime(now, 400) ?? now
+  }
+
+  /** Switch category: the learned order for that category is applied on entry. */
+  enter(category: Category, opts: { t?: number; t0?: number } = {}): Promise<void> {
     const now = performance.now()
     const t = opts.t ?? now
-    // Click-to-pixel starts at the event that fires the action: pointerup for presses
-    // (HeroUI/react-aria onPress fires on release), else now (keyboard, programmatic).
-    const t0 = opts.t0 ?? this.fx.lastReleaseTime(now) ?? now
-    const raw = this.fx.snapshot(action, t)
-    this.applyActionEffect(action)
+    const t0 = this.latencyStart(now, opts.t0)
+    const raw = this.fx.snapshot(NAV_ACTION[category], t)
+    this.set({ category, moved: [] })
     return this.enqueue(async () => {
       if (!this.client) return
-      const s = await this.client.step(selectModelFeatures(raw), action)
+      const s = await this.client.predict(selectModelFeatures(raw), category)
       this.pendingLatencyT0 = t0
-      this.set({ raw: Array.from(raw), lastAction: action })
-      this.apply(s, true)
+      this.apply(s, 'entry')
     })
   }
 
-  private applyActionEffect(action: ActionId): void {
-    const st = this.state
-    switch (action) {
-      case 'nav-home': case 'nav-explore': case 'nav-library': this.set({ view: action }); break
-      case 'open-card': this.set({ opened: st.opened + 1 }); break
-      case 'favorite': this.set({ favorites: st.favorites + 1 }); break
-      case 'share': this.set({ shares: st.shares + 1 }); break
-      case 'settings': this.set({ compact: !st.compact }); break
-      case 'search': break
-    }
+  /** The user engaged a card in the current category: train, then re-sort the category live. */
+  engage(card: CardId, verb: Verb, opts: { t?: number; t0?: number } = {}): Promise<void> {
+    const now = performance.now()
+    const t = opts.t ?? now
+    const t0 = this.latencyStart(now, opts.t0)
+    const raw = this.fx.snapshot(verb as ActionId, t)
+    const category = this.state.category
+    const engaged = { ...this.state.engaged, [card]: (this.state.engaged[card] ?? 0) + 1 }
+    const favorites = verb === 'favorite' ? { ...this.state.favorites, [card]: !this.state.favorites[card] } : this.state.favorites
+    this.set({ engaged, favorites })
+    return this.enqueue(async () => {
+      if (!this.client) return
+      const s = await this.client.step(selectModelFeatures(raw), card, verb, category, t)
+      this.pendingLatencyT0 = t0
+      this.set({ raw: Array.from(raw) })
+      this.apply(s, 'live')
+    })
   }
-
-  setQuery(q: string): void { this.set({ query: q }) }
 
   /**
    * Called by the UI after React committed a state version. Click-to-pixel ends when the
    * frame containing that commit has been produced: a rAF callback runs just before the
    * frame's paint, and a message posted from it runs right after that frame (standard
-   * "next paint" approximation). The double-rAF number (one frame later) is kept as an
-   * upper bound in latenciesDoubleRaf.
+   * "next paint" approximation). The double-rAF number is kept as an upper bound.
    */
   committed(): void {
     const t0 = this.pendingLatencyT0
@@ -257,15 +290,15 @@ export class SmartWebController {
     if (m.error) this.log(m.error)
     this.net = m.net
     this.set({ netSource: m.source })
-    if (this.snap) this.apply(this.snap, false)
+    if (this.snap) this.apply(this.snap, 'none')
   }
 
   reset(): Promise<void> {
     return this.enqueue(async () => {
       if (!this.client) return
-      const s = await this.client.reset(selectModelFeatures(this.fx.idle()))
-      this.set({ gridOrder: [...GRID_ACTIONS], gridScores: [...PRIOR], lastMoved: null, latencies: [], latenciesDoubleRaf: [], lastAction: null })
-      this.apply(s, false)
+      const s = await this.client.reset(selectModelFeatures(this.fx.idle()), this.state.category)
+      this.set({ orders: defaultOrders(), moved: [], latencies: [], latenciesDoubleRaf: [], engaged: {}, favorites: {} })
+      this.apply(s, 'none')
       this.log('model reset to prior')
     })
   }
@@ -295,8 +328,9 @@ export class SmartWebController {
     await this.enqueue(async () => {
       if (!this.client) return
       const model = JSON.parse(text) as PersistedModel
-      const s = await this.client.importModel(model, selectModelFeatures(this.fx.idle()))
-      this.apply(s, false)
+      const s = await this.client.importModel(model, selectModelFeatures(this.fx.idle()), this.state.category)
+      this.set({ orders: s.orders ?? defaultOrders() })
+      this.apply(s, 'all')
       this.log(`imported model (${s.stats.examples} examples)`)
     })
   }
@@ -304,14 +338,15 @@ export class SmartWebController {
   async importFragment(fragment: string): Promise<void> {
     await this.enqueue(async () => {
       if (!this.client) return
-      const s = await this.client.importFragment(fragment, selectModelFeatures(this.fx.idle()))
-      this.apply(s, false)
+      const s = await this.client.importFragment(fragment, selectModelFeatures(this.fx.idle()), this.state.category)
+      this.set({ orders: s.orders ?? defaultOrders() })
+      this.apply(s, 'all')
       this.log('imported model from link')
     })
   }
 
-  /** Seeded scripted journey with synthetic pointer dynamics on a virtual clock. */
-  async replay(seed = 42, length = 40, stepDelayMs = 120): Promise<void> {
+  /** Seeded journey with clear per-category preferences, synthetic pointer dynamics, virtual clock. */
+  async replay(seed = 42, length = 48, stepDelayMs = 110): Promise<void> {
     if (this.state.replaying) return
     this.set({ replaying: true })
     const steps = generateJourney(seed, length)
@@ -320,13 +355,16 @@ export class SmartWebController {
     try {
       for (let k = 0; k < steps.length; k++) {
         const step = steps[k]
-        const el = document.querySelector(`[data-testid="action-${step.action}"]`)
+        const id = stepTestId(step.target)
+        const el = document.querySelector(`[data-testid="${id}"]`)
         const r = el?.getBoundingClientRect() ?? { left: pos.x - 40, top: pos.y - 20, width: 80, height: 40 }
         const rect = { left: r.left, top: r.top, width: r.width, height: r.height }
-        const out = synthesizeStep(this.fx, step, pos, rect, `action-${step.action}`, vt, seed * 1000 + k)
+        const out = synthesizeStep(this.fx, step, pos, rect, id, vt, seed * 1000 + k)
         vt = out.t
         pos = out.pos
-        await this.act(step.action, { t: vt, t0: performance.now() })
+        const tgt = step.target
+        if (tgt.kind === 'nav') await this.enter(tgt.category, { t: vt, t0: performance.now() })
+        else await this.engage(tgt.card, tgt.verb, { t: vt, t0: performance.now() })
         await new Promise((res) => setTimeout(res, stepDelayMs))
       }
     } finally {
@@ -340,10 +378,15 @@ export class SmartWebController {
   private installHook(): void {
     const hook: SmartWebTestHook & SmartWebTestExtras = {
       cssOutputs: () => (this.net ? Array.from(this.net.readOutputs()) : []),
-      jsOutputs: () => (this.snap && this.mod ? Array.from(this.mod.jsForward(SHAPE, this.snap.weights, this.snap.x).out) : []),
+      jsOutputs: () => {
+        if (!this.snap || !this.mod) return []
+        const c = this.state.category
+        return Array.from(this.mod.jsForward(SHAPE, this.snap.weights, Float32Array.from(this.snap.xByCategory[c]), categoryMask(c)).out)
+      },
       features: () => [...this.state.x],
-      ranking: () => [...this.state.ranking],
-      stats: () => ({ examples: this.state.stats.examples, markovAcc: this.state.stats.markovAcc, mlpAcc: this.state.stats.mlpAcc, mode: this.state.mode }),
+      category: () => this.state.category,
+      order: (c) => [...this.state.orders[c ?? this.state.category]],
+      stats: () => ({ examples: this.state.stats.examples, affinityAcc: this.state.stats.affinityAcc, mlpAcc: this.state.stats.mlpAcc, alpha: this.state.alpha, mode: this.state.mode }),
       latencies: () => [...this.state.latencies],
       setMode: (m) => this.setMode(m),
       reset: () => this.reset(),
@@ -353,18 +396,14 @@ export class SmartWebController {
         const w = this.snap?.weights
         return w ? { W1: Array.from(w.W1), b1: Array.from(w.b1), W2: Array.from(w.W2), b2: Array.from(w.b2) } : null
       },
-      markov: () => [...this.state.markov],
-      blended: () => [...this.state.blended],
+      scores: () => [...this.state.scores],
+      affinity: () => [...this.state.affinity],
+      evidence: () => ({ ...this.state.evidence }),
       alpha: () => this.state.alpha,
-      gridOrder: () => [...this.state.gridOrder],
+      orders: () => JSON.parse(JSON.stringify(this.state.orders)) as Orders,
       latenciesDoubleRaf: () => [...this.state.latenciesDoubleRaf],
       idle: () => this.enqueue(async () => undefined),
     }
     ;(window as unknown as { __smartweb: SmartWebTestHook & SmartWebTestExtras }).__smartweb = hook
   }
-}
-
-export const ACTION_LABELS: Record<ActionId, string> = {
-  'nav-home': 'Home', 'nav-explore': 'Explore', 'nav-library': 'Library', search: 'Search',
-  'open-card': 'Open', favorite: 'Favorite', share: 'Share', settings: 'Compact mode',
 }

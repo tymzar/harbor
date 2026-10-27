@@ -1,25 +1,20 @@
 import { expect, test } from '@playwright/test'
-import type { ActionId } from '../src/cssnet/contract'
-import { NORMAL, atMostOneMoved, domGridOrder, humanClick, openFresh, recordMetrics, resetMouse } from './helpers'
+import { cardsOf } from '../src/cssnet/contract'
+import { NORMAL, domOrder, engage, openFresh, recordMetrics, resetMouse } from './helpers'
 
-test('realignment: nothing moves during cold start, then at most one grid element per interaction', async ({ page }) => {
+test('evidence gate and hysteresis: no move on the first press, no flip-flop between equal favourites', async ({ page }) => {
   await openFresh(page); resetMouse()
-  // A journey that strongly favours controls at the bottom of the grid, so it has a reason to move.
-  const journey: ActionId[] = []
-  for (let r = 0; r < 6; r++) journey.push('settings', 'share', 'search')
-  const initial = await domGridOrder(page)
-  const orders: string[][] = [initial]
-  for (const a of journey) {
-    await humanClick(page, a, NORMAL)
-    await page.evaluate(() => window.__smartweb.idle())
-    await page.waitForTimeout(50) // let React commit the new order
-    orders.push(await domGridOrder(page))
+  await engage(page, 'notes', 'open', NORMAL)
+  expect(await domOrder(page), 'one press is not a preference yet').toEqual(cardsOf('home'))
+  // Alternate two cards equally for a while: once they lead, they must not swap on every press.
+  const orders: string[][] = []
+  for (let k = 0; k < 12; k++) {
+    await engage(page, k % 2 ? 'inbox' : 'notes', 'open', NORMAL)
+    orders.push(await domOrder(page))
   }
-  const moves: number[] = orders.slice(1).map((o, i) => (o.join() === orders[i].join() ? 0 : 1))
-  recordMetrics('guardrails', { journey, orders, movedPerInteraction: moves })
-  for (let i = 1; i <= 3; i++) expect(orders[i], `cold start interaction ${i}`).toEqual(initial)
-  for (let i = 1; i < orders.length; i++) expect(atMostOneMoved(orders[i - 1], orders[i]), `interaction ${i}: ${orders[i - 1]} -> ${orders[i]}`).toBe(true)
-  expect(moves.reduce((a, b) => a + b, 0), 'the grid should realign at least once').toBeGreaterThan(0)
-  // The hook agrees with the DOM.
-  expect(await page.evaluate(() => window.__smartweb.gridOrder())).toEqual(orders.at(-1))
+  const tail = orders.slice(4)
+  const flips = tail.slice(1).filter((o, i) => o.slice(0, 2).join() !== tail[i].slice(0, 2).join()).length
+  recordMetrics('guardrails', { orders, flipsInTail: flips })
+  for (const o of tail) expect(o.slice(0, 2).sort()).toEqual(['inbox', 'notes'])
+  expect(flips, JSON.stringify(tail)).toBeLessThanOrEqual(2)
 })

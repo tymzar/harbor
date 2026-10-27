@@ -49,6 +49,8 @@ export const prop = {
   z: (k: number) => `--cn-z${k}`,
   e: (k: number) => `--cn-e${k}`,
   p: (k: number) => `--cn-p${k}`,
+  /** Output mask (1 = in scope, 0 = masked out). Masked logits get -MASK_PENALTY. */
+  m: (k: number) => `--cn-m${k}`,
   is: (k: number) => `--cn-is${k}`,
   zmax: '--cn-zmax',
   esum: '--cn-esum',
@@ -99,9 +101,13 @@ export function parameterRegistrations(shape: NetShape, literal = false): string
 }
 
 /** @property rules for the softmax block and argmax flags. */
+/** Logit penalty for masked outputs: exp(-30) ~ 1e-13, so the softmax normalises over the unmasked outputs. */
+export const MASK_PENALTY = 30
+
 export function softmaxRegistrations(shape: NetShape): string[] {
   const out: string[] = []
   for (const k of range(shape.outputs)) {
+    out.push(registration(prop.m(k), true, 1))
     out.push(registration(prop.z(k)), registration(prop.e(k)), registration(prop.p(k)), registration(prop.is(k)))
   }
   out.push(registration(prop.zmax), registration(prop.esum, true, 1), registration(prop.pmax))
@@ -115,7 +121,7 @@ export function softmaxRegistrations(shape: NetShape): string[] {
 export function softmaxDeclarations(shape: NetShape, logit: (k: number) => string): string[] {
   const O = shape.outputs
   const d: string[] = []
-  for (const k of range(O)) d.push(`${prop.z(k)}:calc(${logit(k)})`)
+  for (const k of range(O)) d.push(`${prop.z(k)}:calc(${logit(k)} - (1 - var(${prop.m(k)})) * ${MASK_PENALTY})`)
   d.push(`${prop.zmax}:max(${range(O).map((k) => `var(${prop.z(k)})`).join(',')})`)
   for (const k of range(O)) d.push(`${prop.e(k)}:exp(var(${prop.z(k)}) - var(${prop.zmax}))`)
   d.push(`${prop.esum}:calc(${range(O).map((k) => `var(${prop.e(k)})`).join(' + ')})`)
@@ -141,8 +147,10 @@ export function weightsRule(shape: NetShape, cls: string, w: NetWeights): string
 }
 
 /** Inline style text setting the inputs on the root element. */
-export function inputsStyle(shape: NetShape, x: ArrayLike<number>): string {
-  return range(shape.inputs).map((i) => `${prop.x(i)}:${num(x[i] ?? 0)}`).join(';')
+export function inputsStyle(shape: NetShape, x: ArrayLike<number>, mask?: ArrayLike<number> | null): string {
+  const xs = range(shape.inputs).map((i) => `${prop.x(i)}:${num(x[i] ?? 0)}`)
+  if (mask) for (const k of range(shape.outputs)) xs.push(`${prop.m(k)}:${mask[k] ? 1 : 0}`)
+  return xs.join(';')
 }
 
 const ROOT_STYLE = 'display:block;position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;contain:strict;font-size:16px;line-height:16px'

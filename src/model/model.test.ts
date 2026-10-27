@@ -1,126 +1,178 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ACTIONS, type ActionId } from '../cssnet/contract'
+import { CARDS, CARD_IDS, cardsOf, categoryMask, type CardId, type Category, type Verb } from '../cssnet/contract'
+import { reorder, swapMargin } from '../app/adaptive'
+import { Affinity } from './affinity'
 import { BLEND_MAX, PRIOR, SHAPE, blendAlpha } from './config'
-import { ModelEngine, validatePersisted } from './engine'
-import { Markov } from './markov'
-import { argmax, cloneWeights, forward, initWeights, mulberry32, sgdStep } from './mlp'
+import { ModelEngine, argmaxIn, inTopK, validatePersisted } from './engine'
+import { cloneWeights, forward, initWeights, sgdStep } from './mlp'
 import { debouncedSaver, memoryStore } from './persist'
 import { createHandler } from './protocol'
 import { decodeFragment, encodeFragment, fragmentParam } from './quantize'
 import { ModelClient } from './client'
 
 const small = { inputs: 3, hidden: 4, outputs: 3 }
+const L = Math.log1p
+/** Model-feature vectors (9): press, approach, decel, straightness, tremor, hover, burst, todSin, todCos. */
+const CALM = [L(380), 0.3, 0.35, 0.96, L(0.3), L(600), 1, 0, 1]
+const RUSHED = [L(25), 2.2, -0.6, 0.55, L(3), L(8), 5, 0, 1]
+const NEUTRAL = [L(100), 0.5, 0.2, 0.8, L(0.6), L(90), 1, 0, 1]
+const idx = (id: CardId) => CARD_IDS.indexOf(id)
 
-function oneHotRaw(a: ActionId, rnd = mulberry32(3)): number[] {
-  const raw = Array.from({ length: SHAPE.inputs }, (_, i) => (i < 7 ? rnd() : 0))
-  raw[7 + ACTIONS.indexOf(a)] = 1
-  return raw
+function engage(e: ModelEngine, seq: [CardId, Verb][], raw = NEUTRAL, t0 = 0, gap = 3000) {
+  let t = t0
+  for (const [card, verb] of seq) {
+    const c = CARDS[idx(card)].category as Category
+    e.step(raw, card, verb, c, (t += gap))
+  }
+  return t
 }
 
-describe('MLP', () => {
-  it('cold start emits the prior', () => {
+describe('MLP with a category mask', () => {
+  it('cold start is uniform inside the category and ~0 outside', () => {
     const w = initWeights(SHAPE, PRIOR)
-    const { out } = forward(SHAPE, w, new Float32Array(SHAPE.inputs).fill(0.5))
-    PRIOR.forEach((p, i) => expect(out[i]).toBeCloseTo(p, 1))
+    const { out } = forward(SHAPE, w, new Float32Array(SHAPE.inputs).fill(0.5), categoryMask('home'))
+    CARDS.forEach((k, i) => (k.category === 'home' ? expect(out[i]).toBeCloseTo(1 / 6, 1) : expect(out[i]).toBeLessThan(1e-9)))
     expect(out.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 5)
   })
 
-  it('analytic gradient matches finite differences', () => {
+  it('analytic gradient (with mask and sample weight) matches finite differences', () => {
     const w = initWeights(small, [0.3, 0.3, 0.4], 11)
-    // make W2 non-trivial so dh != 0
     w.W2.forEach((_, i) => { w.W2[i] = Math.sin(i + 1) * 0.5 })
     const x = [0.4, -0.7, 1.1]
+    const mask = [1, 0, 1]
     const label = 2
-    const loss = (ww: typeof w) => -Math.log(forward(small, ww, x).out[label])
+    const weight = 1.5
+    const loss = (ww: typeof w) => -Math.log(forward(small, ww, x, mask).out[label])
     const lr = 1e-3
     const after = cloneWeights(w)
-    sgdStep(small, after, x, label, { lr, l2: 0 })
+    sgdStep(small, after, x, label, { lr, l2: 0 }, mask, weight)
     for (const key of ['W1', 'b1', 'W2', 'b2'] as const) {
       for (let k = 0; k < w[key].length; k++) {
-        const analytic = (w[key][k] - after[key][k]) / lr
+        const analytic = (w[key][k] - after[key][k]) / (lr * weight)
         const eps = 1e-3
         const plus = cloneWeights(w); plus[key][k] += eps
         const minus = cloneWeights(w); minus[key][k] -= eps
-        const numeric = (loss(plus) - loss(minus)) / (2 * eps)
-        expect(analytic).toBeCloseTo(numeric, 2)
+        expect(analytic).toBeCloseTo((loss(plus) - loss(minus)) / (2 * eps), 2)
       }
     }
   })
+})
 
-  it('learns a deterministic transition by SGD', () => {
-    const w = initWeights(SHAPE, PRIOR, 5)
-    const next: Record<string, ActionId> = { 'nav-explore': 'open-card', 'open-card': 'favorite', favorite: 'nav-explore' }
-    const seq = Object.keys(next) as ActionId[]
-    for (let epoch = 0; epoch < 60; epoch++) {
-      for (const a of seq) sgdStep(SHAPE, w, oneHotRaw(a), ACTIONS.indexOf(next[a]), { lr: 0.05, l2: 1e-4 })
+describe('Affinity', () => {
+  it('normalises within each category and decays older engagement', () => {
+    const a = new Affinity(0.9, 1)
+    a.update(idx('drafts'), 1)
+    a.update(idx('drafts'), 1)
+    a.update(idx('team'), 1)
+    const p = a.probs()
+    for (const c of ['home', 'explore', 'library'] as Category[]) {
+      expect(cardsOf(c).reduce((s, id) => s + p[idx(id)], 0)).toBeCloseTo(1, 6)
     }
-    for (const a of seq) expect(ACTIONS[argmax(forward(SHAPE, w, oneHotRaw(a)).out)]).toBe(next[a])
+    expect(p[idx('drafts')]).toBeGreaterThan(p[idx('team')])
+    expect(p[idx('team')]).toBeGreaterThan(p[idx('briefing')])
+    cardsOf('explore').forEach((id) => expect(p[idx(id)]).toBeCloseTo(1 / 6, 6))
   })
 })
 
-describe('Markov', () => {
-  it('falls back to the prior and decays old counts', () => {
-    const m = new Markov(3, [0.2, 0.3, 0.5], 0.5, 1)
-    expect(Array.from(m.predict(null))).toEqual([0.2, 0.3, 0.5].map(Math.fround))
-    m.update(0, 1); m.update(0, 1); m.update(0, 2)
-    // counts row0 after decay: [0, 0.5*... ] -> 1 then 1.5*0.5... check sums
-    const p = m.predict(0)
-    expect(p.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 5)
-    expect(argmax(p)).toBe(2) // most recent wins under strong decay
-    m.update(null, 0) // no-op
+describe('reorder with hysteresis', () => {
+  const scoresFor = (m: Partial<Record<CardId, number>>) => CARD_IDS.map((id) => m[id] ?? 0)
+  it('re-sorts the whole category in one call when the evidence is clear', () => {
+    const prev = cardsOf('home')
+    const s = scoresFor({ notes: 0.4, inbox: 0.3, calendar: 0.2, team: 0.14, drafts: 0.08, briefing: 0.02 })
+    expect(reorder(prev, s)).toEqual(['notes', 'inbox', 'calendar', 'team', 'drafts', 'briefing'])
+  })
+  it('keeps near-ties where they are', () => {
+    const prev: CardId[] = ['drafts', 'team', 'briefing', 'calendar', 'inbox', 'notes']
+    const s = scoresFor({ drafts: 0.2, team: 0.21, briefing: 0.15, calendar: 0.16, inbox: 0.14, notes: 0.14 })
+    // the app's margin at ~10 presses of evidence: 0.01 + 0.6 / 11 ~ 0.065
+    expect(reorder(prev, s, swapMargin(10))).toEqual(prev)
+    expect(swapMargin(10)).toBeGreaterThan(0.05)
   })
 })
 
-describe('ModelEngine', () => {
-  it('uses label delay: trains only after the next action arrives', () => {
-    const e = new ModelEngine(() => 1)
-    e.predict(oneHotRaw('nav-home'))
-    expect(e.examples).toBe(0)
-    e.step(oneHotRaw('nav-explore'), 'nav-explore')
+describe('ModelEngine (per-category ranking)', () => {
+  it('mostly drafts and team: the full Home order follows, other categories untouched', () => {
+    const e = new ModelEngine(() => 0)
+    e.predict(NEUTRAL, 'home')
+    const seq: [CardId, Verb][] = []
+    for (let k = 0; k < 6; k++) seq.push(['drafts', k % 2 ? 'share' : 'open'], ['team', 'open'])
+    seq.push(['calendar', 'open'])
+    engage(e, seq)
+    const s = e.snapshot()
+    const score = CARD_IDS.map((_, i) => (1 - s.alpha) * s.affinity[i] + s.alpha * s.mlp[i])
+    const order = reorder(cardsOf('home'), score)
+    expect(order.slice(0, 3)).toEqual(['drafts', 'team', 'calendar'])
+    expect(s.evidence.explore).toBe(0)
+    cardsOf('explore').forEach((id) => expect(s.affinity[idx(id)]).toBeCloseTo(1 / 6, 6))
+    expect(s.stats.examples).toBe(13)
+  })
+
+  it('a rage burst (same card + verb inside the window) counts once; a different verb counts', () => {
+    const e = new ModelEngine(() => 0)
+    e.predict(NEUTRAL, 'home')
+    for (let k = 0; k < 5; k++) e.step(RUSHED, 'inbox', 'open', 'home', 1000 + k * 120)
     expect(e.examples).toBe(1)
-    const s = e.step(oneHotRaw('open-card'), 'open-card')
-    expect(s.stats.examples).toBe(2)
-    expect(s.stats.accN).toBe(2)
+    e.step(NEUTRAL, 'inbox', 'share', 'home', 1700)
+    expect(e.examples).toBe(2)
+    e.step(NEUTRAL, 'inbox', 'share', 'home', 5000)
+    expect(e.examples).toBe(3)
   })
 
-  it('learns a cyclic journey: Markov and MLP accuracy rise', () => {
-    const e = new ModelEngine(() => 1)
-    const cycle: ActionId[] = ['nav-explore', 'open-card', 'favorite', 'share', 'nav-library']
-    e.predict(oneHotRaw('nav-home'))
-    let s = e.snapshot()
-    for (let k = 0; k < 150; k++) s = e.step(oneHotRaw(cycle[k % cycle.length], mulberry32(k)), cycle[k % cycle.length])
-    expect(s.stats.markovAcc).toBe(1)
-    expect(s.stats.mlpAcc).toBeGreaterThanOrEqual(0.8)
-    expect(s.alpha).toBeGreaterThan(0.6)
-    expect(s.alpha).toBeLessThan(BLEND_MAX)
+  it('learns that intensity changes the preferred card (MLP), where affinity alone cannot', () => {
+    const e = new ModelEngine(() => 0)
+    e.predict(NEUTRAL, 'library')
+    let t = 0
+    // Calm sessions read; rushed sessions grab a map. The running intensity carries the mood.
+    // Blocks of 8: the context is a running average of earlier clicks, so it needs a few
+    // clicks to reflect a change of mood; most examples in a block are then consistent.
+    for (let r = 0; r < 24; r++) {
+      const calm = r % 2 === 0
+      for (let k = 0; k < 8; k++) e.step(calm ? CALM : RUSHED, calm ? 'reading' : 'maps', 'open', 'library', (t += 3000))
+    }
+    for (let k = 0; k < 6; k++) e.step(CALM, 'reading', 'open', 'library', (t += 3000))
+    const afterCalm = e.snapshot().mlp
+    for (let k = 0; k < 6; k++) e.step(RUSHED, 'maps', 'open', 'library', (t += 3000))
+    const afterRushed = e.snapshot().mlp
+    expect(afterCalm[idx('reading')]).toBeGreaterThan(afterCalm[idx('maps')])
+    expect(afterRushed[idx('maps')]).toBeGreaterThan(afterRushed[idx('reading')])
   })
 
-  it('round-trips through toPersisted/load and rejects bad shapes', () => {
-    const e = new ModelEngine()
-    e.predict(oneHotRaw('nav-home'))
-    for (let k = 0; k < 10; k++) e.step(oneHotRaw('search'), 'search')
+  it('hit rate counts the engaged card being in the top 3', () => {
+    const p = CARD_IDS.map((_, i) => (i < 6 ? 6 - i : 0))
+    expect(inTopK(p, 'home', 2)).toBe(true)
+    expect(inTopK(p, 'home', 3)).toBe(false)
+    expect(argmaxIn(p, 'home')).toBe(0)
+  })
+
+  it('round-trips through toPersisted/load (incl. orders) and rejects bad shapes', () => {
+    const e = new ModelEngine(() => 0)
+    e.predict(NEUTRAL, 'home')
+    engage(e, [['drafts', 'open'], ['team', 'favorite'], ['moss', 'open']])
+    e.setOrders({ home: ['team', 'drafts', 'briefing', 'calendar', 'inbox', 'notes'], explore: cardsOf('explore'), library: cardsOf('library') })
     const p = e.toPersisted()
-    const f = new ModelEngine()
-    f.load(JSON.parse(JSON.stringify(p)))
-    expect(f.examples).toBe(e.examples)
-    expect(Array.from(f.weights.W1)).toEqual(Array.from(e.weights.W1))
-    expect(() => validatePersisted({ ...p, schemaVersion: 99 })).toThrow(/schemaVersion/)
-    expect(() => validatePersisted({ ...p, weights: { ...p.weights, b2: [1] } })).toThrow(/shapes/)
-    expect(() => validatePersisted({ ...p, weights: { ...p.weights, b1: p.weights.b1.map(() => NaN) } })).toThrow(/finite/)
+    const e2 = new ModelEngine(() => 0)
+    e2.load(JSON.parse(JSON.stringify(p)))
+    expect(e2.predict(NEUTRAL, 'home').mlp).toEqual(e.predict(NEUTRAL, 'home').mlp)
+    expect(e2.orders?.home[0]).toBe('team')
+    expect(() => e2.load({ ...p, schemaVersion: 1 })).toThrow()
+    expect(() => e2.load({ ...p, affinity: { counts: [1] } })).toThrow()
+    expect(() => e2.load({ ...p, orders: { ...p.orders!, home: ['team'] } })).toThrow()
   })
 
-  it('blend alpha starts at 0 and grows', () => {
-    expect(blendAlpha(0)).toBe(0)
-    expect(blendAlpha(25)).toBeCloseTo(BLEND_MAX / 2)
-    expect(blendAlpha(1000)).toBeLessThan(BLEND_MAX)
+  it('blend alpha starts at 0 and follows relative accuracy within bounds', () => {
+    expect(blendAlpha(0, 0.5, 0.5)).toBe(0)
+    expect(blendAlpha(100, 0.9, 0.1)).toBeCloseTo(0.1, 5)
+    expect(blendAlpha(100, 0.1, 0.9)).toBeCloseTo(BLEND_MAX, 5)
+    expect(blendAlpha(100, 0.5, 0.5)).toBeCloseTo(0.5, 5)
   })
 })
 
 describe('fragment quantisation', () => {
-  it('round-trips within int8 precision', () => {
+  it('round-trips within int8 precision, including orders', () => {
     const e = new ModelEngine()
-    e.predict(oneHotRaw('nav-home'))
-    for (let k = 0; k < 30; k++) e.step(oneHotRaw(ACTIONS[k % 8], mulberry32(k)), ACTIONS[k % 8])
+    e.predict(NEUTRAL, 'home')
+    engage(e, Array.from({ length: 30 }, (_, k) => [CARD_IDS[k % 18], 'open'] as [CardId, Verb]))
+    e.setOrders({ home: ['notes', 'inbox', 'calendar', 'team', 'drafts', 'briefing'], explore: cardsOf('explore'), library: cardsOf('library') })
     const p = e.toPersisted()
     const frag = encodeFragment(p)
     expect(frag).toMatch(/^[A-Za-z0-9_-]+$/)
@@ -130,7 +182,7 @@ describe('fragment quantisation', () => {
     const maxAbs = Math.max(...p.weights.W1.map(Math.abs))
     p.weights.W1.forEach((v, i) => expect(Math.abs(v - d.weights.W1[i])).toBeLessThanOrEqual(maxAbs / 127 / 2 + 1e-6))
     expect(d.examples).toBe(p.examples)
-    expect(d.lastAction).toBe(p.lastAction)
+    expect(d.orders).toEqual(p.orders)
     expect(() => decodeFragment('AAAA', p)).toThrow()
   })
   it('parses the m= hash parameter', () => {
@@ -158,40 +210,41 @@ describe('persistence', () => {
   it('handler restores from the store, imports a fragment, and resets to prior', async () => {
     const store = memoryStore()
     const h1 = createHandler(store)
-    await h1({ type: 'init', raw: oneHotRaw('nav-home') })
-    for (let k = 0; k < 5; k++) await h1({ type: 'step', raw: oneHotRaw('share'), action: 'share' })
+    await h1({ type: 'init', raw: NEUTRAL, category: 'home' })
+    for (let k = 0; k < 5; k++) await h1({ type: 'step', raw: NEUTRAL, card: 'drafts', verb: 'open', category: 'home', t: k * 5000 })
+    await h1({ type: 'setOrders', orders: { home: ['drafts', 'briefing', 'team', 'calendar', 'inbox', 'notes'], explore: cardsOf('explore'), library: cardsOf('library') } })
     await h1({ type: 'flush' })
     expect(store.data?.examples).toBe(5)
 
     const h2 = createHandler(store)
-    const r = await h2({ type: 'init', raw: oneHotRaw('nav-home') })
+    const r = await h2({ type: 'init', raw: NEUTRAL, category: 'home' })
     expect(r.type === 'snapshot' && r.source).toBe('idb')
     expect(r.type === 'snapshot' && r.snapshot.stats.examples).toBe(5)
+    expect(r.type === 'snapshot' && r.snapshot.orders?.home[0]).toBe('drafts')
 
     const frag = await h2({ type: 'exportFragment' })
     const h3 = createHandler(memoryStore())
-    const r3 = await h3({ type: 'init', raw: oneHotRaw('nav-home'), fragment: frag.type === 'fragment' ? frag.fragment : '' })
+    const r3 = await h3({ type: 'init', raw: NEUTRAL, category: 'home', fragment: frag.type === 'fragment' ? frag.fragment : '' })
     expect(r3.type === 'snapshot' && r3.source).toBe('fragment')
     expect(r3.type === 'snapshot' && r3.snapshot.stats.examples).toBe(5)
 
-    const bad = await createHandler(memoryStore())({ type: 'init', raw: oneHotRaw('nav-home'), fragment: '!!' })
+    const bad = await createHandler(memoryStore())({ type: 'init', raw: NEUTRAL, category: 'home', fragment: '!!' })
     expect(bad.type === 'snapshot' && bad.source).toBe('fragment-error')
 
-    const reset = await h2({ type: 'reset', raw: oneHotRaw('nav-home') })
+    const reset = await h2({ type: 'reset', raw: NEUTRAL, category: 'home' })
     expect(reset.type === 'snapshot' && reset.snapshot.stats.examples).toBe(0)
     expect(store.data).toBeUndefined()
-    const prior = reset.type === 'snapshot' ? reset.snapshot.markov : new Float32Array()
-    PRIOR.forEach((p, i) => expect(prior[i]).toBeCloseTo(p, 5))
+    const aff = reset.type === 'snapshot' ? reset.snapshot.affinity : new Float32Array()
+    aff.forEach((v) => expect(v).toBeCloseTo(1 / 6, 5))
   })
 
   it('ModelClient falls back to an in-thread engine without Worker', async () => {
     const c = new ModelClient({ forceLocal: true, store: memoryStore() })
     expect(c.kind).toBe('local')
-    await c.init(Float32Array.from(oneHotRaw('nav-home')))
-    const s = await c.step(Float32Array.from(oneHotRaw('search')), 'search')
+    await c.init(Float32Array.from(NEUTRAL), 'home')
+    const s = await c.step(Float32Array.from(NEUTRAL), 'notes', 'open', 'home', 1)
     expect(s.stats.examples).toBe(1)
     expect(s.weights.W1.length).toBe(SHAPE.inputs * SHAPE.hidden)
-    const m = await c.exportModel()
-    expect(m.examples).toBe(1)
+    expect((await c.exportModel()).examples).toBe(1)
   })
 })

@@ -1,11 +1,12 @@
 import type { JsForward, NetShape, NetWeights } from './contract'
+import { MASK_PENALTY } from './generate'
 
 /**
  * Pure-JS reference forward pass: hidden = relu(W1 x + b1), out = softmax(W2 hidden + b2).
  * Accumulates in doubles; results are returned as Float32Array per the contract.
  * This is the ground truth the CSS modes are compared against in parity.check.mjs.
  */
-export const jsForward: JsForward = (shape: NetShape, w: NetWeights, x: Float32Array) => {
+export const jsForward: JsForward = (shape: NetShape, w: NetWeights, x: Float32Array, mask?: ArrayLike<number> | null) => {
   const { inputs: I, hidden: H, outputs: O } = shape
   const hidden = new Float32Array(H)
   for (let h = 0; h < H; h++) {
@@ -20,6 +21,7 @@ export const jsForward: JsForward = (shape: NetShape, w: NetWeights, x: Float32A
     let s = w.b2[o]
     const row = o * H
     for (let h = 0; h < H; h++) s += w.W2[row + h] * hidden[h]
+    if (mask && !mask[o]) s -= MASK_PENALTY
     out[o] = s
     if (s > m) m = s
   }

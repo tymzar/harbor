@@ -1,4 +1,4 @@
-import { ACTIONS } from '../cssnet/contract'
+import { ACTIONS, CATEGORIES } from '../cssnet/contract'
 
 /**
  * Raw feature catalogue. Every feature is logged (debug drawer); only the
@@ -77,10 +77,11 @@ export interface ModelFeatureSpec {
 }
 
 /**
- * The 15 features the model sees: the strongest pointer-dynamics signals
- * plus the last action as a one-hot over the 8 ACTIONS.
- * Change this constant to change the network input width.
+ * Raw-derived model features: the 7 strongest pointer-dynamics signals plus time of day.
+ * The engine smooths the pointer features into a running "how you have been clicking"
+ * intensity and appends the category one-hot, giving MODEL_INPUTS network inputs.
  */
+export const POINTER_INPUTS = 7
 export const MODEL_FEATURES: readonly ModelFeatureSpec[] = [
   { name: 'pressDuration', normalise: true, transform: 'log1p', prior: { mean: 4.6, std: 0.7 } },  // ~100 ms
   { name: 'approachVelocity', normalise: true, transform: 'none', prior: { mean: 0.5, std: 0.5 } }, // px/ms
@@ -89,10 +90,13 @@ export const MODEL_FEATURES: readonly ModelFeatureSpec[] = [
   { name: 'tremor', normalise: true, transform: 'log1p', prior: { mean: 0.5, std: 0.5 } },         // ~0.6 px
   { name: 'hoverDwell', normalise: true, transform: 'log1p', prior: { mean: 4.5, std: 1.5 } },     // ~90 ms
   { name: 'burstCount2s', normalise: true, transform: 'none', prior: { mean: 1.2, std: 0.8 } },
-  ...ACTIONS.map((a) => ({ name: `last1:${a}`, normalise: false, transform: 'none' as Transform })),
+  { name: 'todSin', normalise: false, transform: 'none' },
+  { name: 'todCos', normalise: false, transform: 'none' },
 ]
-
-export const MODEL_INPUTS = MODEL_FEATURES.length // 15
+/** Network inputs: smoothed pointer intensity (7), time of day (2), category one-hot (3). */
+export const INPUT_NAMES: readonly string[] = [...MODEL_FEATURES.map((f) => f.name), ...CATEGORIES.map((c) => `category:${c}`)]
+export const RAW_MODEL_FEATURES = MODEL_FEATURES.length // 9
+export const MODEL_INPUTS = INPUT_NAMES.length // 12
 
 const NAME_INDEX = new Map(RAW_FEATURE_NAMES.map((n, i) => [n, i]))
 export const MODEL_FEATURE_INDEX = MODEL_FEATURES.map((f) => {
@@ -112,7 +116,7 @@ export const NORM_PRIOR = {
 
 /** Pick the model subset from a raw vector and apply per-feature transforms. */
 export function selectModelFeatures(raw: Float32Array): Float32Array {
-  const out = new Float32Array(MODEL_INPUTS)
+  const out = new Float32Array(RAW_MODEL_FEATURES)
   MODEL_FEATURES.forEach((f, j) => {
     const v = raw[MODEL_FEATURE_INDEX[j]]
     out[j] = f.transform === 'log1p' ? Math.log1p(Math.max(0, v)) : v

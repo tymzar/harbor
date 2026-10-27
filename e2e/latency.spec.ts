@@ -1,16 +1,16 @@
 import { expect, test } from '@playwright/test'
-import type { ActionId, CssNetMode } from '../src/cssnet/contract'
+import type { CssNetMode } from '../src/cssnet/contract'
 import { humanClick, openFresh, percentile, recordMetrics, resetMouse, type Intensity } from './helpers'
 
 /**
  * Click-to-pixel, as the app measures it: from the pointerup that fires the action
  * (HeroUI onPress fires on release) to just after the first frame produced after React
- * committed the new ranking/grid (rAF, then a posted message). That span covers feature
+ * committed the new order (rAF, then a posted message). That span covers feature
  * extraction, the worker round trip (train + predict), the CSS forward pass with readback,
  * React render, and the frame. latenciesDoubleRaf ends one frame later (upper bound).
  */
 const QUICK: Intensity = { steps: 4, stepMs: 8, dwellMs: 30, pressMs: 60, gapMs: 150, wobble: 0 }
-const JOURNEY: ActionId[] = ['nav-home', 'nav-explore', 'open-card', 'favorite', 'share', 'nav-library', 'open-card', 'settings']
+const JOURNEY = ['card-drafts-open', 'card-team-open', 'card-drafts-share', 'nav-explore', 'card-moss-open', 'card-tidepools-favorite', 'nav-home', 'card-calendar-open']
 const N = 24
 const results: Record<string, unknown> = {}
 
@@ -31,7 +31,7 @@ for (const mode of ['calc', 'hybrid', 'animation'] as CssNetMode[]) {
       samples: lat.map((v) => +v.toFixed(2)),
     }
     results[mode] = r
-    recordMetrics(process.env.SMARTWEB_SOFTWARE_GL ? 'latency_swiftshader' : 'latency', { definition: 'pointerup -> rAF+postMessage after the React commit of the new prediction', ...results })
+    recordMetrics(process.env.SMARTWEB_SOFTWARE_GL ? 'latency_swiftshader' : 'latency', { definition: 'pointerup -> rAF+postMessage after the React commit of the new order', ...results })
     expect(r.p95, JSON.stringify(r)).toBeLessThan(50)
   })
 }

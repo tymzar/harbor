@@ -35,7 +35,7 @@ export function nodeStylesheet(shape: NetShape, cls: string, mode: CssNetMode): 
   const { inputs: I, hidden: H, outputs: O } = shape
   const t = NODE_TIMING
   const ease = 'cubic-bezier(.22,.61,.36,1)'
-  const tr = (delay: number) => `transition:width ${t.durationMs}ms ${ease} ${delay}ms,height ${t.durationMs}ms ${ease} ${delay}ms,background-color ${t.durationMs}ms ${ease} ${delay}ms,box-shadow ${t.durationMs}ms ${ease} ${delay}ms,color ${t.durationMs}ms ${ease} ${delay}ms`
+  const tr = (delay: number) => `transition:top 420ms ${ease},opacity 300ms ${ease},width ${t.durationMs}ms ${ease} ${delay}ms,height ${t.durationMs}ms ${ease} ${delay}ms,background-color ${t.durationMs}ms ${ease} ${delay}ms,box-shadow ${t.durationMs}ms ${ease} ${delay}ms,color ${t.durationMs}ms ${ease} ${delay}ms`
   const r: string[] = [registration('--cn-pct', true, 0).replace("'<number>'", "'<integer>'")]
   // The root normally clips (contain:strict, overflow:hidden). With nodes it must paint them.
   r.push(`.${cls}-root.${cls}-visible{overflow:visible;contain:layout style}`)
@@ -56,11 +56,11 @@ export function nodeStylesheet(shape: NetShape, cls: string, mode: CssNetMode): 
 
   // Outputs: probability relative to the max, and the pure-CSS argmax flag for the winner.
   for (const k of range(O)) {
-    r.push(`.${cls}-on${k}{--nv-p:var(${prop.p(k)});--nv-top:var(${prop.is(k)});--cn-pct:calc(var(${prop.p(k)}) * 100);top:var(--nv-o-y${k})}`)
+    r.push(`.${cls}-on${k}{opacity:var(${prop.m(k)});--nv-p:var(${prop.p(k)});--nv-top:var(${prop.is(k)});--cn-pct:calc(var(${prop.p(k)}) * 100);top:var(--nv-o-y${k})}`)
     r.push(`.${cls}-on${k}>.${cls}-label::before{content:var(--nv-label${k})}`)
   }
   r.push(`.${cls}-on{--nv-v:calc(var(--nv-p) / max(var(${prop.pmax}), 0.000001));left:var(--nv-o-x);width:calc(7px + 9px * var(--nv-v));height:calc(7px + 9px * var(--nv-v));background-color:color-mix(in oklab, var(--accent) calc(18% + 60% * var(--nv-v) + 22% * var(--nv-top)), transparent);box-shadow:0 0 calc(28px * var(--nv-top)) calc(5px * var(--nv-top)) color-mix(in oklab, var(--accent) 60%, transparent);${tr(t.outputDelayMs)}}`)
-  r.push(`.${cls}-label{position:absolute;left:calc(100% + 10px);top:50%;translate:0 -50%;width:118px;display:flex;gap:8px;white-space:nowrap;counter-reset:cnpct var(--cn-pct);font-weight:calc(400 + 100 * var(--nv-top));color:color-mix(in oklab, var(--foreground) calc(58% + 42% * var(--nv-top)), transparent);${tr(t.outputDelayMs)}}`)
+  r.push(`.${cls}-label{position:absolute;left:calc(100% + 10px);top:50%;translate:0 -50%;width:150px;display:flex;gap:8px;white-space:nowrap;counter-reset:cnpct var(--cn-pct);font-weight:calc(400 + 100 * var(--nv-top));color:color-mix(in oklab, var(--foreground) calc(58% + 42% * var(--nv-top)), transparent);${tr(t.outputDelayMs)}}`)
   r.push(`.${cls}-label::before{overflow:hidden;text-overflow:ellipsis}`)
   r.push(`.${cls}-label::after{content:counter(cnpct) "%";margin-left:auto;font-variant-numeric:tabular-nums;opacity:.75}`)
   return r.join('\n')

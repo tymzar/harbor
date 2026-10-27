@@ -82,7 +82,7 @@ describe('animationStylesheet', () => {
     expect(css).toContain('.cn4-root{')
     expect(css).toContain('--cn-o0:var(--cn-b2-0)')
     expect(css).toContain('.cn4-n0{--cn-h:var(--cn-b1-0);animation-name:cn4-h0-0,')
-    expect(css).toContain('.cn4-out{display:block;--cn-z0:calc(var(--cn-o0))')
+    expect(css).toContain('.cn4-out{display:block;--cn-z0:calc(var(--cn-o0) - (1 - var(--cn-m0)) * 30)')
   })
   it('never sets font-size on the neuron or p elements', () => {
     for (const rule of css.split('\n').filter((l) => l.startsWith('.cn4-n') || l.startsWith('.cn4-p'))) expect(rule).not.toContain('font-size')
@@ -106,7 +106,7 @@ describe('weightsRule / inputsStyle', () => {
   })
   it('softmaxDeclarations references the given logit expressions', () => {
     const d = softmaxDeclarations({ inputs: 1, hidden: 1, outputs: 2 }, (k) => `var(--L${k})`)
-    expect(d[0]).toBe('--cn-z0:calc(var(--L0))')
+    expect(d[0]).toBe('--cn-z0:calc(var(--L0) - (1 - var(--cn-m0)) * 30)')
     expect(d).toContain('--cn-esum:calc(var(--cn-e0) + var(--cn-e1))')
   })
 })
