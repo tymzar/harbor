@@ -63,6 +63,8 @@ export interface CssNetVisuals {
 
 export interface CssNetModule {
   mount: MountCssNet | null
+  /** Same engine without visible nodes (pure compute), for benchmarking. */
+  mountBare: MountCssNet | null
   jsForward: JsForward
   jsForwardSource: 'cssnet/reference' | 'local'
   visuals: CssNetVisuals
@@ -77,6 +79,7 @@ async function firstModule(mods: Record<string, () => Promise<unknown>>): Promis
 export async function loadCssNetModule(): Promise<CssNetModule> {
   const errors: string[] = []
   let mount: MountCssNet | null = null
+  let mountBare: MountCssNet | null = null
   let jsForward: JsForward = localJsForward
   let jsForwardSource: CssNetModule['jsForwardSource'] = 'local'
   const visuals: CssNetVisuals = {}
@@ -85,7 +88,10 @@ export async function loadCssNetModule(): Promise<CssNetModule> {
     if (!m) errors.push('src/cssnet/index.ts not found; using JS fallback net')
     else {
       const fn = (m.mountCssNet ?? m.default) as MountCssNet | undefined
-      if (typeof fn === 'function') mount = ((h, sh, md) => (fn as (...a: unknown[]) => ReturnType<MountCssNet>)(h, sh, md, { nodes: true })) as MountCssNet
+      if (typeof fn === 'function') {
+        mount = ((h: HTMLElement, sh: NetShape, md: CssNetMode, o?: { nodeOutputs?: number[] }) => (fn as (...a: unknown[]) => ReturnType<MountCssNet>)(h, sh, md, { nodes: true, ...o })) as MountCssNet
+        mountBare = ((h, sh, md) => (fn as (...a: unknown[]) => ReturnType<MountCssNet>)(h, sh, md, { nodes: false })) as MountCssNet
+      }
       else errors.push('src/cssnet/index.ts has no mountCssNet export')
       if (typeof m.jsForward === 'function') { jsForward = m.jsForward as JsForward; jsForwardSource = 'cssnet/reference' }
     }
@@ -107,15 +113,15 @@ export async function loadCssNetModule(): Promise<CssNetModule> {
   } catch (e) {
     errors.push(`cssnet visual failed to load: ${(e as Error).message}`)
   }
-  return { mount, jsForward, jsForwardSource, visuals, errors }
+  return { mount, mountBare, jsForward, jsForwardSource, visuals, errors }
 }
 
 export interface MountedNet { net: CssNet; source: 'cssnet' | 'fallback'; error?: string }
 
-export function mountNet(mod: CssNetModule, host: HTMLElement, shape: NetShape, mode: CssNetMode): MountedNet {
+export function mountNet(mod: CssNetModule, host: HTMLElement, shape: NetShape, mode: CssNetMode, opts?: { nodeOutputs?: number[] }): MountedNet {
   if (mod.mount) {
     try {
-      return { net: mod.mount(host, shape, mode), source: 'cssnet' }
+      return { net: (mod.mount as (h: HTMLElement, s: NetShape, m: CssNetMode, o?: { nodeOutputs?: number[] }) => CssNet)(host, shape, mode, opts), source: 'cssnet' }
     } catch (e) {
       return { net: createFallbackNet(host, shape, mode), source: 'fallback', error: `mountCssNet threw: ${(e as Error).message}` }
     }

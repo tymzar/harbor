@@ -8,7 +8,8 @@ export type ModelRequest =
   | { type: 'init'; raw: number[]; category: Category; fragment?: string | null }
   | { type: 'predict'; raw: number[]; category: Category }
   | { type: 'step'; raw: number[]; card: CardId; verb: Verb; category: Category; t: number }
-  | { type: 'setOrders'; orders: Orders }
+  | { type: 'visit'; raw: number[]; category: Category; t: number }
+  | { type: 'setOrders'; orders: Orders; navOrder?: Category[] | null }
   | { type: 'reset'; raw: number[]; category: Category }
   | { type: 'export' }
   | { type: 'exportFragment' }
@@ -57,8 +58,13 @@ export function createHandler(store: ModelStore, engine = new ModelEngine()) {
         saver.schedule()
         return { type: 'snapshot', snapshot }
       }
+      case 'visit': {
+        const snapshot = engine.visit(req.raw, req.category, req.t)
+        saver.schedule()
+        return { type: 'snapshot', snapshot }
+      }
       case 'setOrders':
-        engine.setOrders(req.orders)
+        engine.setOrders(req.orders, req.navOrder)
         saver.schedule()
         return { type: 'ok' }
       case 'reset':

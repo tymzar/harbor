@@ -24,10 +24,10 @@ const netProbe = (page: Page) => page.evaluate(() => {
   return {
     top: el.dataset.top!, weights: el.dataset.weights!, lit, w: cv.width, h: cv.height,
     // CSS-driven nodes: values live in the computing elements' own styles.
-    outputs: [...el.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=output]')]
+    outputs: [...el.querySelectorAll<HTMLElement>('[data-net-scope][data-active] [data-node=output]')]
       .sort((a, b) => +a.dataset.k! - +b.dataset.k!)
       .map((o) => ({ pct: Number(o.computedStyleMap().get('--cn-pct')!.toString()), top: Number(o.computedStyleMap().get('--nv-top')!.toString()) })),
-    hiddenW: [...el.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=hidden]')]
+    hiddenW: [...el.querySelectorAll<HTMLElement>('[data-net-scope][data-active] [data-node=hidden]')]
       .sort((a, b) => +a.dataset.j! - +b.dataset.j!).map((h) => parseFloat(getComputedStyle(h).width)),
   }
 })
@@ -38,11 +38,13 @@ test('pattern layer and network view respond to the network', async ({ page }) =
   await openFresh(page); resetMouse()
   await page.waitForTimeout(TRANSITION_SETTLE)
   const p0 = await patternStyles(page)
+  await page.getByTestId('nav-model').click(); await page.waitForTimeout(TRANSITION_SETTLE)
   const d0 = await netProbe(page)
   const w0 = flatW(await page.evaluate(() => window.__smartweb.weights()))
   const h0 = await page.evaluate(() => window.__smartweb.hidden())
   await page.screenshot({ path: join(SCREENS, 'visuals-before.png') })
   await page.getByTestId('network-view').screenshot({ path: join(SCREENS, 'network-before.png') })
+  await page.getByTestId('nav-home').click()
   await page.evaluate(() => scrollTo(0, 0)) // element screenshots scroll; humanClick aims in the viewport
 
   const journey = ['card-drafts-open', 'card-team-share', 'card-drafts-favorite', 'card-drafts-open', 'card-team-open', 'card-calendar-open']
@@ -50,6 +52,7 @@ test('pattern layer and network view respond to the network', async ({ page }) =
   for (let k = 0; k < journey.length; k++) await humanClick(page, journey[k], intens[k % 3])
   await page.waitForTimeout(TRANSITION_SETTLE)
   const p1 = await patternStyles(page)
+  await page.getByTestId('nav-model').click(); await page.waitForTimeout(TRANSITION_SETTLE)
   const d1 = await netProbe(page)
   const w1 = flatW(await page.evaluate(() => window.__smartweb.weights()))
   const h1 = await page.evaluate(() => window.__smartweb.hidden())
@@ -85,7 +88,7 @@ test('pattern layer and network view respond to the network', async ({ page }) =
 async function checkNodes(page: Page, mode: string) {
   await page.waitForTimeout(2000)
   const r = await page.evaluate(() => {
-    const els = [...document.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=hidden]')].sort((a, b) => +a.dataset.j! - +b.dataset.j!)
+    const els = [...document.querySelectorAll<HTMLElement>('[data-net-scope][data-active] [data-node=hidden]')].sort((a, b) => +a.dataset.j! - +b.dataset.j!)
     const h = window.__smartweb.hidden()
     return { n: els.length, diff: Math.max(...els.map((el, j) => { const a = Math.max(0, h[j]); return Math.abs(parseFloat(getComputedStyle(el).width) - (5 + 8 * a / (a + 1))) })) }
   })
@@ -100,13 +103,17 @@ test('CSS-driven nodes track the network in every engine mode', async ({ page })
     await page.getByTestId('mode-select').selectOption(mode)
     await humanClick(page, 'card-tidepools-open', NORMAL)
     await checkNodes(page, mode)
-    const pcts = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=output]')]
+    const pcts = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-net-scope][data-active] [data-node=output]')]
       .sort((a, b) => +a.dataset.k! - +b.dataset.k!).map((o) => Number(o.computedStyleMap().get('--cn-pct')!.toString())))
     const css = await page.evaluate(() => window.__smartweb.cssOutputs())
     expect(pcts, `${mode}: CSS counter percentages`).toEqual(css.map((v) => Math.round(v * 100)))
     // Masked outputs (other categories) are invisible, in-scope ones visible: opacity is var(--cn-m{k}).
-    const op = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=output]')]
+    const op = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-net-scope][data-active] [data-node=output]')]
       .sort((a, b) => +a.dataset.k! - +b.dataset.k!).map((o) => Number(getComputedStyle(o).opacity)))
     expect(op.filter((v) => v === 1)).toHaveLength(6)
+    // Full model: every category's net shows its own 6 outputs, so 18 are visible in total.
+    const visibleAll = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-testid=cssnet-host] [data-node=output]')]
+      .filter((o) => getComputedStyle(o).opacity === '1').length)
+    expect(visibleAll).toBe(18)
   }
 })

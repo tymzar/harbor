@@ -1,4 +1,4 @@
-import { Component, memo, type ReactNode, useRef } from 'react'
+import { Component, memo, type ReactNode } from 'react'
 import { Button, Card, Tooltip } from '@heroui/react'
 import { motion } from 'motion/react'
 import { CARD_IDS, CATEGORIES, type CardId, type CssNetMode } from '../cssnet/contract'
@@ -13,102 +13,6 @@ export function percentile(xs: number[], p: number): number {
 }
 
 const pct = (v: number) => `${(v * 100).toFixed(0)}%`
-
-function Mark() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden className="text-foreground">
-      <circle cx="4" cy="6" r="1.6" fill="currentColor" opacity=".45" />
-      <circle cx="4" cy="14" r="1.6" fill="currentColor" opacity=".45" />
-      <circle cx="10" cy="10" r="2" fill="currentColor" opacity=".7" />
-      <circle cx="16" cy="10" r="2.4" fill="var(--accent)" />
-      <path d="M4 6 10 10M4 14l6-4m0 0h6" stroke="currentColor" strokeWidth=".8" opacity=".35" fill="none" />
-    </svg>
-  )
-}
-
-function DebugIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden>
-      <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" />
-      <circle cx="5.5" cy="4.5" r="1.4" fill="var(--background)" />
-      <circle cx="10.5" cy="8" r="1.4" fill="var(--background)" />
-      <circle cx="7" cy="11.5" r="1.4" fill="var(--background)" />
-    </svg>
-  )
-}
-
-export function TopNav({ state, c, debugOpen, onToggleDebug }: { state: AppState; c: SmartWebController; debugOpen: boolean; onToggleDebug: () => void }) {
-  return (
-    <header className="relative z-20 px-4 pt-5 sm:px-6">
-      <div className="mx-auto flex max-w-6xl items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Mark />
-          <span className="text-sm font-semibold tracking-tight">smart-web</span>
-        </div>
-        <nav className="glass mx-auto flex items-center gap-0.5 rounded-full p-1" aria-label="Categories">
-          {CATEGORIES.map((cat) => (
-            <Button
-              key={cat}
-              data-testid={`nav-${cat}`}
-              size="sm"
-              variant="ghost"
-              aria-current={state.category === cat ? 'page' : undefined}
-              className={`rounded-full px-4 ${state.category === cat ? 'bg-surface text-foreground shadow-sm' : 'text-muted'}`}
-              onPress={() => c.enter(cat)}
-            >
-              {CATEGORY_INFO[cat].title}
-            </Button>
-          ))}
-        </nav>
-        <Tooltip delay={300}>
-          <Button
-            data-testid="debug-toggle"
-            isIconOnly
-            variant="ghost"
-            aria-label={debugOpen ? 'Hide debug' : 'Show debug'}
-            aria-expanded={debugOpen}
-            className={`rounded-full ${debugOpen ? 'bg-surface shadow-sm' : ''}`}
-            onPress={onToggleDebug}
-          >
-            <DebugIcon />
-          </Button>
-          <Tooltip.Content>{debugOpen ? 'Hide debug' : 'Debug'}</Tooltip.Content>
-        </Tooltip>
-      </div>
-    </header>
-  )
-}
-
-/** Page title plus the model controls, which stay visible but quiet. */
-export function Toolbar({ state, c }: { state: AppState; c: SmartWebController }) {
-  const fileRef = useRef<HTMLInputElement>(null)
-  const content = CATEGORY_INFO[state.category]
-  return (
-    <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-semibold tracking-tight">{content.title}</h1>
-        <p className="text-sm text-muted">{content.lede} Ordered by how you use it.</p>
-      </div>
-      <div className="ml-auto flex flex-wrap items-center gap-1">
-        <Button data-testid="replay-journey" size="sm" variant="secondary" className="rounded-full" isDisabled={!state.ready || state.replaying} onPress={() => c.replay()}>
-          {state.replaying ? 'Replaying…' : 'Replay'}
-        </Button>
-        <Button data-testid="export-model" size="sm" variant="ghost" className="rounded-full text-muted" isDisabled={!state.ready} onPress={() => c.exportJson()}>Export</Button>
-        <Button data-testid="export-link" size="sm" variant="ghost" className="rounded-full text-muted" isDisabled={!state.ready} onPress={() => c.exportLink()}>Copy Link</Button>
-        <Button data-testid="import-model" size="sm" variant="ghost" className="rounded-full text-muted" isDisabled={!state.ready} onPress={() => fileRef.current?.click()}>Import</Button>
-        <Button data-testid="reset-model" size="sm" variant="danger-soft" className="rounded-full" isDisabled={!state.ready} onPress={() => c.reset()}>Reset</Button>
-        <input
-          ref={fileRef} data-testid="import-file" type="file" accept="application/json,.json" className="hidden"
-          onChange={async (e) => {
-            const f = e.target.files?.[0]
-            if (f) await c.importJsonText(await f.text())
-            e.target.value = ''
-          }}
-        />
-      </div>
-    </div>
-  )
-}
 
 function HeartIcon({ filled }: { filled: boolean }) {
   return (
@@ -129,7 +33,7 @@ function ShareIcon() {
 const FeatureCard = memo(function FeatureCard({ id, n, fav, c }: { id: CardId; n: number; fav: boolean; c: SmartWebController }) {
   const info = CARD_INFO[id]
   return (
-    <Card data-testid={`card-${id}`} className="glass h-44 justify-between rounded-3xl p-5">
+    <Card data-testid={`card-${id}`} className="h-44 justify-between rounded-2xl p-5">
       <Card.Header className="gap-1">
         <Card.Title className="text-base font-medium tracking-tight">{info.title}</Card.Title>
         <Card.Description className="text-sm text-muted">{info.desc}</Card.Description>
@@ -165,14 +69,14 @@ const GridItem = memo(function GridItem({ id, n, fav, flash, c }: { id: CardId; 
       transition={{ type: 'spring', stiffness: 260, damping: 32 }}
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative rounded-3xl"
+      className="relative rounded-2xl"
     >
       <FeatureCard id={id} n={n} fav={fav} c={c} />
       {flash !== null && (
         <motion.span
           key={flash}
           aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-accent/50"
+          className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-accent/50"
           initial={{ opacity: 1 }}
           animate={{ opacity: 0 }}
           transition={{ duration: 1.6, ease: 'easeOut' }}
@@ -196,35 +100,23 @@ export function AdaptiveGrid({ state, c }: { state: AppState; c: SmartWebControl
 
 const MODE_LABEL: Record<CssNetMode, string> = { calc: 'calc()', hybrid: 'Hybrid', animation: 'Animation' }
 
-/** Header for the network panel: title, engine picker and the few numbers that matter. */
-export function NetworkHeader({ state, c }: { state: AppState; c: SmartWebController }) {
-  const stats: [string, string][] = [
-    ['Examples', String(state.stats.examples)],
-    ['Top 3 hit', pct(state.stats.blendAcc)],
-    ['MLP share', pct(state.alpha)],
-    ['Latency', `${percentile(state.latencies, 50).toFixed(0)} ms`],
-  ]
+/** Header for the model card: what it shows and the engine picker. */
+export const NetworkHeader = memo(function NetworkHeader({ state, c }: { state: AppState; c: SmartWebController }) {
   return (
-    <div className="flex flex-wrap items-start gap-x-6 gap-y-4">
+    <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
       <div className="flex flex-col gap-1">
-        <h2 className="text-base font-medium tracking-tight">Network</h2>
-        <p className="text-sm text-muted">
-          {state.netSource === 'cssnet' ? `Ranks ${CATEGORY_INFO[state.category].title} in the stylesheet, ${MODE_LABEL[state.mode]} engine.` : 'Ranking in JavaScript (CSS engine unavailable).'}
+        <h2 className="text-base font-medium tracking-tight">Model</h2>
+        <p className="max-w-2xl text-sm text-muted">
+          {state.netSource === 'cssnet'
+            ? `One network ranks all 18 cards. Every output below is computed by the stylesheet, each category in its own context; ${CATEGORY_INFO[state.category].title} is in scope (${MODE_LABEL[state.mode]} engine).`
+            : 'One network ranks all 18 cards (JavaScript fallback: the CSS engine is unavailable here).'}
         </p>
       </div>
-      <dl className="ml-auto flex flex-wrap gap-2" data-testid="stats">
-        {stats.map(([k, v]) => (
-          <div key={k} className="flex min-w-20 flex-col gap-0.5 rounded-2xl bg-surface-secondary/60 px-3 py-2">
-            <dt className="text-xs text-muted">{k}</dt>
-            <dd className="text-sm font-medium tabular-nums">{v}</dd>
-          </div>
-        ))}
-      </dl>
-      <label className="flex items-center gap-2 self-center text-sm text-muted">
+      <label className="ml-auto flex items-center gap-2 text-sm text-muted">
         <span>Engine</span>
         <select
           data-testid="mode-select"
-          className="cursor-[var(--cursor-interactive)] rounded-full border-0 bg-surface-secondary/70 px-3 py-1.5 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="cursor-[var(--cursor-interactive)] rounded-full border-0 bg-surface-secondary px-3 py-1.5 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-accent"
           value={state.mode}
           onChange={(e) => c.setMode(e.target.value as CssNetMode)}
         >
@@ -235,7 +127,7 @@ export function NetworkHeader({ state, c }: { state: AppState; c: SmartWebContro
       </label>
     </div>
   )
-}
+}, (a, b) => a.state.category === b.state.category && a.state.mode === b.state.mode && a.state.netSource === b.state.netSource)
 
 const fmt = (v: number | undefined) => (v === undefined || Number.isNaN(v) ? '–' : Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(3))
 
@@ -243,7 +135,7 @@ export function DebugDrawer({ state }: { state: AppState }) {
   const lat = state.latencies
   const order = state.orders[state.category]
   return (
-    <Card data-testid="debug-drawer" className="glass rounded-3xl p-5 text-xs">
+    <Card data-testid="debug-drawer" className="rounded-2xl p-5 text-xs">
       <Card.Header className="gap-1">
         <Card.Title className="text-base font-medium tracking-tight">Debug</Card.Title>
         <Card.Description className="text-muted">

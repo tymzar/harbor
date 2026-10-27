@@ -21,8 +21,10 @@ export interface NetworkViewProps {
   /** Output ids and display names, indexed like the network outputs (18). */
   outIds: readonly string[]
   outLabels: readonly string[]
-  /** Output indices to show, top to bottom (the current category, sorted by the network's own CSS output). */
+  /** Output indices to show, top to bottom (grouped by category). */
   visible: number[]
+  /** Sizes of consecutive output groups in `visible` (e.g. [6, 6, 6]) and their titles. */
+  groups?: { title: string; size: number; active: boolean }[]
   inputLabels?: string[]
   inputs: number
   hiddenN: number
@@ -32,6 +34,8 @@ export interface NetworkViewProps {
   hostRef?: Ref<HTMLDivElement>
   /** True when the CSS engine (not the JS fallback) is live, so nodes come from CSS. */
   cssNodes?: boolean
+  /** Pause the canvas animation (the card is offscreen); the CSS nets keep computing. */
+  paused?: boolean
 }
 
 interface Signal { layer: 1 | 2; from: number; to: number; start: number; dur: number; s: number }
@@ -57,14 +61,27 @@ function toRGB(css: string, fallback: RGB): RGB {
 const rgba = ([r, g, b]: RGB, a: number) => `rgba(${r},${g},${b},${Math.max(0, Math.min(1, a)).toFixed(3)})`
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
 
-function geometry(w: number, h: number, n: [number, number, number]) {
+const GROUP_GAP = 26
+
+function geometry(w: number, h: number, n: [number, number, number], groups: number[] = [n[2]]) {
   const padY = 22
   const narrow = w < 560
   const x0 = narrow ? 16 : IN_LABEL_W + 18
   const x2 = Math.max(Math.round(w * 0.62), w - (narrow ? 96 : LABEL_W) - 18)
   const xs = [x0, Math.round((x0 + x2) / 2), x2]
   const ys = n.map((count) => Array.from({ length: count }, (_, k) => padY + ((h - 2 * padY) * (k + 0.5)) / count))
-  return { xs, ys }
+  // Outputs: grouped, with a gap before each group (room for its title).
+  const G = groups.length
+  const top = padY + (G > 1 ? GROUP_GAP : 0)
+  const rowH = (h - top - padY - GROUP_GAP * (G - 1)) / n[2]
+  let slot = 0
+  const groupTops: number[] = []
+  ys[2] = []
+  groups.forEach((size, g) => {
+    groupTops.push(top + g * GROUP_GAP + slot * rowH)
+    for (let k = 0; k < size; k++, slot++) ys[2].push(top + g * GROUP_GAP + rowH * (slot + 0.5))
+  })
+  return { xs, ys, groupTops }
 }
 
 function bez(x0: number, y0: number, x1: number, y1: number, t: number): [number, number] {
@@ -88,6 +105,8 @@ function hostVars(geo: ReturnType<typeof geometry>, labels: readonly string[], v
 export function NetworkView(props: NetworkViewProps) {
   const { inputs: I, hiddenN: H, height = 340 } = props
   const vis = props.visible
+  const groupSizes = (props.groups ?? [{ title: '', size: vis.length, active: true }]).map((g) => g.size)
+  const activeSlots = (props.groups ?? [{ title: '', size: vis.length, active: true }]).flatMap((g) => Array.from({ length: g.size }, () => g.active))
   const O = vis.length
   const outV = vis.map((k) => props.out[k] ?? 0)
   const weightsV = props.weights ? { W1: props.weights.W1, W2: Float32Array.from(vis.flatMap((k) => Array.from(props.weights!.W2).slice(k * H, k * H + H))) } : null
@@ -98,8 +117,8 @@ export function NetworkView(props: NetworkViewProps) {
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
 
   // Latest props for the render loop, without re-subscribing it.
-  const live = useRef({ ...props, out: outV, weights: weightsV, visKey })
-  live.current = { ...props, out: outV, weights: weightsV, visKey }
+  const live = useRef({ ...props, out: outV, weights: weightsV, visKey, activeSlots })
+  live.current = { ...props, out: outV, weights: weightsV, visKey, activeSlots }
 
   // Displayed (animated) values and pending targets.
   const disp = useRef({ x: new Float32Array(I), h: new Float32Array(H), o: new Float32Array(O).fill(1 / O) })
@@ -144,7 +163,7 @@ export function NetworkView(props: NetworkViewProps) {
     const sig: Signal[] = []
     for (const e of c1.slice(0, L1_SIGNALS)) if (e.s > 1e-4) sig.push({ layer: 1, from: e.i, to: e.j, start: now + Math.random() * 90, dur: HOP_MS * (0.85 + Math.random() * 0.3), s: 0.35 + 0.65 * (e.s / m1) })
     const c2: { j: number; k: number; s: number }[] = []
-    for (let k = 0; k < O; k++) for (let j = 0; j < H; j++) c2.push({ j, k, s: Math.max(0, p.hidden[j] ?? 0) * Math.abs(W2[k * H + j]) * (0.4 + (p.out[k] ?? 0)) })
+    for (let k = 0; k < O; k++) if (p.activeSlots[k]) for (let j = 0; j < H; j++) c2.push({ j, k, s: Math.max(0, p.hidden[j] ?? 0) * Math.abs(W2[k * H + j]) * (0.4 + (p.out[k] ?? 0)) })
     c2.sort((a, b) => b.s - a.s)
     const m2 = c2[0]?.s || 1
     for (const e of c2.slice(0, L2_SIGNALS)) if (e.s > 1e-4) sig.push({ layer: 2, from: e.j, to: e.k, start: now + HOP_MS * 0.9 + Math.random() * 90, dur: HOP_MS * (0.85 + Math.random() * 0.3), s: 0.35 + 0.65 * (e.s / m2) })
@@ -165,7 +184,7 @@ export function NetworkView(props: NetworkViewProps) {
     const cs = getComputedStyle(document.documentElement)
     const fg = toRGB(cs.getPropertyValue('--foreground'), dark ? [240, 240, 240] : [20, 20, 22])
     const accent = toRGB(cs.getPropertyValue('--accent'), [0, 111, 238])
-    const geo = geometry(width, height, [I, H, O])
+    const geo = geometry(width, height, [I, H, O], groupSizes)
     const glowOp: GlobalCompositeOperation = dark ? 'lighter' : 'source-over'
 
     // Glow sprite.
@@ -179,7 +198,7 @@ export function NetworkView(props: NetworkViewProps) {
     }
 
     const drawEdges = (w: NetworkViewProps['weights']) => {
-      const key = w ? `${width}|${height}|${dark}|${live.current.visKey}|${Array.from(w.W1).reduce((a, b) => a + Math.abs(b), 0).toFixed(4)}|${Array.from(w.W2).reduce((a, b) => a + Math.abs(b), 0).toFixed(4)}` : `${width}|${height}|${dark}|none`
+      const key = w ? `${width}|${height}|${dark}|${live.current.visKey}|${groupSizes.join()}|${Array.from(w.W1).reduce((a, b) => a + Math.abs(b), 0).toFixed(4)}|${Array.from(w.W2).reduce((a, b) => a + Math.abs(b), 0).toFixed(4)}` : `${width}|${height}|${dark}|none`
       if (cache.current.key === key && cache.current.canvas) return cache.current.canvas
       const off = cache.current.canvas ?? document.createElement('canvas')
       off.width = canvas.width; off.height = canvas.height
@@ -210,7 +229,7 @@ export function NetworkView(props: NetworkViewProps) {
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame)
-      if (document.hidden) return
+      if (document.hidden || live.current.paused) return
       const dt = Math.min(64, now - last); last = now
       const p = live.current
       const d = disp.current, t = target.current
@@ -317,7 +336,7 @@ export function NetworkView(props: NetworkViewProps) {
   }, [width, height, dark, I, H, O])
 
   // Output labels as real text, aligned to the output nodes.
-  const geo = width ? geometry(width, height, [I, H, O]) : null
+  const geo = width ? geometry(width, height, [I, H, O], groupSizes) : null
   let top = 0
   outV.forEach((v, k) => { if (v > (outV[top] ?? 0)) top = k })
   const wsig = props.weights ? Array.from(props.weights.W1).reduce((a, b) => a + Math.abs(b), 0).toFixed(3) : 'none'
@@ -341,6 +360,15 @@ export function NetworkView(props: NetworkViewProps) {
         className="pointer-events-none absolute inset-0"
         style={geo ? hostVars(geo, props.outLabels, vis, I, H) : undefined}
       />
+      {geo && props.groups && props.groups.length > 1 && props.groups.map((g, gi) => (
+        <div
+          key={g.title}
+          className={`absolute text-[11px] font-medium leading-none ${g.active ? 'text-foreground' : 'text-muted'}`}
+          style={{ left: geo.xs[2] - 6, top: geo.groupTops[gi] - 16 }}
+        >
+          {g.title}{g.active ? <span className="ml-1.5 font-normal text-muted">in scope</span> : null}
+        </div>
+      ))}
       {geo && width >= 560 && (props.inputLabels ?? []).slice(0, I).map((l, i) => (
         <div
           key={i}

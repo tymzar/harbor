@@ -1,4 +1,4 @@
-import type { CardId, Category, NetWeights } from '../cssnet/contract'
+import type { CardId, Category, NetWeights, Verb } from '../cssnet/contract'
 import type { NormStats } from '../signals/normalizer'
 import type { AffinityState } from './affinity'
 
@@ -14,6 +14,9 @@ export interface PersistedModel {
   intensity: number[]
   /** Card order per category as last shown (hysteresis starts from here on reload). */
   orders: Orders | null
+  /** Category usage counts (visits + half of card presses), decayed, and the shown category order. */
+  categoryCounts?: number[]
+  navOrder?: Category[] | null
   updatedAt: number
   examples: number
   acc?: { affinity: boolean[]; mlp: boolean[]; blend?: boolean[] }
@@ -29,6 +32,18 @@ export interface ModelStats {
   accN: number
 }
 
+/** What the last press did to the model (for the activity table). */
+export interface ModelEvent {
+  card: CardId
+  verb: Verb
+  category: Category
+  /** Training weight (verb x deliberation); 0 when deduplicated as a repeat. */
+  weight: number
+  counted: boolean
+  /** Was the card already in the shown top 3 before this press? */
+  hit: boolean
+}
+
 export interface ModelSnapshot {
   weights: NetWeights
   /** Network input for the current category (what the CSS net is fed). */
@@ -42,10 +57,16 @@ export interface ModelSnapshot {
   mlp: Float32Array
   /** Decayed engagement mass per category (how much evidence the order rests on). */
   evidence: Record<Category, number>
+  /** Category ranking: normalised usage score per category (CATEGORIES order), its evidence, and the saved order. */
+  categoryScores: number[]
+  categoryEvidence: number
+  navOrder: Category[] | null
   /** MLP weight in the blend. */
   alpha: number
   stats: ModelStats
   orders: Orders | null
+  /** Set by step(), null otherwise. */
+  lastEvent: ModelEvent | null
   updatedAt: number
 }
 

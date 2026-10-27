@@ -66,6 +66,8 @@ export interface MountOptions {
    * supplies positions and labels via --nv-* custom properties. Default false.
    */
   nodes?: boolean
+  /** With nodes: only build output nodes for these output indices (default all). */
+  nodeOutputs?: number[]
 }
 
 let seq = 0
@@ -114,7 +116,7 @@ export const mountCssNet: MountCssNet & ((host: HTMLElement, shape: NetShape, mo
     nodeSheet.dataset.cssnet = `${cls}-nodes`
     nodeSheet.textContent = nodeStylesheet(shape, cls, mode)
     doc.head.appendChild(nodeSheet)
-    buildNodes(doc, shape, cls, root, outEl, fEls)
+    buildNodes(doc, shape, cls, root, outEl, fEls, opts.nodeOutputs)
   }
   root.style.cssText = inputsStyle(shape, new Float32Array(shape.inputs))
   host.appendChild(root)

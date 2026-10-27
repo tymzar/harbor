@@ -11,7 +11,7 @@ for (const mode of ['calc', 'hybrid', 'animation'] as const) {
     await openFresh(page); resetMouse()
     await page.getByTestId('mode-select').selectOption(mode)
     expect(await page.evaluate(() => window.__smartweb.netSource())).toBe('cssnet')
-    await expect(page.locator(`[data-testid=cssnet-host] [data-cssnet=${mode}]`)).toHaveCount(1)
+    await expect(page.locator(`[data-testid=cssnet-host] [data-cssnet=${mode}]`)).toHaveCount(3)
     const steps = [['drafts', 'open'], ['team', 'share'], ['nav', 'explore'], ['moss', 'open'], ['tidepools', 'favorite'], ['nav', 'library'], ['reading', 'open'], ['nav', 'home'], ['drafts', 'open']] as const
     const intens = [NORMAL, RUSHED, CALM]
     const diffs: number[] = []
@@ -27,6 +27,11 @@ for (const mode of ['calc', 'hybrid', 'animation'] as const) {
       diffs.push(maxAbsDiff(css, js))
       outs.push(css)
     }
+    // Full model: after the idle refresh, every category's CSS outputs match the JS reference in that category's context.
+    await expect.poll(async () => page.evaluate(() => {
+      const a = window.__smartweb.cssAll(), b = window.__smartweb.jsAll()
+      return Math.max(...a.map((v, i) => Math.abs(v - b[i])))
+    }), { timeout: 3000 }).toBeLessThan(TOL[mode])
     const worst = Math.max(...diffs)
     const spread = Math.max(...outs.slice(1).map((o) => maxAbsDiff(o, outs[0])))
     results[mode] = { interactions: steps.length, maxAbsDiff: worst, perInteraction: diffs, tolerance: TOL[mode], outputSpread: spread }

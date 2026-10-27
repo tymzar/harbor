@@ -83,19 +83,25 @@ function params(shape: NetShape, w?: NetWeights) {
   }
 }
 
-/** @property rules for inputs and, unless literal, weights and biases. */
-export function parameterRegistrations(shape: NetShape, literal = false): string[] {
+/**
+ * @property rules for inputs and, unless literal, weights and biases.
+ * Weights inherit only where another element reads them (animation-mode keyframes on the
+ * nested chain). In calc/hybrid they are read on the root alone; not inheriting them keeps
+ * visible node elements from copying ~500 properties on every forward pass (measured:
+ * calc 4.4 ms -> see parity/benchmark).
+ */
+export function parameterRegistrations(shape: NetShape, literal = false, inheritWeights = true): string[] {
   const { inputs: I, hidden: H, outputs: O } = shape
   const out: string[] = []
   for (const i of range(I)) out.push(registration(prop.x(i)))
   if (literal) return out
   for (const j of range(H)) {
-    out.push(registration(prop.b1(j)))
-    for (const i of range(I)) out.push(registration(prop.w1(j, i)))
+    out.push(registration(prop.b1(j), inheritWeights))
+    for (const i of range(I)) out.push(registration(prop.w1(j, i), inheritWeights))
   }
   for (const k of range(O)) {
-    out.push(registration(prop.b2(k)))
-    for (const j of range(H)) out.push(registration(prop.w2(k, j)))
+    out.push(registration(prop.b2(k), inheritWeights))
+    for (const j of range(H)) out.push(registration(prop.w2(k, j), inheritWeights))
   }
   return out
 }
@@ -108,9 +114,10 @@ export function softmaxRegistrations(shape: NetShape): string[] {
   const out: string[] = []
   for (const k of range(shape.outputs)) {
     out.push(registration(prop.m(k), true, 1))
-    out.push(registration(prop.z(k)), registration(prop.e(k)), registration(prop.p(k)), registration(prop.is(k)))
+    // z and e are read only where declared; p, is and pmax are read by visible nodes (inherit).
+    out.push(registration(prop.z(k), false), registration(prop.e(k), false), registration(prop.p(k)), registration(prop.is(k)))
   }
-  out.push(registration(prop.zmax), registration(prop.esum, true, 1), registration(prop.pmax))
+  out.push(registration(prop.zmax, false), registration(prop.esum, false, 1), registration(prop.pmax))
   return out
 }
 
@@ -161,7 +168,7 @@ const ROOT_STYLE = 'display:block;position:absolute;width:0;height:0;overflow:hi
 export function calcStylesheet(shape: NetShape, cls: string, w?: NetWeights): string {
   const { inputs: I, hidden: H } = shape
   const P = params(shape, w)
-  const regs = [...parameterRegistrations(shape, !!w), ...range(H).map((j) => registration(prop.h(j))), ...softmaxRegistrations(shape)]
+  const regs = [...parameterRegistrations(shape, !!w, false), ...range(H).map((j) => registration(prop.h(j))), ...softmaxRegistrations(shape)]
   const d: string[] = []
   for (const j of range(H)) {
     const terms = [P.b1(j), ...range(I).map((i) => `${P.w1(j, i)} * var(${prop.x(i)})`)]
@@ -193,7 +200,7 @@ const ANIM_COMMON = `animation-duration:${X_MAX - X_MIN}s;animation-timing-funct
 export function hybridStylesheet(shape: NetShape, cls: string, w?: NetWeights): string {
   const { inputs: I, hidden: H } = shape
   const P = params(shape, w)
-  const regs = [...parameterRegistrations(shape, !!w), ...range(H).flatMap((j) => [registration(prop.h(j)), registration(prop.a(j))]), ...softmaxRegistrations(shape)]
+  const regs = [...parameterRegistrations(shape, !!w, false), ...range(H).flatMap((j) => [registration(prop.h(j)), registration(prop.a(j))]), ...softmaxRegistrations(shape)]
   const { keyframes, delays } = layer1Animation(shape, cls, prop.h, w)
   const d: string[] = []
   for (const j of range(H)) d.push(`${prop.h(j)}:${P.b1(j)}`)

@@ -38,7 +38,11 @@ export function blendScores(affinity: ArrayLike<number>, mlp: ArrayLike<number>,
  * no adjacent pair out of place by more than `margin` (a full reorder if the evidence says so).
  */
 export function reorder(prev: readonly CardId[], scores: ArrayLike<number>, margin = SWAP_MARGIN): CardId[] {
-  const s = (id: CardId) => scores[CARD_IDS.indexOf(id)]
+  return reorderBy(prev, (id) => scores[CARD_IDS.indexOf(id)], margin)
+}
+
+/** Same hysteresis sort for any items (cards, categories). */
+export function reorderBy<T>(prev: readonly T[], s: (t: T) => number, margin = SWAP_MARGIN): T[] {
   const out = [...prev]
   for (let pass = 0; pass < out.length; pass++) {
     let swapped = false

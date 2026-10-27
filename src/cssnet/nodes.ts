@@ -69,7 +69,7 @@ export function nodeStylesheet(shape: NetShape, cls: string, mode: CssNetMode): 
 export interface NodeElements { inputs: HTMLElement[]; hidden: HTMLElement[]; outputs: HTMLElement[] }
 
 /** Creates node elements inside the computing elements. `hiddenParents` are the f_j elements in animation mode. */
-export function buildNodes(doc: Document, shape: NetShape, cls: string, root: HTMLElement, outEl: HTMLElement, hiddenParents: HTMLElement[] | null): NodeElements {
+export function buildNodes(doc: Document, shape: NetShape, cls: string, root: HTMLElement, outEl: HTMLElement, hiddenParents: HTMLElement[] | null, onlyOutputs?: number[]): NodeElements {
   root.classList.add(`${cls}-visible`)
   const mk = (c: string, attrs: Record<string, string>) => {
     const el = doc.createElement('div')
@@ -83,7 +83,7 @@ export function buildNodes(doc: Document, shape: NetShape, cls: string, root: HT
     ;(hiddenParents ? hiddenParents[j] : root).appendChild(el)
     return el
   })
-  const outputs = range(shape.outputs).map((k) => {
+  const outputs = (onlyOutputs ?? range(shape.outputs)).map((k) => {
     const el = mk(`${cls}-node ${cls}-on ${cls}-on${k}`, { 'data-node': 'output', 'data-k': String(k) })
     el.appendChild(mk(`${cls}-label`, {}))
     outEl.appendChild(el)

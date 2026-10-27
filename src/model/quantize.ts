@@ -38,8 +38,8 @@ export function fromBase64Url(s: string): Uint8Array {
 export function encodeFragment(m: PersistedModel): string {
   const count = m.normStats.count
   const std = m.normStats.m2.map((v) => (count > 1 ? Math.sqrt(Math.max(0, v / (count - 1))) : 0))
-  const tensors = [m.weights.W1, m.weights.b1, m.weights.W2, m.weights.b2, m.normStats.mean, std, m.affinity.counts, m.intensity].map(quant)
-  const size = 6 + 4 + 4 + 1 + SHAPE.outputs + tensors.reduce((a, t) => a + 4 + t.q.length, 0)
+  const tensors = [m.weights.W1, m.weights.b1, m.weights.W2, m.weights.b2, m.normStats.mean, std, m.affinity.counts, m.intensity, m.categoryCounts ?? [0, 0, 0]].map(quant)
+  const size = 6 + 4 + 4 + 1 + SHAPE.outputs + 1 + CATEGORIES.length + tensors.reduce((a, t) => a + 4 + t.q.length, 0)
   const buf = new ArrayBuffer(size)
   const dv = new DataView(buf)
   const u8 = new Uint8Array(buf)
@@ -50,6 +50,8 @@ export function encodeFragment(m: PersistedModel): string {
   dv.setUint32(o, count >>> 0, true); o += 4
   u8[o++] = m.orders ? 1 : 0
   for (const k of CARDS) u8[o++] = m.orders ? m.orders[k.category].indexOf(k.id) : 0
+  u8[o++] = m.navOrder ? 1 : 0
+  for (const c of CATEGORIES) u8[o++] = m.navOrder ? m.navOrder.indexOf(c) : 0
   for (const t of tensors) {
     dv.setFloat32(o, t.scale, true); o += 4
     u8.set(new Uint8Array(t.q.buffer), o); o += t.q.length
@@ -70,6 +72,8 @@ export function decodeFragment(s: string, base: PersistedModel): PersistedModel 
   const count = dv.getUint32(o, true); o += 4
   const hasOrders = u8[o++] === 1
   const slots = Array.from(u8.subarray(o, o + O)); o += O
+  const hasNav = u8[o++] === 1
+  const navSlots = Array.from(u8.subarray(o, o + CATEGORIES.length)); o += CATEGORIES.length
   const read = (n: number): number[] => {
     if (o + 4 + n > u8.length) throw new Error('fragment: truncated')
     const scale = dv.getFloat32(o, true); o += 4
@@ -79,7 +83,7 @@ export function decodeFragment(s: string, base: PersistedModel): PersistedModel 
     return out
   }
   const W1 = read(H * I), b1 = read(H), W2 = read(O * H), b2 = read(O)
-  const mean = read(RAW_MODEL_FEATURES), std = read(RAW_MODEL_FEATURES), counts = read(O), intensity = read(POINTER_INPUTS)
+  const mean = read(RAW_MODEL_FEATURES), std = read(RAW_MODEL_FEATURES), counts = read(O), intensity = read(POINTER_INPUTS), categoryCounts = read(CATEGORIES.length)
   let orders: PersistedModel['orders'] = null
   if (hasOrders) {
     orders = {} as Record<Category, CardId[]>
@@ -95,6 +99,8 @@ export function decodeFragment(s: string, base: PersistedModel): PersistedModel 
     affinity: { ...base.affinity, counts },
     intensity,
     orders,
+    categoryCounts,
+    navOrder: hasNav ? [...CATEGORIES].sort((a, b) => navSlots[CATEGORIES.indexOf(a)] - navSlots[CATEGORIES.indexOf(b)]) : null,
     updatedAt: Date.now(),
     examples,
     acc: { affinity: [], mlp: [], blend: [] },

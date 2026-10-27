@@ -64,7 +64,8 @@ export class ModelClient {
   async step(raw: Float32Array, card: CardId, verb: Verb, category: Category, t: number): Promise<ModelSnapshot> {
     return (await this.snap({ type: 'step', raw: Array.from(raw), card, verb, category, t })).snapshot
   }
-  async setOrders(orders: Orders): Promise<void> { await this.send({ type: 'setOrders', orders }) }
+  async visit(raw: Float32Array, category: Category, t: number): Promise<ModelSnapshot> { return (await this.snap({ type: 'visit', raw: Array.from(raw), category, t })).snapshot }
+  async setOrders(orders: Orders, navOrder?: Category[] | null): Promise<void> { await this.send({ type: 'setOrders', orders, navOrder }) }
   async reset(raw: Float32Array, category: Category): Promise<ModelSnapshot> { return (await this.snap({ type: 'reset', raw: Array.from(raw), category })).snapshot }
   async importModel(model: PersistedModel, raw: Float32Array, category: Category): Promise<ModelSnapshot> { return (await this.snap({ type: 'import', model, raw: Array.from(raw), category })).snapshot }
   async importFragment(fragment: string, raw: Float32Array, category: Category): Promise<ModelSnapshot> { return (await this.snap({ type: 'importFragment', fragment, raw: Array.from(raw), category })).snapshot }

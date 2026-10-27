@@ -4,10 +4,10 @@ import { RunningNorm } from '../signals/normalizer'
 import { RollingAccuracy } from './accuracy'
 import { Affinity } from './affinity'
 import {
-  ACC_WINDOW, AFFINITY_DECAY, AFFINITY_PRIOR, DEDUPE_MS, INIT_SEED, INTENSITY_EMA, PRIOR, SCHEMA_VERSION, SGD, SHAPE, VERB_WEIGHT, blendAlpha,
+  ACC_WINDOW, AFFINITY_DECAY, AFFINITY_PRIOR, CARD_TO_CATEGORY, DEDUPE_MS, INIT_SEED, INTENSITY_EMA, PRIOR, SCHEMA_VERSION, SGD, SHAPE, VERB_WEIGHT, blendAlpha,
 } from './config'
 import { cloneWeights, forward, initWeights, sgdStep } from './mlp'
-import { deserialWeights, serialWeights, type ModelSnapshot, type Orders, type PersistedModel } from './types'
+import { deserialWeights, serialWeights, type ModelEvent, type ModelSnapshot, type Orders, type PersistedModel } from './types'
 
 const HOVER = 5 // index of hoverDwell in MODEL_FEATURES
 
@@ -40,6 +40,10 @@ export class ModelEngine {
   examples = 0
   updatedAt = 0
   orders: Orders | null = null
+  /** Category-level usage (CATEGORIES order) and the category order last shown. */
+  categoryCounts = new Float64Array(CATEGORIES.length)
+  navOrder: Category[] | null = null
+  private lastVisit: { c: Category; t: number } | null = null
   category: Category = 'home'
   private last: { card: number; verb: Verb; t: number } | null = null
 
@@ -59,8 +63,30 @@ export class ModelEngine {
     this.intensity.fill(0)
     this.examples = 0
     this.orders = null
+    this.categoryCounts.fill(0)
+    this.navOrder = null
+    this.lastVisit = null
     this.last = null
     this.updatedAt = this.clock()
+  }
+
+  private bumpCategory(c: Category, w: number) {
+    for (let i = 0; i < this.categoryCounts.length; i++) this.categoryCounts[i] *= AFFINITY_DECAY
+    this.categoryCounts[CATEGORIES.indexOf(c)] += w
+  }
+
+  /** The user opened a category: a category-level preference signal (repeats within DEDUPE_MS count once). */
+  visit(raw: ArrayLike<number>, category: Category, t: number): ModelSnapshot {
+    this.observeTime(raw)
+    const dup = !!this.lastVisit && this.lastVisit.c === category && t - this.lastVisit.t < DEDUPE_MS
+    this.lastVisit = { c: category, t }
+    if (!dup && this.category !== category) {
+      const z = this.norm.apply(raw)
+      this.bumpCategory(category, Math.max(0.7, Math.min(1.3, 1 + 0.15 * z[HOVER])))
+    }
+    this.category = category
+    this.updatedAt = this.clock()
+    return this.snapshot()
   }
 
   /** Network input for a category: running intensity, time of day, category one-hot. */
@@ -97,6 +123,7 @@ export class ModelEngine {
     this.category = category
     const dup = !!this.last && this.last.card === k && this.last.verb === verb && t - this.last.t < DEDUPE_MS
     this.last = { card: k, verb, t }
+    let event: ModelEvent = { card, verb, category, weight: 0, counted: false, hit: false }
     if (!dup) {
       const z = this.norm.apply(raw)
       const x = this.context(category)
@@ -106,21 +133,24 @@ export class ModelEngine {
       const alpha = blendAlpha(this.examples, this.accAffinity.value, this.accMlp.value)
       this.accAffinity.push(inTopK(aff, category, k))
       this.accMlp.push(inTopK(mlp, category, k))
-      this.accBlend.push(inTopK(aff.map((a, i) => (1 - alpha) * a + alpha * mlp[i]), category, k))
+      const hit = inTopK(aff.map((a, i) => (1 - alpha) * a + alpha * mlp[i]), category, k)
+      this.accBlend.push(hit)
       const deliberate = Math.max(0.7, Math.min(1.3, 1 + 0.15 * z[HOVER]))
       const w = VERB_WEIGHT[verb] * deliberate
       sgdStep(SHAPE, this.weights, x, k, SGD, mask, w)
       this.affinity.update(k, w)
+      this.bumpCategory(category, CARD_TO_CATEGORY * w)
       this.examples++
+      event = { ...event, weight: w, counted: true, hit }
     }
     this.norm.update(raw)
     const z = this.norm.apply(raw)
     for (let i = 0; i < POINTER_INPUTS; i++) this.intensity[i] = (1 - INTENSITY_EMA) * this.intensity[i] + INTENSITY_EMA * z[i]
     this.updatedAt = this.clock()
-    return this.snapshot()
+    return { ...this.snapshot(), lastEvent: event }
   }
 
-  setOrders(o: Orders): void { this.orders = o }
+  setOrders(o: Orders, nav?: Category[] | null): void { this.orders = o; if (nav) this.navOrder = nav }
 
   snapshot(): ModelSnapshot {
     const mlp = new Float32Array(SHAPE.outputs)
@@ -142,6 +172,10 @@ export class ModelEngine {
       alpha: blendAlpha(this.examples, this.accAffinity.value, this.accMlp.value),
       stats: { examples: this.examples, affinityAcc: this.accAffinity.value, mlpAcc: this.accMlp.value, blendAcc: this.accBlend.value, accN: this.accMlp.size },
       orders: this.orders,
+      categoryScores: (() => { const sum = this.categoryCounts.reduce((a, b) => a + b, 0) + 1; return Array.from(this.categoryCounts, (v) => (v + 1 / 3) / sum) })(),
+      categoryEvidence: this.categoryCounts.reduce((a, b) => a + b, 0),
+      navOrder: this.navOrder,
+      lastEvent: null,
       updatedAt: this.updatedAt,
     }
   }
@@ -154,6 +188,8 @@ export class ModelEngine {
       affinity: this.affinity.toJSON(),
       intensity: Array.from(this.intensity),
       orders: this.orders,
+      categoryCounts: Array.from(this.categoryCounts),
+      navOrder: this.navOrder,
       updatedAt: this.updatedAt,
       examples: this.examples,
       acc: { affinity: this.accAffinity.toJSON(), mlp: this.accMlp.toJSON(), blend: this.accBlend.toJSON() },
@@ -167,6 +203,8 @@ export class ModelEngine {
     this.affinity.load(m.affinity)
     this.intensity = Float32Array.from(m.intensity)
     this.orders = m.orders ?? null
+    this.categoryCounts = Float64Array.from(m.categoryCounts ?? [0, 0, 0])
+    this.navOrder = m.navOrder ?? null
     this.examples = m.examples
     this.updatedAt = m.updatedAt
     this.accAffinity.load(m.acc?.affinity ?? [])
@@ -195,6 +233,8 @@ export function validatePersisted(m: unknown): asserts m is PersistedModel {
       if (!Array.isArray(ids) || [...ids].sort().join() !== want) throw new Error(`model: orders.${c} invalid`)
     }
   }
+  if (o.categoryCounts && o.categoryCounts.length !== CATEGORIES.length) throw new Error('model: categoryCounts shape')
+  if (o.navOrder && [...o.navOrder].sort().join() !== [...CATEGORIES].sort().join()) throw new Error('model: navOrder invalid')
   const all = [...w.W1, ...w.b1, ...w.W2, ...w.b2, ...o.normStats.mean, ...o.normStats.m2, ...o.affinity.counts, ...o.intensity]
   if (!all.every((v) => typeof v === 'number' && Number.isFinite(v))) throw new Error('model: non-finite values')
 }

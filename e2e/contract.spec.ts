@@ -16,6 +16,7 @@ test('renders every data-testid from contract.ts, backed by the real CSS net', a
   await expect(page.getByTestId('debug-drawer')).toHaveCount(0)
   await page.getByTestId('debug-toggle').click()
   await expect(page.getByTestId('debug-drawer')).toBeVisible()
-  await expect(page.locator('[data-testid=cssnet-host] [data-cssnet=calc]')).toHaveCount(1)
+  await expect(page.locator('[data-testid=cssnet-host] [data-cssnet=calc]')).toHaveCount(3) // one net per category
+  await expect(page.locator('[data-net-scope][data-active] [data-cssnet=calc]')).toHaveCount(1)
   await expect(page.getByTestId('debug-drawer')).toContainText('net: cssnet (calc) · reference: cssnet/reference')
 })

@@ -17,6 +17,8 @@ export const INTENSITY_EMA = 0.3
 /** The same press (card + verb) repeated within this window counts once (rage bursts collapse). */
 export const DEDUPE_MS = 1500
 export const VERB_WEIGHT = { open: 1, favorite: 1.5, share: 1.5 } as const
+/** Category ranking: a visit counts 1, a card press counts this share of its weight to its category. */
+export const CARD_TO_CATEGORY = 0.5
 export const ACC_WINDOW = 20
 /** MLP blend weight: 0 at first, grows to its share of recent accuracy after BLEND_RAMP examples. */
 export const BLEND_RAMP = 20
