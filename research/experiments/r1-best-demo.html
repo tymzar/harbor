@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>CSS-only MLP — animation-engine forward pass</title>
+<style>
+:root { --d1: 0; --d2: 0; animation: d1 9s ease-in-out infinite alternate, d2 13s ease-in-out infinite alternate; line-height: calc(var(--d1) * 100px); font-size: calc(var(--d2) * 100px); }
+@property --d0 { syntax: '<number>'; inherits: false; initial-value: 0.5; }
+@property --d1 { syntax: '<number>'; inherits: false; initial-value: 0.5; }
+@property --d2 { syntax: '<number>'; inherits: false; initial-value: 0.5; }
+@property --d3 { syntax: '<number>'; inherits: false; initial-value: 0.5; }
+@keyframes d0 { from { --d0: 0.05 } to { --d0: 0.95 } }
+@keyframes d1 { from { --d1: 0.9 } to { --d1: 0.1 } }
+@keyframes d2 { from { --d2: 0.2 } to { --d2: 1 } }
+@keyframes d3 { from { --d3: 0.95 } to { --d3: 0.05 } }
+@property --h { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --v { syntax: '<number>'; inherits: true; initial-value: 0; }  /* inherits so ::after counters see it */
+@property --a { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --t { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --win { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --x0 { syntax: '<number>'; inherits: true; initial-value: 0.5; }
+@property --x1 { syntax: '<number>'; inherits: true; initial-value: 0.5; }
+@property --x2 { syntax: '<number>'; inherits: true; initial-value: 0.5; }
+@property --x3 { syntax: '<number>'; inherits: true; initial-value: 0.5; }
+@property --o0 { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --e0 { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --p0 { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --o1 { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --e1 { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --p1 { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --o2 { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --e2 { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --p2 { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --z { syntax: '<number>'; inherits: true; initial-value: 1; }
+@keyframes h0-0 { from { --h: 0 } to { --h: -0.061000000685453415 } }
+@keyframes h0-1 { from { --h: 0 } to { --h: 2.1610000133514404 } }
+@keyframes h0-2 { from { --h: 0 } to { --h: 2.132999897003174 } }
+@keyframes h0-3 { from { --h: 0 } to { --h: -1.8539999723434448 } }
+@keyframes h1-0 { from { --h: 0 } to { --h: -1.9220000505447388 } }
+@keyframes h1-1 { from { --h: 0 } to { --h: -0.8700000047683716 } }
+@keyframes h1-2 { from { --h: 0 } to { --h: 1.8980000019073486 } }
+@keyframes h1-3 { from { --h: 0 } to { --h: -1.652999997138977 } }
+@keyframes h2-0 { from { --h: 0 } to { --h: 0.07999999821186066 } }
+@keyframes h2-1 { from { --h: 0 } to { --h: -2.0309998989105225 } }
+@keyframes h2-2 { from { --h: 0 } to { --h: -1.6080000400543213 } }
+@keyframes h2-3 { from { --h: 0 } to { --h: 0.5090000033378601 } }
+@keyframes h3-0 { from { --h: 0 } to { --h: 1.0809999704360962 } }
+@keyframes h3-1 { from { --h: 0 } to { --h: 1.0839999914169312 } }
+@keyframes h3-2 { from { --h: 0 } to { --h: 1.3910000324249268 } }
+@keyframes h3-3 { from { --h: 0 } to { --h: 1.0750000476837158 } }
+@keyframes h4-0 { from { --h: 0 } to { --h: -0.9760000109672546 } }
+@keyframes h4-1 { from { --h: 0 } to { --h: 0.17299999296665192 } }
+@keyframes h4-2 { from { --h: 0 } to { --h: 0.2849999964237213 } }
+@keyframes h4-3 { from { --h: 0 } to { --h: 0.8299999833106995 } }
+@keyframes o0-0 { from { --o0: 0 } to { --o0: -7.5280 } }
+@keyframes o0-1 { from { --o0: 0 } to { --o0: 8.2720 } }
+@keyframes o0-2 { from { --o0: 0 } to { --o0: 5.3920 } }
+@keyframes o0-3 { from { --o0: 0 } to { --o0: 6.7440 } }
+@keyframes o0-4 { from { --o0: 0 } to { --o0: -1.9680 } }
+@keyframes o1-0 { from { --o1: 0 } to { --o1: -1.9120 } }
+@keyframes o1-1 { from { --o1: 0 } to { --o1: -7.9360 } }
+@keyframes o1-2 { from { --o1: 0 } to { --o1: -10.9440 } }
+@keyframes o1-3 { from { --o1: 0 } to { --o1: 6.4880 } }
+@keyframes o1-4 { from { --o1: 0 } to { --o1: -4.4720 } }
+@keyframes o2-0 { from { --o2: 0 } to { --o2: 1.8560 } }
+@keyframes o2-1 { from { --o2: 0 } to { --o2: 9.4080 } }
+@keyframes o2-2 { from { --o2: 0 } to { --o2: -5.4240 } }
+@keyframes o2-3 { from { --o2: 0 } to { --o2: -4.1600 } }
+@keyframes o2-4 { from { --o2: 0 } to { --o2: -9.8400 } }
+
+/* ---------- the network ---------- */
+.drive { container-type: inline-size; width: calc(var(--d3) * 1000px); height: 0; line-height: calc(var(--d0) * 100px); animation: d0 7s ease-in-out infinite alternate, d3 11s ease-in-out infinite alternate; }
+.root, .n, .f, .p, .out { display: contents; }
+.root { --o0: 0.21299999952316284; --o1: -0.20399999618530273; --o2: 0.2720000147819519; }
+.n { animation-duration: 1s; animation-timing-function: linear; animation-play-state: paused; animation-fill-mode: both; animation-composition: add;
+     animation-delay: calc(calc(1lh / 100px) * -1s), calc(calc(1rlh / 100px) * -1s), calc(calc(1rem / 100px) * -1s), calc(calc(100cqw / 1000px) * -1s); }
+.stage:has(#manual:checked) .n { animation-delay: calc(var(--x0) * -1s), calc(var(--x1) * -1s), calc(var(--x2) * -1s), calc(var(--x3) * -1s); }
+.f { font-size: calc((var(--h) + 8) * 1px); }
+.p { animation-duration: 16s; animation-timing-function: linear(0, 0 50%, 1); animation-play-state: paused; animation-fill-mode: both; animation-composition: add;
+     animation-delay: calc(((1em / 1px) - 8 - -8) * -1s); }
+.n0 { --h: -0.39800000190734863; animation-name: h0-0, h0-1, h0-2, h0-3; }
+.p0 { animation-name: o0-0, o1-0, o2-0; }
+.n1 { --h: -0.335999995470047; animation-name: h1-0, h1-1, h1-2, h1-3; }
+.p1 { animation-name: o0-1, o1-1, o2-1; }
+.n2 { --h: 0.6140000224113464; animation-name: h2-0, h2-1, h2-2, h2-3; }
+.p2 { animation-name: o0-2, o1-2, o2-2; }
+.n3 { --h: -0.40400001406669617; animation-name: h3-0, h3-1, h3-2, h3-3; }
+.p3 { animation-name: o0-3, o1-3, o2-3; }
+.n4 { --h: 0.6919999718666077; animation-name: h4-0, h4-1, h4-2, h4-3; }
+.p4 { animation-name: o0-4, o1-4, o2-4; }
+.out { --e0: calc(exp(var(--o0))); --e1: calc(exp(var(--o1))); --e2: calc(exp(var(--o2))); --z: calc(var(--e0) + var(--e1) + var(--e2)); --p0: calc(var(--e0) / var(--z)); --p1: calc(var(--e1) / var(--z)); --p2: calc(var(--e2) / var(--z)); --win: max(var(--p0), var(--p1), var(--p2)); }
+.x0 { --v: calc(1lh / 100px); }
+.stage:has(#manual:checked) .x0 { --v: var(--x0); }
+.x1 { --v: calc(1rlh / 100px); }
+.stage:has(#manual:checked) .x1 { --v: var(--x1); }
+.x2 { --v: calc(1rem / 100px); }
+.stage:has(#manual:checked) .x2 { --v: var(--x2); }
+.x3 { --v: calc(100cqw / 1000px); }
+.stage:has(#manual:checked) .x3 { --v: var(--x3); }
+
+/* ---------- visuals (all driven by the CSS-computed values) ---------- */
+* { box-sizing: border-box; }
+body { margin: 0; background: #07090f; color: #cfd6e6; font: 14px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; min-height: 100vh; display: grid; place-items: center; }
+.stage { position: relative; width: 980px; height: 600px; background: radial-gradient(ellipse at 50% 40%, #0f1626 0%, #07090f 70%); border: 1px solid #1c2538; border-radius: 16px; overflow: hidden; font-size: 14px; line-height: 1.4; }
+.title { position: absolute; left: 24px; top: 16px; font-size: 12px; white-space: nowrap; letter-spacing: .08em; text-transform: uppercase; color: #7f8ba6; }
+.title b { color: #e6ecff; }
+.col { position: absolute; top: 42px; font-size: 11px; color: #5d6a86; letter-spacing: .1em; text-transform: uppercase; }
+.node { position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; border: 2px solid #2a3652; background: #0d1322; display: grid; place-items: center; z-index: 2; }
+.node::after { font-size: 11px; color: #e6ecff; }
+.in { --a: var(--v); }
+.in { background: color-mix(in oklab, #ffb347 calc(var(--a) * 100%), #0d1322); box-shadow: 0 0 calc(var(--a) * 28px) color-mix(in oklab, #ffb347 calc(var(--a) * 80%), transparent); border-color: color-mix(in oklab, #ffb347 calc(var(--a) * 100%), #2a3652); }
+.in::after { counter-reset: ip calc(round(down, var(--v), 1)) fp calc(round(var(--v) * 100) - round(down, var(--v), 1) * 100); content: counter(ip) "." counter(fp, decimal-leading-zero); }
+.hid { --a: max(0, min(1, var(--h) / 4)); --neg: max(0, min(1, var(--h) / -4));
+       background: color-mix(in oklab, color-mix(in oklab, #37d7ff calc(var(--a) * 100%), #0d1322) calc(100% - var(--neg) * 100%), #ff3d8b);
+       box-shadow: 0 0 calc(var(--a) * 36px) color-mix(in oklab, #37d7ff calc(var(--a) * 90%), transparent); border-color: color-mix(in oklab, #37d7ff calc(var(--a) * 100%), #2a3652); }
+.hid::after { counter-reset: ip calc(round(down, abs(var(--h)), 1)) fp calc(round(abs(var(--h)) * 100) - round(down, abs(var(--h)), 1) * 100); content: counter(ip) "." counter(fp, decimal-leading-zero); }
+@container style(--h < 0) { .hid::after { content: "-" counter(ip) "." counter(fp, decimal-leading-zero); color: #ffb3cf; } }
+.hid i { position: absolute; inset: -8px; border-radius: 50%; border: 1px dashed #37d7ff55; opacity: calc(1 - var(--a)); }
+.on { --a: var(--pk); width: 58px; height: 58px; margin: -29px 0 0 -29px;
+      background: color-mix(in oklab, #7cff6b calc(var(--a) * 100%), #0d1322); box-shadow: 0 0 calc(var(--a) * 50px) color-mix(in oklab, #7cff6b calc(var(--a) * 90%), transparent); border-color: color-mix(in oklab, #7cff6b calc(var(--a) * 100%), #2a3652); }
+.on::after { counter-reset: pc calc(round(var(--pk) * 100)); content: counter(pc) "%"; font-size: 13px; font-weight: 600; }
+.on .ring { position: absolute; inset: -9px; border-radius: 50%; border: 2px solid #7cff6b; opacity: calc((var(--pk) - var(--win) + 0.0005) * 4000); box-shadow: 0 0 18px #7cff6b; }
+.on .lab { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 12px; white-space: nowrap; color: #9aa6c2; font-size: 12px; }
+.on .lab::before { content: ""; display: block; height: 6px; width: calc(var(--pk) * 110px); margin: 0 auto 6px; border-radius: 3px; background: #7cff6b; box-shadow: 0 0 10px #7cff6b88; }
+.ln { position: absolute; transform-origin: 0 50%; height: calc(var(--t) * 1px + 0.5px); border-radius: 2px; opacity: calc(0.12 + var(--t) / 10);
+      background: repeating-linear-gradient(90deg, var(--c) 0 8px, transparent 8px 16px); animation: flow 0.9s linear infinite; z-index: 1; }
+.ln.pos { --c: #37d7ff; } .ln.neg { --c: #ff3d8b; }
+.ln.i { --t: calc(abs(var(--w)) * var(--v) * 7); }
+.ln.o { --t: calc(abs(var(--w)) * max(0, min(4, var(--h))) * 2.2); }
+@keyframes flow { to { background-position: 16px 0; } }
+.ctl { position: absolute; left: 24px; bottom: 16px; display: flex; gap: 18px; align-items: center; font-size: 12px; color: #9aa6c2; }
+.ctl label { display: flex; gap: 6px; align-items: center; }
+.ctl input[type=range] { width: 90px; accent-color: #ffb347; }
+.stage:not(:has(#manual:checked)) .ctl input[type=range] { opacity: .3; pointer-events: none; }
+.par { position: absolute; right: 24px; bottom: 16px; font-size: 11px; color: #5d6a86; text-align: right; }
+.par b { color: #7cff6b; }
+.legend { position: absolute; left: 24px; bottom: 48px; font-size: 11px; color: #5d6a86; text-align: left; line-height: 1.6; }
+.legend i { display: inline-block; width: 22px; height: 3px; vertical-align: middle; margin-left: 6px; }
+</style></head><body><div class="stage">
+<div class="title"><b>CSS-only MLP 4-5-3</b> · both layers in the animation engine · em bridge · zero JS in auto mode</div>
+<div class="legend">input → hidden: |w·x|<i style="background:#37d7ff"></i><i style="background:#ff3d8b"></i><br>hidden → logit: |w·relu(h)|<br>hidden shows h, output shows softmax %</div>
+<div class="col" style="left:106px">inputs</div><div class="col" style="left:456px">hidden (relu)</div><div class="col" style="left:802px">actions</div>
+<div class="drive"><div class="root"><i class="node in x0" style="left:130px;top:130px"></i><i class="node in x1" style="left:130px;top:235px"></i><i class="node in x2" style="left:130px;top:340px"></i><i class="node in x3" style="left:130px;top:445px"></i><div class="n n0"><div class="f"><i class="node hid" style="left:480px;top:90px"><i></i></i><i class="ln i x0 neg" style="left:130px;top:130px;width:352.3px;transform:translateY(-50%) rotate(-6.52deg);--w:-0.061000000685453415"></i><i class="ln i x1 pos" style="left:130px;top:235px;width:378.8px;transform:translateY(-50%) rotate(-22.50deg);--w:2.1610000133514404"></i><i class="ln i x2 pos" style="left:130px;top:340px;width:430.1px;transform:translateY(-50%) rotate(-35.54deg);--w:2.132999897003174"></i><i class="ln i x3 neg" style="left:130px;top:445px;width:498.5px;transform:translateY(-50%) rotate(-45.41deg);--w:-1.8539999723434448"></i><i class="ln o neg" style="left:480px;top:90px;width:353.6px;transform:translateY(-50%) rotate(8.13deg);--w:-0.9409999847412109"></i><i class="ln o neg" style="left:480px;top:90px;width:408.2px;transform:translateY(-50%) rotate(30.96deg);--w:-0.23899999260902405"></i><i class="ln o pos" style="left:480px;top:90px;width:509.3px;transform:translateY(-50%) rotate(46.59deg);--w:0.23199999332427979"></i><div class="p p0"><div class="n n1"><div class="f"><i class="node hid" style="left:480px;top:195px"><i></i></i><i class="ln i x0 neg" style="left:130px;top:130px;width:356.0px;transform:translateY(-50%) rotate(10.52deg);--w:-1.9220000505447388"></i><i class="ln i x1 neg" style="left:130px;top:235px;width:352.3px;transform:translateY(-50%) rotate(-6.52deg);--w:-0.8700000047683716"></i><i class="ln i x2 pos" style="left:130px;top:340px;width:378.8px;transform:translateY(-50%) rotate(-22.50deg);--w:1.8980000019073486"></i><i class="ln i x3 neg" style="left:130px;top:445px;width:430.1px;transform:translateY(-50%) rotate(-35.54deg);--w:-1.652999997138977"></i><i class="ln o pos" style="left:480px;top:195px;width:354.3px;transform:translateY(-50%) rotate(-8.93deg);--w:1.034000039100647"></i><i class="ln o neg" style="left:480px;top:195px;width:365.4px;transform:translateY(-50%) rotate(16.70deg);--w:-0.9919999837875366"></i><i class="ln o pos" style="left:480px;top:195px;width:439.0px;transform:translateY(-50%) rotate(37.13deg);--w:1.1759999990463257"></i><div class="p p1"><div class="n n2"><div class="f"><i class="node hid" style="left:480px;top:300px"><i></i></i><i class="ln i x0 pos" style="left:130px;top:130px;width:389.1px;transform:translateY(-50%) rotate(25.91deg);--w:0.07999999821186066"></i><i class="ln i x1 neg" style="left:130px;top:235px;width:356.0px;transform:translateY(-50%) rotate(10.52deg);--w:-2.0309998989105225"></i><i class="ln i x2 neg" style="left:130px;top:340px;width:352.3px;transform:translateY(-50%) rotate(-6.52deg);--w:-1.6080000400543213"></i><i class="ln i x3 pos" style="left:130px;top:445px;width:378.8px;transform:translateY(-50%) rotate(-22.50deg);--w:0.5090000033378601"></i><i class="ln o pos" style="left:480px;top:300px;width:384.8px;transform:translateY(-50%) rotate(-24.57deg);--w:0.6740000247955322"></i><i class="ln o neg" style="left:480px;top:300px;width:350.0px;transform:translateY(-50%) rotate(0.00deg);--w:-1.3680000305175781"></i><i class="ln o neg" style="left:480px;top:300px;width:384.8px;transform:translateY(-50%) rotate(24.57deg);--w:-0.6779999732971191"></i><div class="p p2"><div class="n n3"><div class="f"><i class="node hid" style="left:480px;top:405px"><i></i></i><i class="ln i x0 pos" style="left:130px;top:130px;width:445.1px;transform:translateY(-50%) rotate(38.16deg);--w:1.0809999704360962"></i><i class="ln i x1 pos" style="left:130px;top:235px;width:389.1px;transform:translateY(-50%) rotate(25.91deg);--w:1.0839999914169312"></i><i class="ln i x2 pos" style="left:130px;top:340px;width:356.0px;transform:translateY(-50%) rotate(10.52deg);--w:1.3910000324249268"></i><i class="ln i x3 pos" style="left:130px;top:445px;width:352.3px;transform:translateY(-50%) rotate(-6.52deg);--w:1.0750000476837158"></i><i class="ln o pos" style="left:480px;top:405px;width:439.0px;transform:translateY(-50%) rotate(-37.13deg);--w:0.8429999947547913"></i><i class="ln o pos" style="left:480px;top:405px;width:365.4px;transform:translateY(-50%) rotate(-16.70deg);--w:0.8109999895095825"></i><i class="ln o neg" style="left:480px;top:405px;width:354.3px;transform:translateY(-50%) rotate(8.93deg);--w:-0.5199999809265137"></i><div class="p p3"><div class="n n4"><div class="f"><i class="node hid" style="left:480px;top:510px"><i></i></i><i class="ln i x0 neg" style="left:130px;top:130px;width:516.6px;transform:translateY(-50%) rotate(47.35deg);--w:-0.9760000109672546"></i><i class="ln i x1 pos" style="left:130px;top:235px;width:445.1px;transform:translateY(-50%) rotate(38.16deg);--w:0.17299999296665192"></i><i class="ln i x2 pos" style="left:130px;top:340px;width:389.1px;transform:translateY(-50%) rotate(25.91deg);--w:0.2849999964237213"></i><i class="ln i x3 pos" style="left:130px;top:445px;width:356.0px;transform:translateY(-50%) rotate(10.52deg);--w:0.8299999833106995"></i><i class="ln o neg" style="left:480px;top:510px;width:509.3px;transform:translateY(-50%) rotate(-46.59deg);--w:-0.2460000067949295"></i><i class="ln o neg" style="left:480px;top:510px;width:408.2px;transform:translateY(-50%) rotate(-30.96deg);--w:-0.5590000152587891"></i><i class="ln o neg" style="left:480px;top:510px;width:353.6px;transform:translateY(-50%) rotate(-8.13deg);--w:-1.2300000190734863"></i><div class="p p4"><div class="out" data-role="out"><i class="node on" style="left:830px;top:140px;--pk:var(--p0)"><i class="ring"></i><span class="lab">explore</span></i><i class="node on" style="left:830px;top:300px;--pk:var(--p1)"><i class="ring"></i><span class="lab">search</span></i><i class="node on" style="left:830px;top:460px;--pk:var(--p2)"><i class="ring"></i><span class="lab">share</span></i></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div>
+<div class="ctl"><label><input type="checkbox" id="manual"> manual inputs</label><label>x0<input type="range" min="0" max="1" step="0.01" value="0.5" oninput="this.closest('.stage').style.setProperty('--x0', this.value)"></label><label>x1<input type="range" min="0" max="1" step="0.01" value="0.5" oninput="this.closest('.stage').style.setProperty('--x1', this.value)"></label><label>x2<input type="range" min="0" max="1" step="0.01" value="0.5" oninput="this.closest('.stage').style.setProperty('--x2', this.value)"></label><label>x3<input type="range" min="0" max="1" step="0.01" value="0.5" oninput="this.closest('.stage').style.setProperty('--x3', this.value)"></label></div><div class="par" id="par">parity check loading…</div></div><script>
+// Parity overlay only: reads the CSS-computed values and compares against a JS forward pass. Not part of the computation.
+const W = {"W1":[-0.061000000685453415,2.1610000133514404,2.132999897003174,-1.8539999723434448,-1.9220000505447388,-0.8700000047683716,1.8980000019073486,-1.652999997138977,0.07999999821186066,-2.0309998989105225,-1.6080000400543213,0.5090000033378601,1.0809999704360962,1.0839999914169312,1.3910000324249268,1.0750000476837158,-0.9760000109672546,0.17299999296665192,0.2849999964237213,0.8299999833106995],"b1":[-0.39800000190734863,-0.335999995470047,0.6140000224113464,-0.40400001406669617,0.6919999718666077],"W2":[-0.9409999847412109,1.034000039100647,0.6740000247955322,0.8429999947547913,-0.2460000067949295,-0.23899999260902405,-0.9919999837875366,-1.3680000305175781,0.8109999895095825,-0.5590000152587891,0.23199999332427979,1.1759999990463257,-0.6779999732971191,-0.5199999809265137,-1.2300000190734863],"b2":[0.21299999952316284,-0.20399999618530273,0.2720000147819519]}, I = 4, H = 5, O = 3, HMAX = 8;
+const stage = document.querySelector('.stage'), out = document.querySelector('[data-role=out]'), hids = [...document.querySelectorAll('.node.hid')], ins = [...document.querySelectorAll('.node.in')];
+window.__demo = { read() {
+  const x = ins.map(e => parseFloat(getComputedStyle(e).getPropertyValue('--v')));
+  const h = hids.map(e => parseFloat(getComputedStyle(e).getPropertyValue('--h')));
+  const cs = getComputedStyle(out); const p = Array.from({ length: O }, (_, k) => parseFloat(cs.getPropertyValue('--p' + k)));
+  return { x, h, p };
+}, ref(x) {
+  const h = Array.from({ length: H }, (_, j) => W.b1[j] + x.reduce((a, xi, i) => a + W.W1[j * I + i] * xi, 0));
+  const o = Array.from({ length: O }, (_, k) => W.b2[k] + h.reduce((a, hj, j) => a + W.W2[k * H + j] * Math.max(0, Math.min(HMAX, hj)), 0));
+  const m = Math.max(...o), e = o.map(v => Math.exp(v - m)), z = e.reduce((a, b) => a + b, 0);
+  return { h, p: e.map(v => v / z) };
+} };
+(function tick() {
+  const r = window.__demo.read(), ref = window.__demo.ref(r.x);
+  let eh = 0, ep = 0; r.h.forEach((v, j) => eh = Math.max(eh, Math.abs(v - ref.h[j]))); r.p.forEach((v, k) => ep = Math.max(ep, Math.abs(v - ref.p[k])));
+  document.getElementById('par').innerHTML = 'JS reference parity (read-only overlay)<br>max |Δhidden| = <b>' + eh.toExponential(1) + '</b> · max |Δprob| = <b>' + ep.toExponential(1) + '</b>';
+  requestAnimationFrame(tick);
+})();</script></body></html>
