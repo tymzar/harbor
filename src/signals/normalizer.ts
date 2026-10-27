@@ -13,7 +13,9 @@ export class RunningNorm {
   m2: Float64Array
   readonly mask: readonly boolean[]
 
-  constructor(readonly size: number, mask?: readonly boolean[]) {
+  readonly size: number
+  constructor(size: number, mask?: readonly boolean[]) {
+    this.size = size
     this.mean = new Float64Array(size)
     this.m2 = new Float64Array(size)
     this.mask = mask ?? new Array(size).fill(true)

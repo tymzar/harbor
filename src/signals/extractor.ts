@@ -68,11 +68,14 @@ export class FeatureExtractor {
   /** Last raw vector produced by snapshot(). */
   last: Float32Array = new Float32Array(RAW_FEATURE_COUNT)
 
-  constructor(
-    private readonly sessionStart: number,
-    private viewport: { width: number } = { width: 1280 },
-    private readonly now: () => Date = () => new Date(),
-  ) {
+  private readonly sessionStart: number
+  private viewport: { width: number }
+  private readonly now: () => Date
+
+  constructor(sessionStart: number, viewport: { width: number } = { width: 1280 }, now: () => Date = () => new Date()) {
+    this.sessionStart = sessionStart
+    this.viewport = viewport
+    this.now = now
     this.viewSince = sessionStart
   }
 
