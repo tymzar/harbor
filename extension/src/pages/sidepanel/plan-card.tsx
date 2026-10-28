@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Button, Card, Chip, Spinner, Switch } from "@heroui/react";
-import { PaperPlane } from "@gravity-ui/icons";
+import { PaperPlane, TrashBin } from "@gravity-ui/icons";
 
 import type { PlanGroup } from "../../shared/plan";
 import type { CallLog, PanelRequest, ProposalStep, TabSession } from "../../shared/types";
@@ -44,6 +44,11 @@ export function PlanCard({ session }: { session: TabSession }) {
   // A rescan replaces the elements a plan refers to.
   const current = proposal && proposal.scannedAt === scan.scannedAt ? proposal : undefined;
   const running = current?.status === "running";
+
+  const forget = () => {
+    const request: PanelRequest = { type: "forget", tabId: session.tabId };
+    void chrome.runtime.sendMessage(request);
+  };
 
   const send = () => {
     const request: PanelRequest = { type: "propose", tabId: session.tabId, includeScreenshot };
@@ -89,6 +94,17 @@ export function PlanCard({ session }: { session: TabSession }) {
 
         {current?.status === "done" && current.plan && (
           <div className="flex flex-col gap-3" data-testid="plan-result">
+            {current.reused && (
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted" data-testid="plan-reused">
+                <Chip size="sm" variant="soft" color="success">
+                  Saved plan · no Meta call
+                </Chip>
+                {current.reused.match === "page"
+                  ? "saved for this page"
+                  : `saved on ${current.reused.fromUrl.replace(/^https?:\/\//, "")}`}{" "}
+                · {new Date(current.reused.savedAt).toLocaleString()}
+              </div>
+            )}
             <p className="text-sm">{current.plan.summary}</p>
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
               Applies to
@@ -135,7 +151,13 @@ export function PlanCard({ session }: { session: TabSession }) {
         )}
       </Card.Content>
 
-      <Card.Footer className="flex justify-end pt-4">
+      <Card.Footer className="flex justify-end gap-2 pt-4">
+        {current?.reused && (
+          <Button size="sm" variant="ghost" onPress={forget} data-testid="forget-plan">
+            <TrashBin />
+            Forget
+          </Button>
+        )}
         <Button size="sm" variant="primary" isPending={running} onPress={send} data-testid="send-plan">
           <PaperPlane />
           {current?.status === "done" ? "Ask again" : "Send to Meta"}

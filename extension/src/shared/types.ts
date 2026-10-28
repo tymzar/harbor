@@ -28,7 +28,7 @@ export type ScanNode = {
   sensitive: boolean;
   // Link path without query or fragment, which can carry tokens.
   href?: string;
-  // Short id and data-* values: candidates for an identity that survives across pages.
+  // Short id, aria-label and data-* values: candidates for an identity that survives across pages.
   attrs?: Record<string, string>;
 };
 
@@ -68,6 +68,8 @@ export type Proposal = {
   // Validator errors on the final plan (after the one repair attempt, if any).
   errors?: Array<string>;
   repaired: boolean;
+  // Set when this plan was loaded from storage instead of asking Meta.
+  reused?: { match: "page" | "template"; savedAt: number; fromUrl: string };
   error?: string;
   startedAt: number;
   finishedAt?: number;
@@ -89,6 +91,7 @@ export type TabSession = {
 
 export type PanelRequest =
   | { type: "rescan"; tabId: number }
-  | { type: "propose"; tabId: number; includeScreenshot: boolean };
+  | { type: "propose"; tabId: number; includeScreenshot: boolean }
+  | { type: "forget"; tabId: number };
 
 export const sessionKey = (tabId: number) => `session:${tabId}`;

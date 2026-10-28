@@ -19,3 +19,5 @@ What this shows and doesn't:
 - Every plan passed the validator first time; no repair round was needed. Groups and operations were the same across modes and efforts (card grid → `grid`, docs sidebar → `compact` or `none`, the rest `none`).
 - `reasoning_effort: low` halved latency and output tokens with no visible loss on these two pages, so it is now the build default.
 - On clean fixture HTML, SAM added nothing the DOM didn't already show. Its value has to be shown on messy real pages (Day 6 comparison), not assumed.
+
+Later live runs write to `evidence/<date>-effort-<level>/` (set `EVIDENCE_RUN` to name a run) so no record is overwritten.

@@ -126,7 +126,7 @@ function identityAttributes(element: Element): Record<string, string> | undefine
   let count = 0;
   for (const { name, value } of element.attributes) {
     if (count >= MAX_ATTRS) break;
-    if (name !== "id" && !name.startsWith("data-")) continue;
+    if (name !== "id" && name !== "aria-label" && !name.startsWith("data-")) continue;
     if (!value || value.length > ATTR_VALUE_LIMIT) continue;
     attributes[name] = value;
     count += 1;

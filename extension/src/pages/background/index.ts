@@ -1,6 +1,7 @@
 import type { PageScan, PanelRequest, TabSession } from "../../shared/types";
 import { sessionKey } from "../../shared/types";
 import { propose } from "./propose";
+import { forgetPlan, reusePlan } from "./saved-plans";
 
 // Pages Chrome never lets extensions script, even with activeTab.
 const RESTRICTED =
@@ -44,7 +45,9 @@ async function scanTab(tabId: number, settle: boolean) {
       quality: 70,
     });
 
-    await saveSession({ tabId, status: "ready", url, scan, screenshot, updatedAt: Date.now() });
+    // A plan saved for this page (or its template) comes back without a Meta call.
+    const proposal = await reusePlan(scan);
+    await saveSession({ tabId, status: "ready", url, scan, screenshot, proposal, updatedAt: Date.now() });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     await saveSession({
@@ -58,6 +61,15 @@ async function scanTab(tabId: number, settle: boolean) {
       updatedAt: Date.now(),
     });
   }
+}
+
+async function forget(tabId: number) {
+  const key = sessionKey(tabId);
+  const stored = await chrome.storage.session.get(key);
+  const session = stored[key] as TabSession | undefined;
+  if (!session?.url) return;
+  await forgetPlan(session.url);
+  await saveSession({ ...session, proposal: undefined, updatedAt: Date.now() });
 }
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -77,6 +89,7 @@ chrome.action.onClicked.addListener((tab) => {
 chrome.runtime.onMessage.addListener((message: PanelRequest) => {
   if (message.type === "rescan") void scanTab(message.tabId, false);
   if (message.type === "propose") void propose(message.tabId, message.includeScreenshot);
+  if (message.type === "forget") void forget(message.tabId);
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {

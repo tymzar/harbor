@@ -7,6 +7,7 @@ import type { CallLog, PageScan, Proposal, TabSession } from "../../shared/types
 import { sessionKey } from "../../shared/types";
 import type { ChatMessage } from "./meta";
 import { proposeJson, segment } from "./meta";
+import { rememberPlan } from "./saved-plans";
 
 // SAM matches what things look like, not UI names: "card" and "menu" return nothing on
 // screenshots, these do (docs/hackathon/api-probe-2026-10-27.md).
@@ -147,6 +148,8 @@ export async function propose(tabId: number, includeScreenshot: boolean) {
       repaired,
       finishedAt: Date.now(),
     });
+    if (validation.accepted.length > 0)
+      await rememberPlan({ ...plan, groups: validation.accepted }, scan, usedScreenshot);
     console.info("[smart-web] proposal", { url: scan.url, calls, errors: validation.errors });
   } catch (error) {
     await updateProposal(tabId, {

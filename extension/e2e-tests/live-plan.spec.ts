@@ -10,8 +10,10 @@ import { FIXTURE_ORIGIN } from "../playwright.config";
 test.skip(!process.env.LIVE, "set LIVE=1 with the proxy running to call Meta");
 test.setTimeout(240_000);
 
-const EFFORT = process.env.SMART_WEB_REASONING_EFFORT;
-const EVIDENCE = path.resolve(`../evidence/day2${EFFORT ? `-effort-${EFFORT}` : ""}`);
+// Mirrors the build default ("low") so evidence folders say which effort produced them.
+const EFFORT = process.env.SMART_WEB_REASONING_EFFORT ?? "low";
+const RUN = process.env.EVIDENCE_RUN ?? new Date().toISOString().slice(0, 10);
+const EVIDENCE = path.resolve(`../evidence/${RUN}-effort-${EFFORT}`);
 
 for (const fixture of ["docs.html", "catalog.html"]) {
   for (const includeScreenshot of [false, true]) {
@@ -55,6 +57,11 @@ for (const fixture of ["docs.html", "catalog.html"]) {
       expect(proposal.status, proposal.error).toBe("done");
       expect(proposal.usedScreenshot).toBe(includeScreenshot);
       expect(proposal.accepted!.length).toBeGreaterThan(0);
+
+      // The plan was saved: a rescan brings it back without another model call.
+      await panel.getByRole("button", { name: "Rescan" }).click();
+      await expect(panel.getByTestId("plan-reused")).toBeVisible();
+      await expect(panel.getByTestId("plan-calls")).toHaveCount(0);
     });
   }
 }
