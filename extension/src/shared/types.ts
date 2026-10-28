@@ -2,6 +2,7 @@
 
 import type { LayoutPlan, PlanGroup } from "./plan";
 import type { VisualGroup } from "./prompt";
+import type { Answers } from "./questions";
 
 export type Rect = { x: number; y: number; w: number; h: number };
 
@@ -65,6 +66,8 @@ export type Proposal = {
   visualGroups?: Array<VisualGroup>;
   plan?: LayoutPlan;
   accepted?: Array<PlanGroup>;
+  // The user's answers to the plan's questions; they adjust operations locally.
+  answers?: Answers;
   // Validator errors on the final plan (after the one repair attempt, if any).
   errors?: Array<string>;
   repaired: boolean;
@@ -106,6 +109,7 @@ export type PanelRequest =
   // goal: the user's own words for what they come to this page for (optional).
   | { type: "propose"; tabId: number; includeScreenshot: boolean; goal?: string }
   | { type: "forget"; tabId: number }
+  | { type: "answer"; tabId: number; answers: Answers }
   | { type: "layout"; tabId: number; action: "preview" | "apply" | "restore"; labels?: Array<string> }
   // From the page: Escape during a preview already restored it.
   | { type: "page-restored" };

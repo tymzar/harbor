@@ -21,6 +21,11 @@ Return a layout plan:
   A useful plan usually changes at least two regions; return only none when the page is already minimal.
   If your reason calls a region low-value or rarely needed, its operation must not be none.
   When the user states a goal, emphasize what serves it and hide-secondary what doesn't.
+- questions: up to 3 short questions for the user whose answers would change this plan. Ask about what they
+  do on this page, or what helps them read and use it (denser or roomier, fewer distractions). Never ask what
+  the page already shows. Options are short (2-5 words); each lists the group changes it implies, naming
+  groups by their exact label. Prefer single choice. If the user stated a goal, ask at most one question.
+  Return [] when nothing is worth asking.
 - reorderable: true only for groups where a user might want their own order (tabs, nav links, cards).
   identity says how to recognise the same item on another page of this kind: an attribute whose values are
   stable names (e.g. data-tab-item), else href, else text. Never an attribute holding counters or generated ids.

@@ -1,8 +1,9 @@
+import type { Answers } from "../../shared/questions";
 import type { PageScan, PanelRequest, SessionStatus, TabSession } from "../../shared/types";
 import { sessionKey } from "../../shared/types";
-import { clearLayout, pickGroups, showLayout } from "./layout";
+import { clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
-import { forgetPlan, reusePlan } from "./saved-plans";
+import { forgetPlan, rememberAnswers, reusePlan } from "./saved-plans";
 
 // Pages Chrome never lets extensions script, even with activeTab.
 const RESTRICTED =
@@ -14,6 +15,18 @@ const ACCESS_ERROR = /cannot access|permission|activetab|must request/i;
 
 // Opening the side panel narrows the page; wait for the reflow before measuring.
 const SETTLE_MS = 350;
+
+// Chrome allows two captureVisibleTab calls per second; quick rescans (navigation plus a
+// click) would otherwise fail. Captures are spaced out instead.
+const CAPTURE_GAP_MS = 600;
+let nextCaptureAt = 0;
+
+async function captureTab(windowId: number): Promise<string> {
+  const wait = nextCaptureAt - Date.now();
+  nextCaptureAt = Math.max(Date.now(), nextCaptureAt) + CAPTURE_GAP_MS;
+  if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait));
+  return chrome.tabs.captureVisibleTab(windowId, { format: "jpeg", quality: 70 });
+}
 
 async function saveSession(session: TabSession) {
   await chrome.storage.session.set({ [sessionKey(session.tabId)]: session });
@@ -83,10 +96,7 @@ async function scanTab(tabId: number, settle: boolean) {
     if (!scan) throw new Error("The page returned no scan result.");
 
     // Captured right after the scan so boxes and pixels describe the same layout.
-    const screenshot = await chrome.tabs.captureVisibleTab(tab.windowId, {
-      format: "jpeg",
-      quality: 70,
-    });
+    const screenshot = await captureTab(tab.windowId);
 
     // A plan saved for this page (or its template) comes back without a Meta call.
     const proposal = await reusePlan(scan);
@@ -163,10 +173,24 @@ async function changeLayout(tabId: number, action: "preview" | "apply" | "restor
   }
 }
 
+// Answers change operations locally; whatever is on the page follows at once.
+async function answer(tabId: number, answers: Answers) {
+  const session = await readSession(tabId);
+  if (!session?.proposal) return;
+  // Stored first, so a rescan right after answering already finds them. They belong to the plan
+  // they answer, which may have been saved on another page of the same kind.
+  const savedOn = session.proposal.reused?.fromUrl ?? session.url;
+  if (savedOn) await rememberAnswers(savedOn, answers);
+  const next: TabSession = { ...session, proposal: { ...session.proposal, answers }, updatedAt: Date.now() };
+  if (session.layout) next.layout = await showLayout(tabId, effectiveGroups(next), session.layout.state);
+  await saveSession(next);
+}
+
 chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
   if (message.type === "rescan") void scanTab(message.tabId, false);
   if (message.type === "propose") void propose(message.tabId, message.includeScreenshot, message.goal);
   if (message.type === "forget") void forget(message.tabId);
+  if (message.type === "answer") void answer(message.tabId, message.answers);
   if (message.type === "layout") void changeLayout(message.tabId, message.action, message.labels);
   // Escape on the page already undid the preview; the stylesheet and session follow.
   if (message.type === "page-restored" && sender.tab?.id !== undefined) void changeLayout(sender.tab.id, "restore");

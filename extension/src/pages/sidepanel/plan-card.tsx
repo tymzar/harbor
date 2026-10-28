@@ -4,6 +4,9 @@ import { ArrowUturnCcwLeft, Check, Eye, PaperPlane, TrashBin } from "@gravity-ui
 
 import type { LayoutPlan, PlanGroup } from "../../shared/plan";
 import { groupPattern } from "../../shared/plan";
+import type { Answers } from "../../shared/questions";
+import { applyAnswers, usableQuestions } from "../../shared/questions";
+import { Questions } from "./questions-card";
 import type { CallLog, PanelRequest, ProposalStep, TabSession } from "../../shared/types";
 
 const STEP_LABEL: Record<ProposalStep, string> = {
@@ -36,7 +39,13 @@ function GroupRow({ group, plan, selected, onSelect, locked }: GroupRowPropertie
     <li data-testid="plan-group" className="flex flex-col gap-1 rounded-xl bg-default/60 px-3 py-2">
       <div className="flex items-center justify-between gap-2">
         {changes ? (
-          <Checkbox isSelected={selected} onChange={onSelect} isDisabled={locked} aria-label={`Include ${group.label}`}>
+          <Checkbox
+            isSelected={selected}
+            onChange={onSelect}
+            isDisabled={locked}
+            aria-label={`Include ${group.label}`}
+            className="flex min-w-0 flex-row items-center gap-2"
+          >
             <Checkbox.Control>
               <Checkbox.Indicator />
             </Checkbox.Control>
@@ -88,12 +97,21 @@ export function PlanCard({ session }: { session: TabSession }) {
   const layout = session.layout;
 
   // Every proposed change starts included; an applied layout shows what is on the page.
-  const changeable = (current?.accepted ?? []).filter((group) => group.operation !== "none");
+  // The plan as the user's answers adjust it; this is what the list shows and the page gets.
+  const answers = current?.answers ?? {};
+  const questions = current?.plan && current.accepted ? usableQuestions(current.plan, current.accepted) : [];
+  const groups = current?.accepted ? applyAnswers(current.accepted, questions, answers) : [];
+  const changeable = groups.filter((group) => group.operation !== "none");
   const [selected, setSelected] = useState<Array<string>>([]);
   useEffect(() => {
     setSelected(layout ? layout.labels : changeable.map((group) => group.label));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.finishedAt, layout?.state]);
+  }, [current?.finishedAt, layout?.state, JSON.stringify(answers)]);
+
+  const answer = (next: Answers) => {
+    const request: PanelRequest = { type: "answer", tabId: session.tabId, answers: next };
+    void chrome.runtime.sendMessage(request);
+  };
 
   const sendLayout = (action: "preview" | "apply" | "restore", labels = selected) => {
     const request: PanelRequest = { type: "layout", tabId: session.tabId, action, labels };
@@ -173,6 +191,7 @@ export function PlanCard({ session }: { session: TabSession }) {
               </div>
             )}
             <p className="text-sm">{current.plan.summary}</p>
+            {questions.length > 0 && <Questions questions={questions} answers={answers} onAnswer={answer} />}
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
               Applies to
               <Chip size="sm" variant="soft" color="accent" data-testid="plan-template">
@@ -181,7 +200,7 @@ export function PlanCard({ session }: { session: TabSession }) {
             </div>
 
             <ul className="flex flex-col gap-2" aria-label="Proposed groups">
-              {(current.accepted ?? []).map((group) => (
+              {groups.map((group) => (
                 <GroupRow
                   key={`${group.container}-${group.label}`}
                   group={group}
@@ -195,8 +214,9 @@ export function PlanCard({ session }: { session: TabSession }) {
 
             {changeable.length === 0 && (current.accepted?.length ?? 0) > 0 && (
               <p className="rounded-xl border border-border p-3 text-sm text-muted" data-testid="no-changes">
-                Meta found these regions but proposed no visible change for any of them, so there is nothing to
-                preview. Ask again for another plan.
+                {questions.length > 0
+                  ? "Nothing changes yet. Answer a question above, or ask again for another plan."
+                  : "Meta found these regions but proposed no visible change for any of them, so there is nothing to preview. Ask again for another plan."}
               </p>
             )}
 

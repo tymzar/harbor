@@ -2,6 +2,7 @@ import type { SavedPlan } from "../../shared/cache";
 import { MAX_SAVED_PLANS, SAVED_PLANS_KEY, findSavedPlan, pageKey, remapPlan, savePlan } from "../../shared/cache";
 import type { LayoutPlan } from "../../shared/plan";
 import { validatePlan } from "../../shared/plan";
+import type { Answers } from "../../shared/questions";
 import type { PageScan, Proposal } from "../../shared/types";
 
 // Plans are kept on this device only (chrome.storage.local), newest first, one per page.
@@ -16,6 +17,14 @@ export async function rememberPlan(plan: LayoutPlan, scan: PageScan, usedScreens
   const all = await readAll();
   const others = all.filter((saved) => saved.url !== entry.url);
   await chrome.storage.local.set({ [SAVED_PLANS_KEY]: [entry, ...others].slice(0, MAX_SAVED_PLANS) });
+}
+
+export async function rememberAnswers(url: string, answers: Answers) {
+  const key = pageKey(url);
+  const all = await readAll();
+  await chrome.storage.local.set({
+    [SAVED_PLANS_KEY]: all.map((saved) => (saved.url === key ? { ...saved, answers } : saved)),
+  });
 }
 
 export async function forgetPlan(url: string) {
@@ -44,6 +53,7 @@ export async function reusePlan(scan: PageScan): Promise<Proposal | undefined> {
     accepted,
     errors,
     repaired: false,
+    answers: found.saved.answers,
     reused: { match: found.match, savedAt: found.saved.savedAt, fromUrl: found.saved.url },
     startedAt: now,
     finishedAt: now,

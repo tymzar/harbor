@@ -1,5 +1,6 @@
 import { LAYOUT_CSS } from "../../shared/layout-css";
 import type { PlanGroup } from "../../shared/plan";
+import { applyAnswers, usableQuestions } from "../../shared/questions";
 import type { LayoutState, TabSession } from "../../shared/types";
 
 import type { LayoutGroup, LayoutResult } from "../content/apply";
@@ -42,8 +43,15 @@ export async function clearLayout(tabId: number) {
   await removeSheet(tabId);
 }
 
-// The plan's groups the user picked, by label.
+// The plan's groups with the user's answers applied.
+export function effectiveGroups(session: TabSession): Array<PlanGroup> {
+  const proposal = session.proposal;
+  if (!proposal?.plan || !proposal.accepted) return [];
+  return applyAnswers(proposal.accepted, usableQuestions(proposal.plan, proposal.accepted), proposal.answers ?? {});
+}
+
+// Of those, the groups the user picked, by label.
 export function pickGroups(session: TabSession, labels: Array<string> | undefined): Array<PlanGroup> {
-  const accepted = session.proposal?.accepted ?? [];
-  return labels ? accepted.filter((group) => labels.includes(group.label)) : accepted;
+  const groups = effectiveGroups(session);
+  return labels ? groups.filter((group) => labels.includes(group.label)) : groups;
 }

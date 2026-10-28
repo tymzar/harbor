@@ -76,14 +76,11 @@ function classify(element: Element): NodeKind | undefined {
   return undefined;
 }
 
+// checkVisibility also looks at ancestors: a closed menu that fades out with opacity 0 on its
+// outer panel (GitHub's header menus) would otherwise count as on screen.
 function isRendered(element: Element, rect: DOMRect): boolean {
   if (rect.width < 1 || rect.height < 1) return false;
-  const style = getComputedStyle(element);
-  return (
-    style.visibility !== "hidden" &&
-    style.display !== "none" &&
-    Number(style.opacity) > 0
-  );
+  return element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
 }
 
 function intersectsViewport(rect: DOMRect): boolean {

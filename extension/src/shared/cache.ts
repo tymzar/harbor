@@ -1,4 +1,5 @@
 import type { LayoutPlan } from "./plan";
+import type { Answers } from "./questions";
 import { groupPattern, urlPatternMatches } from "./plan";
 import type { NodeKind, PageScan, Rect, ScanNode } from "./types";
 
@@ -26,6 +27,8 @@ export type SavedPlan = {
   // Per group, aligned with plan.groups; undefined where items are matched one by one.
   rows?: Array<RowShape | undefined>;
   usedScreenshot: boolean;
+  // The user's answers to the plan's questions, reused with the plan.
+  answers?: Answers;
   savedAt: number;
 };
 

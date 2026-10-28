@@ -34,11 +34,22 @@ export type PlanGroup = {
   reason: string;
 };
 
+// A question Spark asks after reading the page. Each option states the group changes it implies,
+// so an answer is applied locally and instantly, without another model call.
+export type PlanQuestion = {
+  id: string;
+  text: string;
+  multiple: boolean;
+  options: Array<{ label: string; effects: Array<{ group: string; operation: Operation }> }>;
+};
+
 export type LayoutPlan = {
   summary: string;
   // Which pages this layout could apply to, e.g. "github.com/{owner}/{repo}/*".
   template: { urlPattern: string; pageKind: string };
   groups: Array<PlanGroup>;
+  // Absent on plans saved before questions existed.
+  questions?: Array<PlanQuestion>;
 };
 
 const string = { type: "string" } as const;
@@ -46,7 +57,7 @@ const string = { type: "string" } as const;
 export const PLAN_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["summary", "template", "groups"],
+  required: ["summary", "template", "groups", "questions"],
   properties: {
     summary: string,
     template: {
@@ -54,6 +65,39 @@ export const PLAN_SCHEMA = {
       additionalProperties: false,
       required: ["urlPattern", "pageKind"],
       properties: { urlPattern: string, pageKind: string },
+    },
+    questions: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["id", "text", "multiple", "options"],
+        properties: {
+          id: string,
+          text: string,
+          multiple: { type: "boolean" },
+          options: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["label", "effects"],
+              properties: {
+                label: string,
+                effects: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    additionalProperties: false,
+                    required: ["group", "operation"],
+                    properties: { group: string, operation: { type: "string", enum: OPERATIONS } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
     groups: {
       type: "array",
