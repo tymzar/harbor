@@ -44,7 +44,8 @@ test("pick an element on the page, widen the selection and hide it", async ({ co
   await teams.focus();
   await panel.keyboard.press("Enter");
   await expect
-    .poll(() => site.locator(".side").getByRole("link", { name: "Teams" }).evaluate((element) => getComputedStyle(element).display))
+    // A CSS locator: role locators skip hidden elements, so they can't observe the hide itself.
+    .poll(() => site.locator(".side a", { hasText: /^Teams$/ }).evaluate((element) => getComputedStyle(element).display))
     .toBe("none");
   await expect(panel.getByTestId("layout-applied")).toHaveText("2 changes on the page");
 });
