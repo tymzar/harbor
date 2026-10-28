@@ -65,3 +65,21 @@ function isBelow(node: ScanNode, ancestorId: string, nodes: Array<ScanNode>, amo
     if (current === ancestorId) return among.has(node.id);
   return false;
 }
+
+// What the page showed for an anchor's element before and after Smart Web changed it
+// (content/inspect.ts). ops: operations marked on the element or an ancestor; coveringOps: on a
+// descendant covering most of it.
+export type Observation = { found: boolean; visible: boolean; ops: Array<string>; coveringOps: Array<string> };
+
+export type Verdict = "pass" | "fail" | "unresolved" | "not-visible";
+
+// unresolved: the anchor names nothing on this visit's scan (the site changed).
+// not-visible: the element was already hidden before any change, so the check says nothing.
+export function judge(op: ExpectedOp, before?: Observation, after?: Observation): Verdict {
+  if (!before?.found || !after) return "unresolved";
+  if (!before.visible) return "not-visible";
+  if (op === "hide") return after.visible ? "fail" : "pass";
+  if (op === "keep") return after.visible ? "pass" : "fail";
+  const marked = after.ops.includes(op) || after.coveringOps.includes(op);
+  return after.visible && marked ? "pass" : "fail";
+}

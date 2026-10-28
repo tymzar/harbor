@@ -1,4 +1,5 @@
 import { applyLayout, restoreLayout } from "./apply";
+import { inspectNodes } from "./inspect";
 import { matchBoxes } from "./match";
 import { adjustPick, endPick, pickElement } from "./pick";
 import { scanPage } from "./scan";
@@ -14,6 +15,7 @@ const api = {
   pick: pickElement,
   adjustPick,
   endPick,
+  inspect: inspectNodes,
 };
 
 declare global {

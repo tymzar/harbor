@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { matchesAnchor, resolveAnchor } from "./anchors";
+import { judge, matchesAnchor, resolveAnchor } from "./anchors";
+import type { Observation } from "./anchors";
 import type { ScanNode } from "./types";
 
 const node = (id: string, parent: string | undefined, extra: Partial<ScanNode>): ScanNode => ({
@@ -42,5 +43,28 @@ describe("anchors", () => {
 
   it("matches links by path substring", () => {
     expect(resolveAnchor(nodes, { href: "/issues" }).node?.id).toBe("n2");
+  });
+});
+
+const seen = (extra: Partial<Observation> = {}): Observation => ({ found: true, visible: true, ops: [], coveringOps: [], ...extra });
+
+describe("judge", () => {
+  it("passes a hide only when the element is gone, and a keep only when it stays", () => {
+    expect(judge("hide", seen(), seen({ visible: false }))).toBe("pass");
+    expect(judge("hide", seen(), seen())).toBe("fail");
+    expect(judge("keep", seen(), seen({ visible: false }))).toBe("fail");
+    expect(judge("keep", seen(), seen())).toBe("pass");
+  });
+
+  it("passes emphasize, compact and grid when the element or a covering child carries the operation", () => {
+    expect(judge("emphasize", seen(), seen({ ops: ["emphasize"] }))).toBe("pass");
+    expect(judge("grid", seen(), seen({ coveringOps: ["grid"] }))).toBe("pass");
+    expect(judge("compact", seen(), seen({ ops: ["grid"] }))).toBe("fail");
+    expect(judge("emphasize", seen(), seen({ visible: false, ops: ["emphasize"] }))).toBe("fail");
+  });
+
+  it("does not score elements it could not find or that were hidden to begin with", () => {
+    expect(judge("hide")).toBe("unresolved");
+    expect(judge("hide", seen({ visible: false }), seen({ visible: false }))).toBe("not-visible");
   });
 });

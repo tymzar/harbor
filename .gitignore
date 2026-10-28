@@ -9,3 +9,5 @@ test-results
 
 # Evaluation snapshots hold third-party page content; regenerate with the collector
 evaluation/snapshots/
+# Screenshots from evaluation runs show third-party pages
+evaluation/runs/*/shots/
