@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "version": "1.0.0",
+  "name": "chrome-extension-boilerplate-react",
+  "description": "A chrome extension boilerplate with React 18, Webpack 5, and Webpack Dev Server 4",
+  "options_page": "options/options.html",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "background": { "service_worker": "background/index.js" },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": "32x32.png"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab/newtab.html"
+  },
+  "icons": {
+    "128": "128x128.png"
+  },
+  "content_scripts": [
+    {
+      "js": ["content/index.js"],
+      "matches": ["https://*/*", "http://*/*"]
+    }
+  ],
+  "devtools_page": "devtools/devtools.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["128x128.png", "32x32.png"],
+      "matches": []
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "name": "starter-web-extension",
+  "version": "1.0.1",
+  "description": "A web extension boilerplate with React 18, Webpack 5, and Webpack Dev Server 4",
+  "license": "MIT",
+  "engines": {
+    "node": ">22.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tymzar/starter-web-extension"
+  },
+  "watch": {
+    "dev": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "ts,tsx,html"
+    }
+  },
+  "scripts": {
+    "start": "dotenv -e .env.local node scripts/esbuild.config.ts",
+    "build": "dotenv -e .env node scripts/esbuild.config.ts",
+    "build:binary": "node scripts/build-binary.ts",
+    "prepublishOnly": "yarn build:binary",
+    "lint": "eslint --cache --no-error-on-unmatched-pattern --ext ts,tsx {src,scripts}",
+    "lint:fix": "yarn lint --fix",
+    "format": "prettier --no-editorconfig src/**/*.* --check",
+    "format:fix": "prettier --no-editorconfig src/**/*.* --write",
+    "test:e2e": "playwright test",
+    "test:docker": "docker compose up playwright-tests --build",
+    "test:docker:update-snapshots": "docker compose run --rm playwright-tests yarn test:e2e --update-snapshots",
+    "prettier:fix": "prettier --no-editorconfig src/'**/*.{ts,tsx,js,css,html,md}' --write",
+    "knip": "knip",
+    "semantic-release": "semantic-release"
+  },
+  "type": "module",
+  "bin": "./bin/create-web-extension.js",
+  "files": [
+    "bin/",
+    "src/",
+    "e2e-tests/",
+    "scripts/",
+    "eslint.config.js",
+    "knip.config.ts",
+    "playwright.config.ts",
+    "postcss.config.mjs",
+    "tailwind.config.js",
+    "tsconfig.json",
+    "Dockerfile",
+    "docker-compose.yml",
+    ".gitignore",
+    ".yarnrc.yml",
+    ".env.example",
+    ".github/dependabot.yml",
+    ".github/workflows/pull-request-check.yml",
+    ".github/workflows/package-extension.yml"
+  ],
+  "dependencies": {
+    "@heroui/react": "2.8.4",
+    "@iconify/react": "6.0.2",
+    "@inquirer/prompts": "7.8.6",
+    "chart.js": "4.5.0",
+    "framer-motion": "12.23.12",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@craftamap/esbuild-plugin-html": "0.9.0",
+    "@playwright/test": "1.55.1",
+    "@semantic-release/changelog": "6.0.3",
+    "@semantic-release/commit-analyzer": "13.0.1",
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/github": "11.0.6",
+    "@semantic-release/npm": "12.0.2",
+    "@semantic-release/release-notes-generator": "14.1.0",
+    "@types/chrome": "0.1.12",
+    "@types/node": "^24.4.0",
+    "@types/react": "18.2.37",
+    "@types/react-dom": "18.2.15",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "autoprefixer": "10.4.16",
+    "dotenv-cli": "7.2.1",
+    "esbuild": "0.18.0",
+    "esbuild-plugin-clean": "1.0.1",
+    "esbuild-plugin-copy": "2.1.1",
+    "esbuild-style-plugin": "1.6.3",
+    "eslint": "9.35.0",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "eslint-plugin-unicorn": "61.0.2",
+    "knip": "5.64.0",
+    "postcss": "8.5.6",
+    "prettier": "2.8.3",
+    "semantic-release": "24.2.7",
+    "tailwindcss": "^3.4.0",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "yarn@4.9.3"
+}

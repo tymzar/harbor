@@ -1,0 +1,25 @@
+node_modules
+build
+.DS_Store
+.env*
+!.env.example
+
+# Yarn 4
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# ESLint
+.eslintcache
+
+# JS files
+*.js
+*.cjs
