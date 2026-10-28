@@ -75,7 +75,8 @@ export type Proposal = {
   finishedAt?: number;
 };
 
-export type SessionStatus = "scanning" | "ready" | "restricted" | "error";
+// needs-access: Chrome withdrew the page grant (usually after a full page load).
+export type SessionStatus = "scanning" | "ready" | "restricted" | "needs-access" | "error";
 
 export type TabSession = {
   tabId: number;
@@ -85,6 +86,8 @@ export type TabSession = {
   // JPEG data URL of the visible tab, captured right after the scan.
   screenshot?: string;
   error?: string;
+  // The site this tab was last read on; Chrome hides the URL once access is gone.
+  lastOrigin?: string;
   proposal?: Proposal;
   updatedAt: number;
 };

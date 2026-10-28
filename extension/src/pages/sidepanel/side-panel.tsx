@@ -5,6 +5,7 @@ import { Magnifier } from "@gravity-ui/icons";
 import type { NodeKind, PanelRequest, ScanNode, TabSession } from "../../shared/types";
 import { sessionKey } from "../../shared/types";
 import { PlanCard } from "./plan-card";
+import { NeedsAccess, SiteAccessSwitch } from "./site-access";
 
 const KIND_LABEL: Record<NodeKind, string> = {
   landmark: "Landmarks",
@@ -157,7 +158,7 @@ export function SidePanel() {
               ? `Visible area · ${scan.viewport.w}×${scan.viewport.h} · ${scan.durationMs} ms`
               : ""}
           </span>
-          {session?.status !== "restricted" && (
+          {session?.status !== "restricted" && session?.status !== "needs-access" && (
             <Button
               size="sm"
               variant="primary"
@@ -170,7 +171,15 @@ export function SidePanel() {
             </Button>
           )}
         </Card.Footer>
+
+        {session?.lastOrigin && session.status !== "needs-access" && (
+          <div className="border-t border-border pt-3">
+            <SiteAccessSwitch origin={session.lastOrigin} />
+          </div>
+        )}
       </Card>
+
+      {session?.status === "needs-access" && <NeedsAccess tabId={session.tabId} origin={session.lastOrigin} />}
 
       {scan && session && <PlanCard session={session} />}
 
