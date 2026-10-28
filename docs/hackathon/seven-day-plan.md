@@ -21,7 +21,7 @@ toolbar click
 
 ## Today, Mon 27 Oct (evening, 30 min)
 
-- [ ] Email organizers: track (Indie/Startup) and whether pre-event code (ranker, CSS inference) may be reused.
+- [x] Email organizers: track (Indie/Startup) and whether pre-event code (ranker, CSS inference) may be reused. **Answered 29 Oct: "all good"** (relayed by the user; the exact wording and which track it confirms are not on file). Pre-event code may be reused, credited as such.
 - [ ] Commit `HACKATHON_PLAN.md`, `docs/hackathon/`, `FEEDBACK.md`, `.gitignore` as the dated baseline. Leave `reports/` changes and `template-finances.zip` out.
 
 ## Day 1 — Tue 28 Oct · Extension shell and proxy

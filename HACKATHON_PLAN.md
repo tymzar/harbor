@@ -55,4 +55,4 @@ The package distinguishes four kinds of evidence: supplied participant-guide req
 
 After this limitation was disclosed and the goal was blocked, the user asked to continue. We proceed with the completed independent substitute reviews on that basis. GPT‑5.6 was not used; the substitution remains part of the provenance, not a claim about the requested model.
 
-One event question needs resolution before submission: the supplied guide explicitly gives startups an existing-code reuse exception; its application to an Indie entry is unclear. Confirm the actual track and baseline with organizers. This planning task has not contacted anyone or treated the exception as universal.
+**Resolved 29 Oct:** the organizers answered the track and reuse question with "all good" (relayed by the user); pre-event code may be reused if credited. Original note follows. One event question needs resolution before submission: the supplied guide explicitly gives startups an existing-code reuse exception; its application to an Indie entry is unclear. Confirm the actual track and baseline with organizers. This planning task has not contacted anyone or treated the exception as universal.
