@@ -26,13 +26,13 @@
 
 \title{\textbf{Smart Web}\\[2pt]\large Personal layouts for websites you never set up,\\ with Meta Muse Spark~1.3 and SAM~3.1\\[2pt]\normalsize Technical report}
 \author{Tymon Żarski}
-\date{Meta AI Developer Hackathon --- status at 28 October 2026, end of build day 1}
+\date{Meta AI Developer Hackathon --- status at 29 October 2026, build day 2}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-\noindent Smart Web is a Chrome extension that reads a web page the user has never configured, asks Meta's Muse Spark~1.3 for a bounded layout plan, previews the plan on the real page and applies it reversibly. The user can state what they come to the page for (``I only read the feed: hide both sidebars''); the plan hides, compacts, lays out as a grid, or emphasises regions of the site's own markup, never rewriting it. A screenshot can optionally be segmented with SAM~3.1 to give the planner visual groups. We built an evaluation set of 54 scenarios on 20 popular live websites with 124 checkable expectations, including 52 ``keep'' checks that catch over-hiding, and a runner that drives the extension through each scenario and checks the outcome on the live page. Three evaluation rounds found and fixed two real defects; in the last round Smart Web met 93\% of expectations and fully completed 84\% of scenarios, with no over-hiding, against 42\% and 0\% for leaving the page unchanged. Sending the screenshot to SAM made no consistent difference on this set. A round costs about \$2.25 of Spark tokens at listed prices.
+\noindent Smart Web is a Chrome extension that reads a web page the user has never configured, asks Meta's Muse Spark~1.3 for a bounded layout plan, previews the plan on the real page and applies it reversibly. With the user's consent it learns which items they open and suggests emphasising them; the page changes only when they accept. The user can state what they come to the page for (``I only read the feed: hide both sidebars''); the plan hides, compacts, lays out as a grid, or emphasises regions of the site's own markup, never rewriting it. A screenshot can optionally be segmented with SAM~3.1 to give the planner visual groups. We built an evaluation set of 54 scenarios on 20 popular live websites with 124 checkable expectations, including 52 ``keep'' checks that catch over-hiding, and a runner that drives the extension through each scenario and checks the outcome on the live page. Three evaluation rounds found and fixed two real defects; in the last round Smart Web met 93\% of expectations and fully completed 84\% of scenarios, with no over-hiding, against 42\% and 0\% for leaving the page unchanged. Sending the screenshot to SAM made no consistent difference on this set. A round costs about \$2.25 of Spark tokens at listed prices.
 \end{abstract}
 
 \section{Problem}
@@ -42,7 +42,8 @@ Smart Web lets a person say, in their own words, what they come to a page for, a
 
 \paragraph{Contributions.}
 \begin{itemize}
-\item An MV3 extension that scans a page, obtains a validated Meta layout plan, previews it, applies it, restores the page, follows the tab across navigation, and reuses saved plans on later visits and on other pages of the same kind without a model call (\S\ref{sec:system}).
+\item An MV3 extension that scans a page, obtains a validated Meta layout plan, previews it, applies it, restores the page, follows the tab across navigation, re-applies the layout when a single-page app redraws a region, and reuses saved plans on later visits and on other pages of the same kind without a model call (\S\ref{sec:system}).
+\item Learning from use: opt-in, on-device counts of what the user opens, turned into suggestions that change the page only when accepted (\S\ref{sec:system}).
 \item A planner contract: strict JSON schema, a local validator with one repair round, user goals, and follow-up questions whose answers adjust the plan locally (\S\ref{sec:meta}).
 \item An evaluation set of real sites and requests with machine-checkable expectations, a runner that measures outcomes on the live page, and three scored rounds (\S\ref{sec:eval}, \S\ref{sec:results}).
 \end{itemize}
@@ -84,6 +85,10 @@ Smart Web lets a person say, in their own words, what they come to a page for, a
 \paragraph{Apply and restore.} The executor never moves or rewrites the site's DOM. It sets data attributes on the site's own elements and inserts one stylesheet keyed on them; restore removes both. Preview shows hidden regions dimmed and outlined in place, and Escape on the page undoes it. Links, focus order and the site's scripts keep working. A hide takes the plan's whole region only when the named members are most of it; otherwise only the members are hidden (\S\ref{sec:results}).
 
 \paragraph{Remember and follow.} An applied plan is saved per page with node signatures; on the next visit, or on another page matching a group's URL pattern (e.g.\ \texttt{github.com/\{owner\}/\{repo\}/*}), it is remapped to the new scan and re-applied with no model call. Lists are re-found by row shape only when the plan covered the whole list. With the user's permission for a site, the extension follows the tab across navigation. ``Hide something else'' lets the user point at any element, widen or narrow the selection, and hide it; such hides are saved with the plan and survive a new plan.
+
+\paragraph{Redraws.} Single-page apps such as YouTube and GitHub replace whole regions when they re-render, which drops the marks. While a layout is kept, the page watches for marked elements leaving the document; once the burst settles the extension reads the page again and the saved plan re-applies, with no model call. A page that redraws more than five times in 30 seconds gets a notice instead, so a site that reacts to the change itself cannot loop.
+
+\paragraph{Learning from use.} Off until the user turns it on for a site. While a layout is kept, real clicks (\texttt{isTrusted}; scripted clicks are ignored) on items of its groups are counted on the device with a decaying per-item count. When one item has at least three uses and holds most of its group's weight, the panel asks: \emph{``You opened `Summit 45' 3 times. Highlight it in Backpack cards?''} Accepting adds a learned \texttt{emphasize} group over the plan, saved with it so it returns on later visits; either answer is remembered and the suggestion is not repeated; Reset clears what was learned. Learned changes are limited to emphasis: visually reordering a site's own controls would separate visual order from focus and reading order.
 
 \begin{figure}[t]
 \centering
@@ -141,11 +146,11 @@ Run & Mode & \shortstack{Expectations\\met} & \shortstack{Scenarios\\fully passe
 \rows{generated/rounds.tex}
 \bottomrule
 \end{tabular}
-\caption{Goal scenarios, three rounds on 28 October 2026 (Spark effort low). The six picker scenarios passed all 11 of their expectations in every round. Denominators vary because sites change between visits; unscored expectations are excluded.}
+\caption{Goal scenarios, Spark effort low. Rounds 1--3 on 28 October 2026; round 4 on 29 October, DOM only, a regression check after adding redraw handling and learning. The six picker scenarios passed every scored expectation in every round. Denominators vary because sites change between visits; unscored expectations are excluded.}
 \label{tab:rounds}
 \end{table}
 
-Table~\ref{tab:rounds} gives the three rounds. The extension changed between rounds, so they are a before/after sequence, not repeats.
+Table~\ref{tab:rounds} gives the rounds. The extension changed between rounds, so they are a before/after sequence, not repeats.
 
 \paragraph{Round 1} met 84\% of expectations (DOM only) but hid things the user wanted kept in 6 of 41 keep checks. All six had one cause: the plan named a wide container for a narrow request (the whole left menu as the container for ``Shorts'') and the executor hid the container. ``Remove Shorts from the left menu'' removed Home and Subscriptions too; hiding Steam's sign-in banner took the game's title. The same widening existed in saved plans: a one-item group was saved as ``every row of this shape'' and would have come back as the whole list.
 
@@ -183,10 +188,10 @@ Run & Mode & Plans & Repaired & \shortstack{Spark\\calls} & \shortstack{Input\\t
 \end{itemize}
 
 \section{What is new, and what was reused}
-All extension code, the planner contract, the evaluation set and runner were written during the event (from 28 October 2026). The extension started from the author's own MIT starter template (\texttt{tymzar/\allowbreak starter-web-extension}, imported unmodified as a separate commit). The repository also contains the author's earlier adaptive-interface work (a local ranker and CSS-computed inference, last changed 23 October 2026); none of it is used by the extension so far.
+All extension code, the planner contract, the evaluation set and runner were written during the event (from 28 October 2026). The extension started from the author's own MIT starter template (\texttt{tymzar/\allowbreak starter-web-extension}, imported unmodified as a separate commit). The repository also contains the author's earlier adaptive-interface work (a local ranker and CSS-computed inference, last changed 23 October 2026). Learning reuses one part of it, the decaying per-item count (\texttt{src/model/affinity.ts}), unchanged; the organisers confirmed on 29 October that reusing credited pre-event code is allowed. The neural ranker itself is not used: it learns from pointer signals the extension does not collect.
 
 \section{Next steps}
-Planned before submission: learning from use (items the user activates often are suggested for emphasis or reordering, accepted explicitly, and change the page), more page families, and re-applying a layout when a site re-renders. If time remains: hide the heading of a hidden region; reduce repair rounds by fixing the most common validator rejections at the prompt; and optimise the planner prompt against this evaluation set with DSPy, after making scoring cheap by evaluating plans offline against the collected scans and holding out sites.
+Planned before submission: trying the extension on more page families and recording the demo. If time remains: hide the heading of a hidden region; reduce repair rounds by fixing the most common validator rejections at the prompt; and optimise the planner prompt against this evaluation set with DSPy, after making scoring cheap by evaluating plans offline against the collected scans and holding out sites.
 
 \paragraph{Feedback for Meta} (from our running log). SAM's docs are hard to find (the obvious URL returns 404), a zero-match concept returns an empty \texttt{output\_text} that looks like an error, and a note that SAM answers shape phrases rather than UI names would help screen use cases. LiteLLM's Meta docs lag the model list and omit SAM, which works through it. A per-request latency hint, or a faster structured-output tier, would help interactive use, where reasoning dominates output.
 

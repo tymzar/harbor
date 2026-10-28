@@ -1,0 +1,381 @@
+{
+  "scenario": {
+    "id": "devto-hide-right-sidebar",
+    "site": "devto-feed",
+    "goal": "Hide the right sidebar with livestreams and listings.",
+    "tags": [
+      "community",
+      "hide",
+      "sidebar"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "id": "sidebar-additional"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "main",
+          "attr": {
+            "id": "main-content"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "devto-feed",
+    "url": "https://dev.to/",
+    "finalUrl": "https://dev.to/"
+  },
+  "at": "2026-10-28T23:19:44.315Z",
+  "scanNodes": 105,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "id": "sidebar-additional"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n90",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": ".long-bb-body { max-height: calc(100vh - 200px); overflow: hidden; } .long-bb-b…"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "main",
+        "attr": {
+          "id": "main-content"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n46",
+        "tag": "main",
+        "kind": "landmark",
+        "text": "Posts Relevant"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n90",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n46",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n90",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Right sidebar",
+              "members": [
+                "n91"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Livestreams and listings sidebar user wants hidden",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n46",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Main feed",
+              "members": [
+                "n56"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is reading posts, give it full width",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "dev.to/"
+            },
+            {
+              "container": "n21",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Left navigation",
+              "members": [
+                "n24",
+                "n26",
+                "n29",
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n42",
+                "n45"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n48",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Feed filter tabs",
+              "members": [
+                "n51",
+                "n53",
+                "n55"
+              ],
+              "operation": "none",
+              "reason": "Primary feed sorting already works",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "dev.to/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "More compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left navigation",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it too"
+                }
+              ],
+              "text": "How much do you use the left sidebar navigation?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Grid cards"
+                }
+              ],
+              "text": "How do you want the main post feed to look?"
+            }
+          ],
+          "summary": "Hides the right livestreams/listings sidebar and emphasizes the main feed for faster reading.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "dev.to/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n90",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Right sidebar",
+            "members": [
+              "n91"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Livestreams and listings sidebar user wants hidden",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n46",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Main feed",
+            "members": [
+              "n56"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is reading posts, give it full width",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "dev.to/"
+          },
+          {
+            "container": "n21",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Left navigation",
+            "members": [
+              "n24",
+              "n26",
+              "n29",
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n42",
+              "n45"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n48",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Feed filter tabs",
+            "members": [
+              "n51",
+              "n53",
+              "n55"
+            ],
+            "operation": "none",
+            "reason": "Primary feed sorting already works",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "dev.to/"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 4463,
+            "model": "spark",
+            "ms": 7178,
+            "outputTokens": 2104,
+            "purpose": "layout plan",
+            "reasoningTokens": 1494
+          }
+        ],
+        "ms": 7193
+      },
+      "layout": {
+        "labels": [
+          "Right sidebar",
+          "Main feed"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n90",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n46",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

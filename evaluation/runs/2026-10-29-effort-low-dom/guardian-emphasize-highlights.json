@@ -1,0 +1,309 @@
+{
+  "scenario": {
+    "id": "guardian-emphasize-highlights",
+    "site": "guardian-front",
+    "goal": "Make the highlighted stories row stand out.",
+    "tags": [
+      "news",
+      "emphasize"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "tag": "ul",
+          "attr": {
+            "data-component": "highlights"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "guardian-front",
+    "url": "https://www.theguardian.com/international",
+    "finalUrl": "https://www.theguardian.com/international"
+  },
+  "at": "2026-10-28T23:20:48.144Z",
+  "scanNodes": 105,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "ul",
+        "attr": {
+          "data-component": "highlights"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n11",
+        "tag": "ul",
+        "kind": "list",
+        "text": "The ideas interview Jeanette Winterson: humans are at a turning point Shiri Pas…"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n11",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n11",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Highlights carousel",
+              "members": [
+                "n12",
+                "n18",
+                "n24",
+                "n30"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal: make this row stand out",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.theguardian.com/international"
+            },
+            {
+              "container": "n6",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Top utility bar",
+              "members": [
+                "n7",
+                "n8"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely needed chrome that competes with highlights",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.theguardian.com/*"
+            },
+            {
+              "container": "n55",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sub-navigation list",
+              "members": [
+                "n57",
+                "n59",
+                "n61",
+                "n63",
+                "n65",
+                "n67",
+                "n69",
+                "n71",
+                "n73",
+                "n75",
+                "n77"
+              ],
+              "operation": "compact",
+              "reason": "Dense skim list to tighten so highlights dominate",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theguardian.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "highlight-style",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Big and bold"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Even grid"
+                }
+              ],
+              "text": "How should the highlighted stories stand out?"
+            },
+            {
+              "id": "chrome-distraction",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top utility bar",
+                      "operation": "hide-secondary"
+                    },
+                    {
+                      "group": "Sub-navigation list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Minimize distractions"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top utility bar",
+                      "operation": "none"
+                    },
+                    {
+                      "group": "Sub-navigation list",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Keep surrounding header navigation fully visible?"
+            }
+          ],
+          "summary": "Emphasized Highlights carousel and tucked away competing header chrome.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.theguardian.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n11",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Highlights carousel",
+            "members": [
+              "n12",
+              "n18",
+              "n24",
+              "n30"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal: make this row stand out",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.theguardian.com/international"
+          },
+          {
+            "container": "n6",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Top utility bar",
+            "members": [
+              "n7",
+              "n8"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely needed chrome that competes with highlights",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.theguardian.com/*"
+          },
+          {
+            "container": "n55",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sub-navigation list",
+            "members": [
+              "n57",
+              "n59",
+              "n61",
+              "n63",
+              "n65",
+              "n67",
+              "n69",
+              "n71",
+              "n73",
+              "n75",
+              "n77"
+            ],
+            "operation": "compact",
+            "reason": "Dense skim list to tighten so highlights dominate",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theguardian.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4881,
+            "model": "spark",
+            "ms": 7122,
+            "outputTokens": 2109,
+            "purpose": "layout plan",
+            "reasoningTokens": 1574
+          },
+          {
+            "inputTokens": 5426,
+            "model": "spark",
+            "ms": 4808,
+            "outputTokens": 1546,
+            "purpose": "repair",
+            "reasoningTokens": 1138
+          }
+        ],
+        "ms": 11940
+      },
+      "layout": {
+        "labels": [
+          "Highlights carousel",
+          "Top utility bar",
+          "Sub-navigation list"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n11",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

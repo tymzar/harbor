@@ -1,0 +1,373 @@
+{
+  "scenario": {
+    "id": "amazon-hide-filters",
+    "site": "amazon-search",
+    "goal": "Hide the left filter column; I just scan results.",
+    "tags": [
+      "commerce",
+      "hide",
+      "sidebar"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "kind": "heading",
+          "text": "Popular Shopping Ideas"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "kind": "heading",
+          "text": "Brands",
+          "area": {
+            "maxX": 250
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h2",
+          "textStart": "Anker USB C to USB C Cable"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "amazon-search",
+    "url": "https://www.amazon.com/s?k=usb+c+cable",
+    "finalUrl": "https://www.amazon.com/s?k=usb+c+cable"
+  },
+  "at": "2026-10-28T23:18:26.586Z",
+  "scanNodes": 179,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "kind": "heading",
+        "text": "Popular Shopping Ideas"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n109",
+        "tag": "div",
+        "kind": "heading",
+        "text": "Popular Shopping Ideas"
+      }
+    },
+    {
+      "anchor": {
+        "kind": "heading",
+        "text": "Brands",
+        "area": {
+          "maxX": 250
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n154",
+        "tag": "div",
+        "kind": "heading",
+        "text": "Brands"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "textStart": "Anker USB C to USB C Cable"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n78",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "Anker USB C to USB C Cable, 60W Fast Charging Cable (5-Pack, 6 ft, Black)"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n109",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n154",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n78",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n38",
+                "n40",
+                "n42",
+                "n44",
+                "n46",
+                "n48",
+                "n50"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already minimal",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.amazon.com/*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Filter sidebar",
+              "members": [
+                "n108",
+                "n122",
+                "n153"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Left filter column user wants hidden to scan results",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.amazon.com/s*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "data-asin",
+                "source": "attribute"
+              },
+              "label": "Search results",
+              "members": [
+                "n69",
+                "n89"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is scanning results",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.amazon.com/s*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Denser grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomy list"
+                }
+              ],
+              "text": "How do you scan results fastest?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Keep hidden"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Show compact"
+                }
+              ],
+              "text": "Keep filters hidden or show slim version?"
+            }
+          ],
+          "summary": "Hide left filters, emphasize results for fast scanning.",
+          "template": {
+            "pageKind": "search",
+            "urlPattern": "www.amazon.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n36",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n38",
+              "n40",
+              "n42",
+              "n44",
+              "n46",
+              "n48",
+              "n50"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already minimal",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.amazon.com/*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Filter sidebar",
+            "members": [
+              "n108",
+              "n122",
+              "n153"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Left filter column user wants hidden to scan results",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.amazon.com/s*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "data-asin",
+              "source": "attribute"
+            },
+            "label": "Search results",
+            "members": [
+              "n69",
+              "n89"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is scanning results",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.amazon.com/s*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 7680,
+            "model": "spark",
+            "ms": 7833,
+            "outputTokens": 1627,
+            "purpose": "layout plan",
+            "reasoningTokens": 1161
+          },
+          {
+            "inputTokens": 8142,
+            "model": "spark",
+            "ms": 4479,
+            "outputTokens": 1161,
+            "purpose": "repair",
+            "reasoningTokens": 691
+          }
+        ],
+        "ms": 12326
+      },
+      "layout": {
+        "labels": [
+          "Filter sidebar",
+          "Search results"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n109",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n154",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n78",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

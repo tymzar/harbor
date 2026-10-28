@@ -1,0 +1,255 @@
+{
+  "scenario": {
+    "id": "pypi-hide-announcement",
+    "site": "pypi-package",
+    "goal": "Hide the announcement bar at the top.",
+    "tags": [
+      "code",
+      "hide",
+      "banner"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "div",
+          "area": {
+            "maxX": 0,
+            "maxY": 0
+          }
+        },
+        "note": "the whole announcement bar at the very top; its text changes"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "requests"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "pypi-package",
+    "url": "https://pypi.org/project/requests/",
+    "finalUrl": "https://pypi.org/project/requests/"
+  },
+  "at": "2026-10-28T23:20:38.353Z",
+  "scanNodes": 75,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "div",
+        "area": {
+          "maxX": 0,
+          "maxY": 0
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n1",
+        "tag": "div",
+        "kind": "group",
+        "text": "Security notice: Upgrade certifi, pip, and uv in response to CA certificate inc…"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "requests"
+      },
+      "matches": 2,
+      "node": {
+        "id": "n27",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "requests 2.34.2"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n1",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n27",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n1",
+              "identity": {
+                "attribute": "none",
+                "source": "none"
+              },
+              "label": "Announcement bar",
+              "members": [
+                "n2",
+                "n3"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide announcement bar",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "pypi.org/project/{project}/*"
+            },
+            {
+              "container": "n54",
+              "identity": {
+                "attribute": "none",
+                "source": "none"
+              },
+              "label": "Project sidebar",
+              "members": [
+                "n55",
+                "n66",
+                "n74"
+              ],
+              "operation": "compact",
+              "reason": "Dense metadata to skim on repeat visits",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "pypi.org/project/{project}/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Project sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Project sidebar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy"
+                }
+              ],
+              "text": "How dense should the project sidebar be?"
+            }
+          ],
+          "summary": "Hide announcement bar as requested, compact sidebar for faster scanning.",
+          "template": {
+            "pageKind": "project detail",
+            "urlPattern": "pypi.org/project/{project}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n1",
+            "identity": {
+              "attribute": "none",
+              "source": "none"
+            },
+            "label": "Announcement bar",
+            "members": [
+              "n2",
+              "n3"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide announcement bar",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "pypi.org/project/{project}/*"
+          },
+          {
+            "container": "n54",
+            "identity": {
+              "attribute": "none",
+              "source": "none"
+            },
+            "label": "Project sidebar",
+            "members": [
+              "n55",
+              "n66",
+              "n74"
+            ],
+            "operation": "compact",
+            "reason": "Dense metadata to skim on repeat visits",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "pypi.org/project/{project}/"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3265,
+            "model": "spark",
+            "ms": 10576,
+            "outputTokens": 2647,
+            "purpose": "layout plan",
+            "reasoningTokens": 2348
+          }
+        ],
+        "ms": 10581
+      },
+      "layout": {
+        "labels": [
+          "Announcement bar",
+          "Project sidebar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n1",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n27",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

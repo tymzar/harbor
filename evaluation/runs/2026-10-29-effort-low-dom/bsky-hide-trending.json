@@ -1,0 +1,417 @@
+{
+  "scenario": {
+    "id": "bsky-hide-trending",
+    "site": "bluesky-profile",
+    "goal": "Hide the Trending column on the right; I only read this profile's posts.",
+    "tags": [
+      "social",
+      "hide",
+      "sidebar"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "div",
+          "textStart": "Trending",
+          "area": {
+            "minX": 850,
+            "maxX": 900
+          }
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "href": "/feed/",
+          "area": {
+            "minX": 870,
+            "maxX": 890,
+            "minY": 125,
+            "maxY": 145
+          }
+        },
+        "note": "first trending topic; topics change daily, position doesn't"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "data-testid": "profilePager"
+          },
+          "textStart": "Posts Media Videos"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "bluesky-profile",
+    "url": "https://bsky.app/profile/bsky.app",
+    "finalUrl": "https://bsky.app/profile/bsky.app"
+  },
+  "at": "2026-10-28T23:19:45.018Z",
+  "scanNodes": 138,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "div",
+        "textStart": "Trending",
+        "area": {
+          "minX": 850,
+          "maxX": 900
+        }
+      },
+      "matches": 2,
+      "node": {
+        "id": "n111",
+        "tag": "div",
+        "kind": "group",
+        "text": "Trending"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "href": "/feed/",
+        "area": {
+          "minX": 870,
+          "maxX": 890,
+          "minY": 125,
+          "maxY": 145
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n114",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Browse topic ce60e3cf463b"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "profilePager"
+        },
+        "textStart": "Posts Media Videos"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n46",
+        "tag": "div",
+        "kind": "group",
+        "text": "Posts Media Videos Feeds Starter Packs"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n111",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n114",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n46",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Trending right sidebar",
+              "members": [
+                "n108",
+                "n110",
+                "n134",
+                "n138"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Right column you asked to hide; you only read posts.",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Suggested profiles",
+              "members": [
+                "n25",
+                "n32",
+                "n39"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Suggested cards distract from reading posts.",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "bsky.app/profile/{handle}"
+            },
+            {
+              "container": "n54",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Profile posts",
+              "members": [
+                "n55",
+                "n80"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal - reading this profile's posts.",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "bsky.app/profile/{handle}"
+            },
+            {
+              "container": "n47",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Profile tabs",
+              "members": [
+                "n48",
+                "n49",
+                "n50",
+                "n51",
+                "n52"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation for Posts, Media, Videos.",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "post-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Profile posts",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Profile posts",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                }
+              ],
+              "text": "How should the profile posts look?"
+            },
+            {
+              "id": "bottom-bar",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Profile posts",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Keep header"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Profile posts",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact header"
+                }
+              ],
+              "text": "Keep full profile header or tighten it to see posts sooner?"
+            }
+          ],
+          "summary": "Hide the right Trending sidebar and Suggested profiles, emphasize the profile posts feed.",
+          "template": {
+            "pageKind": "profile",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Trending right sidebar",
+            "members": [
+              "n108",
+              "n110",
+              "n134",
+              "n138"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Right column you asked to hide; you only read posts.",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Suggested profiles",
+            "members": [
+              "n25",
+              "n32",
+              "n39"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Suggested cards distract from reading posts.",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "bsky.app/profile/{handle}"
+          },
+          {
+            "container": "n54",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Profile posts",
+            "members": [
+              "n55",
+              "n80"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal - reading this profile's posts.",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "bsky.app/profile/{handle}"
+          },
+          {
+            "container": "n47",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Profile tabs",
+            "members": [
+              "n48",
+              "n49",
+              "n50",
+              "n51",
+              "n52"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation for Posts, Media, Videos.",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 6372,
+            "model": "spark",
+            "ms": 12041,
+            "outputTokens": 2738,
+            "purpose": "layout plan",
+            "reasoningTokens": 2151
+          }
+        ],
+        "ms": 12053
+      },
+      "layout": {
+        "labels": [
+          "Trending right sidebar",
+          "Suggested profiles",
+          "Profile posts"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n111",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n114",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n46",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

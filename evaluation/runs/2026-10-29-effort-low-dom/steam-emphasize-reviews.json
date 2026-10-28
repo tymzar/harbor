@@ -1,0 +1,383 @@
+{
+  "scenario": {
+    "id": "steam-emphasize-reviews",
+    "site": "steam-app",
+    "goal": "Before buying I check reviews; make the review summary stand out.",
+    "tags": [
+      "gaming",
+      "emphasize",
+      "goal-inference"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "attr": {
+            "id": "userReviews"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "steam-app",
+    "url": "https://store.steampowered.com/app/730/CounterStrike_2/",
+    "finalUrl": "https://store.steampowered.com/app/730/CounterStrike_2/"
+  },
+  "at": "2026-10-28T23:20:52.293Z",
+  "scanNodes": 95,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "userReviews"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n50",
+        "tag": "div",
+        "kind": "group",
+        "text": "Recent Reviews:"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n50",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n49",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Review summary",
+              "members": [
+                "n50",
+                "n55",
+                "n56",
+                "n58"
+              ],
+              "operation": "emphasize",
+              "reason": "Core to before-buying check, make Mostly Positive stand out",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+            },
+            {
+              "container": "n29",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Desktop app banner",
+              "members": [
+                "n30"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo banner rarely needed when checking reviews",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+            },
+            {
+              "container": "n61",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Popular tags",
+              "members": [
+                "n62",
+                "n63",
+                "n64",
+                "n65",
+                "n66",
+                "n67"
+              ],
+              "operation": "compact",
+              "reason": "Skimmable list, tighten to keep focus on reviews",
+              "reorderable": true,
+              "role": "toolbar",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+            },
+            {
+              "container": "n82",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Screenshot strip",
+              "members": [
+                "n83",
+                "n85",
+                "n87",
+                "n88",
+                "n89",
+                "n90",
+                "n91",
+                "n92",
+                "n93",
+                "n94",
+                "n95"
+              ],
+              "operation": "grid",
+              "reason": "Long uneven filmstrip, grid is faster to scan",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+            },
+            {
+              "container": "n4",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Global header",
+              "members": [
+                "n8",
+                "n9",
+                "n10",
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q_reviews_depth",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Review summary",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Summary only"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Review summary",
+                      "operation": "emphasize"
+                    },
+                    {
+                      "group": "Screenshot strip",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide media too"
+                }
+              ],
+              "text": "Do you only need the review summary, or also full reviews?"
+            },
+            {
+              "id": "q_density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tags",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Screenshot strip",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tags",
+                      "operation": "none"
+                    },
+                    {
+                      "group": "Screenshot strip",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "Do you prefer denser or roomier game pages?"
+            }
+          ],
+          "summary": "Emphasized the Recent/English review summary for pre-purchase check, hid the desktop-app promo, compacted tags and gridded screenshots.",
+          "template": {
+            "pageKind": "app-page",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n49",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Review summary",
+            "members": [
+              "n50",
+              "n55",
+              "n56",
+              "n58"
+            ],
+            "operation": "emphasize",
+            "reason": "Core to before-buying check, make Mostly Positive stand out",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          },
+          {
+            "container": "n29",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Desktop app banner",
+            "members": [
+              "n30"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo banner rarely needed when checking reviews",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          },
+          {
+            "container": "n61",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Popular tags",
+            "members": [
+              "n62",
+              "n63",
+              "n64",
+              "n65",
+              "n66",
+              "n67"
+            ],
+            "operation": "compact",
+            "reason": "Skimmable list, tighten to keep focus on reviews",
+            "reorderable": true,
+            "role": "toolbar",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          },
+          {
+            "container": "n82",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Screenshot strip",
+            "members": [
+              "n83",
+              "n85",
+              "n87",
+              "n88",
+              "n89",
+              "n90",
+              "n91",
+              "n92",
+              "n93",
+              "n94",
+              "n95"
+            ],
+            "operation": "grid",
+            "reason": "Long uneven filmstrip, grid is faster to scan",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          },
+          {
+            "container": "n4",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Global header",
+            "members": [
+              "n8",
+              "n9",
+              "n10",
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3660,
+            "model": "spark",
+            "ms": 7579,
+            "outputTokens": 2137,
+            "purpose": "layout plan",
+            "reasoningTokens": 1337
+          }
+        ],
+        "ms": 7585
+      },
+      "layout": {
+        "labels": [
+          "Review summary",
+          "Desktop app banner",
+          "Popular tags",
+          "Screenshot strip"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n50",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

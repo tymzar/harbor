@@ -1,0 +1,161 @@
+{
+  "scenario": {
+    "id": "pick-ikea-chat",
+    "site": "ikea-category",
+    "pick": {
+      "attr": {
+        "aria-label": "Open chat window"
+      }
+    },
+    "tags": [
+      "picker",
+      "hide",
+      "floating"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "aria-label": "Open chat window"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Sofas"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "ikea-category",
+    "url": "https://www.ikea.com/ch/en/cat/sofas-fu003/",
+    "finalUrl": "https://www.ikea.com/ch/en/cat/sofas-fu003/",
+    "consent": "Reject (reject)"
+  },
+  "at": "2026-10-28T23:21:35.768Z",
+  "scanNodes": 87,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Open chat window"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n38",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Open chat window"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Open chat window"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n38",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Open chat window"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Sofas"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n66",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Sofas"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n38",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n38",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n66",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "picker",
+      "layout": {
+        "labels": [
+          "Hidden by you: Open chat window"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n38",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n38",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n66",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

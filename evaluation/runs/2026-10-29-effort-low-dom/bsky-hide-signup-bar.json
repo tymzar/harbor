@@ -1,0 +1,375 @@
+{
+  "scenario": {
+    "id": "bsky-hide-signup-bar",
+    "site": "bluesky-profile",
+    "goal": "Hide the Create account / Sign in bar at the bottom.",
+    "tags": [
+      "social",
+      "hide",
+      "sticky"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "nav",
+          "text": "Create account Sign in"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "data-testid": "profilePager"
+          },
+          "textStart": "Posts Media Videos"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "bluesky-profile",
+    "url": "https://bsky.app/profile/bsky.app",
+    "finalUrl": "https://bsky.app/profile/bsky.app"
+  },
+  "at": "2026-10-28T23:20:03.494Z",
+  "scanNodes": 138,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "text": "Create account Sign in"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n101",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Create account Sign in"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "profilePager"
+        },
+        "textStart": "Posts Media Videos"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n46",
+        "tag": "div",
+        "kind": "group",
+        "text": "Posts Media Videos Feeds Starter Packs"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n101",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n46",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n101",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Bottom sign-in bar",
+              "members": [
+                "n105",
+                "n106"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Create account / Sign in bar",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "bsky.app/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Suggested for you",
+              "members": [
+                "n25",
+                "n32",
+                "n39"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Related suggestions rarely needed on repeat visits",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "bsky.app/profile/{handle}"
+            },
+            {
+              "container": "n113",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Trending topics",
+              "members": [
+                "n114",
+                "n116",
+                "n118",
+                "n120",
+                "n122",
+                "n124",
+                "n126",
+                "n128",
+                "n130",
+                "n132"
+              ],
+              "operation": "compact",
+              "reason": "Dense skim list in sidebar",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "bsky.app/*"
+            },
+            {
+              "container": "n47",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Profile tabs",
+              "members": [
+                "n48",
+                "n49",
+                "n50",
+                "n51",
+                "n52"
+              ],
+              "operation": "none",
+              "reason": "Primary profile navigation already works",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Suggested for you",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide suggestions"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Suggested for you",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Suggested for you",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "What should happen to Suggested profiles?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Trending topics",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide trending"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Trending topics",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "How much trending sidebar do you use?"
+            }
+          ],
+          "summary": "Hide bottom Create account / Sign in bar, hide suggestions and tighten trending.",
+          "template": {
+            "pageKind": "profile",
+            "urlPattern": "bsky.app/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n101",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Bottom sign-in bar",
+            "members": [
+              "n105",
+              "n106"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Create account / Sign in bar",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "bsky.app/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Suggested for you",
+            "members": [
+              "n25",
+              "n32",
+              "n39"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Related suggestions rarely needed on repeat visits",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "bsky.app/profile/{handle}"
+          },
+          {
+            "container": "n113",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Trending topics",
+            "members": [
+              "n114",
+              "n116",
+              "n118",
+              "n120",
+              "n122",
+              "n124",
+              "n126",
+              "n128",
+              "n130",
+              "n132"
+            ],
+            "operation": "compact",
+            "reason": "Dense skim list in sidebar",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "bsky.app/*"
+          },
+          {
+            "container": "n47",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Profile tabs",
+            "members": [
+              "n48",
+              "n49",
+              "n50",
+              "n51",
+              "n52"
+            ],
+            "operation": "none",
+            "reason": "Primary profile navigation already works",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 6368,
+            "model": "spark",
+            "ms": 12855,
+            "outputTokens": 2660,
+            "purpose": "layout plan",
+            "reasoningTokens": 2040
+          }
+        ],
+        "ms": 12864
+      },
+      "layout": {
+        "labels": [
+          "Bottom sign-in bar",
+          "Suggested for you",
+          "Trending topics"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n101",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n46",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    }
+  ]
+}

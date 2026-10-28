@@ -1,0 +1,386 @@
+{
+  "scenario": {
+    "id": "mdn-hide-left-sidebar",
+    "site": "mdn-reference",
+    "goal": "Hide the left reference sidebar but keep 'In this article'.",
+    "tags": [
+      "docs",
+      "hide",
+      "sidebar",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "main-sidebar"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h2",
+          "text": "In this article"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Array"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "mdn-reference",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "finalUrl": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array"
+  },
+  "at": "2026-10-28T23:18:27.375Z",
+  "scanNodes": 112,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "main-sidebar"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n74",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": "Standard built-in objects Array Constructor"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "In this article"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n39",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "In this article"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Array"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n28",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Array"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n74",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n39",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n28",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n74",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Left reference sidebar",
+              "members": [
+                "n77",
+                "n79",
+                "n81",
+                "n87",
+                "n99",
+                "n105"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide left reference nav",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+            },
+            {
+              "container": "n38",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "In this article",
+              "members": [
+                "n41",
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51",
+                "n53",
+                "n55",
+                "n57",
+                "n59"
+              ],
+              "operation": "emphasize",
+              "reason": "User wants to keep for quick jumps",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/Array"
+            },
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Top site navigation",
+              "members": [
+                "n6",
+                "n7",
+                "n8",
+                "n9",
+                "n10",
+                "n11",
+                "n12",
+                "n13",
+                "n14"
+              ],
+              "operation": "none",
+              "reason": "Primary site chrome, already compact",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "In this article",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Keep prominent"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "In this article",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact list"
+                }
+              ],
+              "text": "How should 'In this article' appear?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top site navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top site navigation",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                }
+              ],
+              "text": "Do you use the top MDN nav on this page?"
+            }
+          ],
+          "summary": "Hide left reference sidebar, keep and emphasize 'In this article'.",
+          "template": {
+            "pageKind": "docs",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n74",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Left reference sidebar",
+            "members": [
+              "n77",
+              "n79",
+              "n81",
+              "n87",
+              "n99",
+              "n105"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide left reference nav",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+          },
+          {
+            "container": "n38",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "In this article",
+            "members": [
+              "n41",
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51",
+              "n53",
+              "n55",
+              "n57",
+              "n59"
+            ],
+            "operation": "emphasize",
+            "reason": "User wants to keep for quick jumps",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/Array"
+          },
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Top site navigation",
+            "members": [
+              "n6",
+              "n7",
+              "n8",
+              "n9",
+              "n10",
+              "n11",
+              "n12",
+              "n13",
+              "n14"
+            ],
+            "operation": "none",
+            "reason": "Primary site chrome, already compact",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 4490,
+            "model": "spark",
+            "ms": 11439,
+            "outputTokens": 2424,
+            "purpose": "layout plan",
+            "reasoningTokens": 1843
+          }
+        ],
+        "ms": 11444
+      },
+      "layout": {
+        "labels": [
+          "Left reference sidebar",
+          "In this article"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n74",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n39",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n28",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,326 @@
+{
+  "scenario": {
+    "id": "wiki-hide-account-links",
+    "site": "wikipedia-article",
+    "goal": "Hide Donate, Create account and Log in; keep the search box.",
+    "tags": [
+      "reading",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "ul",
+          "text": "Donate Create account Log in"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "id": "searchform"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "wikipedia-article",
+    "url": "https://en.wikipedia.org/wiki/Web_browser",
+    "finalUrl": "https://en.wikipedia.org/wiki/Web_browser"
+  },
+  "at": "2026-10-28T23:17:57.458Z",
+  "scanNodes": 172,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "ul",
+        "text": "Donate Create account Log in"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n17",
+        "tag": "ul",
+        "kind": "list",
+        "text": "Donate Create account Log in"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "searchform"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n12",
+        "tag": "form",
+        "kind": "landmark",
+        "text": "Search"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n17",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n12",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Personal tools",
+              "members": [
+                "n18",
+                "n20",
+                "n22"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Donate, Create account and Log in",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Table of contents",
+              "members": [
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n45",
+                "n51",
+                "n53",
+                "n55"
+              ],
+              "operation": "compact",
+              "reason": "Long section list to skim while reading",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n82",
+              "identity": {
+                "attribute": "id",
+                "source": "text"
+              },
+              "label": "Appearance settings",
+              "members": [
+                "n85",
+                "n92",
+                "n98"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Font/width/color controls rarely needed",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "toc-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide entirely"
+                }
+              ],
+              "text": "How should the article table of contents appear?"
+            },
+            {
+              "id": "appearance-need",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Appearance settings",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide panel"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Appearance settings",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "Do you change text size, width, or color on articles?"
+            }
+          ],
+          "summary": "Hide Personal tools per request, keep search untouched, compact TOC and hide Appearance settings.",
+          "template": {
+            "pageKind": "wiki-article",
+            "urlPattern": "en.wikipedia.org/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Personal tools",
+            "members": [
+              "n18",
+              "n20",
+              "n22"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Donate, Create account and Log in",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Table of contents",
+            "members": [
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n45",
+              "n51",
+              "n53",
+              "n55"
+            ],
+            "operation": "compact",
+            "reason": "Long section list to skim while reading",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n82",
+            "identity": {
+              "attribute": "id",
+              "source": "text"
+            },
+            "label": "Appearance settings",
+            "members": [
+              "n85",
+              "n92",
+              "n98"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Font/width/color controls rarely needed",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 6439,
+            "model": "spark",
+            "ms": 9758,
+            "outputTokens": 2323,
+            "purpose": "layout plan",
+            "reasoningTokens": 1814
+          }
+        ],
+        "ms": 9767
+      },
+      "layout": {
+        "labels": [
+          "Personal tools",
+          "Table of contents",
+          "Appearance settings"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n17",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n12",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

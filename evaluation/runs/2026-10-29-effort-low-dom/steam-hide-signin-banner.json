@@ -1,0 +1,317 @@
+{
+  "scenario": {
+    "id": "steam-hide-signin-banner",
+    "site": "steam-app",
+    "goal": "Hide the 'You're not signed in! Open in Desktop App' banner.",
+    "tags": [
+      "gaming",
+      "hide",
+      "banner"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "div",
+          "textStart": "Open in Desktop App You're not signed in"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "id": "game_highlights"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "steam-app",
+    "url": "https://store.steampowered.com/app/730/CounterStrike_2/",
+    "finalUrl": "https://store.steampowered.com/app/730/CounterStrike_2/"
+  },
+  "at": "2026-10-28T23:20:39.369Z",
+  "scanNodes": 95,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "div",
+        "textStart": "Open in Desktop App You're not signed in"
+      },
+      "matches": 2,
+      "node": {
+        "id": "n30",
+        "tag": "div",
+        "kind": "group",
+        "text": "Open in Desktop App You're not signed in! Open this page in the Steam App to wi…"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "game_highlights"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n44",
+        "tag": "div",
+        "kind": "group",
+        "text": "Counter-Strike 2"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n30",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n44",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n29",
+              "identity": {
+                "attribute": "none",
+                "source": "none"
+              },
+              "label": "Desktop app sign-in banner",
+              "members": [
+                "n30"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide this banner",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "store.steampowered.com/app/{appId}/*"
+            },
+            {
+              "container": "n61",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Popular user tags",
+              "members": [
+                "n62",
+                "n63",
+                "n64",
+                "n65",
+                "n66",
+                "n67"
+              ],
+              "operation": "compact",
+              "reason": "Dense tag list is faster to skim",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+            },
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Global menu links",
+              "members": [
+                "n8",
+                "n9",
+                "n10",
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "nav-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Global menu links",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Global menu links",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Leave as is"
+                }
+              ],
+              "text": "How compact should navigation feel?"
+            },
+            {
+              "id": "tags-layout",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Popular user tags",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact row"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Popular user tags",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide tags"
+                }
+              ],
+              "text": "How should tags be shown?"
+            }
+          ],
+          "summary": "Hide the desktop app sign-in banner, compact tags for skimming.",
+          "template": {
+            "pageKind": "game-product",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n29",
+            "identity": {
+              "attribute": "none",
+              "source": "none"
+            },
+            "label": "Desktop app sign-in banner",
+            "members": [
+              "n30"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide this banner",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "store.steampowered.com/app/{appId}/*"
+          },
+          {
+            "container": "n61",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Popular user tags",
+            "members": [
+              "n62",
+              "n63",
+              "n64",
+              "n65",
+              "n66",
+              "n67"
+            ],
+            "operation": "compact",
+            "reason": "Dense tag list is faster to skim",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+          },
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Global menu links",
+            "members": [
+              "n8",
+              "n9",
+              "n10",
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3662,
+            "model": "spark",
+            "ms": 9712,
+            "outputTokens": 2548,
+            "purpose": "layout plan",
+            "reasoningTokens": 2057
+          }
+        ],
+        "ms": 9717
+      },
+      "layout": {
+        "labels": [
+          "Desktop app sign-in banner",
+          "Popular user tags"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n30",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n44",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

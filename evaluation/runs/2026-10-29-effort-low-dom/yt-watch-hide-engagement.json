@@ -1,0 +1,377 @@
+{
+  "scenario": {
+    "id": "yt-watch-hide-engagement",
+    "site": "youtube-watch",
+    "goal": "I never like, dislike or share videos. Hide those buttons but keep Subscribe.",
+    "tags": [
+      "video",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "button",
+          "text": "like this video"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "aria-label": "Dislike this video"
+          }
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "aria-label": "Share"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "Subscribe to jawed."
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-watch",
+    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "finalUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T23:17:05.182Z",
+  "scanNodes": 153,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "button",
+        "text": "like this video"
+      },
+      "matches": 2,
+      "node": {
+        "id": "n76",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "like this video along with 20,117,582 other people"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Dislike this video"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n78",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Dislike this video"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Share"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n80",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Share"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Subscribe to jawed."
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n70",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Subscribe to jawed."
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n76",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n78",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n80",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n70",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n73",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Like Dislike Share buttons",
+              "members": [
+                "n76",
+                "n78",
+                "n80"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never likes, dislikes or shares",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n63",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Subscribe button",
+              "members": [
+                "n70"
+              ],
+              "operation": "emphasize",
+              "reason": "User wants to keep Subscribe visible",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n72",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Save and More actions",
+              "members": [
+                "n82",
+                "n84"
+              ],
+              "operation": "none",
+              "reason": "Left visible unless user wants them hidden",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Save and More actions",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Yes, hide them"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Save and More actions",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep them"
+                }
+              ],
+              "text": "Also hide Save and More actions buttons?"
+            }
+          ],
+          "summary": "Hides Like, Dislike and Share but keeps and emphasizes Subscribe.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n73",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Like Dislike Share buttons",
+            "members": [
+              "n76",
+              "n78",
+              "n80"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never likes, dislikes or shares",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n63",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Subscribe button",
+            "members": [
+              "n70"
+            ],
+            "operation": "emphasize",
+            "reason": "User wants to keep Subscribe visible",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n72",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Save and More actions",
+            "members": [
+              "n82",
+              "n84"
+            ],
+            "operation": "none",
+            "reason": "Left visible unless user wants them hidden",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 5841,
+            "model": "spark",
+            "ms": 12282,
+            "outputTokens": 2421,
+            "purpose": "layout plan",
+            "reasoningTokens": 2042
+          },
+          {
+            "inputTokens": 6249,
+            "model": "spark",
+            "ms": 3432,
+            "outputTokens": 971,
+            "purpose": "repair",
+            "reasoningTokens": 588
+          }
+        ],
+        "ms": 15727
+      },
+      "layout": {
+        "labels": [
+          "Like Dislike Share buttons",
+          "Subscribe button"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n76",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n78",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n80",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n70",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

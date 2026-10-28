@@ -1,0 +1,430 @@
+{
+  "scenario": {
+    "id": "twitch-dir-hide-side-nav",
+    "site": "twitch-directory",
+    "goal": "I only browse categories. Hide the Live Channels sidebar on the left.",
+    "tags": [
+      "streaming",
+      "hide",
+      "sidebar"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "data-a-target": "side-nav-bar"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Browse"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h2",
+          "text": "Just Chatting",
+          "area": {
+            "minX": 250
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "twitch-directory",
+    "url": "https://www.twitch.tv/directory",
+    "finalUrl": "https://www.twitch.tv/directory"
+  },
+  "at": "2026-10-28T23:16:39.337Z",
+  "scanNodes": 212,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "data-a-target": "side-nav-bar"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n23",
+        "tag": "div",
+        "kind": "landmark",
+        "text": "Live Channels Caedrel League of Legends Live 254K 254K viewers Hype Train • Lev…"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Browse"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n97",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Browse"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "Just Chatting",
+        "area": {
+          "minX": 250
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n144",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "Just Chatting"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n23",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n97",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n144",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Live Channels sidebar",
+              "members": [
+                "n31",
+                "n39",
+                "n45",
+                "n51",
+                "n57",
+                "n63",
+                "n69",
+                "n75",
+                "n81",
+                "n89"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User only browses categories and explicitly asked to hide it",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "https://www.twitch.tv/*"
+            },
+            {
+              "container": "n128",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Categories grid",
+              "members": [
+                "n130",
+                "n139",
+                "n149",
+                "n162",
+                "n172",
+                "n184",
+                "n189",
+                "n194",
+                "n199",
+                "n204"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is browsing categories",
+              "reorderable": true,
+              "role": "content-cards",
+              "urlPattern": "https://www.twitch.tv/directory"
+            },
+            {
+              "container": "n98",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Browse category types",
+              "members": [
+                "n99",
+                "n102",
+                "n105",
+                "n108",
+                "n111"
+              ],
+              "operation": "none",
+              "reason": "Primary way to filter categories, already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "https://www.twitch.tv/*"
+            },
+            {
+              "container": "n208",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Signup footer promo",
+              "members": [
+                "n209"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing promo rarely needed for browsing",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "https://www.twitch.tv/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "grid-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Categories grid",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Spacious cards"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Categories grid",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Tight grid"
+                }
+              ],
+              "text": "How should the categories grid look?"
+            },
+            {
+              "id": "filter-bar",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Browse category types",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Browse category types",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make compact"
+                }
+              ],
+              "text": "Make top Games / IRL / Music links more compact?"
+            }
+          ],
+          "summary": "Hide left Live Channels sidebar and footer promo, emphasize categories grid for category-only browsing.",
+          "template": {
+            "pageKind": "directory",
+            "urlPattern": "https://www.twitch.tv/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Live Channels sidebar",
+            "members": [
+              "n31",
+              "n39",
+              "n45",
+              "n51",
+              "n57",
+              "n63",
+              "n69",
+              "n75",
+              "n81",
+              "n89"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User only browses categories and explicitly asked to hide it",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "https://www.twitch.tv/*"
+          },
+          {
+            "container": "n128",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Categories grid",
+            "members": [
+              "n130",
+              "n139",
+              "n149",
+              "n162",
+              "n172",
+              "n184",
+              "n189",
+              "n194",
+              "n199",
+              "n204"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is browsing categories",
+            "reorderable": true,
+            "role": "content-cards",
+            "urlPattern": "https://www.twitch.tv/directory"
+          },
+          {
+            "container": "n98",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Browse category types",
+            "members": [
+              "n99",
+              "n102",
+              "n105",
+              "n108",
+              "n111"
+            ],
+            "operation": "none",
+            "reason": "Primary way to filter categories, already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "https://www.twitch.tv/*"
+          },
+          {
+            "container": "n208",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Signup footer promo",
+            "members": [
+              "n209"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing promo rarely needed for browsing",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "https://www.twitch.tv/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 7913,
+            "model": "spark",
+            "ms": 10229,
+            "outputTokens": 2382,
+            "purpose": "layout plan",
+            "reasoningTokens": 1755
+          },
+          {
+            "inputTokens": 8556,
+            "model": "spark",
+            "ms": 6405,
+            "outputTokens": 1638,
+            "purpose": "repair",
+            "reasoningTokens": 1004
+          }
+        ],
+        "ms": 16651
+      },
+      "layout": {
+        "labels": [
+          "Live Channels sidebar",
+          "Categories grid",
+          "Signup footer promo"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n23",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n97",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n144",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

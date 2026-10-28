@@ -1,0 +1,351 @@
+{
+  "scenario": {
+    "id": "so-hide-sidebar",
+    "site": "stackoverflow-question",
+    "goal": "I read answers only. Hide the right sidebar (blog, meta, promos).",
+    "tags": [
+      "q-and-a",
+      "hide",
+      "sidebar",
+      "reading"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "sidebar"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "textStart": "Why is conditional processing"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "question and answers"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "stackoverflow-question",
+    "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+    "finalUrl": "https://stackoverflow.com/questions/11227809/why-is-conditional-processing-of-a-sorted-array-faster-than-of-an-unsorted-array"
+  },
+  "at": "2026-10-28T23:17:35.913Z",
+  "scanNodes": 144,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "sidebar"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n101",
+        "tag": "div",
+        "kind": "landmark",
+        "text": "sidebar"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "textStart": "Why is conditional processing"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n77",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Why is conditional processing of a sorted array faster than of an unsorted arra…"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "question and answers"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n84",
+        "tag": "div",
+        "kind": "landmark",
+        "text": "question and answers"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n101",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n77",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n84",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n101",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Agents promo card",
+              "members": [
+                "n102"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo user asked to hide",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+            },
+            {
+              "container": "n109",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Blog and Meta sidebar",
+              "members": [
+                "n111",
+                "n115",
+                "n117",
+                "n119",
+                "n121"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Blog and Meta list user asked to hide",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+            },
+            {
+              "container": "n84",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Question and answers",
+              "members": [
+                "n85"
+              ],
+              "operation": "emphasize",
+              "reason": "Main reading area for answers-only goal",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-left-nav",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Keep it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Compact it"
+                }
+              ],
+              "text": "How should the left navigation appear while reading?"
+            },
+            {
+              "id": "q-question",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Keep question visible"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make answers denser"
+                }
+              ],
+              "text": "Do you want the question collapsed to reach answers faster?"
+            }
+          ],
+          "summary": "Hide right sidebar promos and Blog/Meta, emphasize answers reading area.",
+          "template": {
+            "pageKind": "question",
+            "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n101",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Agents promo card",
+            "members": [
+              "n102"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo user asked to hide",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+          },
+          {
+            "container": "n109",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Blog and Meta sidebar",
+            "members": [
+              "n111",
+              "n115",
+              "n117",
+              "n119",
+              "n121"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Blog and Meta list user asked to hide",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+          },
+          {
+            "container": "n84",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Question and answers",
+            "members": [
+              "n85"
+            ],
+            "operation": "emphasize",
+            "reason": "Main reading area for answers-only goal",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 5650,
+            "model": "spark",
+            "ms": 8529,
+            "outputTokens": 2022,
+            "purpose": "layout plan",
+            "reasoningTokens": 1538
+          }
+        ],
+        "ms": 8536
+      },
+      "layout": {
+        "labels": [
+          "Agents promo card",
+          "Blog and Meta sidebar",
+          "Question and answers"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n101",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n77",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n84",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

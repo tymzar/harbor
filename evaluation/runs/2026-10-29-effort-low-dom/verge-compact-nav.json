@@ -1,0 +1,289 @@
+{
+  "scenario": {
+    "id": "verge-compact-nav",
+    "site": "theverge-front",
+    "goal": "Make the top navigation more compact.",
+    "tags": [
+      "news",
+      "density"
+    ],
+    "expect": [
+      {
+        "op": "compact",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Top Navigation"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "theverge-front",
+    "url": "https://www.theverge.com/",
+    "finalUrl": "https://www.theverge.com/"
+  },
+  "at": "2026-10-28T23:19:26.498Z",
+  "scanNodes": 59,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Top Navigation"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n6",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Top Navigation"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n6",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Top Navigation",
+              "members": [
+                "n9",
+                "n11",
+                "n13",
+                "n15",
+                "n17",
+                "n19",
+                "n21",
+                "n23"
+              ],
+              "operation": "compact",
+              "reason": "Goal asks for more compact top nav",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Top Actions",
+              "members": [
+                "n4",
+                "n5"
+              ],
+              "operation": "compact",
+              "reason": "Part of top chrome to tighten with nav",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n51",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Privacy Banner",
+              "members": [
+                "n52"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value banner rarely needed on return visits",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.theverge.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "top-actions",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top Actions",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep Sign In"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top Actions",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide both"
+                }
+              ],
+              "text": "Should Subscribe and Sign In stay visible?"
+            },
+            {
+              "id": "privacy",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Privacy Banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Privacy Banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep it"
+                }
+              ],
+              "text": "Hide the privacy notice?"
+            }
+          ],
+          "summary": "Compact top nav and header actions, hide privacy banner.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.theverge.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Top Navigation",
+            "members": [
+              "n9",
+              "n11",
+              "n13",
+              "n15",
+              "n17",
+              "n19",
+              "n21",
+              "n23"
+            ],
+            "operation": "compact",
+            "reason": "Goal asks for more compact top nav",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Top Actions",
+            "members": [
+              "n4",
+              "n5"
+            ],
+            "operation": "compact",
+            "reason": "Part of top chrome to tighten with nav",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n51",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Privacy Banner",
+            "members": [
+              "n52"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value banner rarely needed on return visits",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.theverge.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 3066,
+            "model": "spark",
+            "ms": 8253,
+            "outputTokens": 2263,
+            "purpose": "layout plan",
+            "reasoningTokens": 1798
+          },
+          {
+            "inputTokens": 3448,
+            "model": "spark",
+            "ms": 3563,
+            "outputTokens": 1002,
+            "purpose": "repair",
+            "reasoningTokens": 537
+          }
+        ],
+        "ms": 11822
+      },
+      "layout": {
+        "labels": [
+          "Top Navigation",
+          "Top Actions",
+          "Privacy Banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [
+            "compact"
+          ],
+          "found": true,
+          "hasContent": true,
+          "id": "n6",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+{
+  "scenario": {
+    "id": "gh-hide-actions-everywhere",
+    "site": "github-repo",
+    "goal": "please hide completly. i do not use at all the actions [unpin,watch,fork,start] neither on the top bar neitiher in the sidebar",
+    "tags": [
+      "code",
+      "hide",
+      "duplicate-regions",
+      "user-reported"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "data-testid": "repo-header-actions"
+          }
+        },
+        "note": "Notifications / Fork / Star in the header"
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "span",
+          "text": "stars",
+          "area": {
+            "minX": 900
+          }
+        },
+        "note": "the same stats in the About sidebar"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Repository"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "github-repo",
+    "url": "https://github.com/facebook/react",
+    "finalUrl": "https://github.com/react/react"
+  },
+  "at": "2026-10-28T23:17:36.662Z",
+  "scanNodes": 236,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "repo-header-actions"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n65",
+        "tag": "ul",
+        "kind": "list",
+        "text": "Notifications You must be signed in to change notification settings Fork 51.6k ("
+      }
+    },
+    {
+      "anchor": {
+        "tag": "span",
+        "text": "stars",
+        "area": {
+          "minX": 900
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n230",
+        "tag": "span",
+        "kind": "group",
+        "text": "251.8k stars"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Repository"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n40",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Repository"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n65",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n230",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n40",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n65",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Header repo actions",
+              "members": [
+                "n67",
+                "n70",
+                "n74"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Fork, Star and Notifications buttons you never use",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n228",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Sidebar stars watchers forks",
+              "members": [
+                "n230",
+                "n232",
+                "n234"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Sidebar Star Watch Fork counts you never use",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n41",
+              "identity": {
+                "attribute": "data-tab-item",
+                "source": "attribute"
+              },
+              "label": "Repository tabs",
+              "members": [
+                "n43",
+                "n45",
+                "n49",
+                "n52",
+                "n54",
+                "n57"
+              ],
+              "operation": "none",
+              "reason": "Primary repo navigation",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n118",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "File list",
+              "members": [
+                "n119",
+                "n126",
+                "n133",
+                "n142",
+                "n149",
+                "n158",
+                "n167",
+                "n174",
+                "n181",
+                "n188",
+                "n195"
+              ],
+              "operation": "none",
+              "reason": "Main code content",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "github.com/{owner}/{repo}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "File list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "File list",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                }
+              ],
+              "text": "Do you want the file list denser to scan faster?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Repository tabs",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact tabs"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Repository tabs",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Do you want repository tabs tightened?"
+            }
+          ],
+          "summary": "Hides Fork/Star/Watch/Unpin actions in top bar and sidebar per your request, leaves tabs and files unchanged.",
+          "template": {
+            "pageKind": "repository",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n65",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Header repo actions",
+            "members": [
+              "n67",
+              "n70",
+              "n74"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Fork, Star and Notifications buttons you never use",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n228",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Sidebar stars watchers forks",
+            "members": [
+              "n230",
+              "n232",
+              "n234"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Sidebar Star Watch Fork counts you never use",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n41",
+            "identity": {
+              "attribute": "data-tab-item",
+              "source": "attribute"
+            },
+            "label": "Repository tabs",
+            "members": [
+              "n43",
+              "n45",
+              "n49",
+              "n52",
+              "n54",
+              "n57"
+            ],
+            "operation": "none",
+            "reason": "Primary repo navigation",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n118",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "File list",
+            "members": [
+              "n119",
+              "n126",
+              "n133",
+              "n142",
+              "n149",
+              "n158",
+              "n167",
+              "n174",
+              "n181",
+              "n188",
+              "n195"
+            ],
+            "operation": "none",
+            "reason": "Main code content",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "github.com/{owner}/{repo}"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 10943,
+            "model": "spark",
+            "ms": 8217,
+            "outputTokens": 2074,
+            "purpose": "layout plan",
+            "reasoningTokens": 1451
+          },
+          {
+            "inputTokens": 11455,
+            "model": "spark",
+            "ms": 5438,
+            "outputTokens": 1393,
+            "purpose": "repair",
+            "reasoningTokens": 916
+          }
+        ],
+        "ms": 13676
+      },
+      "layout": {
+        "labels": [
+          "Header repo actions",
+          "Sidebar stars watchers forks"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n65",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n230",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n40",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

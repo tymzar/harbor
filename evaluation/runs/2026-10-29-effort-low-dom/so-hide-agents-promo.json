@@ -1,0 +1,400 @@
+{
+  "scenario": {
+    "id": "so-hide-agents-promo",
+    "site": "stackoverflow-question",
+    "goal": "Hide the 'Stack Overflow for Agents' promo but keep the rest of the sidebar.",
+    "tags": [
+      "q-and-a",
+      "hide",
+      "precision",
+      "promo"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "aria-label": "Stack Overflow for Agents"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "ul",
+          "text": "The Overflow Blog"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "stackoverflow-question",
+    "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+    "finalUrl": "https://stackoverflow.com/questions/11227809/why-is-conditional-processing-of-a-sorted-array-faster-than-of-an-unsorted-array"
+  },
+  "at": "2026-10-28T23:18:04.307Z",
+  "scanNodes": 136,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "aria-label": "Stack Overflow for Agents"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n94",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": "Stack Overflow for Agents"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "ul",
+        "text": "The Overflow Blog"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n101",
+        "tag": "ul",
+        "kind": "list",
+        "text": "The Overflow Blog"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n94",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n101",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n93",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Agents promo (right sidebar)",
+              "members": [
+                "n94"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Right sidebar promo user asked to hide",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "stackoverflow.com/questions/*"
+            },
+            {
+              "container": "n28",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Agents link (left nav)",
+              "members": [
+                "n43"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Same Agents promo in left nav, hide everywhere",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "stackoverflow.com/questions/*"
+            },
+            {
+              "container": "n101",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sidebar blog links",
+              "members": [
+                "n103",
+                "n107",
+                "n109",
+                "n111",
+                "n113"
+              ],
+              "operation": "none",
+              "reason": "Rest of sidebar to keep as-is",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "stackoverflow.com/questions/*"
+            },
+            {
+              "container": "n28",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Primary left navigation",
+              "members": [
+                "n30",
+                "n33",
+                "n36",
+                "n39",
+                "n48",
+                "n54",
+                "n58",
+                "n62",
+                "n65"
+              ],
+              "operation": "none",
+              "reason": "Main navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "stackoverflow.com/questions/*"
+            },
+            {
+              "container": "n26",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Stack Internal promo (left nav)",
+              "members": [
+                "n72"
+              ],
+              "operation": "none",
+              "reason": "Other left promo, kept for now",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "stackoverflow.com/questions/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "other-promos",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Stack Internal promo (left nav)",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Stack Internal promo (left nav)",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                }
+              ],
+              "text": "Also hide the Stack Internal left promo?"
+            },
+            {
+              "id": "sidebar-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar blog links",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar blog links",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "More compact"
+                }
+              ],
+              "text": "How should the rest of the sidebar read?"
+            }
+          ],
+          "summary": "Hide both Stack Overflow for Agents promos, keep question content, left nav, and blog sidebar unchanged.",
+          "template": {
+            "pageKind": "question",
+            "urlPattern": "stackoverflow.com/questions/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n93",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Agents promo (right sidebar)",
+            "members": [
+              "n94"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Right sidebar promo user asked to hide",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "stackoverflow.com/questions/*"
+          },
+          {
+            "container": "n28",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Agents link (left nav)",
+            "members": [
+              "n43"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Same Agents promo in left nav, hide everywhere",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "stackoverflow.com/questions/*"
+          },
+          {
+            "container": "n101",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sidebar blog links",
+            "members": [
+              "n103",
+              "n107",
+              "n109",
+              "n111",
+              "n113"
+            ],
+            "operation": "none",
+            "reason": "Rest of sidebar to keep as-is",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "stackoverflow.com/questions/*"
+          },
+          {
+            "container": "n28",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Primary left navigation",
+            "members": [
+              "n30",
+              "n33",
+              "n36",
+              "n39",
+              "n48",
+              "n54",
+              "n58",
+              "n62",
+              "n65"
+            ],
+            "operation": "none",
+            "reason": "Main navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "stackoverflow.com/questions/*"
+          },
+          {
+            "container": "n26",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Stack Internal promo (left nav)",
+            "members": [
+              "n72"
+            ],
+            "operation": "none",
+            "reason": "Other left promo, kept for now",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "stackoverflow.com/questions/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 5442,
+            "model": "spark",
+            "ms": 10702,
+            "outputTokens": 2605,
+            "purpose": "layout plan",
+            "reasoningTokens": 1941
+          },
+          {
+            "inputTokens": 5980,
+            "model": "spark",
+            "ms": 3898,
+            "outputTokens": 1156,
+            "purpose": "repair",
+            "reasoningTokens": 494
+          }
+        ],
+        "ms": 14615
+      },
+      "layout": {
+        "labels": [
+          "Agents promo (right sidebar)",
+          "Agents link (left nav)"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n94",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n101",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

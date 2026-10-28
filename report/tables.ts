@@ -21,6 +21,7 @@ const RUNS = [
   { id: "2026-10-28-effort-low", name: "Round 1" },
   { id: "2026-10-28-effort-low-r2", name: "Round 2" },
   { id: "2026-10-28-effort-low-r3", name: "Round 3" },
+  { id: "2026-10-29-effort-low-dom", name: "Round 4" },
 ];
 const MODES = [
   { id: "dom-only", name: "DOM" },
@@ -98,7 +99,8 @@ for (const [index, run] of RUNS.entries()) {
     const base = stats(cols.baseline);
     rows.push(`Do nothing & -- & ${pct(base.all)} & ${pct(base.scenarios)} & ${pct(base.hide)} & ${pct(base.keep)} & ${pct(base.marks)} \\\\ \\midrule`);
   }
-  for (const mode of MODES) {
+  // A run may cover one mode only (round 4: a DOM-only regression check).
+  for (const mode of MODES.filter((candidate) => cols[candidate.id].length > 0)) {
     const s = stats(cols[mode.id]);
     rows.push(`${mode.id === "dom-only" ? run.name : ""} & ${mode.name} & ${pct(s.all)} & ${pct(s.scenarios)} & ${pct(s.hide)} & ${pct(s.keep)} & ${pct(s.marks)} \\\\`);
     const proposals = cols[mode.id].flatMap((entry) => (entry.run?.proposal ? [entry.run.proposal] : []));
@@ -129,7 +131,8 @@ const siteRows = sites.map((site) => {
 writeFileSync(path.join(out, "sites.tex"), siteRows.join("\n") + "\n");
 
 // Appendix: every scenario with its round-3 marks.
-const final = new Map(load(RUNS.at(-1)!.id).map((result) => [result.scenario.id, result]));
+// Round 3: the last run with both modes.
+const final = new Map(load(RUNS[2].id).map((result) => [result.scenario.id, result]));
 const mark = (verdict: Verdict) => ({ pass: "\\cmark", fail: "\\xmark", unresolved: "?", "not-visible": "--" })[verdict];
 const marks = (result: Result | undefined, mode: string) => {
   const run = result?.runs.find((candidate) => candidate.mode === mode);

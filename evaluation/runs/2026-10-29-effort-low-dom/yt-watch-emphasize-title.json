@@ -1,0 +1,400 @@
+{
+  "scenario": {
+    "id": "yt-watch-emphasize-title",
+    "site": "youtube-watch",
+    "goal": "Make the video title and channel stand out; recommendations can be denser.",
+    "tags": [
+      "video",
+      "emphasize",
+      "density"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "tag": "h1",
+          "text": "Me at the zoo"
+        }
+      },
+      {
+        "op": "compact",
+        "anchor": {
+          "attr": {
+            "id": "contents"
+          },
+          "area": {
+            "minX": 900
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-watch",
+    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "finalUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T23:17:27.435Z",
+  "scanNodes": 154,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Me at the zoo"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n60",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Me at the zoo"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "contents"
+        },
+        "area": {
+          "minX": 900
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n85",
+        "tag": "div",
+        "kind": "group",
+        "text": "26:47 OceanGate Is Worse Than You Thought The Fool 3.2M"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n60",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n85",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Top header",
+              "members": [
+                "n4",
+                "n11",
+                "n16"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n59",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Video title and channel",
+              "members": [
+                "n60",
+                "n62"
+              ],
+              "operation": "emphasize",
+              "reason": "Goal wants title and channel to stand out",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n71",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Like share actions",
+              "members": [
+                "n75",
+                "n77",
+                "n79",
+                "n81",
+                "n83"
+              ],
+              "operation": "compact",
+              "reason": "Tighten to give title more prominence",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n85",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Recommendations",
+              "members": [
+                "n86",
+                "n97",
+                "n109",
+                "n121",
+                "n132",
+                "n144"
+              ],
+              "operation": "compact",
+              "reason": "Goal wants denser recommendations",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "rec-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Recommendations",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Recommendations",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Thumbnail grid"
+                }
+              ],
+              "text": "How dense should recommendations be?"
+            },
+            {
+              "id": "header-use",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top header",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep header"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top header",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Slim header"
+                }
+              ],
+              "text": "Do you use the top header here?"
+            },
+            {
+              "id": "actions-level",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Like share actions",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Show compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Like share actions",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide extras"
+                }
+              ],
+              "text": "How prominent should like and share be?"
+            }
+          ],
+          "summary": "Emphasize title and channel, compact actions and recommendations for denser reuse.",
+          "template": {
+            "pageKind": "watch video",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Top header",
+            "members": [
+              "n4",
+              "n11",
+              "n16"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n59",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Video title and channel",
+            "members": [
+              "n60",
+              "n62"
+            ],
+            "operation": "emphasize",
+            "reason": "Goal wants title and channel to stand out",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n71",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Like share actions",
+            "members": [
+              "n75",
+              "n77",
+              "n79",
+              "n81",
+              "n83"
+            ],
+            "operation": "compact",
+            "reason": "Tighten to give title more prominence",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n85",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Recommendations",
+            "members": [
+              "n86",
+              "n97",
+              "n109",
+              "n121",
+              "n132",
+              "n144"
+            ],
+            "operation": "compact",
+            "reason": "Goal wants denser recommendations",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 5816,
+            "model": "spark",
+            "ms": 10056,
+            "outputTokens": 2840,
+            "purpose": "layout plan",
+            "reasoningTokens": 2204
+          },
+          {
+            "inputTokens": 6433,
+            "model": "spark",
+            "ms": 2990,
+            "outputTokens": 915,
+            "purpose": "repair",
+            "reasoningTokens": 434
+          }
+        ],
+        "ms": 13060
+      },
+      "layout": {
+        "labels": [
+          "Video title and channel",
+          "Like share actions",
+          "Recommendations"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n60",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n85",
+          "ops": [
+            "compact"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,427 @@
+{
+  "scenario": {
+    "id": "devto-reading-feed",
+    "site": "devto-feed",
+    "goal": "I only read the feed: hide both sidebars.",
+    "tags": [
+      "community",
+      "hide",
+      "multiple",
+      "distraction-free"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "aria-label": "Primary sidebar"
+          }
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "id": "sidebar-additional"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "View posts by"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "devto-feed",
+    "url": "https://dev.to/",
+    "finalUrl": "https://dev.to/"
+  },
+  "at": "2026-10-28T23:20:00.132Z",
+  "scanNodes": 105,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "aria-label": "Primary sidebar"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n15",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": "Primary sidebar"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "id": "sidebar-additional"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n90",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": ".long-bb-body { max-height: calc(100vh - 200px); overflow: hidden; } .long-bb-b…"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "View posts by"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n48",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "View posts by"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n15",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n90",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n48",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Left sidebar",
+              "members": [
+                "n16",
+                "n21"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Account promo and site nav distract from reading feed",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n90",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Right sidebar",
+              "members": [
+                "n91"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Events and sponsored sidebar rarely needed for feed reading",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n49",
+              "identity": {
+                "attribute": "data-text",
+                "source": "attribute"
+              },
+              "label": "Feed filter tabs",
+              "members": [
+                "n50",
+                "n52",
+                "n54"
+              ],
+              "operation": "none",
+              "reason": "Primary way to switch Relevant, Latest, Top feed views",
+              "reorderable": false,
+              "role": "tabs",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n56",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Challenge promo card",
+              "members": [
+                "n57",
+                "n61"
+              ],
+              "operation": "none",
+              "reason": "Sponsored Hacktoberfest card above the feed",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "dev.to/"
+            },
+            {
+              "container": "n46",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Main feed",
+              "members": [
+                "n56"
+              ],
+              "operation": "emphasize",
+              "reason": "Core reading goal, give it full width and focus",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "dev.to/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "Do you want the feed denser to scan faster?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Challenge promo card",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Challenge promo card",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep it"
+                }
+              ],
+              "text": "Hide the sponsored challenge card above posts?"
+            }
+          ],
+          "summary": "Hide left and right sidebars, emphasize the central feed for reading.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "dev.to/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n15",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Left sidebar",
+            "members": [
+              "n16",
+              "n21"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Account promo and site nav distract from reading feed",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n90",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Right sidebar",
+            "members": [
+              "n91"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Events and sponsored sidebar rarely needed for feed reading",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n49",
+            "identity": {
+              "attribute": "data-text",
+              "source": "attribute"
+            },
+            "label": "Feed filter tabs",
+            "members": [
+              "n50",
+              "n52",
+              "n54"
+            ],
+            "operation": "none",
+            "reason": "Primary way to switch Relevant, Latest, Top feed views",
+            "reorderable": false,
+            "role": "tabs",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n56",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Challenge promo card",
+            "members": [
+              "n57",
+              "n61"
+            ],
+            "operation": "none",
+            "reason": "Sponsored Hacktoberfest card above the feed",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "dev.to/"
+          },
+          {
+            "container": "n46",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Main feed",
+            "members": [
+              "n56"
+            ],
+            "operation": "emphasize",
+            "reason": "Core reading goal, give it full width and focus",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "dev.to/"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 4463,
+            "model": "spark",
+            "ms": 10302,
+            "outputTokens": 2308,
+            "purpose": "layout plan",
+            "reasoningTokens": 1690
+          }
+        ],
+        "ms": 10307
+      },
+      "layout": {
+        "labels": [
+          "Left sidebar",
+          "Right sidebar",
+          "Main feed"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n15",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n90",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n48",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,377 @@
+{
+  "scenario": {
+    "id": "yt-watch-only-video",
+    "site": "youtube-watch",
+    "goal": "I just want to watch the video. Hide the recommended videos column.",
+    "tags": [
+      "video",
+      "hide",
+      "distraction-free"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "contents"
+          },
+          "area": {
+            "minX": 900
+          }
+        },
+        "note": "recommendations column"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "YouTube Video Player"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Me at the zoo"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-watch",
+    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "finalUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T23:16:41.499Z",
+  "scanNodes": 153,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "contents"
+        },
+        "area": {
+          "minX": 900
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n86",
+        "tag": "div",
+        "kind": "group",
+        "text": "34:11 New I Survived China’s Fat Loss Prison Browney 8.1M"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "YouTube Video Player"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n29",
+        "tag": "div",
+        "kind": "group",
+        "text": "YouTube Video Player"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Me at the zoo"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n61",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Me at the zoo"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n86",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n29",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n61",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Site header",
+              "members": [
+                "n4",
+                "n11",
+                "n16"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already minimal",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n25",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video player",
+              "members": [
+                "n26",
+                "n59"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is watching video",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Recommended videos",
+              "members": [
+                "n87",
+                "n99",
+                "n110",
+                "n121",
+                "n133",
+                "n144"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide recommendations",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Video player",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Full width"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Video player",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Same size"
+                }
+              ],
+              "text": "Expand video to full width when recommendations are hidden?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Site header",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact header"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Site header",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep header"
+                }
+              ],
+              "text": "Make header more compact for more video space?"
+            }
+          ],
+          "summary": "Hide recommended column and emphasize the video player for distraction-free watching.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Site header",
+            "members": [
+              "n4",
+              "n11",
+              "n16"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already minimal",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n25",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video player",
+            "members": [
+              "n26",
+              "n59"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is watching video",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n86",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Recommended videos",
+            "members": [
+              "n87",
+              "n99",
+              "n110",
+              "n121",
+              "n133",
+              "n144"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide recommendations",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 5758,
+            "model": "spark",
+            "ms": 11530,
+            "outputTokens": 2358,
+            "purpose": "layout plan",
+            "reasoningTokens": 1900
+          },
+          {
+            "inputTokens": 6215,
+            "model": "spark",
+            "ms": 4278,
+            "outputTokens": 1010,
+            "purpose": "repair",
+            "reasoningTokens": 548
+          }
+        ],
+        "ms": 15825
+      },
+      "layout": {
+        "labels": [
+          "Video player",
+          "Recommended videos"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n86",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n29",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n61",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,455 @@
+{
+  "scenario": {
+    "id": "twitch-dir-dense-grid",
+    "site": "twitch-directory",
+    "goal": "Fit more categories on screen.",
+    "tags": [
+      "streaming",
+      "density",
+      "grid"
+    ],
+    "expect": [
+      {
+        "op": "compact",
+        "anchor": {
+          "tag": "h2",
+          "text": "Just Chatting",
+          "area": {
+            "minX": 250
+          }
+        },
+        "note": "compact or grid on the category grid both satisfy the intent; see README"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Browse"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "twitch-directory",
+    "url": "https://www.twitch.tv/directory",
+    "finalUrl": "https://www.twitch.tv/directory"
+  },
+  "at": "2026-10-28T23:17:12.520Z",
+  "scanNodes": 206,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "Just Chatting",
+        "area": {
+          "minX": 250
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n138",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "Just Chatting"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Browse"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n91",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Browse"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n138",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n91",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n122",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Category cards",
+              "members": [
+                "n123",
+                "n131",
+                "n141",
+                "n154",
+                "n164",
+                "n176",
+                "n181",
+                "n186",
+                "n191",
+                "n196"
+              ],
+              "operation": "grid",
+              "reason": "Main goal content; grid fits more per screen",
+              "reorderable": true,
+              "role": "content-cards",
+              "urlPattern": "www.twitch.tv/directory"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Live Channels sidebar",
+              "members": [
+                "n31",
+                "n39",
+                "n45",
+                "n51",
+                "n57",
+                "n63",
+                "n69",
+                "n75",
+                "n81"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Frees width for categories, rarely needed here",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.twitch.tv/directory/*"
+            },
+            {
+              "container": "n92",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Top category shortcuts",
+              "members": [
+                "n93",
+                "n96",
+                "n99",
+                "n102",
+                "n105"
+              ],
+              "operation": "compact",
+              "reason": "Tall promo strip wastes vertical space",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.twitch.tv/directory/*"
+            },
+            {
+              "container": "n115",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Filter and sort toolbar",
+              "members": [
+                "n116",
+                "n120"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed controls, tighten to show cards sooner",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.twitch.tv/directory"
+            },
+            {
+              "container": "n202",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Signup footer banner",
+              "members": [
+                "n203"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo footer low-value, steals space",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.twitch.tv/directory/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "sidebar",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide sidebar"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep collapsed"
+                }
+              ],
+              "text": "Keep the Live Channels sidebar?"
+            },
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "More, smaller"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Larger art"
+                }
+              ],
+              "text": "How dense should category cards be?"
+            },
+            {
+              "id": "extras",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Top category shortcuts",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide counts, tags"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Keep details"
+                }
+              ],
+              "text": "Show viewer counts and tags on cards?"
+            }
+          ],
+          "summary": "Make category grid denser and reclaim space by hiding sidebar and signup footer, compacting shortcuts and toolbar.",
+          "template": {
+            "pageKind": "directory",
+            "urlPattern": "www.twitch.tv/directory/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n122",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Category cards",
+            "members": [
+              "n123",
+              "n131",
+              "n141",
+              "n154",
+              "n164",
+              "n176",
+              "n181",
+              "n186",
+              "n191",
+              "n196"
+            ],
+            "operation": "grid",
+            "reason": "Main goal content; grid fits more per screen",
+            "reorderable": true,
+            "role": "content-cards",
+            "urlPattern": "www.twitch.tv/directory"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Live Channels sidebar",
+            "members": [
+              "n31",
+              "n39",
+              "n45",
+              "n51",
+              "n57",
+              "n63",
+              "n69",
+              "n75",
+              "n81"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Frees width for categories, rarely needed here",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.twitch.tv/directory/*"
+          },
+          {
+            "container": "n92",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Top category shortcuts",
+            "members": [
+              "n93",
+              "n96",
+              "n99",
+              "n102",
+              "n105"
+            ],
+            "operation": "compact",
+            "reason": "Tall promo strip wastes vertical space",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.twitch.tv/directory/*"
+          },
+          {
+            "container": "n115",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Filter and sort toolbar",
+            "members": [
+              "n116",
+              "n120"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed controls, tighten to show cards sooner",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.twitch.tv/directory"
+          },
+          {
+            "container": "n202",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Signup footer banner",
+            "members": [
+              "n203"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo footer low-value, steals space",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.twitch.tv/directory/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 7681,
+            "model": "spark",
+            "ms": 8101,
+            "outputTokens": 2145,
+            "purpose": "layout plan",
+            "reasoningTokens": 1328
+          }
+        ],
+        "ms": 8110
+      },
+      "layout": {
+        "labels": [
+          "Category cards",
+          "Live Channels sidebar",
+          "Top category shortcuts",
+          "Filter and sort toolbar",
+          "Signup footer banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n138",
+          "ops": [
+            "grid"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n91",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    }
+  ]
+}

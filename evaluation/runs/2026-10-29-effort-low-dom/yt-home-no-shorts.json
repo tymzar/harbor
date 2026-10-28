@@ -1,0 +1,322 @@
+{
+  "scenario": {
+    "id": "yt-home-no-shorts",
+    "site": "youtube-home",
+    "goal": "I never watch Shorts. Remove Shorts from the left menu.",
+    "tags": [
+      "video",
+      "hide",
+      "navigation",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Shorts"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Home"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Subscriptions"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-home",
+    "url": "https://www.youtube.com/",
+    "finalUrl": "https://www.youtube.com/",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T23:16:38.071Z",
+  "scanNodes": 40,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Shorts"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n27",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Shorts"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Home"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n25",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Home"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Subscriptions"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n29",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Subscriptions"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n27",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n25",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n29",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Shorts in left menu",
+              "members": [
+                "n27"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never watches Shorts",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Left menu navigation",
+              "members": [
+                "n25",
+                "n29",
+                "n31"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation to keep as is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left menu navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep current size"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left menu navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make more compact"
+                }
+              ],
+              "text": "How should the remaining left menu look?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Shorts in left menu",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Only left menu"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Shorts in left menu",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide everywhere"
+                }
+              ],
+              "text": "Also hide Shorts content elsewhere on YouTube?"
+            }
+          ],
+          "summary": "Removes Shorts from the left menu, keeps Home, Subscriptions and You.",
+          "template": {
+            "pageKind": "YouTube home",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Shorts in left menu",
+            "members": [
+              "n27"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never watches Shorts",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Left menu navigation",
+            "members": [
+              "n25",
+              "n29",
+              "n31"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation to keep as is",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 2239,
+            "model": "spark",
+            "ms": 12064,
+            "outputTokens": 2446,
+            "purpose": "layout plan",
+            "reasoningTokens": 2061
+          }
+        ],
+        "ms": 12067
+      },
+      "layout": {
+        "labels": [
+          "Shorts in left menu"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n27",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n25",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n29",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

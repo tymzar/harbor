@@ -1,0 +1,355 @@
+{
+  "scenario": {
+    "id": "bsky-emphasize-tabs",
+    "site": "bluesky-profile",
+    "goal": "I switch between Posts, Media and Videos a lot; make those tabs stand out.",
+    "tags": [
+      "social",
+      "emphasize",
+      "goal-inference"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "attr": {
+            "data-testid": "profilePager"
+          },
+          "textStart": "Posts Media Videos"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "bluesky-profile",
+    "url": "https://bsky.app/profile/bsky.app",
+    "finalUrl": "https://bsky.app/profile/bsky.app"
+  },
+  "at": "2026-10-28T23:20:22.793Z",
+  "scanNodes": 138,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "profilePager"
+        },
+        "textStart": "Posts Media Videos"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n46",
+        "tag": "div",
+        "kind": "group",
+        "text": "Posts Media Videos Feeds Starter Packs"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n46",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n46",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Profile tabs",
+              "members": [
+                "n48",
+                "n49",
+                "n50",
+                "n51",
+                "n52"
+              ],
+              "operation": "emphasize",
+              "reason": "User switches Posts, Media, Videos often",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Suggested profiles",
+              "members": [
+                "n25",
+                "n32",
+                "n39"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value promo unrelated to tabs goal",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "bsky.app/profile/{handle}"
+            },
+            {
+              "container": "n113",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Trending topics",
+              "members": [
+                "n114",
+                "n116",
+                "n118",
+                "n120",
+                "n122",
+                "n124",
+                "n126",
+                "n128",
+                "n130",
+                "n132"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely needed discovery sidebar",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            },
+            {
+              "container": "n54",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Posts feed",
+              "members": [
+                "n55",
+                "n80"
+              ],
+              "operation": "none",
+              "reason": "Main content already works",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "bsky.app/profile/{handle}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "suggested-visibility",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Suggested profiles",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Suggested profiles",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Show compact"
+                }
+              ],
+              "text": "Keep Suggested profiles hidden?"
+            },
+            {
+              "id": "trending-visibility",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Trending topics",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Trending topics",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Show compact"
+                }
+              ],
+              "text": "Keep Trending sidebar hidden?"
+            },
+            {
+              "id": "feed-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Posts feed",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Posts feed",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                }
+              ],
+              "text": "Prefer posts feed roomy or denser?"
+            }
+          ],
+          "summary": "Emphasized Profile tabs for quick Posts/Media/Videos switching, hid Suggested and Trending to reduce distraction.",
+          "template": {
+            "pageKind": "profile",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n46",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Profile tabs",
+            "members": [
+              "n48",
+              "n49",
+              "n50",
+              "n51",
+              "n52"
+            ],
+            "operation": "emphasize",
+            "reason": "User switches Posts, Media, Videos often",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Suggested profiles",
+            "members": [
+              "n25",
+              "n32",
+              "n39"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value promo unrelated to tabs goal",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "bsky.app/profile/{handle}"
+          },
+          {
+            "container": "n113",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Trending topics",
+            "members": [
+              "n114",
+              "n116",
+              "n118",
+              "n120",
+              "n122",
+              "n124",
+              "n126",
+              "n128",
+              "n130",
+              "n132"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely needed discovery sidebar",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          },
+          {
+            "container": "n54",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Posts feed",
+            "members": [
+              "n55",
+              "n80"
+            ],
+            "operation": "none",
+            "reason": "Main content already works",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "bsky.app/profile/{handle}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 6374,
+            "model": "spark",
+            "ms": 13360,
+            "outputTokens": 2809,
+            "purpose": "layout plan",
+            "reasoningTokens": 2131
+          }
+        ],
+        "ms": 13367
+      },
+      "layout": {
+        "labels": [
+          "Profile tabs",
+          "Suggested profiles",
+          "Trending topics"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n46",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

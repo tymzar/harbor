@@ -1,0 +1,104 @@
+{
+  "scenario": {
+    "id": "pick-so-agents-promo",
+    "site": "stackoverflow-question",
+    "pick": {
+      "tag": "aside",
+      "attr": {
+        "aria-label": "Stack Overflow for Agents"
+      }
+    },
+    "tags": [
+      "picker",
+      "hide",
+      "promo"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "aria-label": "Stack Overflow for Agents"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "ul",
+          "text": "The Overflow Blog"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "stackoverflow-question",
+    "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+    "finalUrl": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array"
+  },
+  "at": "2026-10-28T23:18:08.115Z",
+  "scanNodes": 9,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "aria-label": "Stack Overflow for Agents"
+        }
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "aria-label": "Stack Overflow for Agents"
+        }
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "ul",
+        "text": "The Overflow Blog"
+      },
+      "matches": 0
+    }
+  ],
+  "before": [
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    }
+  ],
+  "baseline": [
+    "unresolved",
+    "unresolved"
+  ],
+  "runs": [
+    {
+      "mode": "picker",
+      "error": "The picked element is not on the page.",
+      "verdicts": [
+        "unresolved",
+        "unresolved"
+      ]
+    }
+  ]
+}

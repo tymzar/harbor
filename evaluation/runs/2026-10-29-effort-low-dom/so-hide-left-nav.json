@@ -1,0 +1,93 @@
+{
+  "scenario": {
+    "id": "so-hide-left-nav",
+    "site": "stackoverflow-question",
+    "goal": "Hide the left navigation; I arrive from search and never use it.",
+    "tags": [
+      "q-and-a",
+      "hide",
+      "navigation"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Primary"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "id": "search"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "stackoverflow-question",
+    "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+    "finalUrl": "https://stackoverflow.com/questions/11227809/why-is-conditional-processing-of-a-sorted-array-faster-than-of-an-unsorted-array"
+  },
+  "at": "2026-10-28T23:17:42.334Z",
+  "scanNodes": 122,
+  "rescanned": true,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Primary"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n25",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Primary"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "search"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n11",
+        "tag": "form",
+        "kind": "landmark",
+        "text": ""
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n25",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n11",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": []
+}

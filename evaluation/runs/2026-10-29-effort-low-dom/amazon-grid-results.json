@@ -1,0 +1,323 @@
+{
+  "scenario": {
+    "id": "amazon-grid-results",
+    "site": "amazon-search",
+    "goal": "Show the results as a compact grid so I can compare more at once.",
+    "tags": [
+      "commerce",
+      "grid",
+      "density"
+    ],
+    "expect": [
+      {
+        "op": "grid",
+        "anchor": {
+          "tag": "h2",
+          "textStart": "Anker USB C to USB C Cable"
+        },
+        "note": "compact on the results list is a partial pass; see README"
+      }
+    ]
+  },
+  "site": {
+    "id": "amazon-search",
+    "url": "https://www.amazon.com/s?k=usb+c+cable",
+    "finalUrl": "https://www.amazon.com/s?k=usb+c+cable"
+  },
+  "at": "2026-10-28T23:19:12.941Z",
+  "scanNodes": 179,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "h2",
+        "textStart": "Anker USB C to USB C Cable"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n78",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "Anker USB C to USB C Cable, 60W Fast Charging Cable (5-Pack, 6 ft, Black)"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n78",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top navigation links",
+              "members": [
+                "n39",
+                "n41",
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already minimal",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.amazon.com/*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "data-asin",
+                "source": "attribute"
+              },
+              "label": "Search results",
+              "members": [
+                "n69",
+                "n89"
+              ],
+              "operation": "grid",
+              "reason": "Compact grid to compare more cables at once per goal",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.amazon.com/s*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Filter sidebar",
+              "members": [
+                "n108",
+                "n122",
+                "n153"
+              ],
+              "operation": "compact",
+              "reason": "Skim filters while keeping focus on grid",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.amazon.com/s*"
+            },
+            {
+              "container": "n63",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sponsored promo banner",
+              "members": [
+                "n64",
+                "n66"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value promo distracts from comparison",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.amazon.com/s*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "filters",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact filters"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide sidebar"
+                }
+              ],
+              "text": "How much filtering help do you want while comparing?"
+            },
+            {
+              "id": "promo",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sponsored promo banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Keep hidden"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sponsored promo banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Show banner"
+                }
+              ],
+              "text": "Keep the iPhone accessories banner hidden?"
+            }
+          ],
+          "summary": "Search results become a compact grid for comparison, filters tightened, promo banner hidden.",
+          "template": {
+            "pageKind": "search",
+            "urlPattern": "www.amazon.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n36",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top navigation links",
+            "members": [
+              "n39",
+              "n41",
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already minimal",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.amazon.com/*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "data-asin",
+              "source": "attribute"
+            },
+            "label": "Search results",
+            "members": [
+              "n69",
+              "n89"
+            ],
+            "operation": "grid",
+            "reason": "Compact grid to compare more cables at once per goal",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.amazon.com/s*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Filter sidebar",
+            "members": [
+              "n108",
+              "n122",
+              "n153"
+            ],
+            "operation": "compact",
+            "reason": "Skim filters while keeping focus on grid",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.amazon.com/s*"
+          },
+          {
+            "container": "n63",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sponsored promo banner",
+            "members": [
+              "n64",
+              "n66"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value promo distracts from comparison",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.amazon.com/s*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 7680,
+            "model": "spark",
+            "ms": 12312,
+            "outputTokens": 3175,
+            "purpose": "layout plan",
+            "reasoningTokens": 2611
+          },
+          {
+            "inputTokens": 8267,
+            "model": "spark",
+            "ms": 5241,
+            "outputTokens": 1517,
+            "purpose": "repair",
+            "reasoningTokens": 1084
+          }
+        ],
+        "ms": 17571
+      },
+      "layout": {
+        "labels": [
+          "Search results",
+          "Filter sidebar",
+          "Sponsored promo banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n78",
+          "ops": [
+            "grid"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

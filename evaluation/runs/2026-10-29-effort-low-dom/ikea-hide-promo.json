@@ -1,0 +1,307 @@
+{
+  "scenario": {
+    "id": "ikea-hide-promo",
+    "site": "ikea-category",
+    "goal": "Hide the 15% off / IKEA Family promotion block.",
+    "tags": [
+      "commerce",
+      "hide",
+      "promo"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "section",
+          "textStart": "15% off sofas"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Sofas"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "ikea-category",
+    "url": "https://www.ikea.com/ch/en/cat/sofas-fu003/",
+    "finalUrl": "https://www.ikea.com/ch/en/cat/sofas-fu003/",
+    "consent": "Reject (reject)"
+  },
+  "at": "2026-10-28T23:21:12.308Z",
+  "scanNodes": 88,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "section",
+        "textStart": "15% off sofas"
+      },
+      "matches": 2,
+      "node": {
+        "id": "n80",
+        "tag": "section",
+        "kind": "landmark",
+        "text": "15% off sofas and footstools* IKEA Family and IKEA Business Network offer from …"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Sofas"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n67",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Sofas"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n80",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n67",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n80",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "15% off sofas promo banner",
+              "members": [
+                "n81"
+              ],
+              "operation": "hide-secondary",
+              "reason": "15% off IKEA Family block user asked to hide",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}"
+            },
+            {
+              "container": "n46",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Sofa category pills",
+              "members": [
+                "n47",
+                "n49",
+                "n52",
+                "n55",
+                "n58",
+                "n61",
+                "n64"
+              ],
+              "operation": "compact",
+              "reason": "Dense filter list to skim quickly",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}"
+            },
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Main header navigation",
+              "members": [
+                "n18",
+                "n19",
+                "n20",
+                "n21",
+                "n22"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.ikea.com/{country}/{lang}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa category pills",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa category pills",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How do you use the sofa type filters?"
+            },
+            {
+              "id": "q-header",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main header navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact header"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main header navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Do you want a tighter header on sofa pages?"
+            }
+          ],
+          "summary": "Hid the 15% off IKEA Family promo and tightened category filters for faster sofa browsing.",
+          "template": {
+            "pageKind": "category",
+            "urlPattern": "www.ikea.com/{country}/{lang}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n80",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "15% off sofas promo banner",
+            "members": [
+              "n81"
+            ],
+            "operation": "hide-secondary",
+            "reason": "15% off IKEA Family block user asked to hide",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}"
+          },
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Main header navigation",
+            "members": [
+              "n18",
+              "n19",
+              "n20",
+              "n21",
+              "n22"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.ikea.com/{country}/{lang}/*"
+          }
+        ],
+        "errors": [
+          "groups[1] \"Sofa category pills\": text identity is not unique across members"
+        ],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4326,
+            "model": "spark",
+            "ms": 10257,
+            "outputTokens": 2732,
+            "purpose": "layout plan",
+            "reasoningTokens": 2209
+          },
+          {
+            "inputTokens": 4902,
+            "model": "spark",
+            "ms": 5867,
+            "outputTokens": 1660,
+            "purpose": "repair",
+            "reasoningTokens": 1133
+          }
+        ],
+        "ms": 16135
+      },
+      "layout": {
+        "labels": [
+          "15% off sofas promo banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n80",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n67",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

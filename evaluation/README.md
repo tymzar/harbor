@@ -90,7 +90,7 @@ Known judgement calls: for "fit more on screen" (`twitch-dir-dense-grid`) both `
 
 ## Results
 
-Three runs on 28 Oct 2026, Spark at reasoning effort low. Each `runs/<run>/report.md` has the per-scenario marks. Rounds 2 and 3 changed the extension between runs, so they are before/after comparisons, not repeats.
+Runs on 28–29 Oct 2026, Spark at reasoning effort low. Each `runs/<run>/report.md` has the per-scenario marks. Rounds 2 and 3 changed the extension between runs, so they are before/after comparisons, not repeats.
 
 | Run | What changed before it | Checks passed (structure / + screenshot) | Scenarios fully passed | Nothing extra hidden | Hidden as asked |
 |---|---|---|---|---|---|
@@ -98,6 +98,7 @@ Three runs on 28 Oct 2026, Spark at reasoning effort low. Each `runs/<run>/repor
 | `2026-10-28-effort-low` | – | 84% / 78% | 64% / 60% | 85% / 80% | 83% / 78% |
 | `…-r2` | a hide takes only the named items unless they are all of the region | 87% / 89% | 71% / 76% | 100% / 100% | 73% / 78% |
 | `…-r3` | the region goes when the named items are most of it; checks count emptied wrappers as hidden | **93% / 93%** | **84% / 84%** | **100% / 100%** | **87% / 87%** |
+| `2026-10-29-effort-low-dom` | redraw re-apply and learning added; DOM only, regression check | 93% / – | 83% / – | 100% / – | 86% / – |
 
 Each run: about 136–141 Spark calls (≈830k input, ≈285k output tokens of which ≈210k reasoning), 176–180 SAM calls, 9–13 minutes with three workers. Half the plans needed one repair round. The screenshot (SAM) made no consistent difference across the three runs.
 
