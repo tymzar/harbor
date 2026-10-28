@@ -86,7 +86,7 @@ function SavedPlanRow({ saved, onForget }: { saved: SavedPlan; onForget: () => v
           {saved.plan.groups.map((group) => (
             <li key={`${group.container}-${group.label}`} className="flex items-center gap-2">
               <Chip size="sm" variant="soft" color={group.operation === "none" ? "default" : "accent"}>
-                {group.operation}
+                {group.operation === "none" ? "no change" : group.operation}
               </Chip>
               <span className="truncate">
                 {group.label} · {group.role} · {group.members.length} {group.members.length === 1 ? "item" : "items"}
