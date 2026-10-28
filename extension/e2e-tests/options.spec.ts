@@ -13,6 +13,7 @@ const saved: SavedPlan = {
     groups: [
       {
         label: "Repository tabs",
+        urlPattern: "github.com/{owner}/{repo}/*",
         role: "tabs",
         container: "n1",
         members: ["n2", "n3"],
@@ -23,6 +24,7 @@ const saved: SavedPlan = {
       },
       {
         label: "Languages breakdown",
+        urlPattern: "github.com/{owner}/{repo}",
         role: "list",
         container: "n4",
         members: ["n5"],

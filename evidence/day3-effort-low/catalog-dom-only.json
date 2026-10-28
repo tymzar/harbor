@@ -1,0 +1,198 @@
+{
+  "fixture": "catalog.html",
+  "mode": "dom-only",
+  "at": "2026-10-28T16:23:57.583Z",
+  "scanNodes": 49,
+  "proposal": {
+    "accepted": [
+      {
+        "container": "n1",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Main categories",
+        "members": [
+          "n2",
+          "n3",
+          "n4",
+          "n5",
+          "n6",
+          "n7"
+        ],
+        "operation": "none",
+        "reason": "Site nav used on every page, keep as is",
+        "reorderable": true,
+        "role": "navigation",
+        "urlPattern": "127.0.0.1:4317/*"
+      },
+      {
+        "container": "n12",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Filter sections",
+        "members": [
+          "n13",
+          "n17",
+          "n21"
+        ],
+        "operation": "compact",
+        "reason": "Tighten filter blocks for frequent refining",
+        "reorderable": false,
+        "role": "sidebar",
+        "urlPattern": "127.0.0.1:4317/catalog.html"
+      },
+      {
+        "container": "n28",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Backpack cards",
+        "members": [
+          "n29",
+          "n31",
+          "n33",
+          "n35",
+          "n37",
+          "n39",
+          "n41",
+          "n43"
+        ],
+        "operation": "grid",
+        "reason": "Lay out repeated products in even grid",
+        "reorderable": false,
+        "role": "content-cards",
+        "urlPattern": "127.0.0.1:4317/catalog.html"
+      },
+      {
+        "container": "n45",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Pagination",
+        "members": [
+          "n46",
+          "n47",
+          "n48",
+          "n49"
+        ],
+        "operation": "none",
+        "reason": "Page navigation, leave as is",
+        "reorderable": false,
+        "role": "navigation",
+        "urlPattern": "127.0.0.1:4317/catalog.html"
+      }
+    ],
+    "calls": [
+      {
+        "inputTokens": 1997,
+        "model": "spark",
+        "ms": 6030,
+        "outputTokens": 1435,
+        "purpose": "layout plan",
+        "reasoningTokens": 975
+      }
+    ],
+    "errors": [],
+    "finishedAt": 1793204637208,
+    "plan": {
+      "groups": [
+        {
+          "container": "n1",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Main categories",
+          "members": [
+            "n2",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7"
+          ],
+          "operation": "none",
+          "reason": "Site nav used on every page, keep as is",
+          "reorderable": true,
+          "role": "navigation",
+          "urlPattern": "127.0.0.1:4317/*"
+        },
+        {
+          "container": "n12",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Filter sections",
+          "members": [
+            "n13",
+            "n17",
+            "n21"
+          ],
+          "operation": "compact",
+          "reason": "Tighten filter blocks for frequent refining",
+          "reorderable": false,
+          "role": "sidebar",
+          "urlPattern": "127.0.0.1:4317/catalog.html"
+        },
+        {
+          "container": "n28",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Backpack cards",
+          "members": [
+            "n29",
+            "n31",
+            "n33",
+            "n35",
+            "n37",
+            "n39",
+            "n41",
+            "n43"
+          ],
+          "operation": "grid",
+          "reason": "Lay out repeated products in even grid",
+          "reorderable": false,
+          "role": "content-cards",
+          "urlPattern": "127.0.0.1:4317/catalog.html"
+        },
+        {
+          "container": "n45",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Pagination",
+          "members": [
+            "n46",
+            "n47",
+            "n48",
+            "n49"
+          ],
+          "operation": "none",
+          "reason": "Page navigation, leave as is",
+          "reorderable": false,
+          "role": "navigation",
+          "urlPattern": "127.0.0.1:4317/catalog.html"
+        }
+      ],
+      "summary": "Catalog with header nav, filter sidebar, product grid, and pagination.",
+      "template": {
+        "pageKind": "catalog",
+        "urlPattern": "127.0.0.1:4317/*"
+      }
+    },
+    "repaired": false,
+    "scannedAt": 1793204631070,
+    "startedAt": 1793204631175,
+    "status": "done",
+    "usedScreenshot": false
+  }
+}

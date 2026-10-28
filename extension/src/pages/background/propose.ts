@@ -7,6 +7,7 @@ import type { CallLog, PageScan, Proposal, TabSession } from "../../shared/types
 import { sessionKey } from "../../shared/types";
 import type { ChatMessage } from "./meta";
 import { proposeJson, segment } from "./meta";
+import { clearLayout } from "./layout";
 import { rememberPlan } from "./saved-plans";
 
 // SAM matches what things look like, not UI names: "card" and "menu" return nothing on
@@ -82,12 +83,15 @@ export async function propose(tabId: number, includeScreenshot: boolean) {
   const scan = session?.status === "ready" ? session.scan : undefined;
   if (!session || !scan) return;
 
+  // A new plan replaces the one the current layout came from.
+  if (session.layout) await clearLayout(tabId);
   const usedScreenshot = includeScreenshot && Boolean(session.screenshot);
   const calls: Array<CallLog> = [];
   const startedAt = Date.now();
   await chrome.storage.session.set({
     [key]: {
       ...session,
+      layout: undefined,
       proposal: {
         status: "running",
         step: usedScreenshot ? "segmenting" : "planning",

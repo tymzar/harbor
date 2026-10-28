@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Alert, Button, Card, Chip, Spinner, Switch } from "@heroui/react";
-import { PaperPlane, TrashBin } from "@gravity-ui/icons";
+import { useEffect, useState } from "react";
+import { Alert, Button, Card, Checkbox, Chip, Spinner, Switch } from "@heroui/react";
+import { ArrowUturnCcwLeft, Check, Eye, PaperPlane, TrashBin } from "@gravity-ui/icons";
 
-import type { PlanGroup } from "../../shared/plan";
+import type { LayoutPlan, PlanGroup } from "../../shared/plan";
+import { groupPattern } from "../../shared/plan";
 import type { CallLog, PanelRequest, ProposalStep, TabSession } from "../../shared/types";
 
 const STEP_LABEL: Record<ProposalStep, string> = {
@@ -19,13 +20,33 @@ function callSummary(call: CallLog): string {
   return parts.join(" · ");
 }
 
-function GroupRow({ group }: { group: PlanGroup }) {
+type GroupRowProperties = {
+  group: PlanGroup;
+  plan: LayoutPlan;
+  selected: boolean;
+  onSelect: (selected: boolean) => void;
+  locked: boolean;
+};
+
+function GroupRow({ group, plan, selected, onSelect, locked }: GroupRowProperties) {
+  const changes = group.operation !== "none";
+  const pattern = groupPattern(plan, group);
+
   return (
     <li data-testid="plan-group" className="flex flex-col gap-1 rounded-xl bg-default/60 px-3 py-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="truncate text-sm font-medium">{group.label}</span>
-        <Chip size="sm" variant="soft" color={group.operation === "none" ? "default" : "accent"}>
-          {group.operation}
+        {changes ? (
+          <Checkbox isSelected={selected} onChange={onSelect} isDisabled={locked} aria-label={`Include ${group.label}`}>
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+            <Checkbox.Content className="truncate text-sm font-medium">{group.label}</Checkbox.Content>
+          </Checkbox>
+        ) : (
+          <span className="truncate text-sm font-medium">{group.label}</span>
+        )}
+        <Chip size="sm" variant="soft" color={changes ? "accent" : "default"}>
+          {changes ? group.operation : "no change"}
         </Chip>
       </div>
       <span className="text-xs text-muted">
@@ -33,6 +54,9 @@ function GroupRow({ group }: { group: PlanGroup }) {
         {group.reorderable && ` · reorderable by ${group.identity.attribute || group.identity.source}`}
       </span>
       <span className="text-xs text-muted">{group.reason}</span>
+      {pattern !== plan.template.urlPattern && (
+        <span className="text-xs text-muted">Only on {pattern}</span>
+      )}
     </li>
   );
 }
@@ -44,6 +68,27 @@ export function PlanCard({ session }: { session: TabSession }) {
   // A rescan replaces the elements a plan refers to.
   const current = proposal && proposal.scannedAt === scan.scannedAt ? proposal : undefined;
   const running = current?.status === "running";
+  const layout = session.layout;
+
+  // Every proposed change starts included; an applied layout shows what is on the page.
+  const changeable = (current?.accepted ?? []).filter((group) => group.operation !== "none");
+  const [selected, setSelected] = useState<Array<string>>([]);
+  useEffect(() => {
+    setSelected(layout ? layout.labels : changeable.map((group) => group.label));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current?.finishedAt, layout?.state]);
+
+  const sendLayout = (action: "preview" | "apply" | "restore", labels = selected) => {
+    const request: PanelRequest = { type: "layout", tabId: session.tabId, action, labels };
+    void chrome.runtime.sendMessage(request);
+  };
+
+  const toggle = (label: string, include: boolean) => {
+    const next = include ? [...selected, label] : selected.filter((item) => item !== label);
+    setSelected(next);
+    // While previewing, the page follows the checkboxes.
+    if (layout?.state === "preview") sendLayout(next.length > 0 ? "preview" : "restore", next);
+  };
 
   const forget = () => {
     const request: PanelRequest = { type: "forget", tabId: session.tabId };
@@ -115,9 +160,65 @@ export function PlanCard({ session }: { session: TabSession }) {
 
             <ul className="flex flex-col gap-2" aria-label="Proposed groups">
               {(current.accepted ?? []).map((group) => (
-                <GroupRow key={`${group.container}-${group.label}`} group={group} />
+                <GroupRow
+                  key={`${group.container}-${group.label}`}
+                  group={group}
+                  plan={current.plan!}
+                  selected={selected.includes(group.label)}
+                  onSelect={(include) => toggle(group.label, include)}
+                  locked={layout?.state === "applied"}
+                />
               ))}
             </ul>
+
+            {changeable.length > 0 && (
+              <div className="flex flex-col gap-2 rounded-xl border border-border p-3" data-testid="layout-controls">
+                {!layout && (
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    isDisabled={selected.length === 0}
+                    onPress={() => sendLayout("preview")}
+                    data-testid="preview-layout"
+                  >
+                    <Eye />
+                    Preview on the page
+                  </Button>
+                )}
+                {layout?.state === "preview" && (
+                  <>
+                    <p className="text-xs text-muted">
+                      Changed regions are outlined. Use the page as usual; press Esc on it to cancel.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="primary" onPress={() => sendLayout("apply")} data-testid="keep-layout">
+                        <Check />
+                        Keep
+                      </Button>
+                      <Button size="sm" variant="ghost" onPress={() => sendLayout("restore")} data-testid="cancel-layout">
+                        Cancel
+                      </Button>
+                    </div>
+                  </>
+                )}
+                {layout?.state === "applied" && (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm" data-testid="layout-applied">
+                      {layout.labels.length} {layout.labels.length === 1 ? "change" : "changes"} on the page
+                    </span>
+                    <Button size="sm" variant="tertiary" onPress={() => sendLayout("restore")} data-testid="restore-layout">
+                      <ArrowUturnCcwLeft />
+                      Restore original
+                    </Button>
+                  </div>
+                )}
+                {layout && layout.missing.length > 0 && (
+                  <p className="text-xs text-warning" data-testid="layout-missing">
+                    Not found on the page any more: {layout.missing.join(", ")}. Rescan to read it again.
+                  </p>
+                )}
+              </div>
+            )}
 
             {(current.errors?.length ?? 0) > 0 && (
               <Alert status="warning" data-testid="plan-rejected">

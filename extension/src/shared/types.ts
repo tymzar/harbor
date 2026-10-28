@@ -75,6 +75,14 @@ export type Proposal = {
   finishedAt?: number;
 };
 
+// What is currently changed on the page. Groups are named by label: indices change on rescan.
+export type LayoutState = {
+  state: "preview" | "applied";
+  labels: Array<string>;
+  // Groups whose elements had gone from the page when applying.
+  missing: Array<string>;
+};
+
 // needs-access: Chrome withdrew the page grant (usually after a full page load).
 export type SessionStatus = "scanning" | "ready" | "restricted" | "needs-access" | "error";
 
@@ -86,6 +94,7 @@ export type TabSession = {
   // JPEG data URL of the visible tab, captured right after the scan.
   screenshot?: string;
   error?: string;
+  layout?: LayoutState;
   // The site this tab was last read on; Chrome hides the URL once access is gone.
   lastOrigin?: string;
   proposal?: Proposal;
@@ -95,6 +104,9 @@ export type TabSession = {
 export type PanelRequest =
   | { type: "rescan"; tabId: number }
   | { type: "propose"; tabId: number; includeScreenshot: boolean }
-  | { type: "forget"; tabId: number };
+  | { type: "forget"; tabId: number }
+  | { type: "layout"; tabId: number; action: "preview" | "apply" | "restore"; labels?: Array<string> }
+  // From the page: Escape during a preview already restored it.
+  | { type: "page-restored" };
 
 export const sessionKey = (tabId: number) => `session:${tabId}`;

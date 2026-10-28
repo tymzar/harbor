@@ -1,5 +1,5 @@
 import type { LayoutPlan } from "./plan";
-import { urlPatternMatches } from "./plan";
+import { groupPattern, urlPatternMatches } from "./plan";
 import type { NodeKind, PageScan, Rect, ScanNode } from "./types";
 
 // Saved plans outlive the scan they came from, but node IDs don't. Each referenced node is
@@ -15,10 +15,16 @@ export type NodeSignature = {
   rect: Rect;
 };
 
+// A content list (files, issues, products) differs per page; it is found again as "the
+// container's children of this shape" rather than item by item.
+export type RowShape = { tag: string; kind: NodeKind };
+
 export type SavedPlan = {
   url: string;
   plan: LayoutPlan;
   signatures: Record<string, NodeSignature>;
+  // Per group, aligned with plan.groups; undefined where items are matched one by one.
+  rows?: Array<RowShape | undefined>;
   usedScreenshot: boolean;
   savedAt: number;
 };
@@ -40,15 +46,29 @@ export function signatureOf(node: ScanNode): NodeSignature {
 
 export function savePlan(plan: LayoutPlan, scan: PageScan, usedScreenshot: boolean, now: number): SavedPlan {
   const byId = new Map(scan.nodes.map((node) => [node.id, node]));
+  const rows = plan.groups.map((group) => rowShape(group, byId));
   const signatures: Record<string, NodeSignature> = {};
-  for (const id of plan.groups.flatMap((group) => [group.container, ...group.members])) {
+  // Containers always; members only where they are matched one by one.
+  const ids = plan.groups.flatMap((group, index) => [group.container, ...(rows[index] ? [] : group.members)]);
+  for (const id of ids) {
     const node = byId.get(id);
     if (node) signatures[id] = signatureOf(node);
   }
-  return { url: pageKey(scan.url), plan, signatures, usedScreenshot, savedAt: now };
+  return { url: pageKey(scan.url), plan, signatures, rows, usedScreenshot, savedAt: now };
 }
 
-// The saved plan for this exact page, else the newest one whose template covers it.
+// Groups with a stable per-item identity (tabs) keep it; other groups whose members are all
+// direct children of one shape are saved by that shape.
+function rowShape(group: LayoutPlan["groups"][number], byId: Map<string, ScanNode>): RowShape | undefined {
+  if (group.reorderable) return undefined;
+  const members = group.members.map((id) => byId.get(id));
+  const first = members[0];
+  if (!first || members.some((node) => !node || node.parent !== group.container || node.tag !== first.tag || node.kind !== first.kind))
+    return undefined;
+  return { tag: first.tag, kind: first.kind };
+}
+
+// The saved plan for this exact page, else the newest one with a group that covers it.
 export function findSavedPlan(
   saved: Array<SavedPlan>,
   url: string
@@ -57,7 +77,9 @@ export function findSavedPlan(
   const newestFirst = saved.toSorted((a, b) => b.savedAt - a.savedAt);
   const exact = newestFirst.find((entry) => entry.url === key);
   if (exact) return { saved: exact, match: "page" };
-  const template = newestFirst.find((entry) => urlPatternMatches(entry.plan.template.urlPattern, url));
+  const template = newestFirst.find((entry) =>
+    entry.plan.groups.some((group) => urlPatternMatches(groupPattern(entry.plan, group), url))
+  );
   return template ? { saved: template, match: "template" } : undefined;
 }
 
@@ -100,17 +122,23 @@ export function locateNodes(signatures: Record<string, NodeSignature>, scan: Pag
   return found;
 }
 
-// The saved plan rewritten to this scan's IDs. Members that no longer exist are dropped;
-// groups whose container is gone are dropped. The result still has to pass validatePlan.
+// The saved plan rewritten to this scan's IDs, keeping only groups whose pattern covers this
+// page. Item groups drop members that no longer exist; row groups take the container's current
+// rows. Groups whose container is gone are dropped. The result still has to pass validatePlan.
 export function remapPlan(saved: SavedPlan, scan: PageScan): LayoutPlan {
   const found = locateNodes(saved.signatures, scan);
-  const groups = saved.plan.groups.flatMap((group) => {
+  const groups = saved.plan.groups.flatMap((group, index) => {
+    if (!urlPatternMatches(groupPattern(saved.plan, group), scan.url)) return [];
     const container = found.get(group.container);
-    const members = group.members.flatMap((id) => {
-      const next = found.get(id);
-      return next ? [next] : [];
-    });
-    return container && members.length > 0 ? [{ ...group, container, members }] : [];
+    if (!container) return [];
+    const shape = saved.rows?.[index];
+    const members = shape
+      ? scan.nodes.filter((node) => node.parent === container && node.tag === shape.tag && node.kind === shape.kind).map((node) => node.id)
+      : group.members.flatMap((id) => {
+          const next = found.get(id);
+          return next ? [next] : [];
+        });
+    return members.length > 0 ? [{ ...group, container, members }] : [];
   });
   return { ...saved.plan, groups };
 }

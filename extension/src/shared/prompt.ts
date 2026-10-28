@@ -17,9 +17,12 @@ Return a layout plan:
 - reorderable: true only for groups where a user might want their own order (tabs, nav links, cards).
   identity says how to recognise the same item on another page of this kind: an attribute whose values are
   stable names (e.g. data-tab-item), else href, else text. Never an attribute holding counters or generated ids.
-- template.urlPattern: which pages share this layout. Keep fixed path words, replace variable segments
-  (names, ids, slugs) with {placeholders}, end with /* when sub-pages share it. Must match the current URL.
-  Example: github.com/react/react/issues → github.com/{owner}/{repo}/*
+- urlPattern: which pages share a layout. Keep fixed path words, replace variable segments (names, ids,
+  slugs) with {placeholders}, end with /* when sub-pages share it. Must match the current URL.
+  template.urlPattern is the broadest pattern in the plan. Each group has its own urlPattern: site chrome that
+  appears on every page of this kind (header, repo tabs, nav) gets the broad one; content specific to this
+  view (a file list, an issue list, a product grid) gets a pattern for this view only.
+  Example on github.com/react/react: tabs → github.com/{owner}/{repo}/*, file list → github.com/{owner}/{repo}
 Be concise in label, reason and summary.`;
 
 function line(node: ScanNode): string {

@@ -1,0 +1,94 @@
+import { savePlan } from "../src/shared/cache";
+import type { LayoutPlan } from "../src/shared/plan";
+import type { TabSession } from "../src/shared/types";
+import { test, expect, openWithPanel } from "./fixtures";
+import { FIXTURE_ORIGIN } from "../playwright.config";
+
+// Day 3 exit check on an owned, uninstrumented page: preview → cancel → preview → keep →
+// the original links and tab order still work → restore → re-apply survives a reload.
+test("preview, apply and restore a layout on the real page", async ({ context, extensionId }) => {
+  const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
+  await panel.getByRole("button", { name: "Scan page" }).click();
+  await expect(panel.getByTestId("screenshot")).toBeVisible();
+
+  const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  const matches = nodes.filter((node) => /^(Rotate keys|Scopes|OAuth apps|Rate limits) /.test(node.text));
+  const tiles = matches.filter((node) => matches.some((other) => other.id === node.parent));
+  const toc = nodes.find((node) => node.text.startsWith("On this page"))!;
+  const plan: LayoutPlan = {
+    summary: "Docs page",
+    template: { urlPattern: "127.0.0.1:4317/docs.html", pageKind: "docs" },
+    groups: [
+      {
+        label: "Next steps cards",
+        urlPattern: "127.0.0.1:4317/docs.html",
+        role: "content-cards",
+        container: tiles[0].parent!,
+        members: tiles.map((tile) => tile.id),
+        operation: "grid",
+        reorderable: false,
+        identity: { source: "none", attribute: "" },
+        reason: "",
+      },
+      {
+        label: "On this page",
+        urlPattern: "127.0.0.1:4317/docs.html",
+        role: "navigation",
+        container: toc.id,
+        members: nodes.filter((node) => node.parent === toc.id && node.tag === "a").map((node) => node.id),
+        operation: "emphasize",
+        reorderable: false,
+        identity: { source: "none", attribute: "" },
+        reason: "",
+      },
+    ],
+  };
+  await panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect(panel.getByTestId("plan-reused")).toBeVisible();
+
+  const cards = site.locator(".grid");
+  const display = () => cards.evaluate((element) => getComputedStyle(element).display);
+  expect(await display()).toBe("flex");
+
+  // Preview outlines the regions and changes the page; Escape on the page undoes it.
+  await panel.getByTestId("preview-layout").click();
+  await expect.poll(display).toBe("grid");
+  await expect(site.locator("html")).toHaveAttribute("data-smart-web-preview", "");
+  await site.keyboard.press("Escape");
+  await expect.poll(display).toBe("flex");
+  await expect(panel.getByTestId("preview-layout")).toBeVisible();
+
+  // Untick one group, preview, keep.
+  const tocRow = panel.getByTestId("plan-group").filter({ hasText: "On this page" });
+  await tocRow.getByText("On this page", { exact: true }).click();
+  await expect(panel.getByRole("checkbox", { name: "Include On this page" })).not.toBeChecked();
+  await panel.getByTestId("preview-layout").click();
+  await expect.poll(display).toBe("grid");
+  await panel.getByTestId("keep-layout").click();
+  await expect(panel.getByTestId("layout-applied")).toHaveText("1 change on the page");
+  await expect(site.locator("html")).not.toHaveAttribute("data-smart-web-preview", "");
+  expect(await site.locator(".toc").evaluate((element) => element.hasAttribute("data-smart-web-op"))).toBe(false);
+
+  // The site still works: its own link navigates, and Tab moves through the cards in source order.
+  const card = (name: string) => cards.getByRole("link", { name });
+  await card("Rotate keys").focus();
+  await site.keyboard.press("Tab");
+  await expect(card("Scopes")).toBeFocused();
+  await card("Scopes").click();
+  await expect(site).toHaveURL(/docs\.html#$/);
+
+  // Restore leaves no trace on the page.
+  await panel.getByTestId("restore-layout").click();
+  await expect.poll(display).toBe("flex");
+  expect(await site.locator("[data-smart-web-op], [data-smart-web-member], [data-smart-web-group]").count()).toBe(0);
+
+  // An applied layout follows the tab through a full reload, from the saved plan.
+  await panel.getByTestId("preview-layout").click();
+  await panel.getByTestId("keep-layout").click();
+  await expect(panel.getByTestId("layout-applied")).toBeVisible();
+  await site.reload();
+  await expect(panel.getByTestId("layout-applied")).toBeVisible({ timeout: 10_000 });
+  await expect.poll(display, { timeout: 10_000 }).toBe("grid");
+});

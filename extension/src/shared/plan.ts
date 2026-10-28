@@ -21,6 +21,9 @@ export type Operation = (typeof OPERATIONS)[number];
 
 export type PlanGroup = {
   label: string;
+  // Pages this group exists on. Site chrome (repo tabs) is broad; view content (a file list) is narrow.
+  // Plans saved before 28 Oct lack it and fall back to the plan's template.
+  urlPattern: string;
   role: (typeof GROUP_ROLES)[number];
   container: string;
   members: Array<string>;
@@ -59,6 +62,7 @@ export const PLAN_SCHEMA = {
         additionalProperties: false,
         required: [
           "label",
+          "urlPattern",
           "role",
           "container",
           "members",
@@ -69,6 +73,7 @@ export const PLAN_SCHEMA = {
         ],
         properties: {
           label: string,
+          urlPattern: string,
           role: { type: "string", enum: GROUP_ROLES },
           container: string,
           members: { type: "array", items: string },
@@ -114,6 +119,8 @@ export function urlPatternMatches(pattern: string, url: string): boolean {
   // A trailing "/*" also covers the bare prefix ("github.com/a/b").
   return new RegExp(`^${source.replace(/\/\.\*$/, "(?:/.*)?")}$`).test(subject);
 }
+
+export const groupPattern = (plan: LayoutPlan, group: PlanGroup) => group.urlPattern || plan.template.urlPattern;
 
 function identityValue(node: ScanNode, group: PlanGroup): string | undefined {
   switch (group.identity.source) {
@@ -162,6 +169,9 @@ export function validatePlan(plan: LayoutPlan, scan: PageScan): Validation {
     const at = `groups[${index}] "${group.label}"`;
     const before = errors.length;
     const container = byId.get(group.container);
+
+    if (!urlPatternMatches(groupPattern(plan, group), scan.url))
+      errors.push(`${at}: urlPattern "${group.urlPattern}" does not match the current URL`);
 
     if (!container) errors.push(`${at}: container ${group.container} is not a scanned element`);
     else if (container.sensitive) errors.push(`${at}: container ${group.container} is a form field`);

@@ -1,5 +1,6 @@
 import type { PageScan, PanelRequest, SessionStatus, TabSession } from "../../shared/types";
 import { sessionKey } from "../../shared/types";
+import { clearLayout, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
 import { forgetPlan, reusePlan } from "./saved-plans";
 
@@ -16,6 +17,12 @@ const SETTLE_MS = 350;
 
 async function saveSession(session: TabSession) {
   await chrome.storage.session.set({ [sessionKey(session.tabId)]: session });
+}
+
+async function readSession(tabId: number): Promise<TabSession | undefined> {
+  const key = sessionKey(tabId);
+  const stored = await chrome.storage.session.get(key);
+  return stored[key] as TabSession | undefined;
 }
 
 // Tabs the user has read with Smart Web; they are rescanned when they navigate.
@@ -47,6 +54,9 @@ async function scanTab(tabId: number, settle: boolean) {
   const url = tab.url ?? "";
   const followed = await followedTabs();
   const lastOrigin = originOf(url) ?? followed[tabId];
+  // An applied layout carries over to the next scan of this tab (navigation, rescan).
+  const previous = await readSession(tabId);
+  const keep = previous?.layout?.state === "applied" ? previous.layout.labels : undefined;
 
   // Without access Chrome hides the URL; the injection error below then tells the cases apart.
   if (RESTRICTED.test(url)) {
@@ -60,6 +70,7 @@ async function scanTab(tabId: number, settle: boolean) {
   try {
     if (settle) await new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
 
+    // Injecting restores any marks left by the previous copy, so the scan measures the site's own layout.
     await chrome.scripting.executeScript({
       target: { tabId },
       files: ["content/index.js"],
@@ -79,7 +90,9 @@ async function scanTab(tabId: number, settle: boolean) {
 
     // A plan saved for this page (or its template) comes back without a Meta call.
     const proposal = await reusePlan(scan);
-    await saveSession({ tabId, status: "ready", url, lastOrigin, scan, screenshot, proposal, updatedAt: Date.now() });
+    const session: TabSession = { tabId, status: "ready", url, lastOrigin, scan, screenshot, proposal, updatedAt: Date.now() };
+    if (keep && proposal) session.layout = await showLayout(tabId, pickGroups(session, keep), "applied");
+    await saveSession(session);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     // activeTab lapses on a full page load; that is the common cause of an access error.
@@ -113,7 +126,8 @@ async function forget(tabId: number) {
   const session = stored[key] as TabSession | undefined;
   if (!session?.url) return;
   await forgetPlan(session.url);
-  await saveSession({ ...session, proposal: undefined, updatedAt: Date.now() });
+  if (session.layout) await clearLayout(tabId);
+  await saveSession({ ...session, proposal: undefined, layout: undefined, updatedAt: Date.now() });
 }
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -130,10 +144,32 @@ chrome.action.onClicked.addListener((tab) => {
   void scanTab(tab.id, true);
 });
 
-chrome.runtime.onMessage.addListener((message: PanelRequest) => {
+async function changeLayout(tabId: number, action: "preview" | "apply" | "restore", labels?: Array<string>) {
+  const session = await readSession(tabId);
+  if (!session) return;
+  try {
+    let layout: TabSession["layout"];
+    if (action === "restore") await clearLayout(tabId);
+    else layout = await showLayout(tabId, pickGroups(session, labels), action === "preview" ? "preview" : "applied");
+    await saveSession({ ...session, layout, updatedAt: Date.now() });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await saveSession({
+      ...session,
+      status: ACCESS_ERROR.test(message) ? "needs-access" : "error",
+      error: message,
+      updatedAt: Date.now(),
+    });
+  }
+}
+
+chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
   if (message.type === "rescan") void scanTab(message.tabId, false);
   if (message.type === "propose") void propose(message.tabId, message.includeScreenshot);
   if (message.type === "forget") void forget(message.tabId);
+  if (message.type === "layout") void changeLayout(message.tabId, message.action, message.labels);
+  // Escape on the page already undid the preview; the stylesheet and session follow.
+  if (message.type === "page-restored" && sender.tab?.id !== undefined) void changeLayout(sender.tab.id, "restore");
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {

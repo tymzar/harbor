@@ -36,6 +36,7 @@ test("a saved plan is reused after a rescan and can be forgotten", async ({ cont
     groups: [
       {
         label: "Next steps cards",
+        urlPattern: "127.0.0.1:4317/docs.html",
         role: "content-cards",
         container: tiles[0].parent!,
         members: tiles.map((tile) => tile.id),

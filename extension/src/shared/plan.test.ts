@@ -35,6 +35,7 @@ const scan: PageScan = {
 
 const tabsGroup: PlanGroup = {
   label: "Repository tabs",
+  urlPattern: "github.com/{owner}/{repo}/*",
   role: "tabs",
   container: "n1",
   members: ["n2", "n3", "n4", "n5"],

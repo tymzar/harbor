@@ -62,6 +62,18 @@ for (const fixture of ["docs.html", "catalog.html"]) {
       await panel.getByRole("button", { name: "Rescan" }).click();
       await expect(panel.getByTestId("plan-reused")).toBeVisible();
       await expect(panel.getByTestId("plan-calls")).toHaveCount(0);
+
+      // Day 3 checkpoint: the real plan changes the real page, then leaves no trace.
+      const changes = proposal.accepted!.filter((group) => group.operation !== "none");
+      test.skip(changes.length === 0, "the model proposed no visible change for this page");
+      const marked = site.locator("[data-smart-web-op]");
+      await panel.getByTestId("preview-layout").click();
+      await panel.getByTestId("keep-layout").click();
+      await expect(panel.getByTestId("layout-applied")).toBeVisible();
+      await expect(marked).not.toHaveCount(0);
+      await site.screenshot({ path: path.join(EVIDENCE, `${name}-applied.png`) });
+      await panel.getByTestId("restore-layout").click();
+      await expect(marked).toHaveCount(0);
     });
   }
 }
