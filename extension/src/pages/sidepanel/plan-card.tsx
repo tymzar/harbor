@@ -6,6 +6,7 @@ import type { LayoutPlan, PlanGroup } from "../../shared/plan";
 import { groupPattern } from "../../shared/plan";
 import type { Answers } from "../../shared/questions";
 import { applyAnswers, usableQuestions } from "../../shared/questions";
+import { PickControls } from "./pick-controls";
 import { Questions } from "./questions-card";
 import type { CallLog, PanelRequest, ProposalStep, TabSession } from "../../shared/types";
 
@@ -295,6 +296,8 @@ export function PlanCard({ session }: { session: TabSession }) {
             )}
           </div>
         )}
+
+        <PickControls session={session} disabled={running} />
 
         {current && current.calls.length > 0 && (
           <ul className="flex flex-col gap-0.5 text-xs text-muted" aria-label="Model calls" data-testid="plan-calls">

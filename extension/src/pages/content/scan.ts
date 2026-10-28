@@ -92,21 +92,25 @@ function intersectsViewport(rect: DOMRect): boolean {
   );
 }
 
-function snippet(element: Element, sensitive: boolean): string {
-  if (sensitive) return "";
+// Label or visible text, words kept apart. textContent glues sibling elements together
+// ("DocsGuides"), so text nodes are joined instead.
+export function readableText(element: Element, limit = TEXT_LIMIT): string {
   const label =
     element.getAttribute("aria-label") ??
     element.getAttribute("alt") ??
     element.getAttribute("title");
-  // textContent glues sibling elements together ("DocsGuides"); join text nodes instead.
   let raw = label ?? "";
   if (!label) {
     const texts = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-    for (let node = texts.nextNode(); node && raw.length <= TEXT_LIMIT; node = texts.nextNode())
+    for (let node = texts.nextNode(); node && raw.length <= limit; node = texts.nextNode())
       raw += ` ${node.nodeValue}`;
   }
   const text = raw.replaceAll(/\s+/g, " ").trim();
-  return text.length > TEXT_LIMIT ? `${text.slice(0, TEXT_LIMIT - 1)}…` : text;
+  return text.length > limit ? `${text.slice(0, limit - 1)}…` : text;
+}
+
+function snippet(element: Element, sensitive: boolean): string {
+  return sensitive ? "" : readableText(element);
 }
 
 const ATTR_VALUE_LIMIT = 40;
@@ -138,6 +142,10 @@ export const nodeRegistry = new Map<string, WeakRef<Element>>();
 export const elementIds = new WeakMap<Element, string>();
 // Scroll position at scan time; boxes from the screenshot are only valid at this offset.
 let scannedScroll = { x: 0, y: 0 };
+// Which scan the registry belongs to. Node IDs are only meaningful together with it: callers pass
+// the scan they mean, and a page that has been rescanned since refuses instead of guessing.
+let registryScan = 0;
+export const currentScan = () => registryScan;
 export const scannedScrollOffset = () => scannedScroll;
 
 export function scanPage(): PageScan {
@@ -244,6 +252,6 @@ export function scanPage(): PageScan {
     truncated,
     skipped,
     durationMs: Math.round(performance.now() - started),
-    scannedAt: Date.now(),
+    scannedAt: (registryScan = Date.now()),
   };
 }

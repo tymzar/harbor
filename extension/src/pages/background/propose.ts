@@ -9,6 +9,7 @@ import type { ChatMessage } from "./meta";
 import { proposeJson, segment } from "./meta";
 import { clearLayout } from "./layout";
 import { rememberPlan } from "./saved-plans";
+import { userGroups } from "./user-groups";
 
 // SAM matches what things look like, not UI names: "card" and "menu" return nothing on
 // screenshots, these do (docs/hackathon/api-probe-2026-10-27.md).
@@ -82,6 +83,8 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
   const session = await readSession(tabId);
   const scan = session?.status === "ready" ? session.scan : undefined;
   if (!session || !scan) return;
+  // Hides the user made by hand outlive a new plan for the same scan.
+  const ownGroups = userGroups(session, scan.scannedAt);
 
   // A new plan replaces the one the current layout came from.
   if (session.layout) await clearLayout(tabId);
@@ -141,19 +144,22 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
       repaired = true;
     }
 
+    const carried = ownGroups.filter((own) => !plan.groups.some((group) => group.label === own.label));
+    plan = { ...plan, groups: [...plan.groups, ...carried] };
+    const accepted = [...validation.accepted, ...carried];
+
     await updateProposal(tabId, {
       status: "done",
       step: undefined,
       calls: [...calls],
       visualGroups,
       plan,
-      accepted: validation.accepted,
+      accepted,
       errors: validation.errors,
       repaired,
       finishedAt: Date.now(),
     });
-    if (validation.accepted.length > 0)
-      await rememberPlan({ ...plan, groups: validation.accepted }, scan, usedScreenshot);
+    if (accepted.length > 0) await rememberPlan({ ...plan, groups: accepted }, scan, usedScreenshot);
     console.info("[smart-web] proposal", { url: scan.url, calls, errors: validation.errors });
   } catch (error) {
     await updateProposal(tabId, {

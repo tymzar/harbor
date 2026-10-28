@@ -103,4 +103,9 @@ describe("validatePlan", () => {
     const group = { ...tabsGroup, members: ["n2"], operation: "grid" as const, reorderable: false };
     expect(validatePlan(plan([group]), scan).errors[0]).toMatch(/grid needs at least 2/);
   });
+
+  it("accepts a single element as its own region (a group the user picked)", () => {
+    const picked = { ...tabsGroup, label: "Hidden by you: Issues", container: "n3", members: ["n3"], operation: "hide-secondary" as const, reorderable: false, origin: "user" as const };
+    expect(validatePlan(plan([picked]), scan).errors).toEqual([]);
+  });
 });

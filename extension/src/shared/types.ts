@@ -98,6 +98,10 @@ export type TabSession = {
   screenshot?: string;
   error?: string;
   layout?: LayoutState;
+  // "Hide something else": pointing at the page, then a selection the panel can adjust.
+  picking?: { phase: "pointing" } | { phase: "selected"; nodeId: string; description: string; scannedAt: number };
+  // A short message for the panel about something that didn't happen (e.g. the page changed mid-pick).
+  notice?: string;
   // The site this tab was last read on; Chrome hides the URL once access is gone.
   lastOrigin?: string;
   proposal?: Proposal;
@@ -110,6 +114,9 @@ export type PanelRequest =
   | { type: "propose"; tabId: number; includeScreenshot: boolean; goal?: string }
   | { type: "forget"; tabId: number }
   | { type: "answer"; tabId: number; answers: Answers }
+  | { type: "pick"; tabId: number; action: "start" | "wider" | "narrower" | "hide" | "cancel" }
+  // Keyboard path: hide a scanned element straight from the panel's element list.
+  | { type: "hide-node"; tabId: number; nodeId: string }
   | { type: "layout"; tabId: number; action: "preview" | "apply" | "restore"; labels?: Array<string> }
   // From the page: Escape during a preview already restored it.
   | { type: "page-restored" };

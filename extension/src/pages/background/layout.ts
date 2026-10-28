@@ -5,16 +5,20 @@ import type { LayoutState, TabSession } from "../../shared/types";
 
 import type { LayoutGroup, LayoutResult } from "../content/apply";
 
+export const STALE_SCAN = "The page changed since Smart Web read it. Rescan, then try again.";
+
 async function removeSheet(tabId: number) {
   await chrome.scripting.removeCSS({ target: { tabId }, css: LAYOUT_CSS }).catch(() => {});
 }
 
 // Puts the chosen groups on the page. Returns the new layout state for the session.
+// The page refuses IDs from another scan; that surfaces here as an error instead of wrong marks.
 export async function showLayout(
-  tabId: number,
+  session: TabSession,
   groups: Array<PlanGroup>,
   state: LayoutState["state"]
 ): Promise<LayoutState | undefined> {
+  const tabId = session.tabId;
   const chosen = groups.filter((group) => group.operation !== "none");
   if (chosen.length === 0) return undefined;
 
@@ -28,11 +32,13 @@ export async function showLayout(
   }));
   const [injection] = await chrome.scripting.executeScript({
     target: { tabId },
-    func: (groups: Array<LayoutGroup>, preview: boolean) => globalThis.smartWeb!.apply(groups, preview),
-    args: [layout, state === "preview"] as [Array<LayoutGroup>, boolean],
+    func: (groups: Array<LayoutGroup>, preview: boolean, scannedAt: number) =>
+      globalThis.smartWeb!.apply(groups, preview, scannedAt),
+    args: [layout, state === "preview", session.scan?.scannedAt ?? 0] as [Array<LayoutGroup>, boolean, number],
   });
   const result = injection?.result as LayoutResult | undefined;
   if (!result) throw new Error("The page did not answer.");
+  if (result.stale) throw new Error(STALE_SCAN);
   return { state, labels: result.applied, missing: result.missing };
 }
 

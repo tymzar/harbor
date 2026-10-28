@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Button, Card, Chip, Spinner } from "@heroui/react";
-import { Gear, Magnifier } from "@gravity-ui/icons";
+import { EyeSlash, Gear, Magnifier } from "@gravity-ui/icons";
 
 import type { NodeKind, PanelRequest, ScanNode, TabSession } from "../../shared/types";
 import { sessionKey } from "../../shared/types";
@@ -70,11 +70,12 @@ function useSession(tabId: number | undefined) {
   return session;
 }
 
-function NodeRow({ node }: { node: ScanNode }) {
+function NodeRow({ node, onHide }: { node: ScanNode; onHide: () => void }) {
+  const name = node.text || node.tag;
   return (
     <li
       data-testid="scan-node"
-      className="flex items-center gap-2 py-1 text-sm"
+      className="group flex items-center gap-2 py-1 text-sm"
       style={{ paddingInlineStart: `${Math.min(node.depth, 8) * 12}px` }}
     >
       <Chip size="sm" variant="soft" color={KIND_COLOR[node.kind]}>
@@ -83,6 +84,19 @@ function NodeRow({ node }: { node: ScanNode }) {
       <span className="min-w-0 truncate text-muted">
         {node.sensitive ? "Form field, content not read" : node.text || "—"}
       </span>
+      {!node.sensitive && (
+        // Keyboard path for hiding: shown on hover, and whenever it has focus.
+        <Button
+          isIconOnly
+          size="sm"
+          variant="ghost"
+          aria-label={`Hide ${name} on the page`}
+          className="ml-auto shrink-0 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+          onPress={onHide}
+        >
+          <EyeSlash />
+        </Button>
+      )}
     </li>
   );
 }
@@ -192,6 +206,15 @@ export function SidePanel() {
 
       {session?.status === "needs-access" && <NeedsAccess tabId={session.tabId} origin={session.lastOrigin} />}
 
+      {session?.notice && (
+        <Alert status="warning" data-testid="notice">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>{session.notice}</Alert.Description>
+          </Alert.Content>
+        </Alert>
+      )}
+
       {scan && session && <PlanCard session={session} />}
 
       {scan && (scan.truncated || scan.skipped.iframes > 0 || scan.skipped.shadowHosts > 0) && (
@@ -237,7 +260,14 @@ export function SidePanel() {
       {scan && (
         <ul aria-label="Elements found" className="flex flex-col">
           {scan.nodes.map((node) => (
-            <NodeRow key={node.id} node={node} />
+            <NodeRow
+              key={node.id}
+              node={node}
+              onHide={() => {
+                const request: PanelRequest = { type: "hide-node", tabId: session!.tabId, nodeId: node.id };
+                void chrome.runtime.sendMessage(request);
+              }}
+            />
           ))}
         </ul>
       )}

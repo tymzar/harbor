@@ -1,9 +1,10 @@
 import type { Answers } from "../../shared/questions";
 import type { PageScan, PanelRequest, SessionStatus, TabSession } from "../../shared/types";
 import { sessionKey } from "../../shared/types";
-import { clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
+import { STALE_SCAN, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
 import { forgetPlan, rememberAnswers, reusePlan } from "./saved-plans";
+import { hideNode } from "./user-groups";
 
 // Pages Chrome never lets extensions script, even with activeTab.
 const RESTRICTED =
@@ -101,7 +102,7 @@ async function scanTab(tabId: number, settle: boolean) {
     // A plan saved for this page (or its template) comes back without a Meta call.
     const proposal = await reusePlan(scan);
     const session: TabSession = { tabId, status: "ready", url, lastOrigin, scan, screenshot, proposal, updatedAt: Date.now() };
-    if (keep && proposal) session.layout = await showLayout(tabId, pickGroups(session, keep), "applied");
+    if (keep && proposal) session.layout = await showLayout(session, pickGroups(session, keep), "applied");
     await saveSession(session);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -125,6 +126,9 @@ function scheduleRescan(tabId: number) {
       const tab = await chrome.tabs.get(tabId).catch(() => {});
       if (!tab) return;
       if (tab.status !== "complete") return scheduleRescan(tabId);
+      // A rescan renumbers elements; never pull them out from under a pick in progress.
+      const current = await readSession(tabId);
+      if (current?.picking) return scheduleRescan(tabId);
       await scanTab(tabId, false);
     }, NAVIGATION_SETTLE_MS)
   );
@@ -154,22 +158,27 @@ chrome.action.onClicked.addListener((tab) => {
   void scanTab(tab.id, true);
 });
 
+// A stale scan is a notice in the panel (rescan and retry); lost access and real failures are states.
+async function fail(session: TabSession, error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  const base: TabSession = { ...session, picking: undefined, updatedAt: Date.now() };
+  await saveSession(
+    message === STALE_SCAN
+      ? { ...base, notice: message }
+      : { ...base, status: ACCESS_ERROR.test(message) ? "needs-access" : "error", error: message }
+  );
+}
+
 async function changeLayout(tabId: number, action: "preview" | "apply" | "restore", labels?: Array<string>) {
   const session = await readSession(tabId);
   if (!session) return;
   try {
     let layout: TabSession["layout"];
     if (action === "restore") await clearLayout(tabId);
-    else layout = await showLayout(tabId, pickGroups(session, labels), action === "preview" ? "preview" : "applied");
-    await saveSession({ ...session, layout, updatedAt: Date.now() });
+    else layout = await showLayout(session, pickGroups(session, labels), action === "preview" ? "preview" : "applied");
+    await saveSession({ ...session, layout, notice: undefined, updatedAt: Date.now() });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    await saveSession({
-      ...session,
-      status: ACCESS_ERROR.test(message) ? "needs-access" : "error",
-      error: message,
-      updatedAt: Date.now(),
-    });
+    await fail(session, error);
   }
 }
 
@@ -182,8 +191,70 @@ async function answer(tabId: number, answers: Answers) {
   const savedOn = session.proposal.reused?.fromUrl ?? session.url;
   if (savedOn) await rememberAnswers(savedOn, answers);
   const next: TabSession = { ...session, proposal: { ...session.proposal, answers }, updatedAt: Date.now() };
-  if (session.layout) next.layout = await showLayout(tabId, effectiveGroups(next), session.layout.state);
-  await saveSession(next);
+  try {
+    if (session.layout) next.layout = await showLayout(next, effectiveGroups(next), session.layout.state);
+    await saveSession(next);
+  } catch (error) {
+    await fail(next, error);
+  }
+}
+
+type PickResult = { nodeId: string; description: string; scannedAt: number } | undefined;
+
+async function runInPage<T>(tabId: number, inPage: () => T | Promise<T>): Promise<T | undefined> {
+  const [injection] = await chrome.scripting.executeScript({ target: { tabId }, func: inPage });
+  return injection?.result as T | undefined;
+}
+
+// "Hide something else": point and click on the page, adjust in the panel, then hide.
+async function pick(tabId: number, action: "start" | "wider" | "narrower" | "hide" | "cancel") {
+  const session = await readSession(tabId);
+  if (!session?.scan) return;
+  try {
+    if (action === "start") {
+      await saveSession({ ...session, picking: { phase: "pointing" }, notice: undefined, updatedAt: Date.now() });
+      const chosen = await runInPage<PickResult>(tabId, () => globalThis.smartWeb!.pick());
+      const latest = await readSession(tabId);
+      if (!latest) return;
+      await saveSession({
+        ...latest,
+        picking: chosen ? { phase: "selected", ...chosen } : undefined,
+        updatedAt: Date.now(),
+      });
+      return;
+    }
+    if (action === "wider" || action === "narrower") {
+      const chosen =
+        action === "wider"
+          ? await runInPage<PickResult>(tabId, () => globalThis.smartWeb!.adjustPick("wider"))
+          : await runInPage<PickResult>(tabId, () => globalThis.smartWeb!.adjustPick("narrower"));
+      // No answer means the page was rescanned and the selection went with it.
+      await (chosen
+        ? saveSession({ ...session, picking: { phase: "selected", ...chosen }, updatedAt: Date.now() })
+        : fail(session, new Error(STALE_SCAN)));
+      return;
+    }
+    await runInPage(tabId, () => globalThis.smartWeb!.endPick());
+    const picked = session.picking?.phase === "selected" ? session.picking : undefined;
+    if (action === "hide" && picked && picked.scannedAt !== session.scan.scannedAt) {
+      await saveSession({ ...session, picking: undefined, notice: STALE_SCAN, updatedAt: Date.now() });
+      return;
+    }
+    const next = action === "hide" && picked ? await hideNode(session, picked.nodeId) : session;
+    await saveSession({ ...next, picking: undefined, notice: undefined, updatedAt: Date.now() });
+  } catch (error) {
+    await fail(session, error);
+  }
+}
+
+async function hideFromList(tabId: number, nodeId: string) {
+  const session = await readSession(tabId);
+  if (!session?.scan) return;
+  try {
+    await saveSession({ ...(await hideNode(session, nodeId)), notice: undefined });
+  } catch (error) {
+    await fail(session, error);
+  }
 }
 
 chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
@@ -191,6 +262,8 @@ chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
   if (message.type === "propose") void propose(message.tabId, message.includeScreenshot, message.goal);
   if (message.type === "forget") void forget(message.tabId);
   if (message.type === "answer") void answer(message.tabId, message.answers);
+  if (message.type === "pick") void pick(message.tabId, message.action);
+  if (message.type === "hide-node") void hideFromList(message.tabId, message.nodeId);
   if (message.type === "layout") void changeLayout(message.tabId, message.action, message.labels);
   // Escape on the page already undid the preview; the stylesheet and session follow.
   if (message.type === "page-restored" && sender.tab?.id !== undefined) void changeLayout(sender.tab.id, "restore");

@@ -32,6 +32,8 @@ export type PlanGroup = {
   reorderable: boolean;
   identity: { source: (typeof IDENTITY_SOURCES)[number]; attribute: string };
   reason: string;
+  // Set on groups the user made with "Hide something else"; Spark's groups leave it out.
+  origin?: "user";
 };
 
 // A question Spark asks after reading the page. Each option states the group changes it implies,
@@ -230,7 +232,8 @@ export function validatePlan(plan: LayoutPlan, scan: PageScan): Validation {
       const node = byId.get(id);
       if (!node) errors.push(`${at}: member ${id} is not a scanned element`);
       else if (node.sensitive) errors.push(`${at}: member ${id} is a form field and can't be changed`);
-      else if (container && !isInside(id, container.id, byId))
+      // A single picked element is both the region and its only member.
+      else if (container && id !== container.id && !isInside(id, container.id, byId))
         errors.push(`${at}: member ${id} is not inside container ${container.id}`);
       if (claimed.has(id)) errors.push(`${at}: member ${id} already belongs to another group`);
     }

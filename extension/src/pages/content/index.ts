@@ -1,16 +1,26 @@
 import { applyLayout, restoreLayout } from "./apply";
 import { matchBoxes } from "./match";
+import { adjustPick, endPick, pickElement } from "./pick";
 import { scanPage } from "./scan";
 
 // Injected on demand by the background worker (activeTab), never declared in the
 // manifest. Injected once per scan; the latest copy wins so a reloaded extension
-// never talks to a stale one. Matching and applying reuse the registry of that scan.
+// never talks to a stale one. Matching, applying and picking reuse that scan's registry.
+const api = {
+  scan: scanPage,
+  match: matchBoxes,
+  apply: applyLayout,
+  restore: restoreLayout,
+  pick: pickElement,
+  adjustPick,
+  endPick,
+};
+
 declare global {
-  var smartWeb:
-    | { scan: typeof scanPage; match: typeof matchBoxes; apply: typeof applyLayout; restore: typeof restoreLayout }
-    | undefined;
+  var smartWeb: typeof api | undefined;
 }
 
-// A previous copy may still have elements marked; undo them before replacing it.
+// A previous copy may still have elements marked or a picker open; undo that before replacing it.
 globalThis.smartWeb?.restore?.();
-globalThis.smartWeb = { scan: scanPage, match: matchBoxes, apply: applyLayout, restore: restoreLayout };
+globalThis.smartWeb?.endPick?.();
+globalThis.smartWeb = api;

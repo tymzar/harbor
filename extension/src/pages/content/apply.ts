@@ -1,8 +1,8 @@
 import type { Operation } from "../../shared/plan";
-import { nodeRegistry } from "./scan";
+import { currentScan, nodeRegistry } from "./scan";
 
 export type LayoutGroup = { label: string; container: string; members: Array<string>; operation: Operation };
-export type LayoutResult = { applied: Array<string>; missing: Array<string> };
+export type LayoutResult = { applied: Array<string>; missing: Array<string>; stale?: true };
 
 const GROUP = "data-smart-web-group";
 const OP = "data-smart-web-op";
@@ -51,9 +51,11 @@ export function restoreLayout(): number {
 
 // Marks the plan's elements; the inserted stylesheet does the rest. In preview, regions are
 // outlined and Escape on the page undoes everything.
-export function applyLayout(groups: Array<LayoutGroup>, preview: boolean): LayoutResult {
+export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scannedAt: number): LayoutResult {
   restoreLayout();
   const result: LayoutResult = { applied: [], missing: [] };
+  // IDs from another scan would mark the wrong elements.
+  if (scannedAt !== currentScan()) return { applied: [], missing: groups.map((group) => group.label), stale: true };
 
   for (const [index, group] of groups.entries()) {
     const container = resolve(group.container);
