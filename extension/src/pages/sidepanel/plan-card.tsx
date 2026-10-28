@@ -28,10 +28,9 @@ type GroupRowProperties = {
   plan: LayoutPlan;
   selected: boolean;
   onSelect: (selected: boolean) => void;
-  locked: boolean;
 };
 
-function GroupRow({ group, plan, selected, onSelect, locked }: GroupRowProperties) {
+function GroupRow({ group, plan, selected, onSelect }: GroupRowProperties) {
   const changes = group.operation !== "none";
   const pattern = groupPattern(plan, group);
 
@@ -42,7 +41,6 @@ function GroupRow({ group, plan, selected, onSelect, locked }: GroupRowPropertie
           <Checkbox
             isSelected={selected}
             onChange={onSelect}
-            isDisabled={locked}
             aria-label={`Include ${group.label}`}
             className="flex min-w-0 flex-row items-center gap-2"
           >
@@ -121,9 +119,10 @@ export function PlanCard({ session }: { session: TabSession }) {
   const toggle = (label: string, include: boolean) => {
     const next = include ? [...selected, label] : selected.filter((item) => item !== label);
     setSelected(next);
-    // While previewing, the page follows the checkboxes.
-    if (layout?.state === "preview") sendLayout(next.length > 0 ? "preview" : "restore", next);
+    // A preview or an applied layout follows the checkboxes; unticking a hidden region shows it again.
+    if (layout) sendLayout(next.length > 0 ? (layout.state === "preview" ? "preview" : "apply") : "restore", next);
   };
+  const hidden = groups.filter((group) => group.operation === "hide-secondary" && layout?.labels.includes(group.label));
 
   const forget = () => {
     const request: PanelRequest = { type: "forget", tabId: session.tabId };
@@ -207,7 +206,6 @@ export function PlanCard({ session }: { session: TabSession }) {
                   plan={current.plan!}
                   selected={selected.includes(group.label)}
                   onSelect={(include) => toggle(group.label, include)}
-                  locked={layout?.state === "applied"}
                 />
               ))}
             </ul>
@@ -262,6 +260,12 @@ export function PlanCard({ session }: { session: TabSession }) {
                       Restore original
                     </Button>
                   </div>
+                )}
+                {hidden.length > 0 && (
+                  <p className="text-xs text-muted" data-testid="layout-hidden">
+                    Hidden on the page: {hidden.map((group) => group.label).join(", ")}. Untick one above to show it
+                    again.
+                  </p>
                 )}
                 {layout && layout.missing.length > 0 && (
                   <p className="text-xs text-warning" data-testid="layout-missing">

@@ -29,14 +29,13 @@ export const LAYOUT_CSS = `
   border-radius: 8px !important; background-color: rgb(${ACCENT} / 0.06) !important;
 }
 
-/* Collapsed, not removed: hovering or tabbing into it opens it again. */
-[data-smart-web-op="hide-secondary"] {
-  max-height: 2.75rem !important; overflow: hidden !important; opacity: 0.55 !important;
-}
-[data-smart-web-op="hide-secondary"]:hover,
-[data-smart-web-op="hide-secondary"]:focus-within { max-height: none !important; opacity: 1 !important; }
-@media (prefers-reduced-motion: no-preference) {
-  [data-smart-web-op="hide-secondary"] { transition: opacity 0.15s, max-height 0.2s !important; }
+/* Hidden outright: no space, not focusable, not announced. The side panel lists hidden regions
+   and unticking one there shows it again; that works for keyboard and screen-reader users,
+   which hover-to-reveal did not. */
+html:not([data-smart-web-preview]) [data-smart-web-op="hide-secondary"] { display: none !important; }
+/* In preview the region stays in place, dimmed, so the user sees what Keep would hide. */
+html[data-smart-web-preview] [data-smart-web-op="hide-secondary"] {
+  opacity: 0.35 !important; outline-style: dotted !important;
 }
 
 html[data-smart-web-preview] [data-smart-web-group] {

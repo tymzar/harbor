@@ -1,5 +1,5 @@
 import { savePlan } from "../src/shared/cache";
-import type { LayoutPlan } from "../src/shared/plan";
+import type { LayoutPlan, PlanGroup } from "../src/shared/plan";
 import type { TabSession } from "../src/shared/types";
 import { test, expect, openWithPanel } from "./fixtures";
 import { FIXTURE_ORIGIN } from "../playwright.config";
@@ -91,4 +91,52 @@ test("preview, apply and restore a layout on the real page", async ({ context, e
   await site.reload();
   await expect(panel.getByTestId("layout-applied")).toBeVisible({ timeout: 10_000 });
   await expect.poll(display, { timeout: 10_000 }).toBe("grid");
+});
+
+// hide-secondary hides for real; in preview it stays visible but dimmed; unticking it after
+// Keep shows it again without restoring the rest.
+test("hidden regions are dimmed in preview, hidden after Keep, and shown again from the panel", async ({ context, extensionId }) => {
+  const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
+  await panel.getByRole("button", { name: "Scan page" }).click();
+  await expect(panel.getByTestId("screenshot")).toBeVisible();
+
+  const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  const footer = nodes.find((node) => node.text.startsWith("Privacy Terms"))!;
+  const toc = nodes.find((node) => node.text.startsWith("On this page"))!;
+  const group = (label: string, container: string, operation: PlanGroup["operation"]): PlanGroup => ({
+    label,
+    urlPattern: "127.0.0.1:4317/*",
+    role: "other",
+    container,
+    members: nodes.filter((node) => node.parent === container).map((node) => node.id),
+    operation,
+    reorderable: false,
+    identity: { source: "none", attribute: "" },
+    reason: "",
+  });
+  const plan: LayoutPlan = {
+    summary: "Docs page",
+    template: { urlPattern: "127.0.0.1:4317/*", pageKind: "docs" },
+    groups: [group("Footer links", footer.id, "hide-secondary"), group("On this page", toc.id, "emphasize")],
+  };
+  await panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect(panel.getByTestId("plan-reused")).toBeVisible();
+
+  const foot = site.locator(".foot");
+  const style = () => foot.evaluate((element) => ({ display: getComputedStyle(element).display, opacity: getComputedStyle(element).opacity }));
+
+  await panel.getByTestId("preview-layout").click();
+  await expect.poll(style).toEqual({ display: "flex", opacity: "0.35" });
+
+  await panel.getByTestId("keep-layout").click();
+  await expect.poll(style).toEqual({ display: "none", opacity: "1" });
+  await expect(panel.getByTestId("layout-hidden")).toHaveText(/Hidden on the page: Footer links/);
+
+  // Untick while applied: the footer comes back, the emphasized TOC stays.
+  await panel.getByTestId("plan-group").filter({ hasText: "Footer links" }).getByText("Footer links", { exact: true }).click();
+  await expect.poll(style).toEqual({ display: "flex", opacity: "1" });
+  await expect(panel.getByTestId("layout-applied")).toHaveText("1 change on the page");
+  await expect.poll(() => site.locator(".toc").getAttribute("data-smart-web-op")).toBe("emphasize");
 });

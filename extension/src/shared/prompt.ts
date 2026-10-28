@@ -12,7 +12,7 @@ Return a layout plan:
   container is the closest common ancestor id and members are its repeated items. Use only ids from the list.
   Never include elements marked FORM.
 - operation per group. The user returns to this page repeatedly; make it faster for them to use:
-  hide-secondary (collapse; reopens on hover/focus) for regions they rarely need: stats, metadata, badges,
+  hide-secondary (hidden; the user can show it again from the side panel) for regions they rarely need: stats, metadata, badges,
     language bars, promos, marketing navigation, "related" lists, footers.
   compact (tighten spacing) for dense lists, toolbars and sidebars they skim.
   grid for repeated cards laid out unevenly or in one long column.

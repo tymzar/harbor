@@ -15,12 +15,22 @@ let onEscape: ((event: KeyboardEvent) => void) | undefined;
 
 const resolve = (id: string) => nodeRegistry.get(id)?.deref();
 
-// Layout rules act on a container's direct children. A plan's container is the nearest scanned
+// grid and compact act on a container's direct children. A plan's container is the nearest scanned
 // ancestor, which may sit a few wrappers above the items; use the items' own parent when they share one.
+// emphasize and hide-secondary act on the region as a whole, so they keep the planned container
+// (see regionOf for tables).
 function layoutParent(container: Element, members: Array<Element>): Element {
   const parent = members[0]?.parentElement;
   return parent && members.every((member) => member.parentElement === parent) && container.contains(parent)
     ? parent
+    : container;
+}
+
+// Outlines and backgrounds aren't drawn on table sections and rows; a region-level change
+// on one goes to its table.
+function regionOf(container: Element): Element {
+  return /^table-(row|row-group|header-group|footer-group)$/.test(getComputedStyle(container).display)
+    ? (container.closest("table") ?? container)
     : container;
 }
 
@@ -53,7 +63,8 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean): Layou
       result.missing.push(group.label);
       continue;
     }
-    const target = layoutParent(container, members);
+    const target =
+      group.operation === "grid" || group.operation === "compact" ? layoutParent(container, members) : regionOf(container);
     mark(target, GROUP, String(index));
     mark(target, OP, group.operation);
     for (const member of members) mark(member, MEMBER, "");
