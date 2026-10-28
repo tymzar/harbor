@@ -77,7 +77,7 @@ async function findVisualGroups(
   return groups;
 }
 
-export async function propose(tabId: number, includeScreenshot: boolean) {
+export async function propose(tabId: number, includeScreenshot: boolean, goal: string | undefined) {
   const key = sessionKey(tabId);
   const session = await readSession(tabId);
   const scan = session?.status === "ready" ? session.scan : undefined;
@@ -111,7 +111,7 @@ export async function propose(tabId: number, includeScreenshot: boolean) {
 
     const messages: Array<ChatMessage> = [
       { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: describePage(scan, visualGroups) },
+      { role: "user", content: describePage(scan, visualGroups, goal?.trim() || undefined) },
     ];
     const first = await proposeJson(messages, PLAN_SCHEMA, "layout plan", REASONING_EFFORT);
     calls.push(first.log);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Card, Checkbox, Chip, Spinner, Switch } from "@heroui/react";
+import { Alert, Button, Card, Checkbox, Chip, Description, Input, Label, Spinner, Switch, TextField } from "@heroui/react";
 import { ArrowUturnCcwLeft, Check, Eye, PaperPlane, TrashBin } from "@gravity-ui/icons";
 
 import type { LayoutPlan, PlanGroup } from "../../shared/plan";
@@ -61,8 +61,25 @@ function GroupRow({ group, plan, selected, onSelect, locked }: GroupRowPropertie
   );
 }
 
+// The user's goal is remembered per site, on this device, to prefill the field next time.
+const goalKey = (origin: string | undefined) => `goal:${origin ?? ""}`;
+
+function useSiteGoal(origin: string | undefined) {
+  const [goal, setGoal] = useState("");
+  useEffect(() => {
+    const key = goalKey(origin);
+    void chrome.storage.local.get(key).then((stored) => setGoal((stored[key] as string | undefined) ?? ""));
+  }, [origin]);
+  const save = (next: string) => {
+    setGoal(next);
+    void chrome.storage.local.set({ [goalKey(origin)]: next });
+  };
+  return [goal, save] as const;
+}
+
 export function PlanCard({ session }: { session: TabSession }) {
   const [includeScreenshot, setIncludeScreenshot] = useState(false);
+  const [goal, setGoal] = useSiteGoal(session.lastOrigin);
   const scan = session.scan!;
   const proposal = session.proposal;
   // A rescan replaces the elements a plan refers to.
@@ -96,7 +113,7 @@ export function PlanCard({ session }: { session: TabSession }) {
   };
 
   const send = () => {
-    const request: PanelRequest = { type: "propose", tabId: session.tabId, includeScreenshot };
+    const request: PanelRequest = { type: "propose", tabId: session.tabId, includeScreenshot, goal };
     void chrome.runtime.sendMessage(request);
   };
 
@@ -111,6 +128,11 @@ export function PlanCard({ session }: { session: TabSession }) {
       </Card.Header>
 
       <Card.Content className="flex flex-col gap-3 pt-3">
+        <TextField value={goal} onChange={setGoal} isDisabled={running} data-testid="goal">
+          <Label className="text-sm">I come here to… (optional)</Label>
+          <Input placeholder="e.g. review pull requests and check Actions" />
+          <Description className="text-xs text-muted">Sent with the request, so the plan favours what you use.</Description>
+        </TextField>
         <Switch isSelected={includeScreenshot} onChange={setIncludeScreenshot} isDisabled={running || !session.screenshot}>
           <Switch.Content className="text-sm">
             <Switch.Control>

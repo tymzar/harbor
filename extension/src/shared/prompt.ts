@@ -11,9 +11,16 @@ Return a layout plan:
 - groups: coherent regions (navigation, tabs, cards, toolbars, lists, sidebars, promos, footers). For each, the
   container is the closest common ancestor id and members are its repeated items. Use only ids from the list.
   Never include elements marked FORM.
-- operation per group, chosen for a person who uses this page repeatedly to get to what they need:
-  compact (tighten spacing), grid (lay repeated cards out in a grid), emphasize (make the group stand out),
-  hide-secondary (collapse low-value items), none (leave as is). Prefer none over a change you can't justify.
+- operation per group. The user returns to this page repeatedly; make it faster for them to use:
+  hide-secondary (collapse; reopens on hover/focus) for regions they rarely need: stats, metadata, badges,
+    language bars, promos, marketing navigation, "related" lists, footers.
+  compact (tighten spacing) for dense lists, toolbars and sidebars they skim.
+  grid for repeated cards laid out unevenly or in one long column.
+  emphasize for the one or two regions that serve the user's goal.
+  none for primary navigation and main content that already work as they are.
+  A useful plan usually changes at least two regions; return only none when the page is already minimal.
+  If your reason calls a region low-value or rarely needed, its operation must not be none.
+  When the user states a goal, emphasize what serves it and hide-secondary what doesn't.
 - reorderable: true only for groups where a user might want their own order (tabs, nav links, cards).
   identity says how to recognise the same item on another page of this kind: an attribute whose values are
   stable names (e.g. data-tab-item), else href, else text. Never an attribute holding counters or generated ids.
@@ -44,8 +51,13 @@ function line(node: ScanNode): string {
   return parts.join(" ");
 }
 
-export function describePage(scan: PageScan, visualGroups: Array<VisualGroup> | undefined): string {
+export function describePage(
+  scan: PageScan,
+  visualGroups: Array<VisualGroup> | undefined,
+  goal: string | undefined
+): string {
   const sections = [
+    ...(goal ? [`User's goal on this page: ${goal}`] : []),
     `URL: ${scan.url}`,
     `Title: ${scan.title}`,
     `Viewport: ${scan.viewport.w}x${scan.viewport.h}${scan.truncated ? " (element list truncated)" : ""}`,

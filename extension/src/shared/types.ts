@@ -103,7 +103,8 @@ export type TabSession = {
 
 export type PanelRequest =
   | { type: "rescan"; tabId: number }
-  | { type: "propose"; tabId: number; includeScreenshot: boolean }
+  // goal: the user's own words for what they come to this page for (optional).
+  | { type: "propose"; tabId: number; includeScreenshot: boolean; goal?: string }
   | { type: "forget"; tabId: number }
   | { type: "layout"; tabId: number; action: "preview" | "apply" | "restore"; labels?: Array<string> }
   // From the page: Escape during a preview already restored it.

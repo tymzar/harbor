@@ -165,7 +165,7 @@ async function changeLayout(tabId: number, action: "preview" | "apply" | "restor
 
 chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
   if (message.type === "rescan") void scanTab(message.tabId, false);
-  if (message.type === "propose") void propose(message.tabId, message.includeScreenshot);
+  if (message.type === "propose") void propose(message.tabId, message.includeScreenshot, message.goal);
   if (message.type === "forget") void forget(message.tabId);
   if (message.type === "layout") void changeLayout(message.tabId, message.action, message.labels);
   // Escape on the page already undid the preview; the stylesheet and session follow.

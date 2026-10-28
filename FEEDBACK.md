@@ -17,3 +17,4 @@ Notes for the submission's feedback fields. Add entries as they happen, dated.
 - **LiteLLM auth status codes.** Missing key → 500, wrong key → 400 "No connected db"; both refused, but neither is a 401.
 - **Spark latency vs reasoning effort.** Layout plans took 13–23 s at default effort with 85–92% reasoning tokens; `reasoning_effort: low` gave the same plans in 8–9 s on two pages. A per-request latency hint or a faster structured-output tier would help interactive use.
 - **SAM non-streaming works.** Plain `POST /v1/responses` (no `stream`) returns the full token text; docs only show streaming.
+- **Spark is conservative by default.** On a GitHub repo it returned "no change" for every region, including one its own reason called "low-value". Explicit per-region guidance plus an optional user goal produced 3–4 sensible changes per run, consistent across runs. Instruction-following on structured output is good once the prompt says what "useful" means.
