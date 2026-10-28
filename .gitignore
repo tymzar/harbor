@@ -11,3 +11,10 @@ test-results
 evaluation/snapshots/
 # Screenshots from evaluation runs show third-party pages
 evaluation/runs/*/shots/
+
+# LaTeX build files (report/main.pdf is committed)
+report/*.aux
+report/*.fdb_latexmk
+report/*.fls
+report/*.out
+report/*.toc
