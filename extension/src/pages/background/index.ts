@@ -1,6 +1,6 @@
 import type { Answers } from "../../shared/questions";
 import type { PageScan, PanelRequest, SessionStatus, TabSession } from "../../shared/types";
-import { sessionKey } from "../../shared/types";
+import { sessionKey, shotKey } from "../../shared/types";
 import { STALE_SCAN, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
 import { forgetPlan, rememberAnswers, reusePlan } from "./saved-plans";
@@ -101,7 +101,8 @@ async function scanTab(tabId: number, settle: boolean) {
 
     // A plan saved for this page (or its template) comes back without a Meta call.
     const proposal = await reusePlan(scan);
-    const session: TabSession = { tabId, status: "ready", url, lastOrigin, scan, screenshot, proposal, updatedAt: Date.now() };
+    await chrome.storage.session.set({ [shotKey(tabId)]: screenshot });
+    const session: TabSession = { tabId, status: "ready", url, lastOrigin, scan, hasScreenshot: true, proposal, updatedAt: Date.now() };
     if (keep && proposal) session.layout = await showLayout(session, pickGroups(session, keep), "applied");
     await saveSession(session);
   } catch (error) {
@@ -271,7 +272,7 @@ chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   clearTimeout(pendingRescans.get(tabId));
-  void chrome.storage.session.remove(sessionKey(tabId));
+  void chrome.storage.session.remove([sessionKey(tabId), shotKey(tabId)]);
   void unfollow(tabId);
 });
 
@@ -281,7 +282,7 @@ chrome.tabs.onUpdated.addListener((tabId, change) => {
   if (!change.url && change.status !== "complete") return;
   void followedTabs().then((followed) => {
     if (!(tabId in followed)) {
-      if (change.url) void chrome.storage.session.remove(sessionKey(tabId));
+      if (change.url) void chrome.storage.session.remove([sessionKey(tabId), shotKey(tabId)]);
       return;
     }
     scheduleRescan(tabId);

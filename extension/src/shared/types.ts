@@ -94,8 +94,9 @@ export type TabSession = {
   status: SessionStatus;
   url?: string;
   scan?: PageScan;
-  // JPEG data URL of the visible tab, captured right after the scan.
-  screenshot?: string;
+  // The screenshot of this scan is stored separately under shotKey(tabId): it is ~100 KB and
+  // every small state change would otherwise rewrite and resend it.
+  hasScreenshot?: boolean;
   error?: string;
   layout?: LayoutState;
   // "Hide something else": pointing at the page, then a selection the panel can adjust.
@@ -122,3 +123,4 @@ export type PanelRequest =
   | { type: "page-restored" };
 
 export const sessionKey = (tabId: number) => `session:${tabId}`;
+export const shotKey = (tabId: number) => `shot:${tabId}`;

@@ -27,6 +27,8 @@ test("pick an element on the page, widen the selection and hide it", async ({ co
   await expect.poll(() => footer.evaluate((element) => getComputedStyle(element).display)).toBe("none");
   await expect(site.locator("[data-smart-web-picker]")).toHaveCount(0);
   await expect(panel.getByTestId("plan-group").filter({ hasText: "Hidden by you" })).toHaveCount(1);
+  // What is hidden on the page is ticked in the panel.
+  await expect(panel.getByRole("checkbox", { name: /^Include Hidden by you: Privacy/ })).toBeChecked();
   await expect(panel.getByTestId("layout-hidden")).toContainText("Hidden by you: Privacy Terms Security");
 
   // Saved with the plan: still hidden after a rescan, without asking Meta.
@@ -40,6 +42,7 @@ test("pick an element on the page, widen the selection and hide it", async ({ co
   await expect.poll(() => footer.evaluate((element) => getComputedStyle(element).display)).toBe("none");
 
   // Keyboard path: the element list's Hide button.
+  await panel.getByTestId("element-list").getByText(/^All \d+ elements on this page$/).click();
   const teams = panel.getByRole("button", { name: "Hide Teams on the page" });
   await teams.focus();
   await panel.keyboard.press("Enter");

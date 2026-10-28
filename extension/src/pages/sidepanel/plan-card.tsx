@@ -101,9 +101,13 @@ export function PlanCard({ session }: { session: TabSession }) {
   const questions = current?.plan && current.accepted ? usableQuestions(current.plan, current.accepted) : [];
   const groups = current?.accepted ? applyAnswers(current.accepted, questions, answers) : [];
   const changeable = groups.filter((group) => group.operation !== "none");
-  const [selected, setSelected] = useState<Array<string>>([]);
+  // Before anything is on the page the checkboxes are a local choice; once a layout is previewed
+  // or applied they show what is actually on the page (a hidden element is always ticked).
+  const [draft, setDraft] = useState<Array<string>>([]);
+  const selected = layout ? layout.labels : draft;
+  const setSelected = setDraft;
   useEffect(() => {
-    setSelected(layout ? layout.labels : changeable.map((group) => group.label));
+    setDraft(changeable.map((group) => group.label));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current?.finishedAt, layout?.state, JSON.stringify(answers)]);
 
@@ -151,7 +155,7 @@ export function PlanCard({ session }: { session: TabSession }) {
           <Input placeholder="e.g. review pull requests and check Actions" />
           <Description className="text-xs text-muted">Sent with the request, so the plan favours what you use.</Description>
         </TextField>
-        <Switch isSelected={includeScreenshot} onChange={setIncludeScreenshot} isDisabled={running || !session.screenshot}>
+        <Switch isSelected={includeScreenshot} onChange={setIncludeScreenshot} isDisabled={running || !session.hasScreenshot}>
           <Switch.Content className="text-sm">
             <Switch.Control>
               <Switch.Thumb />

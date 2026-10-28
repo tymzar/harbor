@@ -101,22 +101,34 @@ export function pickElement(): Promise<PickSelection | undefined> {
   endPick();
   return new Promise((resolve) => {
     let hovered: Element | undefined;
+    // At most once per frame, reading before writing: moving the overlay and then measuring the
+    // next element on every pointer event forced a full layout each time on heavy pages.
+    let pointer: { x: number; y: number } | undefined;
+    let frame = 0;
     const onMove = (event: PointerEvent) => {
-      const element = scannedFrom(document.elementFromPoint(event.clientX, event.clientY));
-      if (!element || element === hovered) return;
-      hovered = element;
-      highlight(element);
+      pointer = { x: event.clientX, y: event.clientY };
+      frame ||= requestAnimationFrame(() => {
+        frame = 0;
+        const element = pointer && scannedFrom(document.elementFromPoint(pointer.x, pointer.y));
+        if (!element || element === hovered) return;
+        hovered = element;
+        highlight(element);
+      });
     };
     const onClick = (event: MouseEvent) => {
       block(event);
-      if (!hovered) return;
-      selected = hovered;
+      // Where the click landed, not the last highlight, which may be a frame behind.
+      const element = scannedFrom(document.elementFromPoint(event.clientX, event.clientY)) ?? hovered;
+      if (!element) return;
+      selected = element;
+      highlight(element);
       finish(selection());
     };
     const timer = setTimeout(() => endPick(), POINT_TIMEOUT_MS);
 
     function stop() {
       clearTimeout(timer);
+      cancelAnimationFrame(frame);
       globalThis.removeEventListener("pointermove", onMove, true);
       globalThis.removeEventListener("click", onClick, true);
       globalThis.removeEventListener("keydown", onPickKey, true);

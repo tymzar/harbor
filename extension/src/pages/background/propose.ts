@@ -4,7 +4,7 @@ import type { VisualGroup } from "../../shared/prompt";
 import { SYSTEM_PROMPT, describePage } from "../../shared/prompt";
 import { parseSamBoxes, toViewportRect } from "../../shared/sam";
 import type { CallLog, PageScan, Proposal, TabSession } from "../../shared/types";
-import { sessionKey } from "../../shared/types";
+import { sessionKey, shotKey } from "../../shared/types";
 import type { ChatMessage } from "./meta";
 import { proposeJson, segment } from "./meta";
 import { clearLayout } from "./layout";
@@ -88,7 +88,9 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
 
   // A new plan replaces the one the current layout came from.
   if (session.layout) await clearLayout(tabId);
-  const usedScreenshot = includeScreenshot && Boolean(session.screenshot);
+  const shot = await chrome.storage.session.get(shotKey(tabId));
+  const screenshot = shot[shotKey(tabId)] as string | undefined;
+  const usedScreenshot = includeScreenshot && Boolean(screenshot);
   const calls: Array<CallLog> = [];
   const startedAt = Date.now();
   await chrome.storage.session.set({
@@ -109,7 +111,7 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
   });
 
   try {
-    const visualGroups = usedScreenshot ? await findVisualGroups(tabId, scan, session.screenshot!, calls) : undefined;
+    const visualGroups = usedScreenshot ? await findVisualGroups(tabId, scan, screenshot!, calls) : undefined;
     await updateProposal(tabId, { step: "planning", calls: [...calls], visualGroups });
 
     const messages: Array<ChatMessage> = [

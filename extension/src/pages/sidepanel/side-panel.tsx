@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Alert, Button, Card, Chip, Spinner } from "@heroui/react";
 import { EyeSlash, Gear, Magnifier } from "@gravity-ui/icons";
 
-import type { NodeKind, PanelRequest, ScanNode, TabSession } from "../../shared/types";
-import { sessionKey } from "../../shared/types";
+import type { NodeKind, PageScan, PanelRequest, ScanNode, TabSession } from "../../shared/types";
+import { sessionKey, shotKey } from "../../shared/types";
 import { PlanCard } from "./plan-card";
 import { NeedsAccess, SiteAccessSwitch } from "./site-access";
 
@@ -47,6 +47,48 @@ function useActiveTabId() {
 
   return tabId;
 }
+
+// The screenshot lives in its own storage entry and only changes with a new scan.
+function useScreenshot(tabId: number | undefined, scannedAt: number | undefined) {
+  const [screenshot, setScreenshot] = useState<string>();
+  useEffect(() => {
+    setScreenshot(undefined);
+    if (tabId === undefined || scannedAt === undefined) return;
+    const key = shotKey(tabId);
+    void chrome.storage.session.get(key).then((stored) => setScreenshot(stored[key] as string | undefined));
+  }, [tabId, scannedAt]);
+  return screenshot;
+}
+
+// Every element of the scan, with a Hide button per row (the keyboard path for hiding).
+// Collapsed by default and rendered only when opened; re-rendered only for a new scan,
+// not on every state change of the session.
+const ElementList = memo(
+  function ElementList({ scan, tabId }: { scan: PageScan; tabId: number }) {
+    const [open, setOpen] = useState(false);
+    const hide = (nodeId: string) => {
+      const request: PanelRequest = { type: "hide-node", tabId, nodeId };
+      void chrome.runtime.sendMessage(request);
+    };
+    return (
+      <details
+        className="rounded-xl border border-border px-3 py-2"
+        onToggle={(event) => setOpen(event.currentTarget.open)}
+        data-testid="element-list"
+      >
+        <summary className="cursor-pointer text-sm">All {scan.nodes.length} elements on this page</summary>
+        {open && (
+          <ul aria-label="Elements found" className="mt-2 flex flex-col">
+            {scan.nodes.map((node) => (
+              <NodeRow key={node.id} node={node} onHide={() => hide(node.id)} />
+            ))}
+          </ul>
+        )}
+      </details>
+    );
+  },
+  (previous, next) => previous.scan.scannedAt === next.scan.scannedAt && previous.tabId === next.tabId
+);
 
 function useSession(tabId: number | undefined) {
   const [session, setSession] = useState<TabSession>();
@@ -106,6 +148,7 @@ export function SidePanel() {
   const session = useSession(tabId);
   const scan = session?.status === "ready" ? session.scan : undefined;
   const isScanning = session?.status === "scanning";
+  const screenshot = useScreenshot(tabId, scan?.scannedAt);
 
   const counts = useMemo(() => {
     const result = new Map<NodeKind, number>();
@@ -149,10 +192,10 @@ export function SidePanel() {
           </Card.Description>
         </Card.Header>
 
-        {scan && session?.screenshot && (
+        {scan && screenshot && (
           <img
             data-testid="screenshot"
-            src={session.screenshot}
+            src={screenshot}
             alt="The visible part of the page when it was read"
             className="mt-3 w-full rounded-xl border border-border"
           />
@@ -257,20 +300,7 @@ export function SidePanel() {
         </Alert>
       )}
 
-      {scan && (
-        <ul aria-label="Elements found" className="flex flex-col">
-          {scan.nodes.map((node) => (
-            <NodeRow
-              key={node.id}
-              node={node}
-              onHide={() => {
-                const request: PanelRequest = { type: "hide-node", tabId: session!.tabId, nodeId: node.id };
-                void chrome.runtime.sendMessage(request);
-              }}
-            />
-          ))}
-        </ul>
-      )}
+      {scan && session && <ElementList scan={scan} tabId={session.tabId} />}
     </main>
   );
 }

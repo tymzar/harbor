@@ -50,6 +50,8 @@ for (const fixture of ["docs.html", "catalog.html"]) {
     expect(count).toBeGreaterThan(20);
 
     // Search boxes are read as present but their contents are never shown or kept.
+    // The element list is collapsed by default.
+    await panel.getByTestId("element-list").getByText(/^All \d+ elements on this page$/).click();
     await expect(panel.getByTestId("scan-node").filter({ hasText: "Form field, content not read" })).not.toHaveCount(0);
     await expect(panel.getByRole("button", { name: "Rescan" })).toBeVisible();
   });
