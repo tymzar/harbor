@@ -37,6 +37,10 @@ export async function openSite(context: BrowserContext, extensionId: string, sit
       break;
     }
   }
+  // A short video would end and autoplay the next one, navigating mid-run.
+  await page.evaluate(() => {
+    for (const media of document.querySelectorAll("video, audio")) (media as HTMLMediaElement).pause();
+  });
   return { ...opened, consent, loadMs: Date.now() - started };
 }
 

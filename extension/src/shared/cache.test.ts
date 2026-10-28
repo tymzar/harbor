@@ -157,4 +157,19 @@ describe("saved plans", () => {
     expect(remapped.groups.find((group) => group.label === "File list")?.members).toEqual(["n7", "n8"]);
     expect(validatePlan(remapped, linuxCode).errors).toEqual([]);
   });
+
+  it("saves a group that picks one row item by item, so it doesn't come back as the whole list", () => {
+    // "Hide the Actions tab": one of four links of the same shape.
+    const hideActions = {
+      ...plan.groups[0],
+      label: "Actions tab",
+      members: ["n5"],
+      operation: "hide-secondary" as const,
+      reorderable: false,
+      identity: { source: "none" as const, attribute: "" },
+    };
+    const saved = savePlan({ ...plan, groups: [hideActions] }, react, false, 100);
+    expect(saved.rows).toEqual([undefined]);
+    expect(remapPlan(saved, repoScan("react/react", ["code", "issues", "pull-requests", "actions"], 2)).groups[0].members).toEqual(["n7"]);
+  });
 });

@@ -140,3 +140,43 @@ test("hidden regions are dimmed in preview, hidden after Keep, and shown again f
   await expect(panel.getByTestId("layout-applied")).toHaveText("1 change on the page");
   await expect.poll(() => site.locator(".toc").getAttribute("data-smart-web-op")).toBe("emphasize");
 });
+
+// A plan may name a wide container for one member: hiding "Privacy" in the footer must not take
+// Terms and Security with it. When the members are all of the region, the region itself goes.
+test("hiding one member of a region leaves the rest of the region", async ({ context, extensionId }) => {
+  const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
+  await panel.getByRole("button", { name: "Scan page" }).click();
+  await expect(panel.getByTestId("screenshot")).toBeVisible();
+
+  const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  const footer = nodes.find((node) => node.text.startsWith("Privacy Terms"))!;
+  const privacy = nodes.find((node) => node.parent === footer.id && node.text === "Privacy")!;
+  const plan: LayoutPlan = {
+    summary: "Docs page",
+    template: { urlPattern: "127.0.0.1:4317/*", pageKind: "docs" },
+    groups: [
+      {
+        label: "Privacy link",
+        urlPattern: "127.0.0.1:4317/*",
+        role: "other",
+        container: footer.id,
+        members: [privacy.id],
+        operation: "hide-secondary",
+        reorderable: false,
+        identity: { source: "none", attribute: "" },
+        reason: "",
+      },
+    ],
+  };
+  await panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect(panel.getByTestId("plan-reused")).toBeVisible();
+  await panel.getByTestId("preview-layout").click();
+  await panel.getByTestId("keep-layout").click();
+
+  const foot = site.locator(".foot");
+  await expect(foot.getByRole("link", { name: "Privacy" })).toBeHidden();
+  await expect(foot.getByRole("link", { name: "Terms" })).toBeVisible();
+  await expect(foot).toBeVisible();
+});

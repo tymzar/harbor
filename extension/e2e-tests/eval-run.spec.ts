@@ -7,6 +7,7 @@ import type { Anchor, Observation, Scenario, Verdict } from "../src/shared/ancho
 import type { PanelRequest, TabSession } from "../src/shared/types";
 import { test, expect } from "./fixtures";
 import { EVALUATION, SITES, openSite, readSession } from "./fixtures/sites";
+import type { Site } from "./fixtures/sites";
 
 // Runs the evaluation set (../evaluation/scenarios.json) through the extension on the real sites:
 // scan, ask for a plan with the scenario's goal, apply every proposed change, then check each
@@ -68,9 +69,15 @@ async function layout(panel: Page, tabId: number, action: "apply" | "restore") {
 
 const NOT_FOUND: Observation = { found: false, visible: false, ops: [], coveringOps: [] };
 
-for (const scenario of scenarios) {
-  const site = SITES.find((candidate) => candidate.id === scenario.site)!;
+// One site at a time per worker: visiting a site from several browsers at once got bot checks
+// (Amazon, Stack Overflow) in the first run. Other sites run alongside.
+for (const site of SITES.filter((candidate) => scenarios.some((scenario) => scenario.site === candidate.id)))
+  test.describe(site.id, () => {
+    test.describe.configure({ mode: "default" });
+    for (const scenario of scenarios.filter((candidate) => candidate.site === site.id)) defineScenario(site, scenario);
+  });
 
+function defineScenario(site: Site, scenario: Scenario) {
   test(`eval ${scenario.id}`, async ({ context, extensionId }) => {
     const { site: page, panel, tabId, consent } = await openSite(context, extensionId, site);
     const [worker] = context.serviceWorkers();
@@ -110,7 +117,14 @@ for (const scenario of scenarios) {
       } else runs.push({ mode: "picker", error: "The picked element is not on the page.", verdicts: verdicts(before.map(() => NOT_FOUND)) });
     }
 
-    for (const mode of scenario.goal ? MODES : []) {
+    // Nothing the scenario names is on the page: a bot check or a different page. Asking for a plan
+    // would cost tokens and score nothing.
+    const absent = scenario.expect.every((_, index) => !resolved[index + offset].node);
+    if (absent && scenario.goal)
+      for (const mode of MODES)
+        runs.push({ mode, error: "None of the scenario's elements are on the page.", verdicts: verdicts(before.map(() => NOT_FOUND)) });
+
+    for (const mode of scenario.goal && !absent ? MODES : []) {
       const sentAt = Date.now();
       await send(panel, { type: "propose", tabId, includeScreenshot: mode === "dom+sam", goal: scenario.goal });
       const proposed = await waitFor(

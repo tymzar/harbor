@@ -49,7 +49,7 @@ export function signatureOf(node: ScanNode): NodeSignature {
 
 export function savePlan(plan: LayoutPlan, scan: PageScan, usedScreenshot: boolean, now: number): SavedPlan {
   const byId = new Map(scan.nodes.map((node) => [node.id, node]));
-  const rows = plan.groups.map((group) => rowShape(group, byId));
+  const rows = plan.groups.map((group) => rowShape(group, scan, byId));
   const signatures: Record<string, NodeSignature> = {};
   // Containers always; members only where they are matched one by one.
   const ids = plan.groups.flatMap((group, index) => [group.container, ...(rows[index] ? [] : group.members)]);
@@ -60,15 +60,17 @@ export function savePlan(plan: LayoutPlan, scan: PageScan, usedScreenshot: boole
   return { url: pageKey(scan.url), plan, signatures, rows, usedScreenshot, savedAt: now };
 }
 
-// Groups with a stable per-item identity (tabs) keep it; other groups whose members are all
-// direct children of one shape are saved by that shape.
-function rowShape(group: LayoutPlan["groups"][number], byId: Map<string, ScanNode>): RowShape | undefined {
-  if (group.reorderable) return undefined;
+// Groups with a stable per-item identity (tabs) keep it; other groups whose members are every
+// direct child of one shape (the whole list) are saved by that shape. A group that picks some of
+// the rows ("hide Shorts" in the menu) is matched item by item, or it would come back as all of them.
+function rowShape(group: LayoutPlan["groups"][number], scan: PageScan, byId: Map<string, ScanNode>): RowShape | undefined {
+  if (group.reorderable || group.members.length < 2) return undefined;
   const members = group.members.map((id) => byId.get(id));
   const first = members[0];
   if (!first || members.some((node) => !node || node.parent !== group.container || node.tag !== first.tag || node.kind !== first.kind))
     return undefined;
-  return { tag: first.tag, kind: first.kind };
+  const rows = scan.nodes.filter((node) => node.parent === group.container && node.tag === first.tag && node.kind === first.kind);
+  return rows.length === new Set(group.members).size ? { tag: first.tag, kind: first.kind } : undefined;
 }
 
 // The saved plan for this exact page, else the newest one with a group that covers it.

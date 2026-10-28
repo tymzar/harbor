@@ -1,5 +1,5 @@
 import type { Operation } from "../../shared/plan";
-import { currentScan, nodeRegistry } from "./scan";
+import { currentScan, elementIds, nodeRegistry } from "./scan";
 
 export type LayoutGroup = { label: string; container: string; members: Array<string>; operation: Operation };
 export type LayoutResult = { applied: Array<string>; missing: Array<string>; stale?: true };
@@ -34,6 +34,34 @@ function regionOf(container: Element): Element {
     : container;
 }
 
+// Scanned in the current scan (elementIds also remembers elements from earlier scans).
+const scanned = (element: Element) => {
+  const id = elementIds.get(element);
+  return id !== undefined && resolve(id) === element;
+};
+
+// The nearest scanned elements below this one: what the plan saw inside it.
+function scannedChildren(element: Element): Array<Element> {
+  return [...element.children].flatMap((child) => (scanned(child) ? [child] : scannedChildren(child)));
+}
+
+// True when hiding the members would leave nothing the scan saw in this element still showing.
+function coveredBy(element: Element, members: Set<Element>): boolean {
+  if (members.has(element)) return true;
+  const children = scannedChildren(element);
+  return (
+    children.length > 0 &&
+    children.every((child) => !child.checkVisibility({ checkVisibilityCSS: true }) || coveredBy(child, members))
+  );
+}
+
+// A plan may name a wide container for one member (the whole left menu, to hide Shorts). Hiding
+// the container would take the rest with it, so the region goes only when its members are all of
+// it; otherwise just the members are hidden.
+function hideTargets(container: Element, members: Array<Element>): Array<Element> {
+  return coveredBy(container, new Set(members)) ? [regionOf(container)] : members;
+}
+
 function mark(element: Element, name: string, value: string) {
   element.setAttribute(name, value);
   owned.add(element);
@@ -65,10 +93,13 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
       result.missing.push(group.label);
       continue;
     }
-    const target =
-      group.operation === "grid" || group.operation === "compact" ? layoutParent(container, members) : regionOf(container);
-    mark(target, GROUP, String(index));
-    mark(target, OP, group.operation);
+    let targets = [regionOf(container)];
+    if (group.operation === "grid" || group.operation === "compact") targets = [layoutParent(container, members)];
+    if (group.operation === "hide-secondary") targets = hideTargets(container, members);
+    for (const target of targets) {
+      mark(target, GROUP, String(index));
+      mark(target, OP, group.operation);
+    }
     for (const member of members) mark(member, MEMBER, "");
     result.applied.push(group.label);
   }
