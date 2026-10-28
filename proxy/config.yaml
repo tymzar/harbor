@@ -1,0 +1,21 @@
+# Local LiteLLM proxy: holds the Meta key so the extension never does.
+# Run from the repo root:  proxy/run.sh
+model_list:
+  - model_name: spark
+    litellm_params:
+      model: meta/muse-spark-1.3
+      api_key: os.environ/META_API_KEY
+  - model_name: sam
+    litellm_params:
+      model: meta/sam-3.1
+      api_key: os.environ/META_API_KEY
+
+general_settings:
+  # The extension authenticates with this local key, not the Meta key.
+  master_key: os.environ/SMART_WEB_PROXY_KEY
+
+litellm_settings:
+  # Global spend cap in USD for this proxy process (plan: $100 project cap).
+  max_budget: 100
+  budget_duration: 30d
+  drop_params: false

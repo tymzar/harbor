@@ -1,29 +1,23 @@
 import { test as base, chromium, type BrowserContext } from "@playwright/test";
-import path from "path";
+import path from "node:path";
 
 export const PAGE_TO_PAGE_URL = {
-  POPUP: "popup/popup.html",
-  PANEL: "panel/panel.html",
-  OPTIONS: "options/options.html",
-  NEWTAB: "newtab/newtab.html",
-  DEVTOOLS: "devtools/devtools.html",
+  SIDEPANEL: "sidepanel/sidepanel.html",
 };
 
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
 }>({
+  // eslint-disable-next-line no-empty-pattern
   context: async ({}, use) => {
-    const __dirname = path.resolve();
-    const pathToExtension = path.join(__dirname, "build");
+    const pathToExtension = path.resolve("build");
 
     const context = await chromium.launchPersistentContext("", {
       channel: "chromium",
       args: [
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
       ],
     });
     await use(context);

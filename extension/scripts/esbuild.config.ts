@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { clean } from "esbuild-plugin-clean";
 import { htmlPlugin } from "@craftamap/esbuild-plugin-html";
 import postCssPlugin from "esbuild-style-plugin";
 import { copy } from "esbuild-plugin-copy";
 import * as esbuild from "esbuild";
-import tailwindcss from "tailwindcss";
-import autoprefixer from "autoprefixer";
+import tailwindcss from "@tailwindcss/postcss";
 
 import type { BuildContext, BuildOptions } from "esbuild";
 
@@ -28,11 +27,7 @@ const config: BuildOptions = {
     const baseEntries = [
       "./src/pages/background/index.ts",
       "./src/pages/content/index.ts",
-      "./src/pages/devtools/index.ts",
-      "./src/pages/newtab/index.tsx",
-      "./src/pages/options/index.tsx",
-      "./src/pages/panel/index.tsx",
-      "./src/pages/popup/index.tsx",
+      "./src/pages/sidepanel/index.tsx",
     ];
 
     if (isDevelopment) {
@@ -50,40 +45,16 @@ const config: BuildOptions = {
     }),
     postCssPlugin({
       postcss: {
-        plugins: [tailwindcss, autoprefixer],
+        plugins: [tailwindcss()],
       },
     }),
     htmlPlugin({
       files: [
         {
-          entryPoints: makeHtmlEntries(["src/pages/popup/index.tsx"]),
-          filename: "popup/popup.html",
-          title: "Popup",
-          htmlTemplate: readFileSync("./src/pages/popup/index.html", "utf8"),
-        },
-        {
-          entryPoints: makeHtmlEntries(["src/pages/panel/index.tsx"]),
-          filename: "panel/panel.html",
-          title: "Panel",
-          htmlTemplate: readFileSync("./src/pages/panel/index.html", "utf8"),
-        },
-        {
-          entryPoints: makeHtmlEntries(["src/pages/options/index.tsx"]),
-          filename: "options/options.html",
-          title: "Options",
-          htmlTemplate: readFileSync("./src/pages/options/index.html", "utf8"),
-        },
-        {
-          entryPoints: makeHtmlEntries(["src/pages/newtab/index.tsx"]),
-          filename: "newtab/newtab.html",
-          title: "Newtab",
-          htmlTemplate: readFileSync("./src/pages/newtab/index.html", "utf8"),
-        },
-        {
-          entryPoints: makeHtmlEntries(["src/pages/devtools/index.ts"]),
-          filename: "devtools/devtools.html",
-          title: "Devtools",
-          htmlTemplate: readFileSync("./src/pages/devtools/index.html", "utf8"),
+          entryPoints: makeHtmlEntries(["src/pages/sidepanel/index.tsx"]),
+          filename: "sidepanel/sidepanel.html",
+          title: "Smart Web",
+          htmlTemplate: readFileSync("./src/pages/sidepanel/index.html", "utf8"),
         },
       ],
     }),
@@ -111,6 +82,15 @@ async function createEsbuildContext(
   options: BuildOptions
 ): Promise<BuildContext> {
   return esbuild.context(options);
+}
+
+// Playwright can't click the toolbar icon, so test builds get host access to the
+// fixture pages instead of relying on the activeTab grant.
+function grantTestHosts() {
+  const manifestPath = "./build/manifest.json";
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  manifest.host_permissions = ["<all_urls>"]; // captureVisibleTab needs <all_urls> without activeTab
+  writeFileSync(manifestPath, JSON.stringify(manifest, undefined, 2));
 }
 
 function main() {
@@ -142,6 +122,7 @@ function main() {
     esbuild
       .build(config)
       .then(() => {
+        if (process.env.E2E) grantTestHosts();
         console.log("Building extension complete!");
       })
       .catch((error) => {

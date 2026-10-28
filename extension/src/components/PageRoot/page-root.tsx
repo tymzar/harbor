@@ -1,47 +1,29 @@
-import React from "react";
+import { useEffect, type ReactNode } from "react";
+import { Toast } from "@heroui/react";
 import "../../assets/css/index.css";
-import { HeroUIProvider, ToastProvider } from "@heroui/react";
-import {
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  Chart,
-  Legend,
-  LineElement,
-  LinearScale,
-  PointElement,
-  Title,
-  Tooltip,
-} from "chart.js";
 
-type ApplicationRootProperties = {
-  children: React.ReactNode;
-};
+// Extension pages can't run an inline theme script (MV3 CSP), so follow the OS scheme here.
+function useSystemTheme(): void {
+  useEffect(() => {
+    const query = globalThis.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => {
+      document.documentElement.classList.toggle("dark", query.matches);
+      document.documentElement.dataset.theme = query.matches ? "dark" : "light";
+    };
 
-// Legend
-Chart.register(
-  Legend,
-  ArcElement,
-  Tooltip,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  PointElement,
-  LineElement
-);
+    apply();
+    query.addEventListener("change", apply);
+    return () => query.removeEventListener("change", apply);
+  }, []);
+}
 
-export function PageRoot({ children }: ApplicationRootProperties): JSX.Element {
+export function PageRoot({ children }: { children: ReactNode }) {
+  useSystemTheme();
+
   return (
-    <HeroUIProvider>
-      <ToastProvider />
-      <div className="min-h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        <div className="flex justify-center w-full">
-          <div className="grid grid-cols-12 gap-4 w-full max-w-none">
-            <div className="col-start-2 col-end-12">{children}</div>
-          </div>
-        </div>
-      </div>
-    </HeroUIProvider>
+    <>
+      <Toast.Provider placement="bottom" />
+      <div className="min-h-full w-full">{children}</div>
+    </>
   );
 }

@@ -10,3 +10,8 @@ Notes for the submission's feedback fields. Add entries as they happen, dated.
 - **SAM on UI screenshots.** `button`, `icon`, `rounded rectangle` work well; `card`, `panel`, `navigation menu` return nothing. Worth documenting for UI/screen use cases.
 - **Spark reasoning share.** ~90% of completion tokens were reasoning on a small structured task; positive: strict JSON schema held exactly, directly and via LiteLLM.
 - **LiteLLM docs lag.** LiteLLM's Meta provider page still shows `muse-spark-1.1`; `meta/muse-spark-1.3` works.
+
+## 2026-10-28
+
+- **SAM works through LiteLLM.** `meta/sam-3.1` streams through the LiteLLM proxy `/v1/responses` unchanged (11 boxes, same as direct). Not in LiteLLM's Meta docs.
+- **LiteLLM auth status codes.** Missing key → 500, wrong key → 400 "No connected db"; both refused, but neither is a 401.

@@ -1,34 +1,27 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "@heroui/styles";
 
-#app,
-#root,
-body,
-html {
-  height: 100%;
-  margin: 0;
+/* Scan the extension sources for utility classes (paths are relative to this file). */
+@source "../../";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Same harbor-teal accent as the Smart Web app (src/index.css in the repo root). */
+:root {
+  --accent: oklch(0.52 0.11 195);
+  --accent-foreground: oklch(0.99 0 0);
 }
-html {
-  -webkit-text-size-adjust: 100%;
-  padding: 0;
-  font-size: 16px;
-  line-height: 24px;
-  background: #fff;
-  color: #26221e;
-  font-weight: 500;
+.dark {
+  --accent: oklch(0.68 0.11 195);
+  --accent-foreground: oklch(0.18 0.03 195);
+}
+
+html,
+body,
+#root {
+  height: 100%;
 }
 
 body {
-  box-sizing: border-box;
-  cursor: default;
-  font-family: Montserrat, DejaVu Sans, Verdana, sans‑serif;
-  font-weight: 500;
-}
-
-*,
-:after,
-:before {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+  @apply bg-background text-foreground antialiased;
 }

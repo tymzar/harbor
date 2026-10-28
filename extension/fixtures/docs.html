@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lattice Docs — Authentication</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.55 system-ui, sans-serif; color: #1f2328; background: #fff; }
+  .top { display: flex; align-items: center; gap: 18px; padding: 10px 20px; border-bottom: 1px solid #ddd; background: #f6f8fa; }
+  .top .brand { font-weight: 700; margin-right: 12px; }
+  .top a { color: #444; text-decoration: none; font-size: 14px; }
+  .top .search { margin-left: auto; padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; width: 220px; }
+  .layout { display: grid; grid-template-columns: 240px 1fr 200px; gap: 24px; padding: 20px; }
+  .side a { display: block; padding: 3px 8px; color: #333; text-decoration: none; font-size: 14px; border-radius: 4px; }
+  .side a.on { background: #e7f0ff; color: #0b5cad; }
+  .side .h { margin: 14px 0 4px; font-size: 12px; text-transform: uppercase; color: #777; }
+  .doc h1 { margin-top: 0; font-size: 28px; }
+  .callout { padding: 10px 14px; background: #fff8e1; border-left: 4px solid #f2b600; margin: 14px 0; }
+  pre { background: #0d1117; color: #e6edf3; padding: 12px; border-radius: 6px; overflow: auto; font-size: 13px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 12px; }
+  .tile { flex: 1 1 180px; border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
+  .tile b { display: block; }
+  .tile span { font-size: 13px; color: #666; }
+  .toc a { display: block; font-size: 13px; color: #555; text-decoration: none; padding: 2px 0; }
+  .foot { display: flex; gap: 16px; padding: 16px 20px; border-top: 1px solid #ddd; font-size: 13px; color: #666; }
+  .foot a { color: #666; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <span class="brand">Lattice</span>
+    <a href="#">Docs</a><a href="#">Guides</a><a href="#">API reference</a><a href="#">SDKs</a>
+    <a href="#">Changelog</a><a href="#">Status</a><a href="#">Pricing</a><a href="#">Community</a>
+    <input class="search" type="search" placeholder="Search docs">
+  </div>
+  <div class="layout">
+    <div class="side">
+      <div class="h">Getting started</div>
+      <a href="#">Overview</a><a href="#">Quickstart</a><a href="#">Install the CLI</a><a href="#">Projects</a>
+      <div class="h">Core concepts</div>
+      <a href="#" class="on">Authentication</a><a href="#">API keys</a><a href="#">OAuth apps</a><a href="#">Scopes</a>
+      <a href="#">Rate limits</a><a href="#">Errors</a><a href="#">Pagination</a><a href="#">Webhooks</a>
+      <div class="h">Resources</div>
+      <a href="#">Users</a><a href="#">Teams</a><a href="#">Invoices</a><a href="#">Events</a><a href="#">Files</a>
+    </div>
+    <div class="doc">
+      <h1>Authentication</h1>
+      <p>Every request to the Lattice API carries a bearer token. Tokens are scoped to a project and expire after 30 days unless rotated.</p>
+      <div class="callout">Never ship a secret key in client-side code. Use a server route that holds the key.</div>
+      <h2>Create a key</h2>
+      <p>Open <em>Project settings → Keys</em> and choose <strong>New key</strong>. Copy it once; it is not shown again.</p>
+      <pre>curl https://api.lattice.dev/v1/me \
+  -H "Authorization: Bearer $LATTICE_KEY"</pre>
+      <h2>Next steps</h2>
+      <div class="grid">
+        <div class="tile"><b><a href="#">Rotate keys</a></b><span>Replace a key without downtime.</span></div>
+        <div class="tile"><b><a href="#">Scopes</a></b><span>Limit what a key can do.</span></div>
+        <div class="tile"><b><a href="#">OAuth apps</a></b><span>Act on behalf of users.</span></div>
+        <div class="tile"><b><a href="#">Rate limits</a></b><span>Quotas per key and project.</span></div>
+      </div>
+    </div>
+    <div class="toc">
+      <div class="h">On this page</div>
+      <a href="#">Create a key</a><a href="#">Send a request</a><a href="#">Rotate</a><a href="#">Next steps</a>
+    </div>
+  </div>
+  <div class="foot"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Security</a><span>© 2026 Lattice</span></div>
+</body>
+</html>

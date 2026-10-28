@@ -23,3 +23,5 @@ build
 # JS files
 *.js
 *.cjs
+*.tsbuildinfo
+
