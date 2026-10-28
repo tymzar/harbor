@@ -6,3 +6,6 @@ test-results
 .DS_Store
 .env
 .env.*
+
+# Evaluation snapshots hold third-party page content; regenerate with the collector
+evaluation/snapshots/

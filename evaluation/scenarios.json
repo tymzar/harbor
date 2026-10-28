@@ -1,0 +1,417 @@
+[
+  {
+    "id": "yt-watch-only-video",
+    "site": "youtube-watch",
+    "goal": "I just want to watch the video. Hide the recommended videos column.",
+    "tags": ["video", "hide", "distraction-free"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "id": "contents" }, "area": { "minX": 900 } }, "note": "recommendations column" },
+      { "op": "keep", "anchor": { "attr": { "aria-label": "YouTube Video Player" } } },
+      { "op": "keep", "anchor": { "tag": "h1", "text": "Me at the zoo" } }
+    ]
+  },
+  {
+    "id": "yt-watch-hide-engagement",
+    "site": "youtube-watch",
+    "goal": "I never like, dislike or share videos. Hide those buttons but keep Subscribe.",
+    "tags": ["video", "hide", "precision"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "button", "text": "like this video" } },
+      { "op": "hide", "anchor": { "attr": { "aria-label": "Dislike this video" } } },
+      { "op": "hide", "anchor": { "attr": { "aria-label": "Share" } } },
+      { "op": "keep", "anchor": { "attr": { "aria-label": "Subscribe to jawed." } } }
+    ]
+  },
+  {
+    "id": "yt-watch-emphasize-title",
+    "site": "youtube-watch",
+    "goal": "Make the video title and channel stand out; recommendations can be denser.",
+    "tags": ["video", "emphasize", "density"],
+    "expect": [
+      { "op": "emphasize", "anchor": { "tag": "h1", "text": "Me at the zoo" } },
+      { "op": "compact", "anchor": { "attr": { "id": "contents" }, "area": { "minX": 900 } } }
+    ]
+  },
+  {
+    "id": "yt-home-no-shorts",
+    "site": "youtube-home",
+    "goal": "I never watch Shorts. Remove Shorts from the left menu.",
+    "tags": ["video", "hide", "navigation", "precision"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "a", "attr": { "aria-label": "Shorts" } } },
+      { "op": "keep", "anchor": { "tag": "a", "attr": { "aria-label": "Home" } } },
+      { "op": "keep", "anchor": { "tag": "a", "attr": { "aria-label": "Subscriptions" } } }
+    ]
+  },
+  {
+    "id": "yt-home-hide-history-notice",
+    "site": "youtube-home",
+    "goal": "Hide the 'history is off' box; I only use search.",
+    "tags": ["video", "hide", "sparse-page"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "h2", "text": "Your YouTube history is off" } },
+      { "op": "keep", "anchor": { "tag": "yt-searchbox" } }
+    ]
+  },
+  {
+    "id": "twitch-dir-hide-side-nav",
+    "site": "twitch-directory",
+    "goal": "I only browse categories. Hide the Live Channels sidebar on the left.",
+    "tags": ["streaming", "hide", "sidebar"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "data-a-target": "side-nav-bar" } } },
+      { "op": "keep", "anchor": { "tag": "h1", "text": "Browse" } },
+      { "op": "keep", "anchor": { "tag": "h2", "text": "Just Chatting", "area": { "minX": 250 } } }
+    ]
+  },
+  {
+    "id": "twitch-dir-hide-signup-footer",
+    "site": "twitch-directory",
+    "goal": "Hide the sticky 'Join the Twitch community' bar at the bottom.",
+    "tags": ["streaming", "hide", "sticky"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "id": "twilight-sticky-footer-root" } } },
+      { "op": "keep", "anchor": { "attr": { "data-a-target": "top-nav-container" } } }
+    ]
+  },
+  {
+    "id": "twitch-dir-dense-grid",
+    "site": "twitch-directory",
+    "goal": "Fit more categories on screen.",
+    "tags": ["streaming", "density", "grid"],
+    "expect": [
+      { "op": "compact", "anchor": { "tag": "h2", "text": "Just Chatting", "area": { "minX": 250 } }, "note": "compact or grid on the category grid both satisfy the intent; see README" },
+      { "op": "keep", "anchor": { "tag": "h1", "text": "Browse" } }
+    ]
+  },
+  {
+    "id": "twitch-cat-hide-notice",
+    "site": "twitch-category",
+    "goal": "Hide the 'May Contain Labeled Content' notice and the sign-up footer.",
+    "tags": ["streaming", "hide", "multiple"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "article", "textStart": "May Contain Labeled Content" } },
+      { "op": "hide", "anchor": { "attr": { "id": "twilight-sticky-footer-root" } } },
+      { "op": "keep", "anchor": { "attr": { "data-a-target": "directory-content-type-tabs" } } }
+    ]
+  },
+  {
+    "id": "gh-hide-actions-everywhere",
+    "site": "github-repo",
+    "goal": "please hide completly. i do not use at all the actions [unpin,watch,fork,start] neither on the top bar neitiher in the sidebar",
+    "tags": ["code", "hide", "duplicate-regions", "user-reported"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "data-testid": "repo-header-actions" } }, "note": "Notifications / Fork / Star in the header" },
+      { "op": "hide", "anchor": { "tag": "span", "text": "stars", "area": { "minX": 900 } }, "note": "the same stats in the About sidebar" },
+      { "op": "keep", "anchor": { "tag": "nav", "attr": { "aria-label": "Repository" } } }
+    ]
+  },
+  {
+    "id": "gh-hide-marketing-nav",
+    "site": "github-repo",
+    "goal": "Hide GitHub's marketing menu at the top (Platform, Solutions, Resources...).",
+    "tags": ["code", "hide", "navigation", "hidden-menus"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "nav", "attr": { "aria-label": "Global" } } },
+      { "op": "keep", "anchor": { "tag": "nav", "attr": { "aria-label": "Repository" } } }
+    ]
+  },
+  {
+    "id": "gh-review-prs",
+    "site": "github-repo",
+    "goal": "review pull requests and check Actions",
+    "tags": ["code", "emphasize", "goal-inference"],
+    "expect": [
+      { "op": "emphasize", "anchor": { "tag": "nav", "attr": { "aria-label": "Repository" } } },
+      { "op": "keep", "anchor": { "tag": "a", "href": "/pulls" } }
+    ]
+  },
+  {
+    "id": "so-hide-sidebar",
+    "site": "stackoverflow-question",
+    "goal": "I read answers only. Hide the right sidebar (blog, meta, promos).",
+    "tags": ["q-and-a", "hide", "sidebar", "reading"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "id": "sidebar" } } },
+      { "op": "keep", "anchor": { "tag": "h1", "textStart": "Why is conditional processing" } },
+      { "op": "keep", "anchor": { "attr": { "aria-label": "question and answers" } } }
+    ]
+  },
+  {
+    "id": "so-hide-left-nav",
+    "site": "stackoverflow-question",
+    "goal": "Hide the left navigation; I arrive from search and never use it.",
+    "tags": ["q-and-a", "hide", "navigation"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "nav", "attr": { "aria-label": "Primary" } } },
+      { "op": "keep", "anchor": { "attr": { "id": "search" } } }
+    ]
+  },
+  {
+    "id": "so-hide-agents-promo",
+    "site": "stackoverflow-question",
+    "goal": "Hide the 'Stack Overflow for Agents' promo but keep the rest of the sidebar.",
+    "tags": ["q-and-a", "hide", "precision", "promo"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "aside", "attr": { "aria-label": "Stack Overflow for Agents" } } },
+      { "op": "keep", "anchor": { "tag": "ul", "text": "The Overflow Blog" } }
+    ]
+  },
+  {
+    "id": "wiki-distraction-free",
+    "site": "wikipedia-article",
+    "goal": "Distraction-free reading: hide the Appearance panel and the Contents sidebar.",
+    "tags": ["reading", "hide", "distraction-free", "multiple"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "nav", "attr": { "aria-label": "Appearance" } } },
+      { "op": "hide", "anchor": { "attr": { "id": "mw-panel-toc" } } },
+      { "op": "keep", "anchor": { "tag": "h1", "text": "Web browser" } },
+      { "op": "keep", "anchor": { "tag": "section", "attr": { "data-mw-section-id": "0" } } }
+    ]
+  },
+  {
+    "id": "wiki-hide-account-links",
+    "site": "wikipedia-article",
+    "goal": "Hide Donate, Create account and Log in; keep the search box.",
+    "tags": ["reading", "hide", "precision"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "ul", "text": "Donate Create account Log in" } },
+      { "op": "keep", "anchor": { "attr": { "id": "searchform" } } }
+    ]
+  },
+  {
+    "id": "wiki-emphasize-toc",
+    "site": "wikipedia-article",
+    "goal": "I jump between sections a lot; make the table of contents stand out.",
+    "tags": ["reading", "emphasize", "goal-inference"],
+    "expect": [
+      { "op": "emphasize", "anchor": { "attr": { "id": "mw-panel-toc" } } },
+      { "op": "keep", "anchor": { "tag": "h1", "text": "Web browser" } }
+    ]
+  },
+  {
+    "id": "amazon-hide-filters",
+    "site": "amazon-search",
+    "goal": "Hide the left filter column; I just scan results.",
+    "tags": ["commerce", "hide", "sidebar"],
+    "expect": [
+      { "op": "hide", "anchor": { "kind": "heading", "text": "Popular Shopping Ideas" } },
+      { "op": "keep", "anchor": { "tag": "h2", "textStart": "Anker USB C to USB C Cable" } }
+    ]
+  },
+  {
+    "id": "amazon-hide-subnav",
+    "site": "amazon-search",
+    "goal": "Hide the second navigation bar (All, Today's Deals, ...); keep the search bar.",
+    "tags": ["commerce", "hide", "navigation"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "id": "nav-main" } } },
+      { "op": "keep", "anchor": { "attr": { "id": "nav-search-bar-form" } } }
+    ]
+  },
+  {
+    "id": "amazon-grid-results",
+    "site": "amazon-search",
+    "goal": "Show the results as a compact grid so I can compare more at once.",
+    "tags": ["commerce", "grid", "density"],
+    "expect": [
+      { "op": "grid", "anchor": { "tag": "h2", "textStart": "Anker USB C to USB C Cable" }, "note": "compact on the results list is a partial pass; see README" }
+    ]
+  },
+  {
+    "id": "mdn-hide-left-sidebar",
+    "site": "mdn-reference",
+    "goal": "Hide the left reference sidebar but keep 'In this article'.",
+    "tags": ["docs", "hide", "sidebar", "precision"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "id": "main-sidebar" } } },
+      { "op": "keep", "anchor": { "tag": "h2", "text": "In this article" } },
+      { "op": "keep", "anchor": { "tag": "h1", "text": "Array" } }
+    ]
+  },
+  {
+    "id": "mdn-hide-baseline",
+    "site": "mdn-reference",
+    "goal": "Hide the Baseline compatibility box at the top.",
+    "tags": ["docs", "hide", "precision"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "summary", "text": "Baseline Widely available" } },
+      { "op": "keep", "anchor": { "tag": "h1", "text": "Array" } }
+    ]
+  },
+  {
+    "id": "bbc-hide-region-nav",
+    "site": "bbc-news",
+    "goal": "Hide the second row of the navigation (US & Canada, UK, Africa...).",
+    "tags": ["news", "hide", "navigation", "precision"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "data-testid": "level2-navigation-container" } } },
+      { "op": "keep", "anchor": { "attr": { "data-testid": "level1-navigation-container" } } }
+    ]
+  },
+  {
+    "id": "bbc-emphasize-top-story",
+    "site": "bbc-news",
+    "goal": "Make the top story block stand out.",
+    "tags": ["news", "emphasize"],
+    "expect": [
+      { "op": "emphasize", "anchor": { "attr": { "data-testid": "connecticut-grid-1" } } }
+    ]
+  },
+  {
+    "id": "linkedin-hide-upsells",
+    "site": "linkedin-jobs",
+    "goal": "Hide 'Get notified when a new job is posted' and the 'Use AI to assess how you fit' box.",
+    "tags": ["jobs", "hide", "multiple", "promo"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "section", "text": "Get notified when a new job is posted" } },
+      { "op": "hide", "anchor": { "tag": "section", "text": "Use AI to assess how you fit" } },
+      { "op": "keep", "anchor": { "tag": "h1", "text": "Frontend Engineer Jobs" } }
+    ]
+  },
+  {
+    "id": "verge-hide-account-links",
+    "site": "theverge-front",
+    "goal": "Hide the Subscribe and Sign In links.",
+    "tags": ["news", "hide", "precision"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "a", "href": "/subscribe" } },
+      { "op": "hide", "anchor": { "tag": "a", "href": "/auth/login" } },
+      { "op": "keep", "anchor": { "tag": "nav", "attr": { "aria-label": "Top Navigation" } } }
+    ]
+  },
+  {
+    "id": "verge-compact-nav",
+    "site": "theverge-front",
+    "goal": "Make the top navigation more compact.",
+    "tags": ["news", "density"],
+    "expect": [
+      { "op": "compact", "anchor": { "tag": "nav", "attr": { "aria-label": "Top Navigation" } } }
+    ]
+  },
+  {
+    "id": "booking-hide-product-tabs",
+    "site": "booking-search",
+    "goal": "I only book stays. Hide the Flights / Car rental / Cruises tabs.",
+    "tags": ["travel", "hide", "navigation", "partial-page"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "nav", "attr": { "aria-label": "What are you looking for?" } } },
+      { "op": "keep", "anchor": { "tag": "form", "attr": { "aria-label": "Search properties" } } }
+    ]
+  },
+  {
+    "id": "booking-hide-footer-links",
+    "site": "booking-search",
+    "goal": "Hide the big footer link lists.",
+    "tags": ["travel", "hide", "footer", "partial-page"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "data-testid": "full-footer" } } },
+      { "op": "keep", "anchor": { "attr": { "data-testid": "header-booking-logo" } } }
+    ]
+  },
+  {
+    "id": "spotify-hide-upsell",
+    "site": "spotify-artist",
+    "goal": "Hide Premium, Support, Download and Install App in the top bar.",
+    "tags": ["music", "hide", "precision"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "button", "text": "Premium", "area": { "minX": 600, "maxY": 60 } } },
+      { "op": "hide", "anchor": { "tag": "a", "href": "/download" } },
+      { "op": "keep", "anchor": { "tag": "form", "text": "What do you want to play?" } }
+    ]
+  },
+  {
+    "id": "spotify-hide-now-playing",
+    "site": "spotify-artist",
+    "goal": "Hide the Now playing panel on the right.",
+    "tags": ["music", "hide", "sidebar"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "aside", "attr": { "aria-label": "Now playing view" } } },
+      { "op": "keep", "anchor": { "tag": "nav", "attr": { "aria-label": "Main" } } }
+    ]
+  },
+
+  {
+    "id": "pick-gh-star-row",
+    "site": "github-repo",
+    "pick": { "tag": "ul", "attr": { "data-testid": "repo-header-actions" } },
+    "tags": ["picker", "hide"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "data-testid": "repo-header-actions" } } },
+      { "op": "keep", "anchor": { "tag": "nav", "attr": { "aria-label": "Repository" } } }
+    ]
+  },
+  {
+    "id": "pick-yt-shorts",
+    "site": "youtube-home",
+    "pick": { "tag": "a", "attr": { "aria-label": "Shorts" } },
+    "tags": ["picker", "hide", "precision"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "a", "attr": { "aria-label": "Shorts" } } },
+      { "op": "keep", "anchor": { "tag": "a", "attr": { "aria-label": "Home" } } }
+    ]
+  },
+  {
+    "id": "pick-so-agents-promo",
+    "site": "stackoverflow-question",
+    "pick": { "tag": "aside", "attr": { "aria-label": "Stack Overflow for Agents" } },
+    "tags": ["picker", "hide", "promo"],
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "aside", "attr": { "aria-label": "Stack Overflow for Agents" } } },
+      { "op": "keep", "anchor": { "tag": "ul", "text": "The Overflow Blog" } }
+    ]
+  },
+  {
+    "id": "pick-twitch-footer",
+    "site": "twitch-directory",
+    "pick": { "attr": { "id": "twilight-sticky-footer-root" } },
+    "tags": ["picker", "hide", "sticky"],
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "id": "twilight-sticky-footer-root" } } }
+    ]
+  },
+
+  {
+    "id": "x-hide-trends",
+    "site": "x-profile",
+    "goal": "Hide 'What's happening' and 'Who to follow' in the right column.",
+    "tags": ["social", "hide", "sidebar"],
+    "requires": "real-browser",
+    "expect": [
+      { "op": "hide", "anchor": { "attr": { "aria-label": "Timeline: Trending now" } } },
+      { "op": "hide", "anchor": { "text": "Who to follow" } }
+    ]
+  },
+  {
+    "id": "reddit-hide-sidebar",
+    "site": "reddit-subreddit",
+    "goal": "Hide the right sidebar and the promoted posts.",
+    "tags": ["social", "hide", "sidebar", "promo"],
+    "requires": "real-browser",
+    "expect": [
+      { "op": "hide", "anchor": { "tag": "aside" } },
+      { "op": "keep", "anchor": { "tag": "main" } }
+    ]
+  },
+  {
+    "id": "hn-compact-stories",
+    "site": "hackernews-front",
+    "goal": "Make the story list denser and emphasize the titles.",
+    "tags": ["news", "density", "emphasize"],
+    "requires": "real-browser",
+    "expect": [
+      { "op": "compact", "anchor": { "tag": "table", "attr": { "id": "hnmain" } } }
+    ]
+  },
+  {
+    "id": "npm-hide-sidebar-stats",
+    "site": "npm-package",
+    "goal": "Hide the download stats and collaborators; keep install command and versions.",
+    "tags": ["code", "hide", "sidebar", "precision"],
+    "requires": "real-browser",
+    "expect": [
+      { "op": "hide", "anchor": { "text": "Weekly Downloads" } },
+      { "op": "keep", "anchor": { "text": "npm i react" } }
+    ]
+  }
+]

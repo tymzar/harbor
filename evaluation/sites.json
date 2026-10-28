@@ -1,0 +1,22 @@
+[
+  { "id": "youtube-home", "name": "YouTube", "kind": "video feed", "url": "https://www.youtube.com/" },
+  { "id": "youtube-watch", "name": "YouTube", "kind": "video page", "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
+  { "id": "twitch-directory", "name": "Twitch", "kind": "stream directory", "url": "https://www.twitch.tv/directory" },
+  { "id": "twitch-category", "name": "Twitch", "kind": "category streams", "url": "https://www.twitch.tv/directory/category/just-chatting" },
+  { "id": "x-profile", "name": "X (Twitter)", "kind": "social profile", "url": "https://x.com/NASA" },
+  { "id": "reddit-subreddit", "name": "Reddit", "kind": "community feed", "url": "https://www.reddit.com/r/programming/" },
+  { "id": "github-repo", "name": "GitHub", "kind": "code repository", "url": "https://github.com/facebook/react" },
+  { "id": "stackoverflow-question", "name": "Stack Overflow", "kind": "Q&A thread", "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array" },
+  { "id": "wikipedia-article", "name": "Wikipedia", "kind": "encyclopedia article", "url": "https://en.wikipedia.org/wiki/Web_browser" },
+  { "id": "amazon-search", "name": "Amazon", "kind": "product search", "url": "https://www.amazon.com/s?k=usb+c+cable" },
+  { "id": "mdn-reference", "name": "MDN", "kind": "documentation", "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" },
+  { "id": "hackernews-front", "name": "Hacker News", "kind": "link aggregator", "url": "https://news.ycombinator.com/" },
+  { "id": "bbc-news", "name": "BBC News", "kind": "news front page", "url": "https://www.bbc.com/news" },
+  { "id": "npm-package", "name": "npm", "kind": "package page", "url": "https://www.npmjs.com/package/react" },
+  { "id": "imdb-title", "name": "IMDb", "kind": "title page", "url": "https://www.imdb.com/title/tt0111161/" },
+  { "id": "ebay-search", "name": "eBay", "kind": "product search", "url": "https://www.ebay.com/sch/i.html?_nkw=headphones" },
+  { "id": "linkedin-jobs", "name": "LinkedIn", "kind": "job search", "url": "https://www.linkedin.com/jobs/search?keywords=frontend%20engineer" },
+  { "id": "theverge-front", "name": "The Verge", "kind": "news front page", "url": "https://www.theverge.com/" },
+  { "id": "spotify-artist", "name": "Spotify", "kind": "music artist page", "url": "https://open.spotify.com/artist/0OdUWJ0sBjDrqHygGUXeCF" },
+  { "id": "booking-search", "name": "Booking.com", "kind": "travel search", "url": "https://www.booking.com/searchresults.html?ss=Zurich" }
+]
