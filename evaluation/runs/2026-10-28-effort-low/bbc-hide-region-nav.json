@@ -1,0 +1,594 @@
+{
+  "scenario": {
+    "id": "bbc-hide-region-nav",
+    "site": "bbc-news",
+    "goal": "Hide the second row of the navigation (US & Canada, UK, Africa...).",
+    "tags": [
+      "news",
+      "hide",
+      "navigation",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "data-testid": "level2-navigation-container"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "data-testid": "level1-navigation-container"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "bbc-news",
+    "url": "https://www.bbc.com/news",
+    "finalUrl": "https://www.bbc.com/news"
+  },
+  "at": "2026-10-28T19:41:58.715Z",
+  "scanNodes": 88,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "level2-navigation-container"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n42",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "US & Canada UK Africa Asia Australia Europe Latin America Middle East In Pictur…"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "level1-navigation-container"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n12",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Home News Sport Business Technology Health Culture Arts Travel Earth Audio Video"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n42",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n12",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n17",
+                "n19",
+                "n21",
+                "n23",
+                "n25",
+                "n27",
+                "n29",
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n41"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/*"
+            },
+            {
+              "container": "n44",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Regional sub-navigation",
+              "members": [
+                "n46",
+                "n48",
+                "n50",
+                "n52",
+                "n54",
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64",
+                "n66"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Second nav row user asked to hide",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/news"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-second-row",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Regional sub-navigation",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide completely"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Regional sub-navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Show compact"
+                }
+              ],
+              "text": "How should the second-row regional links appear?"
+            },
+            {
+              "id": "q-top-nav",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make compact"
+                }
+              ],
+              "text": "Should the top main navigation stay as-is?"
+            }
+          ],
+          "summary": "Hides the second-row regional nav on BBC News, keeps top navigation unchanged.",
+          "template": {
+            "pageKind": "news front page",
+            "urlPattern": "www.bbc.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n15",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n17",
+              "n19",
+              "n21",
+              "n23",
+              "n25",
+              "n27",
+              "n29",
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n41"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/*"
+          },
+          {
+            "container": "n44",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Regional sub-navigation",
+            "members": [
+              "n46",
+              "n48",
+              "n50",
+              "n52",
+              "n54",
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64",
+              "n66"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Second nav row user asked to hide",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/news"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 3939,
+            "model": "spark",
+            "ms": 10741,
+            "outputTokens": 2362,
+            "purpose": "layout plan",
+            "reasoningTokens": 1907
+          },
+          {
+            "inputTokens": 4390,
+            "model": "spark",
+            "ms": 4646,
+            "outputTokens": 1256,
+            "purpose": "repair",
+            "reasoningTokens": 798
+          }
+        ],
+        "ms": 15400
+      },
+      "layout": {
+        "labels": [
+          "Regional sub-navigation"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n42",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Top sections navigation",
+              "members": [
+                "n16",
+                "n18",
+                "n20",
+                "n22",
+                "n24",
+                "n26",
+                "n28",
+                "n30",
+                "n32",
+                "n34",
+                "n36",
+                "n38",
+                "n40"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation that already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/*"
+            },
+            {
+              "container": "n44",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Regional sub-navigation",
+              "members": [
+                "n45",
+                "n47",
+                "n49",
+                "n51",
+                "n53",
+                "n55",
+                "n57",
+                "n59",
+                "n61",
+                "n63",
+                "n65"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Second nav row user asked to hide",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/news"
+            },
+            {
+              "container": "n80",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Cookie consent banner",
+              "members": [
+                "n85",
+                "n87"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely needed consent prompt",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.bbc.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "nav-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top sections navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top sections navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make compact"
+                }
+              ],
+              "text": "How should the main menu feel?"
+            },
+            {
+              "id": "cookie-pref",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Cookie consent banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Yes, hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Cookie consent banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Show it"
+                }
+              ],
+              "text": "Keep cookie banner hidden?"
+            }
+          ],
+          "summary": "Hid the regional second-row nav as requested and hid the cookie banner; kept main nav as-is.",
+          "template": {
+            "pageKind": "news homepage",
+            "urlPattern": "www.bbc.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n15",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Top sections navigation",
+            "members": [
+              "n16",
+              "n18",
+              "n20",
+              "n22",
+              "n24",
+              "n26",
+              "n28",
+              "n30",
+              "n32",
+              "n34",
+              "n36",
+              "n38",
+              "n40"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation that already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/*"
+          },
+          {
+            "container": "n44",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Regional sub-navigation",
+            "members": [
+              "n45",
+              "n47",
+              "n49",
+              "n51",
+              "n53",
+              "n55",
+              "n57",
+              "n59",
+              "n61",
+              "n63",
+              "n65"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Second nav row user asked to hide",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/news"
+          },
+          {
+            "container": "n80",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Cookie consent banner",
+            "members": [
+              "n85",
+              "n87"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely needed consent prompt",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.bbc.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1501,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 2268,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1215,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 868,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3950,
+            "model": "spark",
+            "ms": 10302,
+            "outputTokens": 2762,
+            "purpose": "layout plan",
+            "reasoningTokens": 2226
+          }
+        ],
+        "ms": 12594
+      },
+      "layout": {
+        "labels": [
+          "Regional sub-navigation",
+          "Cookie consent banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n42",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    }
+  ]
+}

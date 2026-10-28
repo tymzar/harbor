@@ -1,0 +1,656 @@
+{
+  "scenario": {
+    "id": "bbc-emphasize-top-story",
+    "site": "bbc-news",
+    "goal": "Make the top story block stand out.",
+    "tags": [
+      "news",
+      "emphasize"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "attr": {
+            "data-testid": "connecticut-grid-1"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "bbc-news",
+    "url": "https://www.bbc.com/news",
+    "finalUrl": "https://www.bbc.com/news"
+  },
+  "at": "2026-10-28T19:42:17.830Z",
+  "scanNodes": 88,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "connecticut-grid-1"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n70",
+        "tag": "section",
+        "kind": "landmark",
+        "text": "LIVE At least 68 killed in Spanish high-speed train crash, as prime minister sa…"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n70",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n71",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Top story",
+              "members": [
+                "n72",
+                "n73"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal: make hero story dominant",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.bbc.com/news"
+            },
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Main navigation",
+              "members": [
+                "n17",
+                "n19",
+                "n21",
+                "n23",
+                "n25",
+                "n27",
+                "n29",
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n41"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/*"
+            },
+            {
+              "container": "n44",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "News sections",
+              "members": [
+                "n46",
+                "n48",
+                "n50",
+                "n52",
+                "n54",
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64",
+                "n66"
+              ],
+              "operation": "compact",
+              "reason": "Tighten to give top story more prominence",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/news/*"
+            },
+            {
+              "container": "n80",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Cookie prompt",
+              "members": [
+                "n85",
+                "n87"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value overlay blocking content",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.bbc.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "News sections",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide section links"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "News sections",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "How much of the news section links do you use?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top story",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Larger and roomier"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top story",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                }
+              ],
+              "text": "Should the top story stay large or be denser?"
+            }
+          ],
+          "summary": "Emphasize the top story block and tighten surrounding chrome so it stands out.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "www.bbc.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n71",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Top story",
+            "members": [
+              "n72",
+              "n73"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal: make hero story dominant",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.bbc.com/news"
+          },
+          {
+            "container": "n15",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Main navigation",
+            "members": [
+              "n17",
+              "n19",
+              "n21",
+              "n23",
+              "n25",
+              "n27",
+              "n29",
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n41"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/*"
+          },
+          {
+            "container": "n44",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "News sections",
+            "members": [
+              "n46",
+              "n48",
+              "n50",
+              "n52",
+              "n54",
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64",
+              "n66"
+            ],
+            "operation": "compact",
+            "reason": "Tighten to give top story more prominence",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/news/*"
+          },
+          {
+            "container": "n80",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Cookie prompt",
+            "members": [
+              "n85",
+              "n87"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value overlay blocking content",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.bbc.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 3930,
+            "model": "spark",
+            "ms": 7388,
+            "outputTokens": 1907,
+            "purpose": "layout plan",
+            "reasoningTokens": 1283
+          },
+          {
+            "inputTokens": 4453,
+            "model": "spark",
+            "ms": 4480,
+            "outputTokens": 1347,
+            "purpose": "repair",
+            "reasoningTokens": 723
+          }
+        ],
+        "ms": 11879
+      },
+      "layout": {
+        "labels": [
+          "Top story",
+          "News sections",
+          "Cookie prompt"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [
+            "emphasize"
+          ],
+          "found": true,
+          "id": "n70",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n70",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Top story",
+              "members": [
+                "n71"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal: make lead story stand out",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.bbc.com/news"
+            },
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Main navigation",
+              "members": [
+                "n17",
+                "n19",
+                "n21",
+                "n23",
+                "n25",
+                "n27",
+                "n29",
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n41"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/*"
+            },
+            {
+              "container": "n44",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Regional sections",
+              "members": [
+                "n46",
+                "n48",
+                "n50",
+                "n52",
+                "n54",
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64",
+                "n66"
+              ],
+              "operation": "compact",
+              "reason": "Long skimmed sub-nav competes with top story",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/*"
+            },
+            {
+              "container": "n84",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Cookie banner",
+              "members": [
+                "n85",
+                "n87"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value consent bar obscures top story",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.bbc.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Regional sections",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep quick access"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Regional sections",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide regional links"
+                }
+              ],
+              "text": "Do you use the regional section links under the main menu?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [],
+                  "label": "Roomy spotlight"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Regional sections",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser page"
+                }
+              ],
+              "text": "Should areas below the top story stay roomy or get denser?"
+            }
+          ],
+          "summary": "Emphasize Top story for the stated goal, tighten Regional sections, and hide Cookie banner to reduce clutter.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "www.bbc.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n70",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Top story",
+            "members": [
+              "n71"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal: make lead story stand out",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.bbc.com/news"
+          },
+          {
+            "container": "n15",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Main navigation",
+            "members": [
+              "n17",
+              "n19",
+              "n21",
+              "n23",
+              "n25",
+              "n27",
+              "n29",
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n41"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/*"
+          },
+          {
+            "container": "n44",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Regional sections",
+            "members": [
+              "n46",
+              "n48",
+              "n50",
+              "n52",
+              "n54",
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64",
+              "n66"
+            ],
+            "operation": "compact",
+            "reason": "Long skimmed sub-nav competes with top story",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/*"
+          },
+          {
+            "container": "n84",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Cookie banner",
+            "members": [
+              "n85",
+              "n87"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value consent bar obscures top story",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.bbc.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1397,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 873,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1067,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 937,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3941,
+            "model": "spark",
+            "ms": 10360,
+            "outputTokens": 2339,
+            "purpose": "layout plan",
+            "reasoningTokens": 1724
+          },
+          {
+            "inputTokens": 4579,
+            "model": "spark",
+            "ms": 5698,
+            "outputTokens": 1702,
+            "purpose": "repair",
+            "reasoningTokens": 1230
+          }
+        ],
+        "ms": 17477
+      },
+      "layout": {
+        "labels": [
+          "Top story",
+          "Regional sections",
+          "Cookie banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n70",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

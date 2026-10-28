@@ -1,0 +1,655 @@
+{
+  "scenario": {
+    "id": "bsky-hide-signup-bar",
+    "site": "bluesky-profile",
+    "goal": "Hide the Create account / Sign in bar at the bottom.",
+    "tags": [
+      "social",
+      "hide",
+      "sticky"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "nav",
+          "text": "Create account Sign in"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "data-testid": "profilePager"
+          },
+          "textStart": "Posts Media Videos"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "bluesky-profile",
+    "url": "https://bsky.app/profile/bsky.app",
+    "finalUrl": "https://bsky.app/profile/bsky.app"
+  },
+  "at": "2026-10-28T19:43:56.494Z",
+  "scanNodes": 139,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "text": "Create account Sign in"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n102",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Create account Sign in"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "profilePager"
+        },
+        "textStart": "Posts Media Videos"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n46",
+        "tag": "div",
+        "kind": "group",
+        "text": "Posts Media Videos Feeds Starter Packs"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n102",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n46",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n102",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Sign-in bar",
+              "members": [
+                "n106",
+                "n107"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Login promo requested hidden by user",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            },
+            {
+              "container": "n47",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Profile tabs",
+              "members": [
+                "n48",
+                "n49",
+                "n50",
+                "n51",
+                "n52"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation for this profile view",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Suggested profiles",
+              "members": [
+                "n25",
+                "n32",
+                "n39"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Related suggestions rarely needed",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "bsky.app/profile/{handle}"
+            },
+            {
+              "container": "n114",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Trending topics",
+              "members": [
+                "n115",
+                "n117",
+                "n119",
+                "n121",
+                "n123",
+                "n125",
+                "n127",
+                "n129",
+                "n131",
+                "n133"
+              ],
+              "operation": "compact",
+              "reason": "Long sidebar list to skim",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Suggested profiles",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide suggestions"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Suggested profiles",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep suggestions"
+                }
+              ],
+              "text": "Do you use Suggested profiles on this page?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Trending topics",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide trending"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Trending topics",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Trending topics",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Full size"
+                }
+              ],
+              "text": "How much Trending do you want to see?"
+            }
+          ],
+          "summary": "Hides bottom Create account / Sign in bar, hides suggested profiles, compacts trending sidebar.",
+          "template": {
+            "pageKind": "profile",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n102",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Sign-in bar",
+            "members": [
+              "n106",
+              "n107"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Login promo requested hidden by user",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          },
+          {
+            "container": "n47",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Profile tabs",
+            "members": [
+              "n48",
+              "n49",
+              "n50",
+              "n51",
+              "n52"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation for this profile view",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Suggested profiles",
+            "members": [
+              "n25",
+              "n32",
+              "n39"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Related suggestions rarely needed",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "bsky.app/profile/{handle}"
+          },
+          {
+            "container": "n114",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Trending topics",
+            "members": [
+              "n115",
+              "n117",
+              "n119",
+              "n121",
+              "n123",
+              "n125",
+              "n127",
+              "n129",
+              "n131",
+              "n133"
+            ],
+            "operation": "compact",
+            "reason": "Long sidebar list to skim",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 6387,
+            "model": "spark",
+            "ms": 8482,
+            "outputTokens": 2027,
+            "purpose": "layout plan",
+            "reasoningTokens": 1410
+          }
+        ],
+        "ms": 8490
+      },
+      "layout": {
+        "labels": [
+          "Sign-in bar",
+          "Suggested profiles",
+          "Trending topics"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n102",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n46",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n102",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Bottom signup bar",
+              "members": [
+                "n106",
+                "n107"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Explicit goal to hide Create account / Sign in bar",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            },
+            {
+              "container": "n21",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Suggested profiles",
+              "members": [
+                "n25",
+                "n32",
+                "n39"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo rarely needed on repeat visits",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "bsky.app/profile/{handle}"
+            },
+            {
+              "container": "n54",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Profile posts feed",
+              "members": [
+                "n55",
+                "n80"
+              ],
+              "operation": "emphasize",
+              "reason": "Main content for viewing profile posts",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "bsky.app/profile/{handle}"
+            },
+            {
+              "container": "n47",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Profile tabs",
+              "members": [
+                "n48",
+                "n49",
+                "n50",
+                "n51",
+                "n52"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation for profile sections",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "bsky.app/profile/{handle}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Suggested profiles",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide suggestions"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Suggested profiles",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "What to do with Suggested profiles?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Profile posts feed",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Profile posts feed",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How should the posts feed read?"
+            }
+          ],
+          "summary": "Hides bottom Create account / Sign in bar, hides Suggested profiles, emphasizes posts feed.",
+          "template": {
+            "pageKind": "profile",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n102",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Bottom signup bar",
+            "members": [
+              "n106",
+              "n107"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Explicit goal to hide Create account / Sign in bar",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          },
+          {
+            "container": "n21",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Suggested profiles",
+            "members": [
+              "n25",
+              "n32",
+              "n39"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo rarely needed on repeat visits",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "bsky.app/profile/{handle}"
+          },
+          {
+            "container": "n54",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Profile posts feed",
+            "members": [
+              "n55",
+              "n80"
+            ],
+            "operation": "emphasize",
+            "reason": "Main content for viewing profile posts",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "bsky.app/profile/{handle}"
+          },
+          {
+            "container": "n47",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Profile tabs",
+            "members": [
+              "n48",
+              "n49",
+              "n50",
+              "n51",
+              "n52"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation for profile sections",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "bsky.app/profile/{handle}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1099,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1181,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1235,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 9,
+            "model": "sam",
+            "ms": 1110,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 6398,
+            "model": "spark",
+            "ms": 8470,
+            "outputTokens": 2112,
+            "purpose": "layout plan",
+            "reasoningTokens": 1547
+          }
+        ],
+        "ms": 9746
+      },
+      "layout": {
+        "labels": [
+          "Bottom signup bar",
+          "Suggested profiles",
+          "Profile posts feed"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n102",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n46",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

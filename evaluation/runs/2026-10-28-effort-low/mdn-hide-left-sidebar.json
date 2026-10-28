@@ -1,0 +1,643 @@
+{
+  "scenario": {
+    "id": "mdn-hide-left-sidebar",
+    "site": "mdn-reference",
+    "goal": "Hide the left reference sidebar but keep 'In this article'.",
+    "tags": [
+      "docs",
+      "hide",
+      "sidebar",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "main-sidebar"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h2",
+          "text": "In this article"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Array"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "mdn-reference",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "finalUrl": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array"
+  },
+  "at": "2026-10-28T19:41:45.198Z",
+  "scanNodes": 112,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "main-sidebar"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n74",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": "Standard built-in objects Array Constructor"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "In this article"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n39",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "In this article"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Array"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n28",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Array"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n74",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n39",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n28",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n76",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Left reference sidebar",
+              "members": [
+                "n77",
+                "n79",
+                "n81",
+                "n87",
+                "n99",
+                "n105"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Reference nav you asked to hide to widen article",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+            },
+            {
+              "container": "n40",
+              "identity": {
+                "attribute": "data-glean-id",
+                "source": "attribute"
+              },
+              "label": "In this article TOC",
+              "members": [
+                "n41",
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51",
+                "n53",
+                "n55",
+                "n57",
+                "n59"
+              ],
+              "operation": "none",
+              "reason": "Kept as requested for in-page navigation",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/Array"
+            },
+            {
+              "container": "n16",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Breadcrumb trail",
+              "members": [
+                "n17",
+                "n19",
+                "n21",
+                "n23",
+                "n25"
+              ],
+              "operation": "compact",
+              "reason": "Rarely used on return visits, tighten spacing",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "toc_density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "In this article TOC",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "In this article TOC",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                }
+              ],
+              "text": "How should 'In this article' look while you read?"
+            },
+            {
+              "id": "breadcrumb_need",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Breadcrumb trail",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Breadcrumb trail",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                }
+              ],
+              "text": "Do you use the breadcrumb trail to navigate up?"
+            }
+          ],
+          "summary": "Hides the left reference sidebar, keeps the right 'In this article' TOC, and compacts breadcrumbs for a wider reading area.",
+          "template": {
+            "pageKind": "reference-doc",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n76",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Left reference sidebar",
+            "members": [
+              "n77",
+              "n79",
+              "n81",
+              "n87",
+              "n99",
+              "n105"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Reference nav you asked to hide to widen article",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+          },
+          {
+            "container": "n40",
+            "identity": {
+              "attribute": "data-glean-id",
+              "source": "attribute"
+            },
+            "label": "In this article TOC",
+            "members": [
+              "n41",
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51",
+              "n53",
+              "n55",
+              "n57",
+              "n59"
+            ],
+            "operation": "none",
+            "reason": "Kept as requested for in-page navigation",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/Array"
+          },
+          {
+            "container": "n16",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Breadcrumb trail",
+            "members": [
+              "n17",
+              "n19",
+              "n21",
+              "n23",
+              "n25"
+            ],
+            "operation": "compact",
+            "reason": "Rarely used on return visits, tighten spacing",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 4490,
+            "model": "spark",
+            "ms": 11991,
+            "outputTokens": 2805,
+            "purpose": "layout plan",
+            "reasoningTokens": 2230
+          }
+        ],
+        "ms": 11998
+      },
+      "layout": {
+        "labels": [
+          "Left reference sidebar",
+          "Breadcrumb trail"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n74",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n39",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n28",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n76",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Left reference sidebar",
+              "members": [
+                "n77",
+                "n79",
+                "n81",
+                "n87",
+                "n99",
+                "n105"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide left reference nav",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/*"
+            },
+            {
+              "container": "n40",
+              "identity": {
+                "attribute": "data-glean-id",
+                "source": "attribute"
+              },
+              "label": "In this article TOC",
+              "members": [
+                "n41",
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51",
+                "n53",
+                "n55",
+                "n57",
+                "n59"
+              ],
+              "operation": "none",
+              "reason": "User asked to keep for in-page navigation",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+            },
+            {
+              "container": "n16",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Breadcrumb trail",
+              "members": [
+                "n17",
+                "n19",
+                "n21",
+                "n23",
+                "n25"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed trail, tighten to give article space",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Breadcrumb trail",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide breadcrumbs"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Breadcrumb trail",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep breadcrumbs"
+                }
+              ],
+              "text": "Do you use the breadcrumb trail when reading reference pages?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "In this article TOC",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser TOC"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "In this article TOC",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy TOC"
+                }
+              ],
+              "text": "Do you want the In this article list denser or roomy?"
+            }
+          ],
+          "summary": "Hid left reference sidebar, kept In this article, tightened breadcrumbs.",
+          "template": {
+            "pageKind": "docs",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n76",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Left reference sidebar",
+            "members": [
+              "n77",
+              "n79",
+              "n81",
+              "n87",
+              "n99",
+              "n105"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide left reference nav",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/*"
+          },
+          {
+            "container": "n40",
+            "identity": {
+              "attribute": "data-glean-id",
+              "source": "attribute"
+            },
+            "label": "In this article TOC",
+            "members": [
+              "n41",
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51",
+              "n53",
+              "n55",
+              "n57",
+              "n59"
+            ],
+            "operation": "none",
+            "reason": "User asked to keep for in-page navigation",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+          },
+          {
+            "container": "n16",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Breadcrumb trail",
+            "members": [
+              "n17",
+              "n19",
+              "n21",
+              "n23",
+              "n25"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed trail, tighten to give article space",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 869,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 859,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 857,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 2249,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4502,
+            "model": "spark",
+            "ms": 18749,
+            "outputTokens": 3729,
+            "purpose": "layout plan",
+            "reasoningTokens": 3177
+          }
+        ],
+        "ms": 21013
+      },
+      "layout": {
+        "labels": [
+          "Left reference sidebar",
+          "Breadcrumb trail"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n74",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n39",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n28",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

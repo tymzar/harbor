@@ -1,0 +1,778 @@
+{
+  "scenario": {
+    "id": "gh-review-prs",
+    "site": "github-repo",
+    "goal": "review pull requests and check Actions",
+    "tags": [
+      "code",
+      "emphasize",
+      "goal-inference"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Repository"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "a",
+          "href": "/pulls"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "github-repo",
+    "url": "https://github.com/facebook/react",
+    "finalUrl": "https://github.com/react/react"
+  },
+  "at": "2026-10-28T19:39:38.803Z",
+  "scanNodes": 233,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Repository"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n40",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Repository"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "href": "/pulls"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n49",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Pull requests 633 ( 633 )"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n40",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n49",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n41",
+              "identity": {
+                "attribute": "data-tab-item",
+                "source": "attribute"
+              },
+              "label": "Repo tabs",
+              "members": [
+                "n43",
+                "n45",
+                "n49",
+                "n52",
+                "n54",
+                "n57"
+              ],
+              "operation": "emphasize",
+              "reason": "Direct path to Pull requests and Actions for review workflow",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Marketing header nav",
+              "members": [
+                "n11",
+                "n14",
+                "n17",
+                "n20",
+                "n23"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing navigation rarely needed for PR review",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n118",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "File list",
+              "members": [
+                "n119",
+                "n126",
+                "n133",
+                "n142",
+                "n146",
+                "n155",
+                "n164",
+                "n171",
+                "n178",
+                "n185",
+                "n192"
+              ],
+              "operation": "hide-secondary",
+              "reason": "File browsing not needed when reviewing PRs and Actions",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "github.com/{owner}/{repo}"
+            },
+            {
+              "container": "n199",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "About sidebar",
+              "members": [
+                "n200",
+                "n233"
+              ],
+              "operation": "hide-secondary",
+              "reason": "About, topics and releases metadata rarely needed for review",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "github.com/{owner}/{repo}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "file-visibility",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "File list",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide completely"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "File list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "How should the file browser appear while reviewing PRs?"
+            },
+            {
+              "id": "tabs-focus",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Repo tabs",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "PRs and Actions only"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Repo tabs",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep all tabs"
+                }
+              ],
+              "text": "Keep only Pull requests and Actions prominent?"
+            },
+            {
+              "id": "sidebar-need",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "About sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "About sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "Do you use the About sidebar for links and stats?"
+            }
+          ],
+          "summary": "Emphasize repo tabs for PRs and Actions, hide marketing nav, file list, and About sidebar.",
+          "template": {
+            "pageKind": "repo",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n41",
+            "identity": {
+              "attribute": "data-tab-item",
+              "source": "attribute"
+            },
+            "label": "Repo tabs",
+            "members": [
+              "n43",
+              "n45",
+              "n49",
+              "n52",
+              "n54",
+              "n57"
+            ],
+            "operation": "emphasize",
+            "reason": "Direct path to Pull requests and Actions for review workflow",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Marketing header nav",
+            "members": [
+              "n11",
+              "n14",
+              "n17",
+              "n20",
+              "n23"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing navigation rarely needed for PR review",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n118",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "File list",
+            "members": [
+              "n119",
+              "n126",
+              "n133",
+              "n142",
+              "n146",
+              "n155",
+              "n164",
+              "n171",
+              "n178",
+              "n185",
+              "n192"
+            ],
+            "operation": "hide-secondary",
+            "reason": "File browsing not needed when reviewing PRs and Actions",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "github.com/{owner}/{repo}"
+          },
+          {
+            "container": "n199",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "About sidebar",
+            "members": [
+              "n200",
+              "n233"
+            ],
+            "operation": "hide-secondary",
+            "reason": "About, topics and releases metadata rarely needed for review",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "github.com/{owner}/{repo}"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 10673,
+            "model": "spark",
+            "ms": 7593,
+            "outputTokens": 1853,
+            "purpose": "layout plan",
+            "reasoningTokens": 1137
+          },
+          {
+            "inputTokens": 11257,
+            "model": "spark",
+            "ms": 4733,
+            "outputTokens": 1515,
+            "purpose": "repair",
+            "reasoningTokens": 799
+          }
+        ],
+        "ms": 12349
+      },
+      "layout": {
+        "labels": [
+          "Repo tabs",
+          "Marketing header nav",
+          "File list",
+          "About sidebar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [
+            "emphasize"
+          ],
+          "found": true,
+          "id": "n40",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n49",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n41",
+              "identity": {
+                "attribute": "data-tab-item",
+                "source": "attribute"
+              },
+              "label": "Repository tabs",
+              "members": [
+                "n43",
+                "n45",
+                "n49",
+                "n52",
+                "n54",
+                "n57"
+              ],
+              "operation": "emphasize",
+              "reason": "Direct path to Pull requests and Actions for reviews",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Marketing header nav",
+              "members": [
+                "n11",
+                "n14",
+                "n17",
+                "n20",
+                "n23"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing navigation rarely needed for PR review",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n118",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "File browser",
+              "members": [
+                "n119",
+                "n126",
+                "n133",
+                "n142",
+                "n146",
+                "n155",
+                "n164",
+                "n171",
+                "n178",
+                "n185",
+                "n192"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value for PR and Actions goal, hides code list distraction",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "github.com/{owner}/{repo}"
+            },
+            {
+              "container": "n205",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Topic tags",
+              "members": [
+                "n206",
+                "n207",
+                "n208",
+                "n209",
+                "n210",
+                "n211"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Metadata rarely needed when reviewing PRs",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "github.com/{owner}/{repo}"
+            },
+            {
+              "container": "n65",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Repo header actions",
+              "members": [
+                "n66",
+                "n69",
+                "n73"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Star/Fork/Notifications rarely needed for reviews",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "review-scope",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Repository tabs",
+                      "operation": "emphasize"
+                    },
+                    {
+                      "group": "File browser",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "PRs and Actions only"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Repository tabs",
+                      "operation": "emphasize"
+                    },
+                    {
+                      "group": "File browser",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep code visible"
+                }
+              ],
+              "text": "Do you need the code file list on this page?"
+            },
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Repository tabs",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser tabs"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Repository tabs",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier tabs"
+                }
+              ],
+              "text": "Prefer denser or roomier repo tabs?"
+            }
+          ],
+          "summary": "Emphasize repo tabs for PRs and Actions, hide marketing nav, file browser, topics, and star/fork actions.",
+          "template": {
+            "pageKind": "repo-home",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n41",
+            "identity": {
+              "attribute": "data-tab-item",
+              "source": "attribute"
+            },
+            "label": "Repository tabs",
+            "members": [
+              "n43",
+              "n45",
+              "n49",
+              "n52",
+              "n54",
+              "n57"
+            ],
+            "operation": "emphasize",
+            "reason": "Direct path to Pull requests and Actions for reviews",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Marketing header nav",
+            "members": [
+              "n11",
+              "n14",
+              "n17",
+              "n20",
+              "n23"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing navigation rarely needed for PR review",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n118",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "File browser",
+            "members": [
+              "n119",
+              "n126",
+              "n133",
+              "n142",
+              "n146",
+              "n155",
+              "n164",
+              "n171",
+              "n178",
+              "n185",
+              "n192"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value for PR and Actions goal, hides code list distraction",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "github.com/{owner}/{repo}"
+          },
+          {
+            "container": "n205",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Topic tags",
+            "members": [
+              "n206",
+              "n207",
+              "n208",
+              "n209",
+              "n210",
+              "n211"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Metadata rarely needed when reviewing PRs",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "github.com/{owner}/{repo}"
+          },
+          {
+            "container": "n65",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Repo header actions",
+            "members": [
+              "n66",
+              "n69",
+              "n73"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Star/Fork/Notifications rarely needed for reviews",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 6,
+            "model": "sam",
+            "ms": 624,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1080,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 929,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 733,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 10685,
+            "model": "spark",
+            "ms": 8534,
+            "outputTokens": 2164,
+            "purpose": "layout plan",
+            "reasoningTokens": 1386
+          },
+          {
+            "inputTokens": 11316,
+            "model": "spark",
+            "ms": 6989,
+            "outputTokens": 1807,
+            "purpose": "repair",
+            "reasoningTokens": 1029
+          }
+        ],
+        "ms": 16637
+      },
+      "layout": {
+        "labels": [
+          "Repository tabs",
+          "Marketing header nav",
+          "File browser",
+          "Topic tags",
+          "Repo header actions"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [
+            "emphasize"
+          ],
+          "found": true,
+          "id": "n40",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n49",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,671 @@
+{
+  "scenario": {
+    "id": "pypi-emphasize-install",
+    "site": "pypi-package",
+    "goal": "I come here for the install command; make it stand out and hide the project sidebar.",
+    "tags": [
+      "code",
+      "emphasize",
+      "hide",
+      "multiple"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "tag": "p",
+          "text": "pip install requests"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "h2",
+          "text": "Project links"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "h2",
+          "text": "maintainers"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "requests"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "pypi-package",
+    "url": "https://pypi.org/project/requests/",
+    "finalUrl": "https://pypi.org/project/requests/"
+  },
+  "at": "2026-10-28T19:45:41.744Z",
+  "scanNodes": 75,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "p",
+        "text": "pip install requests"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n28",
+        "tag": "p",
+        "kind": "group",
+        "text": "pip install requests Copy PIP instructions"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "Project links"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n56",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "Project links"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "maintainers"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n75",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "3 maintainers"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "requests"
+      },
+      "matches": 2,
+      "node": {
+        "id": "n27",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "requests 2.34.2"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n28",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n56",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n75",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n27",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n26",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Install command",
+              "members": [
+                "n28"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal is the pip install command",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "pypi.org/project/{project}"
+            },
+            {
+              "container": "n39",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Project sidebar",
+              "members": [
+                "n54"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide project sidebar",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "pypi.org/project/{project}"
+            },
+            {
+              "container": "n39",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Project description",
+              "members": [
+                "n40"
+              ],
+              "operation": "none",
+              "reason": "Main content, leave as is",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "pypi.org/project/{project}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "desc-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Project description",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Project description",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Full details"
+                }
+              ],
+              "text": "How much description do you want to see?"
+            },
+            {
+              "id": "security-banner",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Project description",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Project sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide extras"
+                }
+              ],
+              "text": "Keep tabs and notices as they are?"
+            }
+          ],
+          "summary": "Emphasized the pip install command and hid the project sidebar.",
+          "template": {
+            "pageKind": "pypi-project",
+            "urlPattern": "pypi.org/project/{project}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n26",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Install command",
+            "members": [
+              "n28"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal is the pip install command",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "pypi.org/project/{project}"
+          },
+          {
+            "container": "n39",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Project sidebar",
+            "members": [
+              "n54"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide project sidebar",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "pypi.org/project/{project}"
+          },
+          {
+            "container": "n39",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Project description",
+            "members": [
+              "n40"
+            ],
+            "operation": "none",
+            "reason": "Main content, leave as is",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "pypi.org/project/{project}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3275,
+            "model": "spark",
+            "ms": 8467,
+            "outputTokens": 1678,
+            "purpose": "layout plan",
+            "reasoningTokens": 1241
+          }
+        ],
+        "ms": 8472
+      },
+      "layout": {
+        "labels": [
+          "Install command",
+          "Project sidebar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n28",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n56",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n75",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n26",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Install command",
+              "members": [
+                "n28"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal is the pip install command; make it stand out.",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "pypi.org/project/{project}/"
+            },
+            {
+              "container": "n54",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Project sidebar",
+              "members": [
+                "n55",
+                "n66",
+                "n74"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value metadata sidebar user asked to hide.",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "pypi.org/project/{project}/*"
+            },
+            {
+              "container": "n14",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Site navigation",
+              "members": [
+                "n15",
+                "n17",
+                "n19",
+                "n21"
+              ],
+              "operation": "none",
+              "reason": "Primary header nav already works.",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "pypi.org/*"
+            },
+            {
+              "container": "n39",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Project description",
+              "members": [
+                "n40"
+              ],
+              "operation": "none",
+              "reason": "Main content that should stay as-is.",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "pypi.org/project/{project}/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Project description",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Project description",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How should the description read?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Site navigation",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide header"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Site navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep header"
+                }
+              ],
+              "text": "Hide header links too?"
+            }
+          ],
+          "summary": "Emphasized the pip install bar and hid the project sidebar per goal, left nav and description untouched.",
+          "template": {
+            "pageKind": "project detail",
+            "urlPattern": "pypi.org/project/{project}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n26",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Install command",
+            "members": [
+              "n28"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal is the pip install command; make it stand out.",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "pypi.org/project/{project}/"
+          },
+          {
+            "container": "n54",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Project sidebar",
+            "members": [
+              "n55",
+              "n66",
+              "n74"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value metadata sidebar user asked to hide.",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "pypi.org/project/{project}/*"
+          },
+          {
+            "container": "n14",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Site navigation",
+            "members": [
+              "n15",
+              "n17",
+              "n19",
+              "n21"
+            ],
+            "operation": "none",
+            "reason": "Primary header nav already works.",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "pypi.org/*"
+          },
+          {
+            "container": "n39",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Project description",
+            "members": [
+              "n40"
+            ],
+            "operation": "none",
+            "reason": "Main content that should stay as-is.",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "pypi.org/project/{project}/"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1169,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 740,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1319,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 696,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3286,
+            "model": "spark",
+            "ms": 11139,
+            "outputTokens": 2397,
+            "purpose": "layout plan",
+            "reasoningTokens": 1854
+          }
+        ],
+        "ms": 12471
+      },
+      "layout": {
+        "labels": [
+          "Install command",
+          "Project sidebar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n28",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n56",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n75",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

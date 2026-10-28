@@ -1,0 +1,749 @@
+{
+  "scenario": {
+    "id": "wiki-distraction-free",
+    "site": "wikipedia-article",
+    "goal": "Distraction-free reading: hide the Appearance panel and the Contents sidebar.",
+    "tags": [
+      "reading",
+      "hide",
+      "distraction-free",
+      "multiple"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Appearance"
+          }
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "mw-panel-toc"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Web browser"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "section",
+          "attr": {
+            "data-mw-section-id": "0"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "wikipedia-article",
+    "url": "https://en.wikipedia.org/wiki/Web_browser",
+    "finalUrl": "https://en.wikipedia.org/wiki/Web_browser"
+  },
+  "at": "2026-10-28T19:40:32.085Z",
+  "scanNodes": 172,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Appearance"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n81",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Appearance"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "mw-panel-toc"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n25",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Contents"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Web browser"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n59",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Web browser"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "section",
+        "attr": {
+          "data-mw-section-id": "0"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n110",
+        "tag": "section",
+        "kind": "landmark",
+        "text": "Software used to access websites A web browser ( Safari ) on a MacBook displayi…"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n81",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n25",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n59",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n110",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n1",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Top header",
+              "members": [
+                "n3",
+                "n11",
+                "n16"
+              ],
+              "operation": "none",
+              "reason": "Site search and account links; keep as-is",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n25",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Contents sidebar",
+              "members": [
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n45",
+                "n51",
+                "n53",
+                "n55"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Requested hidden for distraction-free reading",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n81",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Appearance panel",
+              "members": [
+                "n85",
+                "n92",
+                "n98"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Requested hidden for distraction-free reading",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n109",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Article content",
+              "members": [
+                "n110",
+                "n149"
+              ],
+              "operation": "emphasize",
+              "reason": "Main reading goal; focus here",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "en.wikipedia.org/wiki/Web_browser"
+            }
+          ],
+          "questions": [
+            {
+              "id": "header",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top header",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep header"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top header",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide header too"
+                }
+              ],
+              "text": "Also hide the top header for full focus?"
+            },
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Article content",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomy reading"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Article content",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser text"
+                }
+              ],
+              "text": "Prefer roomier or denser article text?"
+            }
+          ],
+          "summary": "Hide Contents and Appearance sidebars for focused reading, emphasize article.",
+          "template": {
+            "pageKind": "article",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n1",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Top header",
+            "members": [
+              "n3",
+              "n11",
+              "n16"
+            ],
+            "operation": "none",
+            "reason": "Site search and account links; keep as-is",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n25",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Contents sidebar",
+            "members": [
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n45",
+              "n51",
+              "n53",
+              "n55"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Requested hidden for distraction-free reading",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n81",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Appearance panel",
+            "members": [
+              "n85",
+              "n92",
+              "n98"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Requested hidden for distraction-free reading",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n109",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Article content",
+            "members": [
+              "n110",
+              "n149"
+            ],
+            "operation": "emphasize",
+            "reason": "Main reading goal; focus here",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "en.wikipedia.org/wiki/Web_browser"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 6438,
+            "model": "spark",
+            "ms": 10834,
+            "outputTokens": 2297,
+            "purpose": "layout plan",
+            "reasoningTokens": 1718
+          }
+        ],
+        "ms": 10844
+      },
+      "layout": {
+        "labels": [
+          "Contents sidebar",
+          "Appearance panel",
+          "Article content"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n81",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n25",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n59",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n110",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Contents sidebar",
+              "members": [
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n45",
+                "n51",
+                "n53",
+                "n55"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User wants distraction-free reading without Contents sidebar",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n82",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Appearance panel",
+              "members": [
+                "n85",
+                "n92",
+                "n98"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User wants distraction-free reading without Appearance panel",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n109",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Article content",
+              "members": [
+                "n110",
+                "n149"
+              ],
+              "operation": "emphasize",
+              "reason": "Main reading goal, make article body focus",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "en.wikipedia.org/wiki/Web_browser"
+            },
+            {
+              "container": "n69",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Page actions toolbar",
+              "members": [
+                "n72",
+                "n74",
+                "n76"
+              ],
+              "operation": "none",
+              "reason": "Article Talk and Read tools left as-is for now",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Page actions toolbar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide them"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Page actions toolbar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "Also hide Article Talk and Read View history tools?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Article content",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Article content",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "Prefer denser or roomier article reading?"
+            }
+          ],
+          "summary": "Hide Contents sidebar and Appearance panel for distraction-free reading, emphasize article body.",
+          "template": {
+            "pageKind": "article",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Contents sidebar",
+            "members": [
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n45",
+              "n51",
+              "n53",
+              "n55"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User wants distraction-free reading without Contents sidebar",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n82",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Appearance panel",
+            "members": [
+              "n85",
+              "n92",
+              "n98"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User wants distraction-free reading without Appearance panel",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n109",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Article content",
+            "members": [
+              "n110",
+              "n149"
+            ],
+            "operation": "emphasize",
+            "reason": "Main reading goal, make article body focus",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "en.wikipedia.org/wiki/Web_browser"
+          },
+          {
+            "container": "n69",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Page actions toolbar",
+            "members": [
+              "n72",
+              "n74",
+              "n76"
+            ],
+            "operation": "none",
+            "reason": "Article Talk and Read tools left as-is for now",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 853,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 574,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 852,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1234,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 6449,
+            "model": "spark",
+            "ms": 11362,
+            "outputTokens": 2640,
+            "purpose": "layout plan",
+            "reasoningTokens": 2049
+          }
+        ],
+        "ms": 12626
+      },
+      "layout": {
+        "labels": [
+          "Contents sidebar",
+          "Appearance panel",
+          "Article content"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n81",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n25",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n59",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n110",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "fail",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

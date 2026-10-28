@@ -1,0 +1,607 @@
+{
+  "scenario": {
+    "id": "yt-home-hide-history-notice",
+    "site": "youtube-home",
+    "goal": "Hide the 'history is off' box; I only use search.",
+    "tags": [
+      "video",
+      "hide",
+      "sparse-page"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "h2",
+          "text": "Your YouTube history is off"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Update setting"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "yt-searchbox"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-home",
+    "url": "https://www.youtube.com/",
+    "finalUrl": "https://www.youtube.com/",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T19:38:18.479Z",
+  "scanNodes": 40,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "Your YouTube history is off"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n36",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "Your YouTube history is off"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Update setting"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n39",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Update setting"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "yt-searchbox"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n11",
+        "tag": "yt-searchbox",
+        "kind": "landmark",
+        "text": ""
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n36",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n39",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n11",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n34",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "History off notice",
+              "members": [
+                "n35",
+                "n39"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide it, search-only use",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.youtube.com/"
+            },
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Search bar",
+              "members": [
+                "n11"
+              ],
+              "operation": "emphasize",
+              "reason": "Primary tool for search-only use",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Mini sidebar",
+              "members": [
+                "n25",
+                "n27",
+                "n29",
+                "n31"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely needed for search-only use",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Mini sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Mini sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "Keep the left icon sidebar?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search bar",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search bar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                }
+              ],
+              "text": "Search bar size preference?"
+            }
+          ],
+          "summary": "Hide history-off notice and sidebar for search-only use, emphasize search.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n34",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "History off notice",
+            "members": [
+              "n35",
+              "n39"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide it, search-only use",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.youtube.com/"
+          },
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Search bar",
+            "members": [
+              "n11"
+            ],
+            "operation": "emphasize",
+            "reason": "Primary tool for search-only use",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Mini sidebar",
+            "members": [
+              "n25",
+              "n27",
+              "n29",
+              "n31"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely needed for search-only use",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 2239,
+            "model": "spark",
+            "ms": 9326,
+            "outputTokens": 2168,
+            "purpose": "layout plan",
+            "reasoningTokens": 1718
+          },
+          {
+            "inputTokens": 2682,
+            "model": "spark",
+            "ms": 3413,
+            "outputTokens": 892,
+            "purpose": "repair",
+            "reasoningTokens": 550
+          }
+        ],
+        "ms": 12745
+      },
+      "layout": {
+        "labels": [
+          "History off notice",
+          "Search bar",
+          "Mini sidebar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n36",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n39",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n11",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Search bar",
+              "members": [
+                "n11"
+              ],
+              "operation": "emphasize",
+              "reason": "Only tool the user needs",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n33",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "History notice",
+              "members": [
+                "n34"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide history off box",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.youtube.com/"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Mini sidebar",
+              "members": [
+                "n25",
+                "n27",
+                "n29",
+                "n31"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely needed if only searching",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Mini sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide sidebar"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Mini sidebar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep sidebar"
+                }
+              ],
+              "text": "Keep the left Home / Shorts icons visible?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search bar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser header"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search bar",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Larger search"
+                }
+              ],
+              "text": "Prefer a denser header or larger search?"
+            }
+          ],
+          "summary": "Hide the history-off promo and emphasize search; hide mini sidebar since only search is used.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "www.youtube.com/"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Search bar",
+            "members": [
+              "n11"
+            ],
+            "operation": "emphasize",
+            "reason": "Only tool the user needs",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n33",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "History notice",
+            "members": [
+              "n34"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide history off box",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.youtube.com/"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Mini sidebar",
+            "members": [
+              "n25",
+              "n27",
+              "n29",
+              "n31"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely needed if only searching",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 527,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 1548,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 600,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 496,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 2250,
+            "model": "spark",
+            "ms": 7384,
+            "outputTokens": 1716,
+            "purpose": "layout plan",
+            "reasoningTokens": 1258
+          }
+        ],
+        "ms": 8943
+      },
+      "layout": {
+        "labels": [
+          "Search bar",
+          "History notice",
+          "Mini sidebar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n36",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n39",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n11",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

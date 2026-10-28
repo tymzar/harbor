@@ -9,6 +9,8 @@ Real websites, real requests, checkable outcomes. Built 28 October 2026 for the 
 | `snapshots/<site>/` | What the extension saw: `scan.json`, `meta.json`, `page.jpg`. **Not committed** (third-party content); regenerate with the collector |
 | `validation.md` | Last validator report: every anchor checked against the snapshots |
 | `validate.ts` | The validator |
+| `runs/<run>/` | Results of a scored run: one JSON per scenario and `report.md`. Screenshots in `shots/` are not committed |
+| `score.ts` | Turns a run folder into `report.md` |
 
 ## Coverage
 
@@ -66,13 +68,15 @@ Every anchor was also checked by eye against what it resolves to, so that a `hid
 
 ## Scoring
 
-Run each scenario: scan, send the goal (no screenshot, then with screenshot), apply every proposed change, then check each expectation on the live page.
+The runner (`extension/e2e-tests/eval-run.spec.ts`) runs each scenario on the live site: open it the way the collector did, scan, resolve the anchors against *this* scan, then send the goal without and then with the screenshot (same scan), apply every proposed change with the plan's default answers, check each expectation on the page through a read-only content probe (`smartWeb.inspect`), and restore. Picker scenarios hide the picked element instead, with no model call. The untouched page is scored the same way, as the do-nothing baseline.
 
 | Expectation | Passes when |
 |---|---|
 | `hide` | the anchor element is not visible (`checkVisibility` false) |
 | `emphasize`, `compact`, `grid` | the anchor element is inside, or is, an element Smart Web marked with that operation |
 | `keep` | the anchor element is still visible and not inside a hidden region |
+
+Not scored: `unresolved` (the anchor names nothing on this visit, the site changed) and `not-visible` (already hidden before any change). A scenario whose page was rescanned mid-run (it navigated) is left out, since element IDs no longer line up.
 
 Report per run:
 
@@ -92,7 +96,15 @@ E2E=1 npm run build
 COLLECT=1 npx playwright test eval-collect --workers=1    # refresh snapshots (visits the 20 sites)
 COLLECT=1 SITES=github-repo,youtube-watch npx playwright test eval-collect --workers=1
 cd .. && node evaluation/validate.ts                      # every anchor must resolve
+
+# Scored run: real Meta calls through the local proxy (proxy/README.md must be running)
+cd extension
+EVAL=1 npx playwright test eval-run --workers=3                      # → evaluation/runs/<date>-effort-low/
+EVAL=1 SCENARIOS=gh-hide-actions-everywhere MODES=dom-only npx playwright test eval-run
+cd .. && node evaluation/score.ts <date>-effort-low                  # → runs/<run>/report.md
 ```
+
+`EVAL_RUN` names the run folder. A goal scenario in both modes took about 40 s and three Spark calls (one was a repair round), about 33k input and 7k output tokens, in a smoke test on 28 Oct. The proxy keeps no spend records (no database), so cost is reported in tokens.
 
 Use one worker: parallel visits got a site (Hacker News, since replaced) to rate-limit the run. Sites change; re-collect and re-validate before an evaluation run, and fix anchors the validator flags.
 

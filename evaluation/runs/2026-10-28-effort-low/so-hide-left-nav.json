@@ -1,0 +1,393 @@
+{
+  "scenario": {
+    "id": "so-hide-left-nav",
+    "site": "stackoverflow-question",
+    "goal": "Hide the left navigation; I arrive from search and never use it.",
+    "tags": [
+      "q-and-a",
+      "hide",
+      "navigation"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Primary"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "id": "search"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "stackoverflow-question",
+    "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+    "finalUrl": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array"
+  },
+  "at": "2026-10-28T19:40:02.430Z",
+  "scanNodes": 11,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Primary"
+        }
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "search"
+        }
+      },
+      "matches": 0
+    }
+  ],
+  "before": [
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    }
+  ],
+  "baseline": [
+    "unresolved",
+    "unresolved"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n9",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Cloudflare footer",
+              "members": [
+                "n10",
+                "n11"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Attribution links rarely needed",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "footer-visibility",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Cloudflare footer",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide footer"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Cloudflare footer",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Show footer"
+                }
+              ],
+              "text": "Show Cloudflare footer links on check page?"
+            }
+          ],
+          "summary": "Page shows only Cloudflare security check, left navigation not present to hide. Hid Cloudflare footer; left-nav hide will apply when question loads.",
+          "template": {
+            "pageKind": "question",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n9",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Cloudflare footer",
+            "members": [
+              "n10",
+              "n11"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Attribution links rarely needed",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 1541,
+            "model": "spark",
+            "ms": 8891,
+            "outputTokens": 2107,
+            "purpose": "layout plan",
+            "reasoningTokens": 1871
+          }
+        ],
+        "ms": 8895
+      },
+      "layout": {
+        "labels": [
+          "Cloudflare footer"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        }
+      ],
+      "verdicts": [
+        "unresolved",
+        "unresolved"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Security verification notice",
+              "members": [
+                "n6"
+              ],
+              "operation": "none",
+              "reason": "Main status while verification runs",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+            },
+            {
+              "container": "n9",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Cloudflare footer links",
+              "members": [
+                "n10",
+                "n11"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Attribution links rarely needed",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Cloudflare footer links",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide footer"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Cloudflare footer links",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep footer"
+                }
+              ],
+              "text": "Do you want the Cloudflare attribution footer hidden?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Security verification notice",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "More compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Security verification notice",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Do you want the verification message more compact?"
+            }
+          ],
+          "summary": "Page is in Cloudflare security check, so question content and left navigation are not loaded. Kept status visible and hid footer; left-nav hiding will apply once the question loads.",
+          "template": {
+            "pageKind": "question",
+            "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Security verification notice",
+            "members": [
+              "n6"
+            ],
+            "operation": "none",
+            "reason": "Main status while verification runs",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+          },
+          {
+            "container": "n9",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Cloudflare footer links",
+            "members": [
+              "n10",
+              "n11"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Attribution links rarely needed",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "stackoverflow.com/questions/{questionId}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 562,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 955,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 744,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 502,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 1552,
+            "model": "spark",
+            "ms": 11439,
+            "outputTokens": 2503,
+            "purpose": "layout plan",
+            "reasoningTokens": 2101
+          }
+        ],
+        "ms": 12399
+      },
+      "layout": {
+        "labels": [
+          "Cloudflare footer links"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        }
+      ],
+      "verdicts": [
+        "unresolved",
+        "unresolved"
+      ]
+    }
+  ]
+}

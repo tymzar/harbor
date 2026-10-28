@@ -1,0 +1,159 @@
+{
+  "scenario": {
+    "id": "pick-gh-star-row",
+    "site": "github-repo",
+    "pick": {
+      "tag": "ul",
+      "attr": {
+        "data-testid": "repo-header-actions"
+      }
+    },
+    "tags": [
+      "picker",
+      "hide"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "data-testid": "repo-header-actions"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Repository"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "github-repo",
+    "url": "https://github.com/facebook/react",
+    "finalUrl": "https://github.com/react/react"
+  },
+  "at": "2026-10-28T19:43:21.526Z",
+  "scanNodes": 233,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "ul",
+        "attr": {
+          "data-testid": "repo-header-actions"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n65",
+        "tag": "ul",
+        "kind": "list",
+        "text": "Notifications You must be signed in to change notification settings Fork 51.6k ("
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "repo-header-actions"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n65",
+        "tag": "ul",
+        "kind": "list",
+        "text": "Notifications You must be signed in to change notification settings Fork 51.6k ("
+      }
+    },
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Repository"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n40",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Repository"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n65",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n65",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n40",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "picker",
+      "layout": {
+        "labels": [
+          "Hidden by you: Notifications You must be signed in to …"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n65",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n65",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n40",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

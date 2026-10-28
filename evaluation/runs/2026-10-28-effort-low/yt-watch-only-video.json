@@ -1,0 +1,581 @@
+{
+  "scenario": {
+    "id": "yt-watch-only-video",
+    "site": "youtube-watch",
+    "goal": "I just want to watch the video. Hide the recommended videos column.",
+    "tags": [
+      "video",
+      "hide",
+      "distraction-free"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "contents"
+          },
+          "area": {
+            "minX": 900
+          }
+        },
+        "note": "recommendations column"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "YouTube Video Player"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Me at the zoo"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-watch",
+    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "finalUrl": "https://www.youtube.com/watch?v=wS64_n65u3k",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T19:37:47.021Z",
+  "scanNodes": 132,
+  "rescanned": true,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "contents"
+        },
+        "area": {
+          "minX": 900
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n64",
+        "tag": "div",
+        "kind": "group",
+        "text": "12:56 The Worst Periods To Be Alive In History GoExtinct 641K"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "YouTube Video Player"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n29",
+        "tag": "div",
+        "kind": "group",
+        "text": "YouTube Video Player"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Me at the zoo"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n61",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Me at the zoo"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n64",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n29",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n61",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Site header",
+              "members": [
+                "n4",
+                "n11",
+                "n16"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation and search, keep as is",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n26",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video player",
+              "members": [
+                "n28"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal is just watching, make it focus",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n64",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Recommended videos",
+              "members": [
+                "n65",
+                "n76",
+                "n88",
+                "n100",
+                "n111",
+                "n122"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Explicitly asked to hide recommendations column",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Site header",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Yes, hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Site header",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep header"
+                }
+              ],
+              "text": "Also hide the top header for distraction-free watching?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Video player",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Fill the space"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Video player",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep same size"
+                }
+              ],
+              "text": "Expand the video to fill the freed space?"
+            }
+          ],
+          "summary": "Hide the Recommended videos sidebar and emphasize the Video player for focused watching.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Site header",
+            "members": [
+              "n4",
+              "n11",
+              "n16"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation and search, keep as is",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n26",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video player",
+            "members": [
+              "n28"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal is just watching, make it focus",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n64",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Recommended videos",
+            "members": [
+              "n65",
+              "n76",
+              "n88",
+              "n100",
+              "n111",
+              "n122"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Explicitly asked to hide recommendations column",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 5232,
+            "model": "spark",
+            "ms": 12138,
+            "outputTokens": 2537,
+            "purpose": "layout plan",
+            "reasoningTokens": 2063
+          }
+        ],
+        "ms": 12148
+      },
+      "layout": {
+        "labels": [
+          "Video player",
+          "Recommended videos"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n64",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n29",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n61",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n4",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Site header",
+              "members": [
+                "n5",
+                "n12",
+                "n17"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation and search, keep as is",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n27",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video player",
+              "members": [
+                "n29"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal is just watching, make it focus",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n87",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Recommended videos",
+              "members": [
+                "n88",
+                "n99",
+                "n111",
+                "n123",
+                "n134",
+                "n145"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Explicitly asked to hide recommendations column",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Site header",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Yes, hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Site header",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep header"
+                }
+              ],
+              "text": "Also hide the top header for distraction-free watching?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Video player",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Fill the space"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Video player",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep same size"
+                }
+              ],
+              "text": "Expand the video to fill the freed space?"
+            }
+          ],
+          "summary": "Hide the Recommended videos sidebar and emphasize the Video player for focused watching.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n4",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Site header",
+            "members": [
+              "n5",
+              "n12",
+              "n17"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation and search, keep as is",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n27",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video player",
+            "members": [
+              "n29"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal is just watching, make it focus",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n87",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Recommended videos",
+            "members": [
+              "n88",
+              "n99",
+              "n111",
+              "n123",
+              "n134",
+              "n145"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Explicitly asked to hide recommendations column",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [],
+        "ms": 0
+      },
+      "layout": {
+        "labels": [
+          "Video player",
+          "Recommended videos"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": false,
+          "id": "n64",
+          "ops": [],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n29",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n61",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

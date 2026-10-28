@@ -1,0 +1,722 @@
+{
+  "scenario": {
+    "id": "yt-watch-hide-engagement",
+    "site": "youtube-watch",
+    "goal": "I never like, dislike or share videos. Hide those buttons but keep Subscribe.",
+    "tags": [
+      "video",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "button",
+          "text": "like this video"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "aria-label": "Dislike this video"
+          }
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "aria-label": "Share"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "Subscribe to jawed."
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-watch",
+    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "finalUrl": "https://www.youtube.com/watch?v=mh8jmDNFkuE",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T19:37:46.541Z",
+  "scanNodes": 153,
+  "rescanned": true,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "button",
+        "text": "like this video"
+      },
+      "matches": 2,
+      "node": {
+        "id": "n76",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "like this video along with 20,117,411 other people"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Dislike this video"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n78",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Dislike this video"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Share"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n80",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Share"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Subscribe to jawed."
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n70",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Subscribe to jawed."
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n76",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n78",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n80",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n70",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n73",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Like, Dislike, Share buttons",
+              "members": [
+                "n76",
+                "n78",
+                "n80"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never uses like, dislike or share",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n63",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Channel info with Subscribe",
+              "members": [
+                "n64",
+                "n70"
+              ],
+              "operation": "emphasize",
+              "reason": "Keeps Subscribe prominent per goal",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Up next suggestions",
+              "members": [
+                "n87",
+                "n99",
+                "n110",
+                "n122",
+                "n134",
+                "n145"
+              ],
+              "operation": "compact",
+              "reason": "Long sidebar skimmed on repeat visits",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n72",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Save and More actions",
+              "members": [
+                "n82",
+                "n84"
+              ],
+              "operation": "none",
+              "reason": "Kept alongside main actions for now",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "save-more",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Save and More actions",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide them too"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Save and More actions",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep them"
+                }
+              ],
+              "text": "Do you ever use Save or More actions?"
+            },
+            {
+              "id": "up-next",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Up next suggestions",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Up next suggestions",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Up next suggestions",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Full size"
+                }
+              ],
+              "text": "How much do you use Up next suggestions?"
+            }
+          ],
+          "summary": "Hide Like, Dislike and Share, emphasize Subscribe row, compact Up next.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n73",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Like, Dislike, Share buttons",
+            "members": [
+              "n76",
+              "n78",
+              "n80"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never uses like, dislike or share",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n63",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Channel info with Subscribe",
+            "members": [
+              "n64",
+              "n70"
+            ],
+            "operation": "emphasize",
+            "reason": "Keeps Subscribe prominent per goal",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n86",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Up next suggestions",
+            "members": [
+              "n87",
+              "n99",
+              "n110",
+              "n122",
+              "n134",
+              "n145"
+            ],
+            "operation": "compact",
+            "reason": "Long sidebar skimmed on repeat visits",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n72",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Save and More actions",
+            "members": [
+              "n82",
+              "n84"
+            ],
+            "operation": "none",
+            "reason": "Kept alongside main actions for now",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 5729,
+            "model": "spark",
+            "ms": 13746,
+            "outputTokens": 2991,
+            "purpose": "layout plan",
+            "reasoningTokens": 2398
+          },
+          {
+            "inputTokens": 6326,
+            "model": "spark",
+            "ms": 4233,
+            "outputTokens": 1070,
+            "purpose": "repair",
+            "reasoningTokens": 616
+          }
+        ],
+        "ms": 17991
+      },
+      "layout": {
+        "labels": [
+          "Like, Dislike, Share buttons",
+          "Channel info with Subscribe",
+          "Up next suggestions"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n76",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n78",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n80",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n70",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n63",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Like, Dislike, Share buttons",
+              "members": [
+                "n66",
+                "n68",
+                "n70"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never uses like, dislike or share",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n53",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Channel info with Subscribe",
+              "members": [
+                "n54",
+                "n60"
+              ],
+              "operation": "emphasize",
+              "reason": "Keeps Subscribe prominent per goal",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n87",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Up next suggestions",
+              "members": [
+                "n88",
+                "n100",
+                "n111",
+                "n123",
+                "n135",
+                "n146"
+              ],
+              "operation": "compact",
+              "reason": "Long sidebar skimmed on repeat visits",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Save and More actions",
+              "members": [
+                "n72",
+                "n74"
+              ],
+              "operation": "none",
+              "reason": "Kept alongside main actions for now",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "save-more",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Save and More actions",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide them too"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Save and More actions",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep them"
+                }
+              ],
+              "text": "Do you ever use Save or More actions?"
+            },
+            {
+              "id": "up-next",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Up next suggestions",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Up next suggestions",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Up next suggestions",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Full size"
+                }
+              ],
+              "text": "How much do you use Up next suggestions?"
+            }
+          ],
+          "summary": "Hide Like, Dislike and Share, emphasize Subscribe row, compact Up next.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n63",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Like, Dislike, Share buttons",
+            "members": [
+              "n66",
+              "n68",
+              "n70"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never uses like, dislike or share",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n53",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Channel info with Subscribe",
+            "members": [
+              "n54",
+              "n60"
+            ],
+            "operation": "emphasize",
+            "reason": "Keeps Subscribe prominent per goal",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n87",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Up next suggestions",
+            "members": [
+              "n88",
+              "n100",
+              "n111",
+              "n123",
+              "n135",
+              "n146"
+            ],
+            "operation": "compact",
+            "reason": "Long sidebar skimmed on repeat visits",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Save and More actions",
+            "members": [
+              "n72",
+              "n74"
+            ],
+            "operation": "none",
+            "reason": "Kept alongside main actions for now",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [],
+        "ms": 0
+      },
+      "layout": {
+        "labels": [
+          "Like, Dislike, Share buttons",
+          "Channel info with Subscribe",
+          "Up next suggestions"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n76",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n78",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n80",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": false,
+          "id": "n70",
+          "ops": [],
+          "visible": false
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "fail",
+        "fail",
+        "fail"
+      ]
+    }
+  ]
+}

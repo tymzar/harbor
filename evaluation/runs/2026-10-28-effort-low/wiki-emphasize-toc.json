@@ -1,0 +1,595 @@
+{
+  "scenario": {
+    "id": "wiki-emphasize-toc",
+    "site": "wikipedia-article",
+    "goal": "I jump between sections a lot; make the table of contents stand out.",
+    "tags": [
+      "reading",
+      "emphasize",
+      "goal-inference"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "attr": {
+            "id": "mw-panel-toc"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Web browser"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "wikipedia-article",
+    "url": "https://en.wikipedia.org/wiki/Web_browser",
+    "finalUrl": "https://en.wikipedia.org/wiki/Web_browser"
+  },
+  "at": "2026-10-28T19:40:43.415Z",
+  "scanNodes": 117,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "mw-panel-toc"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n50",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Contents"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Web browser"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n69",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Web browser"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n50",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n69",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n50",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Table of Contents",
+              "members": [
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64"
+              ],
+              "operation": "emphasize",
+              "reason": "Core for jumping between sections, per goal",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n25",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Donation banner",
+              "members": [
+                "n28",
+                "n33",
+                "n45"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Fundraising promo blocks content, rarely needed",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n91",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Appearance settings",
+              "members": [
+                "n95"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value chrome when navigating sections",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "toc-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Table of Contents",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Table of Contents",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier list"
+                }
+              ],
+              "text": "Do you want the table of contents denser for faster scanning?"
+            },
+            {
+              "id": "appearance-keep",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Appearance settings",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Keep hidden"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Appearance settings",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "Keep Appearance panel hidden while reading?"
+            }
+          ],
+          "summary": "Emphasized sidebar TOC for section jumping, hid donation banner and Appearance panel.",
+          "template": {
+            "pageKind": "article",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n50",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Table of Contents",
+            "members": [
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64"
+            ],
+            "operation": "emphasize",
+            "reason": "Core for jumping between sections, per goal",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n25",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Donation banner",
+            "members": [
+              "n28",
+              "n33",
+              "n45"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Fundraising promo blocks content, rarely needed",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n91",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Appearance settings",
+            "members": [
+              "n95"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value chrome when navigating sections",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 4674,
+            "model": "spark",
+            "ms": 7524,
+            "outputTokens": 1917,
+            "purpose": "layout plan",
+            "reasoningTokens": 1432
+          }
+        ],
+        "ms": 7534
+      },
+      "layout": {
+        "labels": [
+          "Table of Contents",
+          "Donation banner",
+          "Appearance settings"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n50",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n69",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n55",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Table of contents",
+              "members": [
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64"
+              ],
+              "operation": "emphasize",
+              "reason": "User jumps between sections, needs it to stand out",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n27",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Fundraising banner",
+              "members": [
+                "n28",
+                "n33",
+                "n45"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo banner distracts from section navigation",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n91",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Appearance settings",
+              "members": [
+                "n92"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely needed sidebar competes with contents",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n72",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Article tools",
+              "members": [
+                "n73",
+                "n79"
+              ],
+              "operation": "compact",
+              "reason": "Dense toolbar skimmed while navigating article",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "toc-style",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Bold and expanded"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Extra compact list"
+                }
+              ],
+              "text": "How should the table of contents look while you jump around?"
+            },
+            {
+              "id": "side-panels",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Appearance settings",
+                      "operation": "hide-secondary"
+                    },
+                    {
+                      "group": "Fundraising banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide both panels"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Appearance settings",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep Appearance visible"
+                }
+              ],
+              "text": "Keep side panels hidden to focus on content?"
+            }
+          ],
+          "summary": "Emphasize the table of contents for quick section jumping, hide fundraising and appearance panels, compact article tools.",
+          "template": {
+            "pageKind": "wiki-article",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n55",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Table of contents",
+            "members": [
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64"
+            ],
+            "operation": "emphasize",
+            "reason": "User jumps between sections, needs it to stand out",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n27",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Fundraising banner",
+            "members": [
+              "n28",
+              "n33",
+              "n45"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo banner distracts from section navigation",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n91",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Appearance settings",
+            "members": [
+              "n92"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely needed sidebar competes with contents",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n72",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Article tools",
+            "members": [
+              "n73",
+              "n79"
+            ],
+            "operation": "compact",
+            "reason": "Dense toolbar skimmed while navigating article",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 11,
+            "model": "sam",
+            "ms": 1250,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 10,
+            "model": "sam",
+            "ms": 2424,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 719,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1425,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4745,
+            "model": "spark",
+            "ms": 10165,
+            "outputTokens": 2823,
+            "purpose": "layout plan",
+            "reasoningTokens": 2229
+          }
+        ],
+        "ms": 12604
+      },
+      "layout": {
+        "labels": [
+          "Table of contents",
+          "Fundraising banner",
+          "Appearance settings",
+          "Article tools"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [
+            "emphasize"
+          ],
+          "found": true,
+          "id": "n50",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n69",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

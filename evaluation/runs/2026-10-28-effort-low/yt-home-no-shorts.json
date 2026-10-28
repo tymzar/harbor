@@ -1,0 +1,612 @@
+{
+  "scenario": {
+    "id": "yt-home-no-shorts",
+    "site": "youtube-home",
+    "goal": "I never watch Shorts. Remove Shorts from the left menu.",
+    "tags": [
+      "video",
+      "hide",
+      "navigation",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Shorts"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Home"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Subscriptions"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-home",
+    "url": "https://www.youtube.com/",
+    "finalUrl": "https://www.youtube.com/",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T19:38:26.283Z",
+  "scanNodes": 40,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Shorts"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n27",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Shorts"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Home"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n25",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Home"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Subscriptions"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n29",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Subscriptions"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n27",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n25",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n29",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Shorts in left menu",
+              "members": [
+                "n27"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never watches Shorts; remove per goal",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Left mini guide",
+              "members": [
+                "n25",
+                "n29",
+                "n31"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already minimal",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n34",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "History off notice",
+              "members": [
+                "n35",
+                "n39"
+              ],
+              "operation": "compact",
+              "reason": "Banner takes space on repeat visits; tighten it",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.youtube.com/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "history-banner",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "History off notice",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide banner"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "History off notice",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "How to handle the history-off banner?"
+            },
+            {
+              "id": "sidebar-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left mini guide",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left mini guide",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Tighten icons"
+                }
+              ],
+              "text": "How dense should the left menu be?"
+            }
+          ],
+          "summary": "Remove Shorts entry from left menu, keep rest of navigation, tighten history notice.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Shorts in left menu",
+            "members": [
+              "n27"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never watches Shorts; remove per goal",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Left mini guide",
+            "members": [
+              "n25",
+              "n29",
+              "n31"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already minimal",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n34",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "History off notice",
+            "members": [
+              "n35",
+              "n39"
+            ],
+            "operation": "compact",
+            "reason": "Banner takes space on repeat visits; tighten it",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.youtube.com/"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 2239,
+            "model": "spark",
+            "ms": 11919,
+            "outputTokens": 2644,
+            "purpose": "layout plan",
+            "reasoningTokens": 2182
+          }
+        ],
+        "ms": 11922
+      },
+      "layout": {
+        "labels": [
+          "Shorts in left menu",
+          "History off notice"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n25",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n29",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "fail",
+        "fail"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Side menu",
+              "members": [
+                "n25",
+                "n29",
+                "n31"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already minimal",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Shorts side entry",
+              "members": [
+                "n27"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never watches Shorts",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n33",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "History notice",
+              "members": [
+                "n34"
+              ],
+              "operation": "compact",
+              "reason": "Large info banner clutters feed",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.youtube.com/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "history-hide",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "History notice",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide completely"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "History notice",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "Keep the history notice on home?"
+            },
+            {
+              "id": "menu-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Side menu",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep spacing"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Side menu",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                }
+              ],
+              "text": "How roomy should the left menu be?"
+            }
+          ],
+          "summary": "Removed Shorts from left menu and tightened history banner.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Side menu",
+            "members": [
+              "n25",
+              "n29",
+              "n31"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already minimal",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Shorts side entry",
+            "members": [
+              "n27"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never watches Shorts",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n33",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "History notice",
+            "members": [
+              "n34"
+            ],
+            "operation": "compact",
+            "reason": "Large info banner clutters feed",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.youtube.com/"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1010,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 1623,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 584,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1332,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 2250,
+            "model": "spark",
+            "ms": 11250,
+            "outputTokens": 2692,
+            "purpose": "layout plan",
+            "reasoningTokens": 2262
+          },
+          {
+            "inputTokens": 2675,
+            "model": "spark",
+            "ms": 4843,
+            "outputTokens": 1273,
+            "purpose": "repair",
+            "reasoningTokens": 949
+          }
+        ],
+        "ms": 17735
+      },
+      "layout": {
+        "labels": [
+          "Shorts side entry",
+          "History notice"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n25",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n29",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "fail",
+        "fail"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,567 @@
+{
+  "scenario": {
+    "id": "pypi-hide-announcement",
+    "site": "pypi-package",
+    "goal": "Hide the announcement bar at the top.",
+    "tags": [
+      "code",
+      "hide",
+      "banner"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "div",
+          "area": {
+            "maxX": 0,
+            "maxY": 0
+          }
+        },
+        "note": "the whole announcement bar at the very top; its text changes"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "requests"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "pypi-package",
+    "url": "https://pypi.org/project/requests/",
+    "finalUrl": "https://pypi.org/project/requests/"
+  },
+  "at": "2026-10-28T19:45:29.963Z",
+  "scanNodes": 75,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "div",
+        "area": {
+          "maxX": 0,
+          "maxY": 0
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n1",
+        "tag": "div",
+        "kind": "group",
+        "text": "Security notice: Upgrade certifi, pip, and uv in response to CA certificate inc…"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "requests"
+      },
+      "matches": 2,
+      "node": {
+        "id": "n27",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "requests 2.34.2"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n1",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n27",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n1",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Security notice banner",
+              "members": [
+                "n2",
+                "n3"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Announcement bar user asked to hide",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "pypi.org/*"
+            },
+            {
+              "container": "n14",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Main navigation",
+              "members": [
+                "n16",
+                "n18",
+                "n20",
+                "n22"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "pypi.org/*"
+            },
+            {
+              "container": "n54",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Project sidebar",
+              "members": [
+                "n55",
+                "n66",
+                "n74"
+              ],
+              "operation": "none",
+              "reason": "Project metadata supports main content",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "pypi.org/project/{project}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Project sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Project sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide"
+                }
+              ],
+              "text": "How should the project sidebar appear on return visits?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                }
+              ],
+              "text": "Do you want a denser header when revisiting?"
+            }
+          ],
+          "summary": "Hides the top security notice banner per your goal, keeps navigation and sidebar as-is.",
+          "template": {
+            "pageKind": "package detail",
+            "urlPattern": "pypi.org/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n1",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Security notice banner",
+            "members": [
+              "n2",
+              "n3"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Announcement bar user asked to hide",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "pypi.org/*"
+          },
+          {
+            "container": "n14",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Main navigation",
+            "members": [
+              "n16",
+              "n18",
+              "n20",
+              "n22"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "pypi.org/*"
+          },
+          {
+            "container": "n54",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Project sidebar",
+            "members": [
+              "n55",
+              "n66",
+              "n74"
+            ],
+            "operation": "none",
+            "reason": "Project metadata supports main content",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "pypi.org/project/{project}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3265,
+            "model": "spark",
+            "ms": 14214,
+            "outputTokens": 3228,
+            "purpose": "layout plan",
+            "reasoningTokens": 2767
+          }
+        ],
+        "ms": 14218
+      },
+      "layout": {
+        "labels": [
+          "Security notice banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n1",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n1",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Announcement bar",
+              "members": [
+                "n2",
+                "n3"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Top security notice requested to hide.",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "pypi.org/*"
+            },
+            {
+              "container": "n14",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Header navigation",
+              "members": [
+                "n16",
+                "n18",
+                "n20",
+                "n22"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works.",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "pypi.org/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Project tabs",
+              "members": [
+                "n31",
+                "n33",
+                "n35",
+                "n37"
+              ],
+              "operation": "none",
+              "reason": "Core project navigation for this view.",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "pypi.org/project/{project}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-sidebar",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Project sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide extras"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Project sidebar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep sidebar"
+                }
+              ],
+              "text": "Hide right sidebar project details too?"
+            },
+            {
+              "id": "q-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Project sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser layout"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Project sidebar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier layout"
+                }
+              ],
+              "text": "Prefer denser project page layout?"
+            }
+          ],
+          "summary": "Hides the top security announcement bar per request, keeps header and project tabs unchanged.",
+          "template": {
+            "pageKind": "project-detail",
+            "urlPattern": "pypi.org/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n1",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Announcement bar",
+            "members": [
+              "n2",
+              "n3"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Top security notice requested to hide.",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "pypi.org/*"
+          },
+          {
+            "container": "n14",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Header navigation",
+            "members": [
+              "n16",
+              "n18",
+              "n20",
+              "n22"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works.",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "pypi.org/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Project tabs",
+            "members": [
+              "n31",
+              "n33",
+              "n35",
+              "n37"
+            ],
+            "operation": "none",
+            "reason": "Core project navigation for this view.",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "pypi.org/project/{project}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 563,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 557,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 565,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 628,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3276,
+            "model": "spark",
+            "ms": 8963,
+            "outputTokens": 1976,
+            "purpose": "layout plan",
+            "reasoningTokens": 1520
+          },
+          {
+            "inputTokens": 3650,
+            "model": "spark",
+            "ms": 3582,
+            "outputTokens": 916,
+            "purpose": "repair",
+            "reasoningTokens": 575
+          }
+        ],
+        "ms": 13185
+      },
+      "layout": {
+        "labels": [
+          "Announcement bar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n1",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

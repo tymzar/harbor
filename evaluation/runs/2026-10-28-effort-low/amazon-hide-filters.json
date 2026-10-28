@@ -1,0 +1,684 @@
+{
+  "scenario": {
+    "id": "amazon-hide-filters",
+    "site": "amazon-search",
+    "goal": "Hide the left filter column; I just scan results.",
+    "tags": [
+      "commerce",
+      "hide",
+      "sidebar"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "kind": "heading",
+          "text": "Popular Shopping Ideas"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "kind": "heading",
+          "text": "Brands",
+          "area": {
+            "maxX": 250
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h2",
+          "textStart": "Anker USB C to USB C Cable"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "amazon-search",
+    "url": "https://www.amazon.com/s?k=usb+c+cable",
+    "finalUrl": "https://www.amazon.com/checkpoint/continue?token=v1.YcFzHsPaWsDN_24tLXABeDXrwDb5qoRHIhfBJl6PYlxpUbC6NmLuXESbq3Y_nXJkqU8osANsrGujU8ouCBxdcOCgJmWHbkqCJJjP17F9oiLXu2nDdyWBw7PrlTpdDmtZfSZ48ZfSZXgVNmxiNem-bG0Rwdn8IFVo_YgLAKdI9aVHhYM57LGJ8fX6pkUd8mdj2Ki7WOmc9dFrtorf8Wq59sWw5qEfvZuepKtwJ193F8b00jiyxFuCFQWLsfgPRDnX0vovu1AD"
+  },
+  "at": "2026-10-28T19:41:05.724Z",
+  "scanNodes": 65,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "kind": "heading",
+        "text": "Popular Shopping Ideas"
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "kind": "heading",
+        "text": "Brands",
+        "area": {
+          "maxX": 250
+        }
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "textStart": "Anker USB C to USB C Cable"
+      },
+      "matches": 0
+    }
+  ],
+  "before": [
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    }
+  ],
+  "baseline": [
+    "unresolved",
+    "unresolved",
+    "unresolved"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n4",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Top header",
+              "members": [
+                "n6",
+                "n7",
+                "n16",
+                "n21",
+                "n23",
+                "n24"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed on every visit; tighten to reach results faster",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.amazon.com/*"
+            },
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Category links",
+              "members": [
+                "n37",
+                "n39",
+                "n41",
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing navigation rarely needed when scanning results",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.amazon.com/*"
+            },
+            {
+              "container": "n52",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Continue prompt",
+              "members": [
+                "n54",
+                "n56"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is to get past checkpoint to scan results",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.amazon.com/checkpoint/*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Recommendations footer",
+              "members": [
+                "n63",
+                "n64",
+                "n65"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Sign-in promo low-value when scanning results",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.amazon.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Category links",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide them"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Category links",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "Keep Prime Video, Coupons, Deals links?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top header",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Recommendations footer",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top header",
+                      "operation": "none"
+                    },
+                    {
+                      "group": "Recommendations footer",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "Prefer denser or roomier scanning?"
+            }
+          ],
+          "summary": "Hide marketing nav and promos, tighten header, emphasize continue to results.",
+          "template": {
+            "pageKind": "checkpoint",
+            "urlPattern": "www.amazon.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n4",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Top header",
+            "members": [
+              "n6",
+              "n7",
+              "n16",
+              "n21",
+              "n23",
+              "n24"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed on every visit; tighten to reach results faster",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.amazon.com/*"
+          },
+          {
+            "container": "n36",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Category links",
+            "members": [
+              "n37",
+              "n39",
+              "n41",
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing navigation rarely needed when scanning results",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.amazon.com/*"
+          },
+          {
+            "container": "n52",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Continue prompt",
+            "members": [
+              "n54",
+              "n56"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is to get past checkpoint to scan results",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.amazon.com/checkpoint/*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Recommendations footer",
+            "members": [
+              "n63",
+              "n64",
+              "n65"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Sign-in promo low-value when scanning results",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.amazon.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 3721,
+            "model": "spark",
+            "ms": 8581,
+            "outputTokens": 2108,
+            "purpose": "layout plan",
+            "reasoningTokens": 1503
+          },
+          {
+            "inputTokens": 4496,
+            "model": "spark",
+            "ms": 3030,
+            "outputTokens": 877,
+            "purpose": "repair",
+            "reasoningTokens": 418
+          }
+        ],
+        "ms": 11625
+      },
+      "layout": {
+        "labels": [
+          "Top header",
+          "Category links",
+          "Continue prompt",
+          "Recommendations footer"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        }
+      ],
+      "verdicts": [
+        "unresolved",
+        "unresolved",
+        "unresolved"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Top navigation links",
+              "members": [
+                "n38",
+                "n40",
+                "n42",
+                "n44",
+                "n46",
+                "n48",
+                "n50"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.amazon.com/checkpoint/*"
+            },
+            {
+              "container": "n52",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Continue shopping prompt",
+              "members": [
+                "n53",
+                "n55"
+              ],
+              "operation": "emphasize",
+              "reason": "Blocks scanning results, needs to be found fast",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.amazon.com/checkpoint/continue*"
+            },
+            {
+              "container": "n60",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Sign-in recommendations footer",
+              "members": [
+                "n62"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo rarely needed when scanning results",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.amazon.com/checkpoint/*"
+            },
+            {
+              "container": "n57",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Legal footer links",
+              "members": [
+                "n58",
+                "n59"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value metadata for this task",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.amazon.com/checkpoint/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top navigation links",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser header"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top navigation links",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                }
+              ],
+              "text": "Do you want a denser header to see more results?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sign-in recommendations footer",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide promos"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sign-in recommendations footer",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep promos"
+                }
+              ],
+              "text": "Hide sign-in and recommendation promos on result pages?"
+            }
+          ],
+          "summary": "No filter column on this checkpoint view; emphasized continue prompt and hid footer promos to get you back to scanning results.",
+          "template": {
+            "pageKind": "checkpoint",
+            "urlPattern": "www.amazon.com/checkpoint/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n36",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Top navigation links",
+            "members": [
+              "n38",
+              "n40",
+              "n42",
+              "n44",
+              "n46",
+              "n48",
+              "n50"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.amazon.com/checkpoint/*"
+          },
+          {
+            "container": "n52",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Continue shopping prompt",
+            "members": [
+              "n53",
+              "n55"
+            ],
+            "operation": "emphasize",
+            "reason": "Blocks scanning results, needs to be found fast",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.amazon.com/checkpoint/continue*"
+          },
+          {
+            "container": "n60",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Sign-in recommendations footer",
+            "members": [
+              "n62"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo rarely needed when scanning results",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.amazon.com/checkpoint/*"
+          },
+          {
+            "container": "n57",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Legal footer links",
+            "members": [
+              "n58",
+              "n59"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value metadata for this task",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.amazon.com/checkpoint/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 1407,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 1230,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 998,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1132,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3743,
+            "model": "spark",
+            "ms": 6776,
+            "outputTokens": 1721,
+            "purpose": "layout plan",
+            "reasoningTokens": 1144
+          },
+          {
+            "inputTokens": 4518,
+            "model": "spark",
+            "ms": 7241,
+            "outputTokens": 2068,
+            "purpose": "repair",
+            "reasoningTokens": 1622
+          }
+        ],
+        "ms": 15441
+      },
+      "layout": {
+        "labels": [
+          "Continue shopping prompt",
+          "Sign-in recommendations footer",
+          "Legal footer links"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        }
+      ],
+      "verdicts": [
+        "unresolved",
+        "unresolved",
+        "unresolved"
+      ]
+    }
+  ]
+}

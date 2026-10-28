@@ -1,0 +1,653 @@
+{
+  "scenario": {
+    "id": "verge-hide-account-links",
+    "site": "theverge-front",
+    "goal": "Hide the Subscribe and Sign In links.",
+    "tags": [
+      "news",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "href": "/subscribe"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "href": "/auth/login"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Top Navigation"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "theverge-front",
+    "url": "https://www.theverge.com/",
+    "finalUrl": "https://www.theverge.com/"
+  },
+  "at": "2026-10-28T19:42:27.867Z",
+  "scanNodes": 61,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "a",
+        "href": "/subscribe"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n4",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Subscribe"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "href": "/auth/login"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n5",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Sign In"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Top Navigation"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n6",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Top Navigation"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n4",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n5",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n6",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Subscribe and Sign In links",
+              "members": [
+                "n4",
+                "n5"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide these auth links",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n6",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top Navigation",
+              "members": [
+                "n8",
+                "n10",
+                "n12",
+                "n14",
+                "n16",
+                "n18",
+                "n20"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation that already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n53",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Privacy notice banner",
+              "members": [
+                "n54"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value legal banner rarely needed after dismissal",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n38",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Latest stories list",
+              "members": [
+                "n39",
+                "n44"
+              ],
+              "operation": "compact",
+              "reason": "Dense skimmed feed benefits from tighter spacing",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "www.theverge.com/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Latest stories list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Latest stories list",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How should the Latest stories feed feel?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top Navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top Navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "More compact"
+                }
+              ],
+              "text": "How should the top navigation appear?"
+            }
+          ],
+          "summary": "Hides Subscribe and Sign In links and privacy banner, compacts Latest feed, keeps top navigation.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.theverge.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Subscribe and Sign In links",
+            "members": [
+              "n4",
+              "n5"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide these auth links",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n6",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top Navigation",
+            "members": [
+              "n8",
+              "n10",
+              "n12",
+              "n14",
+              "n16",
+              "n18",
+              "n20"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation that already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n53",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Privacy notice banner",
+            "members": [
+              "n54"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value legal banner rarely needed after dismissal",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n38",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Latest stories list",
+            "members": [
+              "n39",
+              "n44"
+            ],
+            "operation": "compact",
+            "reason": "Dense skimmed feed benefits from tighter spacing",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "www.theverge.com/"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3156,
+            "model": "spark",
+            "ms": 9202,
+            "outputTokens": 2388,
+            "purpose": "layout plan",
+            "reasoningTokens": 1825
+          }
+        ],
+        "ms": 9208
+      },
+      "layout": {
+        "labels": [
+          "Subscribe and Sign In links",
+          "Privacy notice banner",
+          "Latest stories list"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n4",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n5",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n6",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Header auth",
+              "members": [
+                "n4",
+                "n5"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Subscribe and Sign In",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top sections",
+              "members": [
+                "n8",
+                "n10",
+                "n12",
+                "n14",
+                "n16",
+                "n18",
+                "n20"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation that already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n38",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Latest stories",
+              "members": [
+                "n39",
+                "n44"
+              ],
+              "operation": "compact",
+              "reason": "Dense news list to skim faster",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "www.theverge.com/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "feed-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Latest stories",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Latest stories",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy list"
+                }
+              ],
+              "text": "How dense should Latest stories be?"
+            },
+            {
+              "id": "sections-use",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top sections",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top sections",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide sections"
+                }
+              ],
+              "text": "Do you use Tech, Reviews, Science links?"
+            }
+          ],
+          "summary": "Hid Subscribe and Sign In header links, compacted Latest feed.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.theverge.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Header auth",
+            "members": [
+              "n4",
+              "n5"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Subscribe and Sign In",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top sections",
+            "members": [
+              "n8",
+              "n10",
+              "n12",
+              "n14",
+              "n16",
+              "n18",
+              "n20"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation that already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n38",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Latest stories",
+            "members": [
+              "n39",
+              "n44"
+            ],
+            "operation": "compact",
+            "reason": "Dense news list to skim faster",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "www.theverge.com/"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 676,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 925,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 564,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 571,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3167,
+            "model": "spark",
+            "ms": 8378,
+            "outputTokens": 2013,
+            "purpose": "layout plan",
+            "reasoningTokens": 1543
+          },
+          {
+            "inputTokens": 3635,
+            "model": "spark",
+            "ms": 3203,
+            "outputTokens": 729,
+            "purpose": "repair",
+            "reasoningTokens": 371
+          }
+        ],
+        "ms": 12521
+      },
+      "layout": {
+        "labels": [
+          "Header auth",
+          "Latest stories"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n4",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n5",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n6",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

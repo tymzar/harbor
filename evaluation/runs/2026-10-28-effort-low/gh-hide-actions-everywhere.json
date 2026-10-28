@@ -1,0 +1,681 @@
+{
+  "scenario": {
+    "id": "gh-hide-actions-everywhere",
+    "site": "github-repo",
+    "goal": "please hide completly. i do not use at all the actions [unpin,watch,fork,start] neither on the top bar neitiher in the sidebar",
+    "tags": [
+      "code",
+      "hide",
+      "duplicate-regions",
+      "user-reported"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "data-testid": "repo-header-actions"
+          }
+        },
+        "note": "Notifications / Fork / Star in the header"
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "span",
+          "text": "stars",
+          "area": {
+            "minX": 900
+          }
+        },
+        "note": "the same stats in the About sidebar"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Repository"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "github-repo",
+    "url": "https://github.com/facebook/react",
+    "finalUrl": "https://github.com/react/react"
+  },
+  "at": "2026-10-28T19:39:32.851Z",
+  "scanNodes": 233,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "repo-header-actions"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n65",
+        "tag": "ul",
+        "kind": "list",
+        "text": "Notifications You must be signed in to change notification settings Fork 51.6k ("
+      }
+    },
+    {
+      "anchor": {
+        "tag": "span",
+        "text": "stars",
+        "area": {
+          "minX": 900
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n227",
+        "tag": "span",
+        "kind": "group",
+        "text": "251.8k stars"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Repository"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n40",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Repository"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n65",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n227",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n40",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n65",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Top bar Watch Fork Star actions",
+              "members": [
+                "n67",
+                "n70",
+                "n74"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never uses unpin/watch/fork/star in top bar",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n225",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Sidebar Stars Watchers Forks",
+              "members": [
+                "n227",
+                "n229",
+                "n231"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never uses watch/fork/star in sidebar",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "github.com/{owner}/{repo}"
+            },
+            {
+              "container": "n41",
+              "identity": {
+                "attribute": "data-tab-item",
+                "source": "attribute"
+              },
+              "label": "Repository tabs",
+              "members": [
+                "n43",
+                "n45",
+                "n49",
+                "n52",
+                "n54",
+                "n57"
+              ],
+              "operation": "none",
+              "reason": "Primary repo navigation, keep as-is",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n118",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "File and folder list",
+              "members": [
+                "n119",
+                "n126",
+                "n133",
+                "n142",
+                "n146",
+                "n155",
+                "n164",
+                "n171",
+                "n178",
+                "n185",
+                "n192"
+              ],
+              "operation": "none",
+              "reason": "Main code browsing content",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "github.com/{owner}/{repo}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "file-layout",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "File and folder list",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "File and folder list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "File and folder list",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Card grid"
+                }
+              ],
+              "text": "How do you use the file list?"
+            },
+            {
+              "id": "tabs-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Repository tabs",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as-is"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Repository tabs",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Tighter tabs"
+                }
+              ],
+              "text": "Make repository tabs more compact?"
+            }
+          ],
+          "summary": "Hide Watch/Fork/Star completely in top bar and sidebar per goal, keep tabs and file list unchanged.",
+          "template": {
+            "pageKind": "repo",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n65",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Top bar Watch Fork Star actions",
+            "members": [
+              "n67",
+              "n70",
+              "n74"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never uses unpin/watch/fork/star in top bar",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n225",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Sidebar Stars Watchers Forks",
+            "members": [
+              "n227",
+              "n229",
+              "n231"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never uses watch/fork/star in sidebar",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "github.com/{owner}/{repo}"
+          },
+          {
+            "container": "n41",
+            "identity": {
+              "attribute": "data-tab-item",
+              "source": "attribute"
+            },
+            "label": "Repository tabs",
+            "members": [
+              "n43",
+              "n45",
+              "n49",
+              "n52",
+              "n54",
+              "n57"
+            ],
+            "operation": "none",
+            "reason": "Primary repo navigation, keep as-is",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n118",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "File and folder list",
+            "members": [
+              "n119",
+              "n126",
+              "n133",
+              "n142",
+              "n146",
+              "n155",
+              "n164",
+              "n171",
+              "n178",
+              "n185",
+              "n192"
+            ],
+            "operation": "none",
+            "reason": "Main code browsing content",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "github.com/{owner}/{repo}"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 10700,
+            "model": "spark",
+            "ms": 11795,
+            "outputTokens": 2540,
+            "purpose": "layout plan",
+            "reasoningTokens": 1882
+          },
+          {
+            "inputTokens": 11240,
+            "model": "spark",
+            "ms": 5445,
+            "outputTokens": 1393,
+            "purpose": "repair",
+            "reasoningTokens": 888
+          }
+        ],
+        "ms": 17260
+      },
+      "layout": {
+        "labels": [
+          "Top bar Watch Fork Star actions",
+          "Sidebar Stars Watchers Forks"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n65",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n227",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n40",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n65",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Top bar repo actions",
+              "members": [
+                "n66",
+                "n69",
+                "n73"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Notifications, Fork and Star you never use",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n225",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Sidebar activity stats",
+              "members": [
+                "n227",
+                "n229",
+                "n231"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Stars, Watchers and Forks counts you never use",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "github.com/{owner}/{repo}"
+            },
+            {
+              "container": "n118",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Code file list",
+              "members": [
+                "n119",
+                "n126",
+                "n133",
+                "n142",
+                "n146",
+                "n155",
+                "n164",
+                "n171",
+                "n178",
+                "n185",
+                "n192"
+              ],
+              "operation": "none",
+              "reason": "Main code browsing content",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "github.com/{owner}/{repo}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "file-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Code file list",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Code file list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                }
+              ],
+              "text": "How do you browse the file list?"
+            }
+          ],
+          "summary": "Hides Watch/Fork/Star in top bar and Stars/Watchers/Forks in sidebar per your request.",
+          "template": {
+            "pageKind": "repo",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n65",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Top bar repo actions",
+            "members": [
+              "n66",
+              "n69",
+              "n73"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Notifications, Fork and Star you never use",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n225",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Sidebar activity stats",
+            "members": [
+              "n227",
+              "n229",
+              "n231"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Stars, Watchers and Forks counts you never use",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "github.com/{owner}/{repo}"
+          },
+          {
+            "container": "n118",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Code file list",
+            "members": [
+              "n119",
+              "n126",
+              "n133",
+              "n142",
+              "n146",
+              "n155",
+              "n164",
+              "n171",
+              "n178",
+              "n185",
+              "n192"
+            ],
+            "operation": "none",
+            "reason": "Main code browsing content",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "github.com/{owner}/{repo}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 6,
+            "model": "sam",
+            "ms": 820,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1617,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 850,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 882,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 10712,
+            "model": "spark",
+            "ms": 8886,
+            "outputTokens": 2289,
+            "purpose": "layout plan",
+            "reasoningTokens": 1841
+          }
+        ],
+        "ms": 10531
+      },
+      "layout": {
+        "labels": [
+          "Top bar repo actions",
+          "Sidebar activity stats"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n65",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n227",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n40",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

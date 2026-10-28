@@ -1,0 +1,309 @@
+{
+  "scenario": {
+    "id": "so-hide-agents-promo",
+    "site": "stackoverflow-question",
+    "goal": "Hide the 'Stack Overflow for Agents' promo but keep the rest of the sidebar.",
+    "tags": [
+      "q-and-a",
+      "hide",
+      "precision",
+      "promo"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "aria-label": "Stack Overflow for Agents"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "ul",
+          "text": "The Overflow Blog"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "stackoverflow-question",
+    "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+    "finalUrl": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array"
+  },
+  "at": "2026-10-28T19:40:02.676Z",
+  "scanNodes": 9,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "aria-label": "Stack Overflow for Agents"
+        }
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "ul",
+        "text": "The Overflow Blog"
+      },
+      "matches": 0
+    }
+  ],
+  "before": [
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    }
+  ],
+  "baseline": [
+    "unresolved",
+    "unresolved"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Security verification notice",
+              "members": [
+                "n3",
+                "n4"
+              ],
+              "operation": "none",
+              "reason": "Only content during check; leave as is",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+            },
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Cloudflare footer",
+              "members": [
+                "n8",
+                "n9"
+              ],
+              "operation": "none",
+              "reason": "Standard footer; keep for now",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Cloudflare footer",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide footer"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Cloudflare footer",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep footer"
+                }
+              ],
+              "text": "Do you want fewer distractions on the verification screen?"
+            }
+          ],
+          "summary": "Page is blocked by Cloudflare check, Agents promo and sidebar not visible so no layout change yet.",
+          "template": {
+            "pageKind": "question",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Security verification notice",
+            "members": [
+              "n3",
+              "n4"
+            ],
+            "operation": "none",
+            "reason": "Only content during check; leave as is",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          },
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Cloudflare footer",
+            "members": [
+              "n8",
+              "n9"
+            ],
+            "operation": "none",
+            "reason": "Standard footer; keep for now",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 1497,
+            "model": "spark",
+            "ms": 9405,
+            "outputTokens": 1931,
+            "purpose": "layout plan",
+            "reasoningTokens": 1619
+          }
+        ],
+        "ms": 9406
+      },
+      "after": [
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        }
+      ],
+      "verdicts": [
+        "unresolved",
+        "unresolved"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [],
+                  "label": "Yes retry later"
+                },
+                {
+                  "effects": [],
+                  "label": "No action"
+                }
+              ],
+              "text": "Page shows security check, retry after it loads?"
+            }
+          ],
+          "summary": "Blocked by Cloudflare check, sidebar promo not visible to configure yet.",
+          "template": {
+            "pageKind": "question",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          }
+        },
+        "accepted": [],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 451,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 865,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1341,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 549,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 1508,
+            "model": "spark",
+            "ms": 8174,
+            "outputTokens": 1758,
+            "purpose": "layout plan",
+            "reasoningTokens": 1647
+          }
+        ],
+        "ms": 9521
+      },
+      "after": [
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        }
+      ],
+      "verdicts": [
+        "unresolved",
+        "unresolved"
+      ]
+    }
+  ]
+}

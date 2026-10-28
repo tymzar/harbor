@@ -1,0 +1,618 @@
+{
+  "scenario": {
+    "id": "steam-hide-install-and-tags",
+    "site": "steam-app",
+    "goal": "Hide the Install Steam button and the user-defined tags.",
+    "tags": [
+      "gaming",
+      "hide",
+      "multiple",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "text": "Install Steam"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "div",
+          "textStart": "Popular user-defined tags"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "Store menu"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "steam-app",
+    "url": "https://store.steampowered.com/app/730/CounterStrike_2/",
+    "finalUrl": "https://store.steampowered.com/app/730/CounterStrike_2/"
+  },
+  "at": "2026-10-28T19:46:13.322Z",
+  "scanNodes": 95,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "a",
+        "text": "Install Steam"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n13",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Install Steam"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "div",
+        "textStart": "Popular user-defined tags"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n60",
+        "tag": "div",
+        "kind": "group",
+        "text": "Popular user-defined tags for this product:"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Store menu"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n16",
+        "tag": "div",
+        "kind": "landmark",
+        "text": "Store menu"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n13",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n60",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n16",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n12",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Install Steam button",
+              "members": [
+                "n13"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Install Steam button",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "store.steampowered.com/*"
+            },
+            {
+              "container": "n61",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Popular user-defined tags",
+              "members": [
+                "n62",
+                "n63",
+                "n64",
+                "n65",
+                "n66",
+                "n67",
+                "n68"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User-defined tags requested hidden",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "store.steampowered.com/app/{appId}/*"
+            },
+            {
+              "container": "n18",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Store menu navigation",
+              "members": [
+                "n19",
+                "n20",
+                "n21",
+                "n22",
+                "n23"
+              ],
+              "operation": "none",
+              "reason": "Primary store navigation that works as is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Store menu navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Store menu navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make compact"
+                }
+              ],
+              "text": "How do you use the store menu?"
+            }
+          ],
+          "summary": "Hide Install Steam header button and popular user-defined tags on Counter-Strike 2 page.",
+          "template": {
+            "pageKind": "app-detail",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n12",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Install Steam button",
+            "members": [
+              "n13"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Install Steam button",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "store.steampowered.com/*"
+          },
+          {
+            "container": "n61",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Popular user-defined tags",
+            "members": [
+              "n62",
+              "n63",
+              "n64",
+              "n65",
+              "n66",
+              "n67",
+              "n68"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User-defined tags requested hidden",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "store.steampowered.com/app/{appId}/*"
+          },
+          {
+            "container": "n18",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Store menu navigation",
+            "members": [
+              "n19",
+              "n20",
+              "n21",
+              "n22",
+              "n23"
+            ],
+            "operation": "none",
+            "reason": "Primary store navigation that works as is",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3658,
+            "model": "spark",
+            "ms": 11426,
+            "outputTokens": 2618,
+            "purpose": "layout plan",
+            "reasoningTokens": 2197
+          }
+        ],
+        "ms": 11434
+      },
+      "layout": {
+        "labels": [
+          "Install Steam button",
+          "Popular user-defined tags"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n13",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n60",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n16",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "fail",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n12",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Install Steam link",
+              "members": [
+                "n13"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Install Steam button",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            },
+            {
+              "container": "n48",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "User tags",
+              "members": [
+                "n60"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide user-defined tags",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+            },
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Store menu",
+              "members": [
+                "n19",
+                "n20",
+                "n21",
+                "n22",
+                "n23"
+              ],
+              "operation": "none",
+              "reason": "Primary store navigation works as-is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            },
+            {
+              "container": "n49",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Review summary",
+              "members": [
+                "n50",
+                "n55",
+                "n56",
+                "n58"
+              ],
+              "operation": "none",
+              "reason": "Key purchase info next to header image",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q_density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Review summary",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Review summary",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make compact"
+                }
+              ],
+              "text": "How should the review and details sidebar read?"
+            },
+            {
+              "id": "q_menu",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Store menu",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep full menu"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Store menu",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Tighten menu"
+                }
+              ],
+              "text": "Do you use the full store menu often?"
+            }
+          ],
+          "summary": "Hides Install Steam button and user tags block per goal, leaves navigation and review info unchanged.",
+          "template": {
+            "pageKind": "app-detail",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n12",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Install Steam link",
+            "members": [
+              "n13"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Install Steam button",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          },
+          {
+            "container": "n48",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "User tags",
+            "members": [
+              "n60"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide user-defined tags",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+          },
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Store menu",
+            "members": [
+              "n19",
+              "n20",
+              "n21",
+              "n22",
+              "n23"
+            ],
+            "operation": "none",
+            "reason": "Primary store navigation works as-is",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          },
+          {
+            "container": "n49",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Review summary",
+            "members": [
+              "n50",
+              "n55",
+              "n56",
+              "n58"
+            ],
+            "operation": "none",
+            "reason": "Key purchase info next to header image",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 751,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 728,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 981,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 669,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3669,
+            "model": "spark",
+            "ms": 12113,
+            "outputTokens": 2783,
+            "purpose": "layout plan",
+            "reasoningTokens": 2211
+          }
+        ],
+        "ms": 13106
+      },
+      "layout": {
+        "labels": [
+          "Install Steam link",
+          "User tags"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n13",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n60",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n16",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

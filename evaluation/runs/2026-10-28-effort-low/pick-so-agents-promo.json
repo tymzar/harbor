@@ -1,0 +1,158 @@
+{
+  "scenario": {
+    "id": "pick-so-agents-promo",
+    "site": "stackoverflow-question",
+    "pick": {
+      "tag": "aside",
+      "attr": {
+        "aria-label": "Stack Overflow for Agents"
+      }
+    },
+    "tags": [
+      "picker",
+      "hide",
+      "promo"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "aria-label": "Stack Overflow for Agents"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "ul",
+          "text": "The Overflow Blog"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "stackoverflow-question",
+    "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+    "finalUrl": "https://stackoverflow.com/questions/11227809/why-is-conditional-processing-of-a-sorted-array-faster-than-of-an-unsorted-array"
+  },
+  "at": "2026-10-28T19:43:28.176Z",
+  "scanNodes": 136,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "aria-label": "Stack Overflow for Agents"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n94",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": "Stack Overflow for Agents"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "aria-label": "Stack Overflow for Agents"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n94",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": "Stack Overflow for Agents"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "ul",
+        "text": "The Overflow Blog"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n101",
+        "tag": "ul",
+        "kind": "list",
+        "text": "The Overflow Blog"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n94",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n94",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n101",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "picker",
+      "layout": {
+        "labels": [
+          "Hidden by you: Stack Overflow for Agents"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n94",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n94",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n101",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "scenario": {
+    "id": "pick-twitch-footer",
+    "site": "twitch-directory",
+    "pick": {
+      "attr": {
+        "id": "twilight-sticky-footer-root"
+      }
+    },
+    "tags": [
+      "picker",
+      "hide",
+      "sticky"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "twilight-sticky-footer-root"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "twitch-directory",
+    "url": "https://www.twitch.tv/directory",
+    "finalUrl": "https://www.twitch.tv/directory"
+  },
+  "at": "2026-10-28T19:43:32.074Z",
+  "scanNodes": 209,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "twilight-sticky-footer-root"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n205",
+        "tag": "footer",
+        "kind": "landmark",
+        "text": "Join the Twitch community! Discover the best live streams anywhere. Sign Up"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "twilight-sticky-footer-root"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n205",
+        "tag": "footer",
+        "kind": "landmark",
+        "text": "Join the Twitch community! Discover the best live streams anywhere. Sign Up"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n205",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n205",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "picker",
+      "layout": {
+        "labels": [
+          "Hidden by you: Join the Twitch community! Discover the…"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n205",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n205",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

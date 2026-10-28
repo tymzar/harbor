@@ -1,0 +1,713 @@
+{
+  "scenario": {
+    "id": "wiki-hide-account-links",
+    "site": "wikipedia-article",
+    "goal": "Hide Donate, Create account and Log in; keep the search box.",
+    "tags": [
+      "reading",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "ul",
+          "text": "Donate Create account Log in"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "id": "searchform"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "wikipedia-article",
+    "url": "https://en.wikipedia.org/wiki/Web_browser",
+    "finalUrl": "https://en.wikipedia.org/wiki/Web_browser"
+  },
+  "at": "2026-10-28T19:40:35.118Z",
+  "scanNodes": 117,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "ul",
+        "text": "Donate Create account Log in"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n17",
+        "tag": "ul",
+        "kind": "list",
+        "text": "Donate Create account Log in"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "searchform"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n12",
+        "tag": "form",
+        "kind": "landmark",
+        "text": "Search"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n17",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n12",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Personal tools",
+              "members": [
+                "n18",
+                "n20",
+                "n22"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Donate, Create account, Log in you asked to hide",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/*"
+            },
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Fundraising donation options",
+              "members": [
+                "n37",
+                "n38",
+                "n39",
+                "n40",
+                "n41",
+                "n42",
+                "n43",
+                "n44"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Donation ask matching Hide Donate goal",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "en.wikipedia.org/*"
+            },
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Search",
+              "members": [
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "Kept as requested, already works",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "en.wikipedia.org/*"
+            },
+            {
+              "container": "n55",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Table of contents",
+              "members": [
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed sidebar, tighten spacing",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n74",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Article tabs",
+              "members": [
+                "n75",
+                "n77"
+              ],
+              "operation": "none",
+              "reason": "Primary article navigation, keep as is",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "en.wikipedia.org/wiki/{title}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How should the Contents sidebar look?"
+            },
+            {
+              "id": "q-search",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "More prominent"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Should the search box stand out more?"
+            }
+          ],
+          "summary": "Hid top-right login/donate links and fundraising amounts, kept search unchanged.",
+          "template": {
+            "pageKind": "article",
+            "urlPattern": "en.wikipedia.org/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Personal tools",
+            "members": [
+              "n18",
+              "n20",
+              "n22"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Donate, Create account, Log in you asked to hide",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/*"
+          },
+          {
+            "container": "n36",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Fundraising donation options",
+            "members": [
+              "n37",
+              "n38",
+              "n39",
+              "n40",
+              "n41",
+              "n42",
+              "n43",
+              "n44"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Donation ask matching Hide Donate goal",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "en.wikipedia.org/*"
+          },
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Search",
+            "members": [
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "Kept as requested, already works",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "en.wikipedia.org/*"
+          },
+          {
+            "container": "n55",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Table of contents",
+            "members": [
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed sidebar, tighten spacing",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n74",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Article tabs",
+            "members": [
+              "n75",
+              "n77"
+            ],
+            "operation": "none",
+            "reason": "Primary article navigation, keep as is",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "en.wikipedia.org/wiki/{title}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4674,
+            "model": "spark",
+            "ms": 10312,
+            "outputTokens": 2776,
+            "purpose": "layout plan",
+            "reasoningTokens": 2123
+          },
+          {
+            "inputTokens": 5198,
+            "model": "spark",
+            "ms": 3997,
+            "outputTokens": 1272,
+            "purpose": "repair",
+            "reasoningTokens": 617
+          }
+        ],
+        "ms": 14319
+      },
+      "layout": {
+        "labels": [
+          "Personal tools",
+          "Fundraising donation options",
+          "Table of contents"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n17",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Personal tools",
+              "members": [
+                "n18",
+                "n20",
+                "n22"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Donate, Create account, Log in",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Fundraising banner",
+              "members": [
+                "n25"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Donation ask matching hide-Donate goal",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "en.wikipedia.org/*"
+            },
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Search",
+              "members": [
+                "n11"
+              ],
+              "operation": "emphasize",
+              "reason": "User wants to keep search box prominent",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "en.wikipedia.org/*"
+            },
+            {
+              "container": "n55",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Table of contents",
+              "members": [
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64"
+              ],
+              "operation": "compact",
+              "reason": "Dense section list skimmed for navigation",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n91",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Appearance settings",
+              "members": [
+                "n92"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely changed font and layout controls",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "toc-use",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep skimmable"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                }
+              ],
+              "text": "Do you use the Contents sidebar to jump around articles?"
+            },
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser layout"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Table of contents",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier layout"
+                }
+              ],
+              "text": "Do you prefer denser article navigation or more spacing?"
+            }
+          ],
+          "summary": "Hides Personal tools and fundraising banner per goal, emphasizes Search, compacts Contents and hides Appearance.",
+          "template": {
+            "pageKind": "article",
+            "urlPattern": "en.wikipedia.org/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Personal tools",
+            "members": [
+              "n18",
+              "n20",
+              "n22"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Donate, Create account, Log in",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Fundraising banner",
+            "members": [
+              "n25"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Donation ask matching hide-Donate goal",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "en.wikipedia.org/*"
+          },
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Search",
+            "members": [
+              "n11"
+            ],
+            "operation": "emphasize",
+            "reason": "User wants to keep search box prominent",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "en.wikipedia.org/*"
+          },
+          {
+            "container": "n55",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Table of contents",
+            "members": [
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64"
+            ],
+            "operation": "compact",
+            "reason": "Dense section list skimmed for navigation",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n91",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Appearance settings",
+            "members": [
+              "n92"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely changed font and layout controls",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 11,
+            "model": "sam",
+            "ms": 736,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 10,
+            "model": "sam",
+            "ms": 1772,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1569,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1248,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4745,
+            "model": "spark",
+            "ms": 9653,
+            "outputTokens": 2600,
+            "purpose": "layout plan",
+            "reasoningTokens": 1959
+          }
+        ],
+        "ms": 11443
+      },
+      "layout": {
+        "labels": [
+          "Personal tools",
+          "Fundraising banner",
+          "Search",
+          "Table of contents",
+          "Appearance settings"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n17",
+          "ops": [
+            "hide-secondary",
+            "emphasize"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

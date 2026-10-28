@@ -1,0 +1,744 @@
+{
+  "scenario": {
+    "id": "so-hide-sidebar",
+    "site": "stackoverflow-question",
+    "goal": "I read answers only. Hide the right sidebar (blog, meta, promos).",
+    "tags": [
+      "q-and-a",
+      "hide",
+      "sidebar",
+      "reading"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "sidebar"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "textStart": "Why is conditional processing"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "question and answers"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "stackoverflow-question",
+    "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+    "finalUrl": "https://stackoverflow.com/questions/11227809/why-is-conditional-processing-of-a-sorted-array-faster-than-of-an-unsorted-array"
+  },
+  "at": "2026-10-28T19:40:17.306Z",
+  "scanNodes": 114,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "sidebar"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n93",
+        "tag": "div",
+        "kind": "landmark",
+        "text": "sidebar"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "textStart": "Why is conditional processing"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n77",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Why is conditional processing of a sorted array faster than of an unsorted arra…"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "question and answers"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n84",
+        "tag": "div",
+        "kind": "landmark",
+        "text": "question and answers"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n93",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n77",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n84",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n84",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Question and answers",
+              "members": [
+                "n85"
+              ],
+              "operation": "emphasize",
+              "reason": "User reads answers only; make answer column prominent",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+            },
+            {
+              "container": "n93",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Right sidebar agent promo",
+              "members": [
+                "n94"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo sidebar user asked to hide",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+            },
+            {
+              "container": "n101",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Overflow Blog and Meta posts",
+              "members": [
+                "n103",
+                "n107",
+                "n109",
+                "n111",
+                "n113"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Blog and Meta list user asked to hide",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+            },
+            {
+              "container": "n4",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Top About links",
+              "members": [
+                "n5",
+                "n7",
+                "n9"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing nav rarely needed when reading answers",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "stackoverflow.com/*"
+            },
+            {
+              "container": "n28",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Primary left navigation",
+              "members": [
+                "n30",
+                "n33",
+                "n36",
+                "n39",
+                "n44",
+                "n48",
+                "n54",
+                "n58",
+                "n62",
+                "n65"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works as is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "stackoverflow.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-question",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Collapse question"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Keep question"
+                }
+              ],
+              "text": "Should the question post stay fully visible above answers?"
+            },
+            {
+              "id": "q-leftnav",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Primary left navigation",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide left nav"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Primary left navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Narrow left nav"
+                }
+              ],
+              "text": "Do you use the left navigation while reading answers?"
+            }
+          ],
+          "summary": "Emphasized answers column and hid right sidebar promos, blog and meta plus top marketing nav per goal.",
+          "template": {
+            "pageKind": "question",
+            "urlPattern": "stackoverflow.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n84",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Question and answers",
+            "members": [
+              "n85"
+            ],
+            "operation": "emphasize",
+            "reason": "User reads answers only; make answer column prominent",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          },
+          {
+            "container": "n93",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Right sidebar agent promo",
+            "members": [
+              "n94"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo sidebar user asked to hide",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          },
+          {
+            "container": "n101",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Overflow Blog and Meta posts",
+            "members": [
+              "n103",
+              "n107",
+              "n109",
+              "n111",
+              "n113"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Blog and Meta list user asked to hide",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          },
+          {
+            "container": "n4",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Top About links",
+            "members": [
+              "n5",
+              "n7",
+              "n9"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing nav rarely needed when reading answers",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "stackoverflow.com/*"
+          },
+          {
+            "container": "n28",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Primary left navigation",
+            "members": [
+              "n30",
+              "n33",
+              "n36",
+              "n39",
+              "n44",
+              "n48",
+              "n54",
+              "n58",
+              "n62",
+              "n65"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works as is",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "stackoverflow.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 4782,
+            "model": "spark",
+            "ms": 15072,
+            "outputTokens": 3605,
+            "purpose": "layout plan",
+            "reasoningTokens": 2923
+          }
+        ],
+        "ms": 15094
+      },
+      "layout": {
+        "labels": [
+          "Question and answers",
+          "Right sidebar agent promo",
+          "Overflow Blog and Meta posts",
+          "Top About links"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n93",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n77",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n84",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n28",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Left primary navigation",
+              "members": [
+                "n30",
+                "n33",
+                "n36",
+                "n39",
+                "n44",
+                "n48",
+                "n54",
+                "n58",
+                "n62",
+                "n65"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "stackoverflow.com/questions/*"
+            },
+            {
+              "container": "n84",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Question and answers",
+              "members": [
+                "n85"
+              ],
+              "operation": "emphasize",
+              "reason": "Serves read-answers goal",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+            },
+            {
+              "container": "n93",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Right sidebar promo",
+              "members": [
+                "n94"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo rarely needed for reading",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "stackoverflow.com/questions/*"
+            },
+            {
+              "container": "n101",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Right sidebar blog and Meta",
+              "members": [
+                "n105",
+                "n108",
+                "n110",
+                "n112",
+                "n114"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Blog and Meta rarely needed",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "stackoverflow.com/questions/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-left-nav",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left primary navigation",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left primary navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep it"
+                }
+              ],
+              "text": "Also hide the left navigation to focus on answers?"
+            },
+            {
+              "id": "q-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "Prefer denser or roomier answers?"
+            }
+          ],
+          "summary": "Emphasized answers for reading, hid right sidebar blog, Meta and promo.",
+          "template": {
+            "pageKind": "question",
+            "urlPattern": "stackoverflow.com/questions/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n28",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Left primary navigation",
+            "members": [
+              "n30",
+              "n33",
+              "n36",
+              "n39",
+              "n44",
+              "n48",
+              "n54",
+              "n58",
+              "n62",
+              "n65"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "stackoverflow.com/questions/*"
+          },
+          {
+            "container": "n84",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Question and answers",
+            "members": [
+              "n85"
+            ],
+            "operation": "emphasize",
+            "reason": "Serves read-answers goal",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          },
+          {
+            "container": "n93",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Right sidebar promo",
+            "members": [
+              "n94"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo rarely needed for reading",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "stackoverflow.com/questions/*"
+          },
+          {
+            "container": "n101",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Right sidebar blog and Meta",
+            "members": [
+              "n105",
+              "n108",
+              "n110",
+              "n112",
+              "n114"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Blog and Meta rarely needed",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "stackoverflow.com/questions/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 702,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 998,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1261,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 8,
+            "model": "sam",
+            "ms": 1297,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4822,
+            "model": "spark",
+            "ms": 13360,
+            "outputTokens": 3034,
+            "purpose": "layout plan",
+            "reasoningTokens": 2462
+          },
+          {
+            "inputTokens": 5287,
+            "model": "spark",
+            "ms": 5483,
+            "outputTokens": 1491,
+            "purpose": "repair",
+            "reasoningTokens": 919
+          }
+        ],
+        "ms": 20164
+      },
+      "layout": {
+        "labels": [
+          "Question and answers",
+          "Right sidebar promo",
+          "Right sidebar blog and Meta"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n93",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n77",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n84",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

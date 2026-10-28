@@ -1,0 +1,762 @@
+{
+  "scenario": {
+    "id": "twitch-cat-hide-notice",
+    "site": "twitch-category",
+    "goal": "Hide the 'May Contain Labeled Content' notice and the sign-up footer.",
+    "tags": [
+      "streaming",
+      "hide",
+      "multiple"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "article",
+          "textStart": "May Contain Labeled Content"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "twilight-sticky-footer-root"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "data-a-target": "directory-content-type-tabs"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "twitch-category",
+    "url": "https://www.twitch.tv/directory/category/just-chatting",
+    "finalUrl": "https://www.twitch.tv/directory/category/just-chatting"
+  },
+  "at": "2026-10-28T19:39:00.232Z",
+  "scanNodes": 201,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "article",
+        "textStart": "May Contain Labeled Content"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n97",
+        "tag": "article",
+        "kind": "landmark",
+        "text": "May Contain Labeled Content You can control the types of content you see on Twi…"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "twilight-sticky-footer-root"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n197",
+        "tag": "footer",
+        "kind": "landmark",
+        "text": "Join the Twitch community! Discover the best live streams anywhere. Sign Up"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "data-a-target": "directory-content-type-tabs"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n112",
+        "tag": "ul",
+        "kind": "list",
+        "text": "Live Channels Videos Clips"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n97",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n197",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n112",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n96",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Labeled Content Notice",
+              "members": [
+                "n97"
+              ],
+              "operation": "hide-secondary",
+              "reason": "May Contain Labeled Content banner user asked to hide",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "https://www.twitch.tv/directory/category/{category}"
+            },
+            {
+              "container": "n197",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Sign-Up Footer",
+              "members": [
+                "n198"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Sign-up sticky footer user asked to hide",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "https://www.twitch.tv/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Live Channels Sidebar",
+              "members": [
+                "n31",
+                "n37",
+                "n43",
+                "n49",
+                "n55",
+                "n61",
+                "n69",
+                "n75",
+                "n81",
+                "n87"
+              ],
+              "operation": "none",
+              "reason": "Left navigation with followed live channels",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "https://www.twitch.tv/*"
+            },
+            {
+              "container": "n131",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Live Streams Grid",
+              "members": [
+                "n132",
+                "n149",
+                "n166",
+                "n182",
+                "n187",
+                "n192"
+              ],
+              "operation": "none",
+              "reason": "Main Just Chatting live streams",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "https://www.twitch.tv/directory/category/{category}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "sidebar-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels Sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Yes, tighten"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels Sidebar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                }
+              ],
+              "text": "Make left live channels more compact?"
+            },
+            {
+              "id": "grid-layout",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Live Streams Grid",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Even grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Live Streams Grid",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                }
+              ],
+              "text": "Prefer streams in tighter grid?"
+            }
+          ],
+          "summary": "Hide the labeled-content notice and sign-up footer, keep browsing focused on streams.",
+          "template": {
+            "pageKind": "category directory",
+            "urlPattern": "https://www.twitch.tv/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n96",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Labeled Content Notice",
+            "members": [
+              "n97"
+            ],
+            "operation": "hide-secondary",
+            "reason": "May Contain Labeled Content banner user asked to hide",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "https://www.twitch.tv/directory/category/{category}"
+          },
+          {
+            "container": "n197",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Sign-Up Footer",
+            "members": [
+              "n198"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Sign-up sticky footer user asked to hide",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "https://www.twitch.tv/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Live Channels Sidebar",
+            "members": [
+              "n31",
+              "n37",
+              "n43",
+              "n49",
+              "n55",
+              "n61",
+              "n69",
+              "n75",
+              "n81",
+              "n87"
+            ],
+            "operation": "none",
+            "reason": "Left navigation with followed live channels",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "https://www.twitch.tv/*"
+          },
+          {
+            "container": "n131",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Live Streams Grid",
+            "members": [
+              "n132",
+              "n149",
+              "n166",
+              "n182",
+              "n187",
+              "n192"
+            ],
+            "operation": "none",
+            "reason": "Main Just Chatting live streams",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "https://www.twitch.tv/directory/category/{category}"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 8326,
+            "model": "spark",
+            "ms": 9235,
+            "outputTokens": 2267,
+            "purpose": "layout plan",
+            "reasoningTokens": 1678
+          },
+          {
+            "inputTokens": 8928,
+            "model": "spark",
+            "ms": 3648,
+            "outputTokens": 995,
+            "purpose": "repair",
+            "reasoningTokens": 532
+          }
+        ],
+        "ms": 12900
+      },
+      "layout": {
+        "labels": [
+          "Labeled Content Notice",
+          "Sign-Up Footer"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n97",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n197",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n112",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "fail"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n6",
+                "n7",
+                "n18",
+                "n19"
+              ],
+              "operation": "none",
+              "reason": "Primary site nav already minimal",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.twitch.tv/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Live Channels sidebar",
+              "members": [
+                "n31",
+                "n37",
+                "n43",
+                "n49",
+                "n55",
+                "n61",
+                "n69",
+                "n75",
+                "n81",
+                "n87"
+              ],
+              "operation": "compact",
+              "reason": "Long skim list, tighten to see more",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.twitch.tv/*"
+            },
+            {
+              "container": "n96",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Labeled Content Notice",
+              "members": [
+                "n97"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide this notice",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.twitch.tv/directory/category/{category}"
+            },
+            {
+              "container": "n131",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Live stream cards",
+              "members": [
+                "n132",
+                "n149",
+                "n166",
+                "n182",
+                "n187",
+                "n192"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is browsing streams",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.twitch.tv/directory/category/{category}"
+            },
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Sign-up footer",
+              "members": [
+                "n197"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide sign-up footer",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.twitch.tv/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "sidebar",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide sidebar"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "Do you use the Live Channels sidebar?"
+            },
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Live stream cards",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Denser grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Live stream cards",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier cards"
+                }
+              ],
+              "text": "Prefer denser or roomier stream grid?"
+            }
+          ],
+          "summary": "Hides the Labeled Content notice and sticky sign-up footer, compacts sidebar, emphasizes live streams.",
+          "template": {
+            "pageKind": "directory category page",
+            "urlPattern": "www.twitch.tv/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n6",
+              "n7",
+              "n18",
+              "n19"
+            ],
+            "operation": "none",
+            "reason": "Primary site nav already minimal",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.twitch.tv/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Live Channels sidebar",
+            "members": [
+              "n31",
+              "n37",
+              "n43",
+              "n49",
+              "n55",
+              "n61",
+              "n69",
+              "n75",
+              "n81",
+              "n87"
+            ],
+            "operation": "compact",
+            "reason": "Long skim list, tighten to see more",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.twitch.tv/*"
+          },
+          {
+            "container": "n96",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Labeled Content Notice",
+            "members": [
+              "n97"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide this notice",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.twitch.tv/directory/category/{category}"
+          },
+          {
+            "container": "n131",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Live stream cards",
+            "members": [
+              "n132",
+              "n149",
+              "n166",
+              "n182",
+              "n187",
+              "n192"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is browsing streams",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.twitch.tv/directory/category/{category}"
+          },
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Sign-up footer",
+            "members": [
+              "n197"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide sign-up footer",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.twitch.tv/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 8,
+            "model": "sam",
+            "ms": 957,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 7,
+            "model": "sam",
+            "ms": 898,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 981,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 10,
+            "model": "sam",
+            "ms": 1501,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 8361,
+            "model": "spark",
+            "ms": 8529,
+            "outputTokens": 2181,
+            "purpose": "layout plan",
+            "reasoningTokens": 1498
+          },
+          {
+            "inputTokens": 9057,
+            "model": "spark",
+            "ms": 4186,
+            "outputTokens": 1037,
+            "purpose": "repair",
+            "reasoningTokens": 513
+          }
+        ],
+        "ms": 14256
+      },
+      "layout": {
+        "labels": [
+          "Live Channels sidebar",
+          "Labeled Content Notice",
+          "Live stream cards",
+          "Sign-up footer"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n97",
+          "ops": [
+            "hide-secondary",
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n197",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n112",
+          "ops": [
+            "hide-secondary",
+            "hide-secondary"
+          ],
+          "visible": false
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "fail"
+      ]
+    }
+  ]
+}
