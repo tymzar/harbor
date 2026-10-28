@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Button, Card, Chip, Spinner } from "@heroui/react";
-import { Magnifier } from "@gravity-ui/icons";
+import { Gear, Magnifier } from "@gravity-ui/icons";
 
 import type { NodeKind, PanelRequest, ScanNode, TabSession } from "../../shared/types";
 import { sessionKey } from "../../shared/types";
@@ -111,7 +111,18 @@ export function SidePanel() {
         <h1 data-testid="extension-panel-title" className="text-lg font-semibold tracking-tight">
           Smart Web
         </h1>
-        {isScanning && <Spinner size="sm" aria-label="Reading the page" />}
+        <div className="flex items-center gap-2">
+          {isScanning && <Spinner size="sm" aria-label="Reading the page" />}
+          <Button
+            isIconOnly
+            size="sm"
+            variant="ghost"
+            aria-label="Saved layouts and settings"
+            onPress={() => void chrome.runtime.openOptionsPage()}
+          >
+            <Gear />
+          </Button>
+        </div>
       </header>
 
       <Card className="rounded-2xl p-4">

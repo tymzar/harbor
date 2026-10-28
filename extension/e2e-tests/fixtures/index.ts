@@ -3,6 +3,7 @@ import path from "node:path";
 
 export const PAGE_TO_PAGE_URL = {
   SIDEPANEL: "sidepanel/sidepanel.html",
+  OPTIONS: "options/options.html",
 };
 
 export const test = base.extend<{

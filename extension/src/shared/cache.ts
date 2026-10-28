@@ -24,6 +24,8 @@ export type SavedPlan = {
 };
 
 export const MAX_SAVED_PLANS = 50;
+// chrome.storage.local key holding Array<SavedPlan>, newest first.
+export const SAVED_PLANS_KEY = "savedPlans";
 
 const stableText = (text: string) => text.replaceAll(/\d+/g, "").replaceAll(/\s+/g, " ").trim();
 

@@ -1,29 +1,28 @@
 import type { SavedPlan } from "../../shared/cache";
-import { MAX_SAVED_PLANS, findSavedPlan, pageKey, remapPlan, savePlan } from "../../shared/cache";
+import { MAX_SAVED_PLANS, SAVED_PLANS_KEY, findSavedPlan, pageKey, remapPlan, savePlan } from "../../shared/cache";
 import type { LayoutPlan } from "../../shared/plan";
 import { validatePlan } from "../../shared/plan";
 import type { PageScan, Proposal } from "../../shared/types";
 
 // Plans are kept on this device only (chrome.storage.local), newest first, one per page.
-const STORAGE_KEY = "savedPlans";
 
 async function readAll(): Promise<Array<SavedPlan>> {
-  const stored = await chrome.storage.local.get(STORAGE_KEY);
-  return (stored[STORAGE_KEY] as Array<SavedPlan> | undefined) ?? [];
+  const stored = await chrome.storage.local.get(SAVED_PLANS_KEY);
+  return (stored[SAVED_PLANS_KEY] as Array<SavedPlan> | undefined) ?? [];
 }
 
 export async function rememberPlan(plan: LayoutPlan, scan: PageScan, usedScreenshot: boolean) {
   const entry = savePlan(plan, scan, usedScreenshot, Date.now());
   const all = await readAll();
   const others = all.filter((saved) => saved.url !== entry.url);
-  await chrome.storage.local.set({ [STORAGE_KEY]: [entry, ...others].slice(0, MAX_SAVED_PLANS) });
+  await chrome.storage.local.set({ [SAVED_PLANS_KEY]: [entry, ...others].slice(0, MAX_SAVED_PLANS) });
 }
 
 export async function forgetPlan(url: string) {
   const key = pageKey(url);
   const all = await readAll();
   const remaining = all.filter((saved) => saved.url !== key);
-  await chrome.storage.local.set({ [STORAGE_KEY]: remaining });
+  await chrome.storage.local.set({ [SAVED_PLANS_KEY]: remaining });
 }
 
 // A saved plan rebuilt for this scan, or undefined when none applies or nothing survives validation.

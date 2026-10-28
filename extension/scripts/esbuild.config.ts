@@ -43,6 +43,7 @@ const config: BuildOptions = {
       "./src/pages/background/index.ts",
       "./src/pages/content/index.ts",
       "./src/pages/sidepanel/index.tsx",
+      "./src/pages/options/index.tsx",
     ];
 
     if (isDevelopment) {
@@ -70,6 +71,12 @@ const config: BuildOptions = {
           filename: "sidepanel/sidepanel.html",
           title: "Smart Web",
           htmlTemplate: readFileSync("./src/pages/sidepanel/index.html", "utf8"),
+        },
+        {
+          entryPoints: makeHtmlEntries(["src/pages/options/index.tsx"]),
+          filename: "options/options.html",
+          title: "Smart Web settings",
+          htmlTemplate: readFileSync("./src/pages/options/index.html", "utf8"),
         },
       ],
     }),

@@ -29,7 +29,7 @@ function GroupRow({ group }: { group: PlanGroup }) {
         </Chip>
       </div>
       <span className="text-xs text-muted">
-        {group.role} · {group.members.length} items
+        {group.role} · {group.members.length} {group.members.length === 1 ? "item" : "items"}
         {group.reorderable && ` · reorderable by ${group.identity.attribute || group.identity.source}`}
       </span>
       <span className="text-xs text-muted">{group.reason}</span>
