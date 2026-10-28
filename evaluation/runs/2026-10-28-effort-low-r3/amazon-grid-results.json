@@ -1,0 +1,628 @@
+{
+  "scenario": {
+    "id": "amazon-grid-results",
+    "site": "amazon-search",
+    "goal": "Show the results as a compact grid so I can compare more at once.",
+    "tags": [
+      "commerce",
+      "grid",
+      "density"
+    ],
+    "expect": [
+      {
+        "op": "grid",
+        "anchor": {
+          "tag": "h2",
+          "textStart": "Anker USB C to USB C Cable"
+        },
+        "note": "compact on the results list is a partial pass; see README"
+      }
+    ]
+  },
+  "site": {
+    "id": "amazon-search",
+    "url": "https://www.amazon.com/s?k=usb+c+cable",
+    "finalUrl": "https://www.amazon.com/s?k=usb+c+cable"
+  },
+  "at": "2026-10-28T22:34:13.217Z",
+  "scanNodes": 179,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "h2",
+        "textStart": "Anker USB C to USB C Cable"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n78",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "Anker USB C to USB C Cable, 60W Fast Charging Cable (5-Pack, 6 ft, Black)"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n78",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Site header",
+              "members": [
+                "n6",
+                "n21",
+                "n23",
+                "n24"
+              ],
+              "operation": "none",
+              "reason": "Primary store header already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "https://www.amazon.com/*"
+            },
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Top category links",
+              "members": [
+                "n38",
+                "n40",
+                "n42",
+                "n44",
+                "n46",
+                "n48",
+                "n50"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "https://www.amazon.com/*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "data-asin",
+                "source": "attribute"
+              },
+              "label": "Search results",
+              "members": [
+                "n69",
+                "n89"
+              ],
+              "operation": "grid",
+              "reason": "Compact grid to compare more at once per goal",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "https://www.amazon.com/s*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Filters sidebar",
+              "members": [
+                "n108",
+                "n122",
+                "n153"
+              ],
+              "operation": "compact",
+              "reason": "Skim filters while keeping results visible",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "https://www.amazon.com/s*"
+            },
+            {
+              "container": "n63",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sponsored banner",
+              "members": [
+                "n64",
+                "n66"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value promo distracts from comparison",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "https://www.amazon.com/s*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "filters",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Filters sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Often"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Filters sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Rarely"
+                }
+              ],
+              "text": "Do you use left filters when comparing cables?"
+            },
+            {
+              "id": "details",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Price and rating"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Larger images"
+                }
+              ],
+              "text": "What should result cards prioritize?"
+            }
+          ],
+          "summary": "Make results a compact grid for comparison, tighten filters, hide promo banner.",
+          "template": {
+            "pageKind": "search",
+            "urlPattern": "https://www.amazon.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Site header",
+            "members": [
+              "n6",
+              "n21",
+              "n23",
+              "n24"
+            ],
+            "operation": "none",
+            "reason": "Primary store header already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "https://www.amazon.com/*"
+          },
+          {
+            "container": "n36",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Top category links",
+            "members": [
+              "n38",
+              "n40",
+              "n42",
+              "n44",
+              "n46",
+              "n48",
+              "n50"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "https://www.amazon.com/*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "data-asin",
+              "source": "attribute"
+            },
+            "label": "Search results",
+            "members": [
+              "n69",
+              "n89"
+            ],
+            "operation": "grid",
+            "reason": "Compact grid to compare more at once per goal",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "https://www.amazon.com/s*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Filters sidebar",
+            "members": [
+              "n108",
+              "n122",
+              "n153"
+            ],
+            "operation": "compact",
+            "reason": "Skim filters while keeping results visible",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "https://www.amazon.com/s*"
+          },
+          {
+            "container": "n63",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sponsored banner",
+            "members": [
+              "n64",
+              "n66"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value promo distracts from comparison",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "https://www.amazon.com/s*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 7690,
+            "model": "spark",
+            "ms": 12267,
+            "outputTokens": 2890,
+            "purpose": "layout plan",
+            "reasoningTokens": 2249
+          },
+          {
+            "inputTokens": 8331,
+            "model": "spark",
+            "ms": 3143,
+            "outputTokens": 906,
+            "purpose": "repair",
+            "reasoningTokens": 408
+          }
+        ],
+        "ms": 15431
+      },
+      "layout": {
+        "labels": [
+          "Search results",
+          "Filters sidebar",
+          "Sponsored banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n78",
+          "ops": [
+            "grid"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top navigation links",
+              "members": [
+                "n38",
+                "n40",
+                "n42",
+                "n44",
+                "n46",
+                "n48",
+                "n50"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works as is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "https://www.amazon.com/*"
+            },
+            {
+              "container": "n63",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sponsored promo banner",
+              "members": [
+                "n64",
+                "n66"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing promo rarely needed for comparing cables",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "https://www.amazon.com/s*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "data-asin",
+                "source": "attribute"
+              },
+              "label": "Search results",
+              "members": [
+                "n69",
+                "n89"
+              ],
+              "operation": "grid",
+              "reason": "Compact grid to compare more cables at once",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "https://www.amazon.com/s*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "id",
+                "source": "text"
+              },
+              "label": "Filter sidebar",
+              "members": [
+                "n108",
+                "n122",
+                "n153"
+              ],
+              "operation": "compact",
+              "reason": "Dense filters to skim while comparing",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "https://www.amazon.com/s*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide entirely"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "Hide left filters entirely for maximum grid width?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "3-4 per row"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Extra dense list"
+                }
+              ],
+              "text": "How dense should result cards be?"
+            }
+          ],
+          "summary": "Search results set to compact grid for comparison, promo hidden, sidebar compacted.",
+          "template": {
+            "pageKind": "search",
+            "urlPattern": "https://www.amazon.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n63",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sponsored promo banner",
+            "members": [
+              "n64",
+              "n66"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing promo rarely needed for comparing cables",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "https://www.amazon.com/s*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "data-asin",
+              "source": "attribute"
+            },
+            "label": "Search results",
+            "members": [
+              "n69",
+              "n89"
+            ],
+            "operation": "grid",
+            "reason": "Compact grid to compare more cables at once",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "https://www.amazon.com/s*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "id",
+              "source": "text"
+            },
+            "label": "Filter sidebar",
+            "members": [
+              "n108",
+              "n122",
+              "n153"
+            ],
+            "operation": "compact",
+            "reason": "Dense filters to skim while comparing",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "https://www.amazon.com/s*"
+          }
+        ],
+        "errors": [
+          "groups[0] \"Top navigation links\": some members have no href identity (href)"
+        ],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 1286,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 1128,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 857,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 798,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 7701,
+            "model": "spark",
+            "ms": 9081,
+            "outputTokens": 2435,
+            "purpose": "layout plan",
+            "reasoningTokens": 1856
+          },
+          {
+            "inputTokens": 8318,
+            "model": "spark",
+            "ms": 4763,
+            "outputTokens": 1475,
+            "purpose": "repair",
+            "reasoningTokens": 900
+          }
+        ],
+        "ms": 15159
+      },
+      "layout": {
+        "labels": [
+          "Sponsored promo banner",
+          "Search results",
+          "Filter sidebar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n78",
+          "ops": [
+            "grid"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

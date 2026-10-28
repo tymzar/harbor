@@ -1,0 +1,613 @@
+{
+  "scenario": {
+    "id": "yt-watch-emphasize-title",
+    "site": "youtube-watch",
+    "goal": "Make the video title and channel stand out; recommendations can be denser.",
+    "tags": [
+      "video",
+      "emphasize",
+      "density"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "tag": "h1",
+          "text": "Me at the zoo"
+        }
+      },
+      {
+        "op": "compact",
+        "anchor": {
+          "attr": {
+            "id": "contents"
+          },
+          "area": {
+            "minX": 900
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-watch",
+    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "finalUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T22:30:48.885Z",
+  "scanNodes": 156,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Me at the zoo"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n61",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Me at the zoo"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "contents"
+        },
+        "area": {
+          "minX": 900
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n86",
+        "tag": "div",
+        "kind": "group",
+        "text": "2:15 Guns for Women - SNL Saturday Night Live 4.7M 3w ago"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n61",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n86",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n60",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Video title and channel",
+              "members": [
+                "n61",
+                "n63"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal: make title and channel stand out",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "https://www.youtube.com/watch*"
+            },
+            {
+              "container": "n72",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Video actions toolbar",
+              "members": [
+                "n76",
+                "n78",
+                "n80",
+                "n82",
+                "n84"
+              ],
+              "operation": "compact",
+              "reason": "Tighten like/share actions to keep focus on title",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "https://www.youtube.com/watch*"
+            },
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Recommendations",
+              "members": [
+                "n87",
+                "n99",
+                "n111",
+                "n122",
+                "n134",
+                "n146"
+              ],
+              "operation": "compact",
+              "reason": "User wants denser up-next list",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "https://www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Recommendations",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Recommendations",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Thumbnail grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Recommendations",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide extras"
+                }
+              ],
+              "text": "How dense should recommendations be?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Video actions toolbar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Video actions toolbar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide actions"
+                }
+              ],
+              "text": "How much space for like and share buttons?"
+            }
+          ],
+          "summary": "Emphasize title and channel, compact actions and recommendations for denser viewing.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "https://www.youtube.com/watch*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n60",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Video title and channel",
+            "members": [
+              "n61",
+              "n63"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal: make title and channel stand out",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "https://www.youtube.com/watch*"
+          },
+          {
+            "container": "n72",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Video actions toolbar",
+            "members": [
+              "n76",
+              "n78",
+              "n80",
+              "n82",
+              "n84"
+            ],
+            "operation": "compact",
+            "reason": "Tighten like/share actions to keep focus on title",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "https://www.youtube.com/watch*"
+          },
+          {
+            "container": "n86",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Recommendations",
+            "members": [
+              "n87",
+              "n99",
+              "n111",
+              "n122",
+              "n134",
+              "n146"
+            ],
+            "operation": "compact",
+            "reason": "User wants denser up-next list",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "https://www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 5827,
+            "model": "spark",
+            "ms": 8809,
+            "outputTokens": 1840,
+            "purpose": "layout plan",
+            "reasoningTokens": 1334
+          },
+          {
+            "inputTokens": 6326,
+            "model": "spark",
+            "ms": 4405,
+            "outputTokens": 1124,
+            "purpose": "repair",
+            "reasoningTokens": 606
+          }
+        ],
+        "ms": 13231
+      },
+      "layout": {
+        "labels": [
+          "Video title and channel",
+          "Video actions toolbar",
+          "Recommendations"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n61",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n86",
+          "ops": [
+            "compact"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n60",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video title and channel",
+              "members": [
+                "n61",
+                "n63"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal: make title and channel stand out",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Recommendations",
+              "members": [
+                "n87",
+                "n99",
+                "n111",
+                "n122",
+                "n134",
+                "n146"
+              ],
+              "operation": "compact",
+              "reason": "User wants denser recommendations to skim",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n72",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video actions toolbar",
+              "members": [
+                "n76",
+                "n78",
+                "n80",
+                "n82",
+                "n84"
+              ],
+              "operation": "none",
+              "reason": "Like, share and save actions kept at full size",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "rec-layout",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Recommendations",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Very dense"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Recommendations",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Two-column grid"
+                }
+              ],
+              "text": "How dense should recommendations feel?"
+            },
+            {
+              "id": "actions-size",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Video actions toolbar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Video actions toolbar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make compact"
+                }
+              ],
+              "text": "How much room for like and share buttons?"
+            }
+          ],
+          "summary": "Emphasized title and channel, made recommendations denser, kept actions full size.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n60",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video title and channel",
+            "members": [
+              "n61",
+              "n63"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal: make title and channel stand out",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n86",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Recommendations",
+            "members": [
+              "n87",
+              "n99",
+              "n111",
+              "n122",
+              "n134",
+              "n146"
+            ],
+            "operation": "compact",
+            "reason": "User wants denser recommendations to skim",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n72",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video actions toolbar",
+            "members": [
+              "n76",
+              "n78",
+              "n80",
+              "n82",
+              "n84"
+            ],
+            "operation": "none",
+            "reason": "Like, share and save actions kept at full size",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 1192,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 6,
+            "model": "sam",
+            "ms": 1403,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 908,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 844,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 5864,
+            "model": "spark",
+            "ms": 9583,
+            "outputTokens": 2263,
+            "purpose": "layout plan",
+            "reasoningTokens": 1781
+          },
+          {
+            "inputTokens": 6346,
+            "model": "spark",
+            "ms": 5064,
+            "outputTokens": 1194,
+            "purpose": "repair",
+            "reasoningTokens": 826
+          }
+        ],
+        "ms": 16087
+      },
+      "layout": {
+        "labels": [
+          "Video title and channel",
+          "Recommendations"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n61",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n86",
+          "ops": [
+            "compact"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

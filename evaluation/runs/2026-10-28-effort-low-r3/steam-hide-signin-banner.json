@@ -1,0 +1,523 @@
+{
+  "scenario": {
+    "id": "steam-hide-signin-banner",
+    "site": "steam-app",
+    "goal": "Hide the 'You're not signed in! Open in Desktop App' banner.",
+    "tags": [
+      "gaming",
+      "hide",
+      "banner"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "div",
+          "textStart": "Open in Desktop App You're not signed in"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "id": "game_highlights"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "steam-app",
+    "url": "https://store.steampowered.com/app/730/CounterStrike_2/",
+    "finalUrl": "https://store.steampowered.com/app/730/CounterStrike_2/"
+  },
+  "at": "2026-10-28T22:36:43.530Z",
+  "scanNodes": 95,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "div",
+        "textStart": "Open in Desktop App You're not signed in"
+      },
+      "matches": 2,
+      "node": {
+        "id": "n30",
+        "tag": "div",
+        "kind": "group",
+        "text": "Open in Desktop App You're not signed in! Open this page in the Steam App to wi…"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "game_highlights"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n44",
+        "tag": "div",
+        "kind": "group",
+        "text": "Counter-Strike 2"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n30",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n44",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n29",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Sign-in desktop banner",
+              "members": [
+                "n30"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Exact banner user asked to hide",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "store.steampowered.com/app/{appId}/*"
+            },
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Global menu",
+              "members": [
+                "n8",
+                "n9",
+                "n10",
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            },
+            {
+              "container": "n18",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Store sections menu",
+              "members": [
+                "n19",
+                "n20",
+                "n21",
+                "n22",
+                "n23"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed repeatedly; tighten to reach game faster",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "denser-page",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Store sections menu",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Store sections menu",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser lists"
+                }
+              ],
+              "text": "Do you want this app page denser for repeat visits?"
+            },
+            {
+              "id": "header-actions",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Global menu",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep header as is"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Global menu",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Tighten header"
+                }
+              ],
+              "text": "Should the top header stay full size?"
+            }
+          ],
+          "summary": "Hide the Open in Desktop App sign-in banner and tighten store navigation for faster repeat use.",
+          "template": {
+            "pageKind": "product",
+            "urlPattern": "store.steampowered.com/app/{appId}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n29",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Sign-in desktop banner",
+            "members": [
+              "n30"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Exact banner user asked to hide",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "store.steampowered.com/app/{appId}/*"
+          },
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Global menu",
+            "members": [
+              "n8",
+              "n9",
+              "n10",
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          },
+          {
+            "container": "n18",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Store sections menu",
+            "members": [
+              "n19",
+              "n20",
+              "n21",
+              "n22",
+              "n23"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed repeatedly; tighten to reach game faster",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3662,
+            "model": "spark",
+            "ms": 8138,
+            "outputTokens": 2241,
+            "purpose": "layout plan",
+            "reasoningTokens": 1744
+          }
+        ],
+        "ms": 8144
+      },
+      "layout": {
+        "labels": [
+          "Sign-in desktop banner",
+          "Store sections menu"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n30",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n44",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n29",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Desktop app sign-in banner",
+              "members": [
+                "n30"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Explicit user goal to hide this banner",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+            },
+            {
+              "container": "n4",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Global header navigation",
+              "members": [
+                "n8",
+                "n9",
+                "n10",
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Global header navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Global header navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Do you want the header and menus denser?"
+            },
+            {
+              "id": "reviews",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Desktop app sign-in banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Keep hidden"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Desktop app sign-in banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Show again"
+                }
+              ],
+              "text": "Keep the desktop app banner hidden on return visits?"
+            }
+          ],
+          "summary": "Hides the 'You're not signed in / Open in Desktop App' banner, keeps header navigation unchanged.",
+          "template": {
+            "pageKind": "product",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n29",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Desktop app sign-in banner",
+            "members": [
+              "n30"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Explicit user goal to hide this banner",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          },
+          {
+            "container": "n4",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Global header navigation",
+            "members": [
+              "n8",
+              "n9",
+              "n10",
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 888,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1074,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 2007,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 931,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3673,
+            "model": "spark",
+            "ms": 7960,
+            "outputTokens": 2087,
+            "purpose": "layout plan",
+            "reasoningTokens": 1671
+          }
+        ],
+        "ms": 9979
+      },
+      "layout": {
+        "labels": [
+          "Desktop app sign-in banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n30",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n44",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

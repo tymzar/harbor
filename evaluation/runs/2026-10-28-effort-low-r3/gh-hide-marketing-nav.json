@@ -1,0 +1,702 @@
+{
+  "scenario": {
+    "id": "gh-hide-marketing-nav",
+    "site": "github-repo",
+    "goal": "Hide GitHub's marketing menu at the top (Platform, Solutions, Resources...).",
+    "tags": [
+      "code",
+      "hide",
+      "navigation",
+      "hidden-menus"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Global"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Repository"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "github-repo",
+    "url": "https://github.com/facebook/react",
+    "finalUrl": "https://github.com/react/react"
+  },
+  "at": "2026-10-28T22:32:02.133Z",
+  "scanNodes": 236,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Global"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n9",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Global"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Repository"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n40",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Repository"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n9",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n40",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Marketing menu",
+              "members": [
+                "n11",
+                "n14",
+                "n17",
+                "n20",
+                "n23"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing nav user asked to hide",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "github.com/*"
+            },
+            {
+              "container": "n41",
+              "identity": {
+                "attribute": "data-tab-item",
+                "source": "attribute"
+              },
+              "label": "Repo tabs",
+              "members": [
+                "n43",
+                "n45",
+                "n49",
+                "n52",
+                "n54",
+                "n57"
+              ],
+              "operation": "none",
+              "reason": "Primary repo navigation",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n65",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Repo actions",
+              "members": [
+                "n67",
+                "n70",
+                "n74"
+              ],
+              "operation": "compact",
+              "reason": "Secondary actions to skim",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n118",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "File list",
+              "members": [
+                "n119",
+                "n126",
+                "n133",
+                "n142",
+                "n149",
+                "n158",
+                "n167",
+                "n174",
+                "n181",
+                "n188",
+                "n195"
+              ],
+              "operation": "emphasize",
+              "reason": "Main code browsing goal",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "github.com/{owner}/{repo}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "File list",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Browse code"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Repo tabs",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Issues and PRs"
+                }
+              ],
+              "text": "What do you mainly do here?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "File list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "File list",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "Prefer denser or roomier file list?"
+            }
+          ],
+          "summary": "Hides marketing menu per goal, compacts repo actions, emphasizes file list, keeps repo tabs.",
+          "template": {
+            "pageKind": "repo",
+            "urlPattern": "github.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Marketing menu",
+            "members": [
+              "n11",
+              "n14",
+              "n17",
+              "n20",
+              "n23"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing nav user asked to hide",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "github.com/*"
+          },
+          {
+            "container": "n41",
+            "identity": {
+              "attribute": "data-tab-item",
+              "source": "attribute"
+            },
+            "label": "Repo tabs",
+            "members": [
+              "n43",
+              "n45",
+              "n49",
+              "n52",
+              "n54",
+              "n57"
+            ],
+            "operation": "none",
+            "reason": "Primary repo navigation",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n65",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Repo actions",
+            "members": [
+              "n67",
+              "n70",
+              "n74"
+            ],
+            "operation": "compact",
+            "reason": "Secondary actions to skim",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n118",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "File list",
+            "members": [
+              "n119",
+              "n126",
+              "n133",
+              "n142",
+              "n149",
+              "n158",
+              "n167",
+              "n174",
+              "n181",
+              "n188",
+              "n195"
+            ],
+            "operation": "emphasize",
+            "reason": "Main code browsing goal",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "github.com/{owner}/{repo}"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 10926,
+            "model": "spark",
+            "ms": 8770,
+            "outputTokens": 2354,
+            "purpose": "layout plan",
+            "reasoningTokens": 1749
+          },
+          {
+            "inputTokens": 11418,
+            "model": "spark",
+            "ms": 9384,
+            "outputTokens": 1945,
+            "purpose": "repair",
+            "reasoningTokens": 1488
+          }
+        ],
+        "ms": 18182
+      },
+      "layout": {
+        "labels": [
+          "Marketing menu",
+          "Repo actions",
+          "File list"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n9",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n40",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Marketing navigation",
+              "members": [
+                "n11",
+                "n14",
+                "n17",
+                "n20",
+                "n23"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing menu user asked to hide",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "github.com/*"
+            },
+            {
+              "container": "n41",
+              "identity": {
+                "attribute": "data-tab-item",
+                "source": "attribute"
+              },
+              "label": "Repository tabs",
+              "members": [
+                "n43",
+                "n45",
+                "n49",
+                "n52",
+                "n54",
+                "n57"
+              ],
+              "operation": "none",
+              "reason": "Primary repo navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "github.com/{owner}/{repo}/*"
+            },
+            {
+              "container": "n118",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "File list",
+              "members": [
+                "n121",
+                "n128",
+                "n135",
+                "n144",
+                "n151",
+                "n160",
+                "n169",
+                "n176",
+                "n183",
+                "n190",
+                "n197"
+              ],
+              "operation": "compact",
+              "reason": "Dense code list they skim",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "github.com/{owner}/{repo}"
+            },
+            {
+              "container": "n202",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "About sidebar",
+              "members": [
+                "n203",
+                "n236"
+              ],
+              "operation": "none",
+              "reason": "Repo metadata beside file list",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "github.com/{owner}/{repo}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "file-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "File list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "File list",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy rows"
+                }
+              ],
+              "text": "How should the file list look?"
+            },
+            {
+              "id": "about-use",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "About sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "About sidebar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep it"
+                }
+              ],
+              "text": "Do you use the About panel on the right?"
+            }
+          ],
+          "summary": "Hid marketing top menu, compacted file list, kept repo tabs and About as-is.",
+          "template": {
+            "pageKind": "repo",
+            "urlPattern": "github.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Marketing navigation",
+            "members": [
+              "n11",
+              "n14",
+              "n17",
+              "n20",
+              "n23"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing menu user asked to hide",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "github.com/*"
+          },
+          {
+            "container": "n41",
+            "identity": {
+              "attribute": "data-tab-item",
+              "source": "attribute"
+            },
+            "label": "Repository tabs",
+            "members": [
+              "n43",
+              "n45",
+              "n49",
+              "n52",
+              "n54",
+              "n57"
+            ],
+            "operation": "none",
+            "reason": "Primary repo navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "github.com/{owner}/{repo}/*"
+          },
+          {
+            "container": "n118",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "File list",
+            "members": [
+              "n121",
+              "n128",
+              "n135",
+              "n144",
+              "n151",
+              "n160",
+              "n169",
+              "n176",
+              "n183",
+              "n190",
+              "n197"
+            ],
+            "operation": "compact",
+            "reason": "Dense code list they skim",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "github.com/{owner}/{repo}"
+          },
+          {
+            "container": "n202",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "About sidebar",
+            "members": [
+              "n203",
+              "n236"
+            ],
+            "operation": "none",
+            "reason": "Repo metadata beside file list",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "github.com/{owner}/{repo}"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 6,
+            "model": "sam",
+            "ms": 889,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 662,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1607,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 762,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 10938,
+            "model": "spark",
+            "ms": 12152,
+            "outputTokens": 2726,
+            "purpose": "layout plan",
+            "reasoningTokens": 2125
+          },
+          {
+            "inputTokens": 11427,
+            "model": "spark",
+            "ms": 6238,
+            "outputTokens": 1472,
+            "purpose": "repair",
+            "reasoningTokens": 871
+          }
+        ],
+        "ms": 20065
+      },
+      "layout": {
+        "labels": [
+          "Marketing navigation",
+          "File list"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n9",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n40",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

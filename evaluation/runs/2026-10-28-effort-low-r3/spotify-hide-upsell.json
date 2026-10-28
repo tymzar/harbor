@@ -1,0 +1,679 @@
+{
+  "scenario": {
+    "id": "spotify-hide-upsell",
+    "site": "spotify-artist",
+    "goal": "Hide Premium, Support, Download and Install App in the top bar.",
+    "tags": [
+      "music",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "button",
+          "text": "Premium",
+          "area": {
+            "minX": 600,
+            "maxY": 60
+          }
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "href": "/download"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "form",
+          "text": "What do you want to play?"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "spotify-artist",
+    "url": "https://open.spotify.com/artist/0OdUWJ0sBjDrqHygGUXeCF",
+    "finalUrl": "https://open.spotify.com/artist/0OdUWJ0sBjDrqHygGUXeCF",
+    "consent": "REJECT ALL (reject)"
+  },
+  "at": "2026-10-28T22:34:31.642Z",
+  "scanNodes": 137,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "button",
+        "text": "Premium",
+        "area": {
+          "minX": 600,
+          "maxY": 60
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n13",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Premium"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "href": "/download"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n16",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Install App"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "form",
+        "text": "What do you want to play?"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n6",
+        "tag": "form",
+        "kind": "landmark",
+        "text": "What do you want to play? ⌘ Shift L"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n13",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n16",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n6",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n12",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Top bar marketing links",
+              "members": [
+                "n13",
+                "n14",
+                "n15",
+                "n16"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Requested to hide: Premium, Support, Download, Install App",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "open.spotify.com/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Sidebar promos",
+              "members": [
+                "n31",
+                "n34"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo upsells rarely needed for returning listener",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "open.spotify.com/*"
+            },
+            {
+              "container": "n39",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Footer links",
+              "members": [
+                "n40",
+                "n42",
+                "n44",
+                "n46",
+                "n48",
+                "n50"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Legal metadata rarely needed while listening",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "open.spotify.com/*"
+            },
+            {
+              "container": "n90",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Popular tracks",
+              "members": [
+                "n92",
+                "n100",
+                "n108",
+                "n116",
+                "n124"
+              ],
+              "operation": "emphasize",
+              "reason": "Core goal on artist page is playing top songs",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "open.spotify.com/artist/{artistId}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tracks",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Play top songs"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tracks",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Skim many songs"
+                }
+              ],
+              "text": "What do you mainly do on artist pages?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar promos",
+                      "operation": "hide-secondary"
+                    },
+                    {
+                      "group": "Footer links",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Fewer distractions"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar promos",
+                      "operation": "none"
+                    },
+                    {
+                      "group": "Footer links",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep sidebar extras"
+                }
+              ],
+              "text": "Prefer cleaner left sidebar?"
+            }
+          ],
+          "summary": "Hid requested top-bar items and hid sidebar promos and footer; emphasized Popular tracks.",
+          "template": {
+            "pageKind": "artist page",
+            "urlPattern": "open.spotify.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n12",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Top bar marketing links",
+            "members": [
+              "n13",
+              "n14",
+              "n15",
+              "n16"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Requested to hide: Premium, Support, Download, Install App",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "open.spotify.com/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Sidebar promos",
+            "members": [
+              "n31",
+              "n34"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo upsells rarely needed for returning listener",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "open.spotify.com/*"
+          },
+          {
+            "container": "n39",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Footer links",
+            "members": [
+              "n40",
+              "n42",
+              "n44",
+              "n46",
+              "n48",
+              "n50"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Legal metadata rarely needed while listening",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "open.spotify.com/*"
+          },
+          {
+            "container": "n90",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Popular tracks",
+            "members": [
+              "n92",
+              "n100",
+              "n108",
+              "n116",
+              "n124"
+            ],
+            "operation": "emphasize",
+            "reason": "Core goal on artist page is playing top songs",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "open.spotify.com/artist/{artistId}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 5897,
+            "model": "spark",
+            "ms": 9174,
+            "outputTokens": 2331,
+            "purpose": "layout plan",
+            "reasoningTokens": 1510
+          }
+        ],
+        "ms": 9210
+      },
+      "layout": {
+        "labels": [
+          "Top bar marketing links",
+          "Sidebar promos",
+          "Footer links",
+          "Popular tracks"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n13",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n16",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n6",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n12",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Top bar promo links",
+              "members": [
+                "n13",
+                "n14",
+                "n15",
+                "n16"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Premium, Support, Download, Install App",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "open.spotify.com/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Sidebar promos",
+              "members": [
+                "n31",
+                "n34"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Onboarding promos rarely needed on repeat visits",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "open.spotify.com/*"
+            },
+            {
+              "container": "n91",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Popular tracks",
+              "members": [
+                "n92",
+                "n100",
+                "n108",
+                "n116",
+                "n124"
+              ],
+              "operation": "compact",
+              "reason": "Dense list to skim top songs faster",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "open.spotify.com/artist/{artistId}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "use",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tracks",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Play top songs"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tracks",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Browse quickly"
+                }
+              ],
+              "text": "What do you do on this artist page?"
+            },
+            {
+              "id": "distraction",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar promos",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide extras"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar promos",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep sidebar"
+                }
+              ],
+              "text": "Keep sidebar suggestions or hide for focus?"
+            }
+          ],
+          "summary": "Hide requested top bar items, hide sidebar promos, compact popular tracks.",
+          "template": {
+            "pageKind": "artist",
+            "urlPattern": "open.spotify.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n12",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Top bar promo links",
+            "members": [
+              "n13",
+              "n14",
+              "n15",
+              "n16"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Premium, Support, Download, Install App",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "open.spotify.com/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Sidebar promos",
+            "members": [
+              "n31",
+              "n34"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Onboarding promos rarely needed on repeat visits",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "open.spotify.com/*"
+          },
+          {
+            "container": "n91",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Popular tracks",
+            "members": [
+              "n92",
+              "n100",
+              "n108",
+              "n116",
+              "n124"
+            ],
+            "operation": "compact",
+            "reason": "Dense list to skim top songs faster",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "open.spotify.com/artist/{artistId}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 8,
+            "model": "sam",
+            "ms": 961,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 1200,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1225,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 10,
+            "model": "sam",
+            "ms": 1132,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 5918,
+            "model": "spark",
+            "ms": 7509,
+            "outputTokens": 2206,
+            "purpose": "layout plan",
+            "reasoningTokens": 1719
+          }
+        ],
+        "ms": 8753
+      },
+      "layout": {
+        "labels": [
+          "Top bar promo links",
+          "Sidebar promos",
+          "Popular tracks"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n13",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n16",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n6",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

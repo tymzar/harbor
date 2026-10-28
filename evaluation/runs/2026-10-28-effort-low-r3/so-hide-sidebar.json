@@ -1,0 +1,670 @@
+{
+  "scenario": {
+    "id": "so-hide-sidebar",
+    "site": "stackoverflow-question",
+    "goal": "I read answers only. Hide the right sidebar (blog, meta, promos).",
+    "tags": [
+      "q-and-a",
+      "hide",
+      "sidebar",
+      "reading"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "sidebar"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "textStart": "Why is conditional processing"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "question and answers"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "stackoverflow-question",
+    "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+    "finalUrl": "https://stackoverflow.com/questions/11227809/why-is-conditional-processing-of-a-sorted-array-faster-than-of-an-unsorted-array"
+  },
+  "at": "2026-10-28T22:31:29.393Z",
+  "scanNodes": 144,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "sidebar"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n101",
+        "tag": "div",
+        "kind": "landmark",
+        "text": "sidebar"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "textStart": "Why is conditional processing"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n77",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Why is conditional processing of a sorted array faster than of an unsorted arra…"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "question and answers"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n84",
+        "tag": "div",
+        "kind": "landmark",
+        "text": "question and answers"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n101",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n77",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n84",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n101",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Right sidebar",
+              "members": [
+                "n102",
+                "n109"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Blog, Meta and Agents promos distract from reading answers",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "stackoverflow.com/questions/*"
+            },
+            {
+              "container": "n84",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Question and answers",
+              "members": [
+                "n85"
+              ],
+              "operation": "emphasize",
+              "reason": "Main reading area for answers goal",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "stackoverflow.com/questions/*"
+            },
+            {
+              "container": "n28",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Left primary navigation",
+              "members": [
+                "n30",
+                "n33",
+                "n36",
+                "n39",
+                "n44",
+                "n48",
+                "n54",
+                "n58",
+                "n62",
+                "n65"
+              ],
+              "operation": "compact",
+              "reason": "Rarely used while reading; frees width for answers",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "stackoverflow.com/*"
+            },
+            {
+              "container": "n4",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Top marketing links",
+              "members": [
+                "n5",
+                "n7",
+                "n9"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing nav rarely needed while reading answers",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "stackoverflow.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "left-nav",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left primary navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep slim"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left primary navigation",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide completely"
+                }
+              ],
+              "text": "Also hide the left navigation while reading?"
+            },
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How should answers be spaced?"
+            }
+          ],
+          "summary": "Hide the right sidebar promos/blog/Meta and focus the question page on reading answers.",
+          "template": {
+            "pageKind": "question",
+            "urlPattern": "stackoverflow.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n101",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Right sidebar",
+            "members": [
+              "n102",
+              "n109"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Blog, Meta and Agents promos distract from reading answers",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "stackoverflow.com/questions/*"
+          },
+          {
+            "container": "n84",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Question and answers",
+            "members": [
+              "n85"
+            ],
+            "operation": "emphasize",
+            "reason": "Main reading area for answers goal",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "stackoverflow.com/questions/*"
+          },
+          {
+            "container": "n28",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Left primary navigation",
+            "members": [
+              "n30",
+              "n33",
+              "n36",
+              "n39",
+              "n44",
+              "n48",
+              "n54",
+              "n58",
+              "n62",
+              "n65"
+            ],
+            "operation": "compact",
+            "reason": "Rarely used while reading; frees width for answers",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "stackoverflow.com/*"
+          },
+          {
+            "container": "n4",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Top marketing links",
+            "members": [
+              "n5",
+              "n7",
+              "n9"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing nav rarely needed while reading answers",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "stackoverflow.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 5650,
+            "model": "spark",
+            "ms": 11226,
+            "outputTokens": 2585,
+            "purpose": "layout plan",
+            "reasoningTokens": 2012
+          },
+          {
+            "inputTokens": 6117,
+            "model": "spark",
+            "ms": 6779,
+            "outputTokens": 1556,
+            "purpose": "repair",
+            "reasoningTokens": 1125
+          }
+        ],
+        "ms": 18017
+      },
+      "layout": {
+        "labels": [
+          "Right sidebar",
+          "Question and answers",
+          "Left primary navigation",
+          "Top marketing links"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n101",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n77",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n84",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n101",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Right sidebar – blog, meta and promos",
+              "members": [
+                "n102",
+                "n109"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User reads answers only; explicitly asked to hide blog, meta and promos.",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "stackoverflow.com/questions/*"
+            },
+            {
+              "container": "n84",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Question and answers",
+              "members": [
+                "n85"
+              ],
+              "operation": "emphasize",
+              "reason": "Core goal is reading answers; make main column prominent.",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+            },
+            {
+              "container": "n28",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Left primary navigation",
+              "members": [
+                "n30",
+                "n33",
+                "n36",
+                "n39",
+                "n44",
+                "n48",
+                "n54",
+                "n58",
+                "n62",
+                "n64"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed while reading; tighten to give width to answers.",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "stackoverflow.com/questions/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "left-nav",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left primary navigation",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide entirely"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left primary navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left primary navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "How much left navigation do you need while reading?"
+            },
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Wide emphasized"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Question and answers",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                }
+              ],
+              "text": "How should answers be laid out?"
+            }
+          ],
+          "summary": "Hide right sidebar promos/blog/meta, emphasize Q&A column, compact left nav for answer reading.",
+          "template": {
+            "pageKind": "question detail",
+            "urlPattern": "stackoverflow.com/questions/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n101",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Right sidebar – blog, meta and promos",
+            "members": [
+              "n102",
+              "n109"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User reads answers only; explicitly asked to hide blog, meta and promos.",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "stackoverflow.com/questions/*"
+          },
+          {
+            "container": "n84",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Question and answers",
+            "members": [
+              "n85"
+            ],
+            "operation": "emphasize",
+            "reason": "Core goal is reading answers; make main column prominent.",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "stackoverflow.com/questions/{id}/{slug}"
+          }
+        ],
+        "errors": [
+          "groups[2] \"Left primary navigation\": some members have no href identity (href)"
+        ],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 6,
+            "model": "sam",
+            "ms": 905,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1505,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 647,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 974,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 5671,
+            "model": "spark",
+            "ms": 10986,
+            "outputTokens": 2826,
+            "purpose": "layout plan",
+            "reasoningTokens": 2282
+          },
+          {
+            "inputTokens": 6121,
+            "model": "spark",
+            "ms": 4963,
+            "outputTokens": 1430,
+            "purpose": "repair",
+            "reasoningTokens": 886
+          }
+        ],
+        "ms": 17480
+      },
+      "layout": {
+        "labels": [
+          "Right sidebar – blog, meta and promos",
+          "Question and answers"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n101",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n77",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n84",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

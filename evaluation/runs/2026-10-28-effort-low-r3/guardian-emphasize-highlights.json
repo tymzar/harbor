@@ -1,0 +1,648 @@
+{
+  "scenario": {
+    "id": "guardian-emphasize-highlights",
+    "site": "guardian-front",
+    "goal": "Make the highlighted stories row stand out.",
+    "tags": [
+      "news",
+      "emphasize"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "tag": "ul",
+          "attr": {
+            "data-component": "highlights"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "guardian-front",
+    "url": "https://www.theguardian.com/international",
+    "finalUrl": "https://www.theguardian.com/international"
+  },
+  "at": "2026-10-28T22:37:24.379Z",
+  "scanNodes": 105,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "ul",
+        "attr": {
+          "data-component": "highlights"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n11",
+        "tag": "ul",
+        "kind": "list",
+        "text": "The ideas interview Jeanette Winterson: humans are at a turning point Shiri Pas…"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n11",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n11",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Highlights stories",
+              "members": [
+                "n14",
+                "n20",
+                "n26",
+                "n32"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal: make highlighted stories stand out",
+              "reorderable": true,
+              "role": "content-cards",
+              "urlPattern": "www.theguardian.com/international"
+            },
+            {
+              "container": "n41",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Main sections",
+              "members": [
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theguardian.com/*"
+            },
+            {
+              "container": "n55",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sub-section links",
+              "members": [
+                "n57",
+                "n59",
+                "n61",
+                "n63",
+                "n65",
+                "n67",
+                "n69",
+                "n71",
+                "n73",
+                "n75",
+                "n77"
+              ],
+              "operation": "compact",
+              "reason": "Dense skimmed list tightens page around highlights",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theguardian.com/*"
+            },
+            {
+              "container": "n79",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Edition notice",
+              "members": [
+                "n80"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely needed banner distracts from highlights",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.theguardian.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sub-section links",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep tidy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sub-section links",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide extras"
+                }
+              ],
+              "text": "How much sub-navigation do you use?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sub-section links",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sub-section links",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "Prefer denser or roomier lists?"
+            }
+          ],
+          "summary": "Emphasize Highlights stories, compact sub-nav and hide edition notice.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.theguardian.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n11",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Highlights stories",
+            "members": [
+              "n14",
+              "n20",
+              "n26",
+              "n32"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal: make highlighted stories stand out",
+            "reorderable": true,
+            "role": "content-cards",
+            "urlPattern": "www.theguardian.com/international"
+          },
+          {
+            "container": "n41",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Main sections",
+            "members": [
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theguardian.com/*"
+          },
+          {
+            "container": "n55",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sub-section links",
+            "members": [
+              "n57",
+              "n59",
+              "n61",
+              "n63",
+              "n65",
+              "n67",
+              "n69",
+              "n71",
+              "n73",
+              "n75",
+              "n77"
+            ],
+            "operation": "compact",
+            "reason": "Dense skimmed list tightens page around highlights",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theguardian.com/*"
+          },
+          {
+            "container": "n79",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Edition notice",
+            "members": [
+              "n80"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely needed banner distracts from highlights",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.theguardian.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4881,
+            "model": "spark",
+            "ms": 8594,
+            "outputTokens": 2138,
+            "purpose": "layout plan",
+            "reasoningTokens": 1542
+          },
+          {
+            "inputTokens": 5531,
+            "model": "spark",
+            "ms": 10190,
+            "outputTokens": 2821,
+            "purpose": "repair",
+            "reasoningTokens": 2366
+          }
+        ],
+        "ms": 18797
+      },
+      "layout": {
+        "labels": [
+          "Highlights stories",
+          "Sub-section links",
+          "Edition notice"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n11",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n11",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Highlights stories",
+              "members": [
+                "n14",
+                "n20",
+                "n26",
+                "n32"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal is to make this row stand out",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.theguardian.com/international"
+            },
+            {
+              "container": "n78",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Edition notice banner",
+              "members": [
+                "n79"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely needed banner distracts from highlights",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.theguardian.com/international"
+            },
+            {
+              "container": "n55",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sub-navigation links",
+              "members": [
+                "n57",
+                "n59",
+                "n61",
+                "n63",
+                "n65",
+                "n67",
+                "n69",
+                "n71",
+                "n73",
+                "n75",
+                "n77"
+              ],
+              "operation": "compact",
+              "reason": "Dense secondary links to skim",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theguardian.com/*"
+            },
+            {
+              "container": "n41",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Primary sections nav",
+              "members": [
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theguardian.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights stories",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Larger and bolder"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights stories",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Grid layout"
+                }
+              ],
+              "text": "How should Highlights stand out?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sub-navigation links",
+                      "operation": "hide-secondary"
+                    },
+                    {
+                      "group": "Edition notice banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide for focus"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sub-navigation links",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Edition notice banner",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "Minimize distractions around Highlights?"
+            }
+          ],
+          "summary": "Emphasize the Highlights stories row and reduce surrounding chrome.",
+          "template": {
+            "pageKind": "frontpage",
+            "urlPattern": "www.theguardian.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n11",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Highlights stories",
+            "members": [
+              "n14",
+              "n20",
+              "n26",
+              "n32"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal is to make this row stand out",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.theguardian.com/international"
+          },
+          {
+            "container": "n78",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Edition notice banner",
+            "members": [
+              "n79"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely needed banner distracts from highlights",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.theguardian.com/international"
+          },
+          {
+            "container": "n55",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sub-navigation links",
+            "members": [
+              "n57",
+              "n59",
+              "n61",
+              "n63",
+              "n65",
+              "n67",
+              "n69",
+              "n71",
+              "n73",
+              "n75",
+              "n77"
+            ],
+            "operation": "compact",
+            "reason": "Dense secondary links to skim",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theguardian.com/*"
+          },
+          {
+            "container": "n41",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Primary sections nav",
+            "members": [
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theguardian.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1130,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 3272,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1454,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 604,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4892,
+            "model": "spark",
+            "ms": 7018,
+            "outputTokens": 1886,
+            "purpose": "layout plan",
+            "reasoningTokens": 1260
+          },
+          {
+            "inputTokens": 5553,
+            "model": "spark",
+            "ms": 7592,
+            "outputTokens": 2234,
+            "purpose": "repair",
+            "reasoningTokens": 1759
+          }
+        ],
+        "ms": 17915
+      },
+      "layout": {
+        "labels": [
+          "Highlights stories",
+          "Edition notice banner",
+          "Sub-navigation links"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n11",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

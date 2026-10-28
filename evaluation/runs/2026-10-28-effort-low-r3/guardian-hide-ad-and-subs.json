@@ -1,0 +1,647 @@
+{
+  "scenario": {
+    "id": "guardian-hide-ad-and-subs",
+    "site": "guardian-front",
+    "goal": "Hide the ad space at the very top and the Print subscriptions link.",
+    "tags": [
+      "news",
+      "hide",
+      "multiple",
+      "ads"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "data-ad-slot": "true"
+          }
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "text": "Print subscriptions"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "ul",
+          "attr": {
+            "data-component": "highlights"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "guardian-front",
+    "url": "https://www.theguardian.com/international",
+    "finalUrl": "https://www.theguardian.com/international"
+  },
+  "at": "2026-10-28T22:36:07.558Z",
+  "scanNodes": 105,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "data-ad-slot": "true"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n3",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": ""
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "text": "Print subscriptions"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n7",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Print subscriptions"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "ul",
+        "attr": {
+          "data-component": "highlights"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n11",
+        "tag": "ul",
+        "kind": "list",
+        "text": "The ideas interview Jeanette Winterson: humans are at a turning point Shiri Pas…"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": false,
+      "id": "n3",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n7",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n11",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "not-visible",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "data-ad-slot",
+                "source": "attribute"
+              },
+              "label": "Top ad space",
+              "members": [
+                "n3"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Ad slot at very top per goal",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.theguardian.com/*"
+            },
+            {
+              "container": "n6",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Print subscriptions link",
+              "members": [
+                "n7"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Print link to hide per goal",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.theguardian.com/*"
+            },
+            {
+              "container": "n11",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Highlights carousel",
+              "members": [
+                "n14",
+                "n20",
+                "n26",
+                "n32"
+              ],
+              "operation": "none",
+              "reason": "Main story highlights carousel",
+              "reorderable": true,
+              "role": "content-cards",
+              "urlPattern": "www.theguardian.com/international"
+            },
+            {
+              "container": "n79",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Edition notice banner",
+              "members": [
+                "n80"
+              ],
+              "operation": "none",
+              "reason": "International edition switcher notice",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.theguardian.com/international"
+            }
+          ],
+          "questions": [
+            {
+              "id": "highlights-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "More compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                }
+              ],
+              "text": "How should the Highlights carousel look?"
+            },
+            {
+              "id": "edition-banner",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Edition notice banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Edition notice banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                }
+              ],
+              "text": "Keep the edition notice banner?"
+            }
+          ],
+          "summary": "Hides the top ad slot and Print subscriptions link, leaves news and highlights unchanged.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.theguardian.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "data-ad-slot",
+              "source": "attribute"
+            },
+            "label": "Top ad space",
+            "members": [
+              "n3"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Ad slot at very top per goal",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.theguardian.com/*"
+          },
+          {
+            "container": "n6",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Print subscriptions link",
+            "members": [
+              "n7"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Print link to hide per goal",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.theguardian.com/*"
+          },
+          {
+            "container": "n11",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Highlights carousel",
+            "members": [
+              "n14",
+              "n20",
+              "n26",
+              "n32"
+            ],
+            "operation": "none",
+            "reason": "Main story highlights carousel",
+            "reorderable": true,
+            "role": "content-cards",
+            "urlPattern": "www.theguardian.com/international"
+          },
+          {
+            "container": "n79",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Edition notice banner",
+            "members": [
+              "n80"
+            ],
+            "operation": "none",
+            "reason": "International edition switcher notice",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.theguardian.com/international"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4887,
+            "model": "spark",
+            "ms": 8128,
+            "outputTokens": 2149,
+            "purpose": "layout plan",
+            "reasoningTokens": 1592
+          },
+          {
+            "inputTokens": 5471,
+            "model": "spark",
+            "ms": 4912,
+            "outputTokens": 1290,
+            "purpose": "repair",
+            "reasoningTokens": 728
+          }
+        ],
+        "ms": 13049
+      },
+      "layout": {
+        "labels": [
+          "Top ad space",
+          "Print subscriptions link"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n3",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n7",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n11",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "not-visible",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Top ad slot",
+              "members": [
+                "n3"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Ad space at very top requested hidden",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.theguardian.com/*"
+            },
+            {
+              "container": "n6",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Print subscriptions link",
+              "members": [
+                "n7"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Print subscriptions link requested hidden",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.theguardian.com/*"
+            },
+            {
+              "container": "n11",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Highlights carousel",
+              "members": [
+                "n12",
+                "n18",
+                "n24",
+                "n30"
+              ],
+              "operation": "none",
+              "reason": "Main highlights content works as is",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.theguardian.com/international"
+            }
+          ],
+          "questions": [
+            {
+              "id": "highlights-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Show as grid"
+                }
+              ],
+              "text": "How should the Highlights stories below the header display?"
+            }
+          ],
+          "summary": "Hide the top ad slot and Print subscriptions link per request, keep Highlights unchanged.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.theguardian.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Top ad slot",
+            "members": [
+              "n3"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Ad space at very top requested hidden",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.theguardian.com/*"
+          },
+          {
+            "container": "n6",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Print subscriptions link",
+            "members": [
+              "n7"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Print subscriptions link requested hidden",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.theguardian.com/*"
+          },
+          {
+            "container": "n11",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Highlights carousel",
+            "members": [
+              "n12",
+              "n18",
+              "n24",
+              "n30"
+            ],
+            "operation": "none",
+            "reason": "Main highlights content works as is",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.theguardian.com/international"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1564,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1564,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 731,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1162,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4898,
+            "model": "spark",
+            "ms": 6271,
+            "outputTokens": 1690,
+            "purpose": "layout plan",
+            "reasoningTokens": 1283
+          },
+          {
+            "inputTokens": 5326,
+            "model": "spark",
+            "ms": 2969,
+            "outputTokens": 793,
+            "purpose": "repair",
+            "reasoningTokens": 479
+          }
+        ],
+        "ms": 10827
+      },
+      "layout": {
+        "labels": [
+          "Top ad slot",
+          "Print subscriptions link"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n3",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n7",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n11",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "not-visible",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

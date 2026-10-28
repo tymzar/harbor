@@ -1,0 +1,135 @@
+{
+  "scenario": {
+    "id": "pypi-emphasize-install",
+    "site": "pypi-package",
+    "goal": "I come here for the install command; make it stand out and hide the project sidebar.",
+    "tags": [
+      "code",
+      "emphasize",
+      "hide",
+      "multiple"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "tag": "p",
+          "text": "pip install requests"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "h2",
+          "text": "Project links"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "h2",
+          "text": "maintainers"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "requests"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "pypi-package",
+    "url": "https://pypi.org/project/requests/",
+    "finalUrl": "https://pypi.org/project/requests/"
+  },
+  "at": "2026-10-28T22:36:18.074Z",
+  "scanNodes": 9,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "p",
+        "text": "pip install requests"
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "Project links"
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "maintainers"
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "requests"
+      },
+      "matches": 0
+    }
+  ],
+  "before": [
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    }
+  ],
+  "baseline": [
+    "unresolved",
+    "unresolved",
+    "unresolved",
+    "unresolved"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "error": "None of the scenario's elements are on the page.",
+      "verdicts": [
+        "unresolved",
+        "unresolved",
+        "unresolved",
+        "unresolved"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "error": "None of the scenario's elements are on the page.",
+      "verdicts": [
+        "unresolved",
+        "unresolved",
+        "unresolved",
+        "unresolved"
+      ]
+    }
+  ]
+}

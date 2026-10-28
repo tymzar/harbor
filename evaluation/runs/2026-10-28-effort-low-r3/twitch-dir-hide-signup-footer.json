@@ -1,0 +1,732 @@
+{
+  "scenario": {
+    "id": "twitch-dir-hide-signup-footer",
+    "site": "twitch-directory",
+    "goal": "Hide the sticky 'Join the Twitch community' bar at the bottom.",
+    "tags": [
+      "streaming",
+      "hide",
+      "sticky"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "twilight-sticky-footer-root"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "data-a-target": "top-nav-container"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "twitch-directory",
+    "url": "https://www.twitch.tv/directory",
+    "finalUrl": "https://www.twitch.tv/directory"
+  },
+  "at": "2026-10-28T22:30:01.659Z",
+  "scanNodes": 219,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "twilight-sticky-footer-root"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n215",
+        "tag": "footer",
+        "kind": "landmark",
+        "text": "Join the Twitch community! Discover the best live streams anywhere. Sign Up"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "data-a-target": "top-nav-container"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n3",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Skip to... ⌥ P Browse 9 Log In Sign Up"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n215",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n3",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n6",
+                "n7",
+                "n18",
+                "n19"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already minimal",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.twitch.tv/directory/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Live channels sidebar",
+              "members": [
+                "n31",
+                "n37",
+                "n45",
+                "n53",
+                "n59",
+                "n65",
+                "n71",
+                "n81",
+                "n89",
+                "n95"
+              ],
+              "operation": "compact",
+              "reason": "Dense skim list benefits from tighter spacing",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.twitch.tv/directory/*"
+            },
+            {
+              "container": "n104",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Category type cards",
+              "members": [
+                "n105",
+                "n108",
+                "n111",
+                "n114",
+                "n117"
+              ],
+              "operation": "none",
+              "reason": "Main browse entry points work as-is",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "www.twitch.tv/directory/*"
+            },
+            {
+              "container": "n131",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Category grid",
+              "members": [
+                "n132",
+                "n145",
+                "n155",
+                "n167",
+                "n177",
+                "n189",
+                "n194",
+                "n200",
+                "n205",
+                "n210"
+              ],
+              "operation": "grid",
+              "reason": "Main content to keep even and scannable",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.twitch.tv/directory"
+            },
+            {
+              "container": "n215",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Join community sticky bar",
+              "members": [
+                "n216"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Sticky signup promo user asked to hide",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.twitch.tv/directory/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Live channels sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Rarely use it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Live channels sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Skim it"
+                }
+              ],
+              "text": "Do you use the left Live channels list?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Category grid",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Denser grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Category grid",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Larger highlights"
+                }
+              ],
+              "text": "How should the category cards look?"
+            }
+          ],
+          "summary": "Hides the Join the Twitch community sticky footer, compacts the live sidebar and evens the category grid.",
+          "template": {
+            "pageKind": "directory browse",
+            "urlPattern": "www.twitch.tv/directory/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n6",
+              "n7",
+              "n18",
+              "n19"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already minimal",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.twitch.tv/directory/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Live channels sidebar",
+            "members": [
+              "n31",
+              "n37",
+              "n45",
+              "n53",
+              "n59",
+              "n65",
+              "n71",
+              "n81",
+              "n89",
+              "n95"
+            ],
+            "operation": "compact",
+            "reason": "Dense skim list benefits from tighter spacing",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.twitch.tv/directory/*"
+          },
+          {
+            "container": "n104",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Category type cards",
+            "members": [
+              "n105",
+              "n108",
+              "n111",
+              "n114",
+              "n117"
+            ],
+            "operation": "none",
+            "reason": "Main browse entry points work as-is",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "www.twitch.tv/directory/*"
+          },
+          {
+            "container": "n131",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Category grid",
+            "members": [
+              "n132",
+              "n145",
+              "n155",
+              "n167",
+              "n177",
+              "n189",
+              "n194",
+              "n200",
+              "n205",
+              "n210"
+            ],
+            "operation": "grid",
+            "reason": "Main content to keep even and scannable",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.twitch.tv/directory"
+          },
+          {
+            "container": "n215",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Join community sticky bar",
+            "members": [
+              "n216"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Sticky signup promo user asked to hide",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.twitch.tv/directory/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 8110,
+            "model": "spark",
+            "ms": 7912,
+            "outputTokens": 2044,
+            "purpose": "layout plan",
+            "reasoningTokens": 1319
+          }
+        ],
+        "ms": 7927
+      },
+      "layout": {
+        "labels": [
+          "Live channels sidebar",
+          "Category grid",
+          "Join community sticky bar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n215",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n3",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n5",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n6",
+                "n7"
+              ],
+              "operation": "none",
+              "reason": "Primary site nav already minimal",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.twitch.tv/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Live Channels sidebar",
+              "members": [
+                "n31",
+                "n37",
+                "n45",
+                "n53",
+                "n59",
+                "n65",
+                "n71",
+                "n81",
+                "n89",
+                "n95"
+              ],
+              "operation": "compact",
+              "reason": "Dense live list users skim",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.twitch.tv/*"
+            },
+            {
+              "container": "n131",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Category cards",
+              "members": [
+                "n134",
+                "n147",
+                "n157",
+                "n169",
+                "n179",
+                "n191",
+                "n196",
+                "n202",
+                "n207",
+                "n212"
+              ],
+              "operation": "emphasize",
+              "reason": "Main browsing goal",
+              "reorderable": true,
+              "role": "content-cards",
+              "urlPattern": "www.twitch.tv/directory"
+            },
+            {
+              "container": "n215",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Join community sticky bar",
+              "members": [
+                "n216"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User wants sticky promo hidden",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.twitch.tv/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide sidebar"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "Do you use the Live Channels sidebar?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomy focus"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Denser grid"
+                }
+              ],
+              "text": "How should category cards be laid out?"
+            }
+          ],
+          "summary": "Hid the Join community sticky bar and tightened browsing layout.",
+          "template": {
+            "pageKind": "directory",
+            "urlPattern": "www.twitch.tv/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n5",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n6",
+              "n7"
+            ],
+            "operation": "none",
+            "reason": "Primary site nav already minimal",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.twitch.tv/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Live Channels sidebar",
+            "members": [
+              "n31",
+              "n37",
+              "n45",
+              "n53",
+              "n59",
+              "n65",
+              "n71",
+              "n81",
+              "n89",
+              "n95"
+            ],
+            "operation": "compact",
+            "reason": "Dense live list users skim",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.twitch.tv/*"
+          },
+          {
+            "container": "n131",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Category cards",
+            "members": [
+              "n134",
+              "n147",
+              "n157",
+              "n169",
+              "n179",
+              "n191",
+              "n196",
+              "n202",
+              "n207",
+              "n212"
+            ],
+            "operation": "emphasize",
+            "reason": "Main browsing goal",
+            "reorderable": true,
+            "role": "content-cards",
+            "urlPattern": "www.twitch.tv/directory"
+          },
+          {
+            "container": "n215",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Join community sticky bar",
+            "members": [
+              "n216"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User wants sticky promo hidden",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.twitch.tv/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 14,
+            "model": "sam",
+            "ms": 839,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 8,
+            "model": "sam",
+            "ms": 1110,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1844,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 14,
+            "model": "sam",
+            "ms": 1234,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 8184,
+            "model": "spark",
+            "ms": 12117,
+            "outputTokens": 3253,
+            "purpose": "layout plan",
+            "reasoningTokens": 2661
+          },
+          {
+            "inputTokens": 8662,
+            "model": "spark",
+            "ms": 3968,
+            "outputTokens": 1076,
+            "purpose": "repair",
+            "reasoningTokens": 484
+          }
+        ],
+        "ms": 17971
+      },
+      "layout": {
+        "labels": [
+          "Live Channels sidebar",
+          "Category cards",
+          "Join community sticky bar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n215",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n3",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,838 @@
+{
+  "scenario": {
+    "id": "twitch-dir-dense-grid",
+    "site": "twitch-directory",
+    "goal": "Fit more categories on screen.",
+    "tags": [
+      "streaming",
+      "density",
+      "grid"
+    ],
+    "expect": [
+      {
+        "op": "compact",
+        "anchor": {
+          "tag": "h2",
+          "text": "Just Chatting",
+          "area": {
+            "minX": 250
+          }
+        },
+        "note": "compact or grid on the category grid both satisfy the intent; see README"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Browse"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "twitch-directory",
+    "url": "https://www.twitch.tv/directory",
+    "finalUrl": "https://www.twitch.tv/directory"
+  },
+  "at": "2026-10-28T22:30:37.712Z",
+  "scanNodes": 210,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "h2",
+        "text": "Just Chatting",
+        "area": {
+          "minX": 250
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n142",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "Just Chatting"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Browse"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n95",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Browse"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n142",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n95",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Live Channels sidebar",
+              "members": [
+                "n31",
+                "n37",
+                "n45",
+                "n51",
+                "n57",
+                "n63",
+                "n69",
+                "n75",
+                "n81",
+                "n87"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Frees width for category grid; not needed when browsing categories",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.twitch.tv/*"
+            },
+            {
+              "container": "n126",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Category cards",
+              "members": [
+                "n127",
+                "n135",
+                "n145",
+                "n158",
+                "n168",
+                "n180",
+                "n185",
+                "n191",
+                "n196",
+                "n201"
+              ],
+              "operation": "compact",
+              "reason": "Denser tiles fit more categories on screen",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.twitch.tv/directory"
+            },
+            {
+              "container": "n96",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Category type shortcuts",
+              "members": [
+                "n97",
+                "n100",
+                "n103",
+                "n106",
+                "n109"
+              ],
+              "operation": "compact",
+              "reason": "Large banners waste vertical space above grid",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.twitch.tv/directory/*"
+            },
+            {
+              "container": "n119",
+              "identity": {
+                "attribute": "id",
+                "source": "text"
+              },
+              "label": "Filter and sort bar",
+              "members": [
+                "n120",
+                "n124"
+              ],
+              "operation": "compact",
+              "reason": "Slim toolbar leaves more room for grid",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.twitch.tv/directory"
+            },
+            {
+              "container": "n207",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Signup footer promo",
+              "members": [
+                "n208"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Sticky marketing footer hides lower rows of categories",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.twitch.tv/*"
+            },
+            {
+              "container": "n113",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Browse tabs",
+              "members": [
+                "n115",
+                "n117"
+              ],
+              "operation": "none",
+              "reason": "Primary view switch, already minimal",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "www.twitch.tv/directory/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "sidebar",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide sidebar"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Live Channels sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep slim sidebar"
+                }
+              ],
+              "text": "Keep the Live Channels sidebar visible?"
+            },
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Filter and sort bar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser tiles"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "More columns"
+                }
+              ],
+              "text": "How should more categories fit - smaller tiles or more columns?"
+            },
+            {
+              "id": "topbanner",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Category type shortcuts",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide banners"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Category type shortcuts",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep slim banners"
+                }
+              ],
+              "text": "Do you use the Games / IRL / Music shortcuts at the top?"
+            }
+          ],
+          "summary": "Fit more categories by densifying the category grid and toolbar, slimming top shortcuts, and hiding sidebar and signup footer to free space.",
+          "template": {
+            "pageKind": "directory",
+            "urlPattern": "www.twitch.tv/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Live Channels sidebar",
+            "members": [
+              "n31",
+              "n37",
+              "n45",
+              "n51",
+              "n57",
+              "n63",
+              "n69",
+              "n75",
+              "n81",
+              "n87"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Frees width for category grid; not needed when browsing categories",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.twitch.tv/*"
+          },
+          {
+            "container": "n126",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Category cards",
+            "members": [
+              "n127",
+              "n135",
+              "n145",
+              "n158",
+              "n168",
+              "n180",
+              "n185",
+              "n191",
+              "n196",
+              "n201"
+            ],
+            "operation": "compact",
+            "reason": "Denser tiles fit more categories on screen",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.twitch.tv/directory"
+          },
+          {
+            "container": "n96",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Category type shortcuts",
+            "members": [
+              "n97",
+              "n100",
+              "n103",
+              "n106",
+              "n109"
+            ],
+            "operation": "compact",
+            "reason": "Large banners waste vertical space above grid",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.twitch.tv/directory/*"
+          },
+          {
+            "container": "n119",
+            "identity": {
+              "attribute": "id",
+              "source": "text"
+            },
+            "label": "Filter and sort bar",
+            "members": [
+              "n120",
+              "n124"
+            ],
+            "operation": "compact",
+            "reason": "Slim toolbar leaves more room for grid",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.twitch.tv/directory"
+          },
+          {
+            "container": "n207",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Signup footer promo",
+            "members": [
+              "n208"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Sticky marketing footer hides lower rows of categories",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.twitch.tv/*"
+          },
+          {
+            "container": "n113",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Browse tabs",
+            "members": [
+              "n115",
+              "n117"
+            ],
+            "operation": "none",
+            "reason": "Primary view switch, already minimal",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "www.twitch.tv/directory/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 7790,
+            "model": "spark",
+            "ms": 10300,
+            "outputTokens": 2497,
+            "purpose": "layout plan",
+            "reasoningTokens": 1593
+          }
+        ],
+        "ms": 10328
+      },
+      "layout": {
+        "labels": [
+          "Live Channels sidebar",
+          "Category cards",
+          "Category type shortcuts",
+          "Filter and sort bar",
+          "Signup footer promo"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n142",
+          "ops": [
+            "compact"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n95",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "none",
+                "source": "none"
+              },
+              "label": "Live channels sidebar",
+              "members": [
+                "n31",
+                "n37",
+                "n45",
+                "n51",
+                "n57",
+                "n63",
+                "n69",
+                "n75",
+                "n81",
+                "n87"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Sidebar takes 240px needed for more category columns.",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.twitch.tv/*"
+            },
+            {
+              "container": "n126",
+              "identity": {
+                "attribute": "none",
+                "source": "href"
+              },
+              "label": "Category cards grid",
+              "members": [
+                "n127",
+                "n135",
+                "n145",
+                "n158",
+                "n168",
+                "n180",
+                "n185",
+                "n191",
+                "n196",
+                "n201"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal: show more categories, give grid full width.",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.twitch.tv/directory"
+            },
+            {
+              "container": "n206",
+              "identity": {
+                "attribute": "none",
+                "source": "none"
+              },
+              "label": "Signup footer",
+              "members": [
+                "n207"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Sticky promo rarely needed, steals vertical space.",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.twitch.tv/*"
+            },
+            {
+              "container": "n96",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Browse shortcuts",
+              "members": [
+                "n97",
+                "n100",
+                "n103",
+                "n106",
+                "n109"
+              ],
+              "operation": "compact",
+              "reason": "Large shortcut cards push category grid down.",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.twitch.tv/*"
+            },
+            {
+              "container": "n119",
+              "identity": {
+                "attribute": "none",
+                "source": "none"
+              },
+              "label": "Filter and sort bar",
+              "members": [
+                "n120",
+                "n124"
+              ],
+              "operation": "compact",
+              "reason": "Tighten toolbar to fit more rows on screen.",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.twitch.tv/directory"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards grid",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Category cards grid",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How dense should category cards be?"
+            },
+            {
+              "id": "q-sidebar",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Live channels sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide sidebar"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Live channels sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep slim"
+                }
+              ],
+              "text": "Keep left Live Channels list visible?"
+            }
+          ],
+          "summary": "Hide sidebar and footer, tighten top shortcuts and filters, emphasize category grid to fit more categories.",
+          "template": {
+            "pageKind": "directory",
+            "urlPattern": "www.twitch.tv/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "none",
+              "source": "none"
+            },
+            "label": "Live channels sidebar",
+            "members": [
+              "n31",
+              "n37",
+              "n45",
+              "n51",
+              "n57",
+              "n63",
+              "n69",
+              "n75",
+              "n81",
+              "n87"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Sidebar takes 240px needed for more category columns.",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.twitch.tv/*"
+          },
+          {
+            "container": "n126",
+            "identity": {
+              "attribute": "none",
+              "source": "href"
+            },
+            "label": "Category cards grid",
+            "members": [
+              "n127",
+              "n135",
+              "n145",
+              "n158",
+              "n168",
+              "n180",
+              "n185",
+              "n191",
+              "n196",
+              "n201"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal: show more categories, give grid full width.",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.twitch.tv/directory"
+          },
+          {
+            "container": "n206",
+            "identity": {
+              "attribute": "none",
+              "source": "none"
+            },
+            "label": "Signup footer",
+            "members": [
+              "n207"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Sticky promo rarely needed, steals vertical space.",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.twitch.tv/*"
+          },
+          {
+            "container": "n96",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Browse shortcuts",
+            "members": [
+              "n97",
+              "n100",
+              "n103",
+              "n106",
+              "n109"
+            ],
+            "operation": "compact",
+            "reason": "Large shortcut cards push category grid down.",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.twitch.tv/*"
+          },
+          {
+            "container": "n119",
+            "identity": {
+              "attribute": "none",
+              "source": "none"
+            },
+            "label": "Filter and sort bar",
+            "members": [
+              "n120",
+              "n124"
+            ],
+            "operation": "compact",
+            "reason": "Tighten toolbar to fit more rows on screen.",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.twitch.tv/directory"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 14,
+            "model": "sam",
+            "ms": 888,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 9,
+            "model": "sam",
+            "ms": 1660,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 898,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 10,
+            "model": "sam",
+            "ms": 1333,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 7854,
+            "model": "spark",
+            "ms": 10716,
+            "outputTokens": 2607,
+            "purpose": "layout plan",
+            "reasoningTokens": 1889
+          },
+          {
+            "inputTokens": 8575,
+            "model": "spark",
+            "ms": 5986,
+            "outputTokens": 1704,
+            "purpose": "repair",
+            "reasoningTokens": 1159
+          }
+        ],
+        "ms": 18397
+      },
+      "layout": {
+        "labels": [
+          "Live channels sidebar",
+          "Category cards grid",
+          "Signup footer",
+          "Browse shortcuts",
+          "Filter and sort bar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n142",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n95",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    }
+  ]
+}

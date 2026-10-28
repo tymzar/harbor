@@ -1,0 +1,696 @@
+{
+  "scenario": {
+    "id": "mdn-hide-baseline",
+    "site": "mdn-reference",
+    "goal": "Hide the Baseline compatibility box at the top.",
+    "tags": [
+      "docs",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "summary",
+          "text": "Baseline Widely available"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Array"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "mdn-reference",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "finalUrl": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array"
+  },
+  "at": "2026-10-28T22:33:26.247Z",
+  "scanNodes": 112,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "summary",
+        "text": "Baseline Widely available"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n30",
+        "tag": "summary",
+        "kind": "interactive",
+        "text": "Baseline Widely available"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Array"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n28",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Array"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n30",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n28",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n5",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Top topics menu",
+              "members": [
+                "n6",
+                "n7",
+                "n8",
+                "n9",
+                "n10",
+                "n11",
+                "n12",
+                "n13",
+                "n14"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation, keep as is.",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+            },
+            {
+              "container": "n16",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Breadcrumb trail",
+              "members": [
+                "n17",
+                "n19",
+                "n21",
+                "n23",
+                "n25"
+              ],
+              "operation": "none",
+              "reason": "Orientation for docs hierarchy, keep as is.",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+            },
+            {
+              "container": "n27",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Baseline compatibility box",
+              "members": [
+                "n29"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Requested to hide per user goal.",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/Array"
+            },
+            {
+              "container": "n40",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "In this article TOC",
+              "members": [
+                "n41",
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51",
+                "n53",
+                "n55",
+                "n57",
+                "n59"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed on repeat visits, tighten spacing.",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+            },
+            {
+              "container": "n76",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Left reference sidebar",
+              "members": [
+                "n77",
+                "n79",
+                "n81",
+                "n87",
+                "n99",
+                "n105"
+              ],
+              "operation": "compact",
+              "reason": "Long method list skimmed, tighten spacing.",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left reference sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left reference sidebar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy list"
+                }
+              ],
+              "text": "How do you use the left methods list?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "In this article TOC",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep visible compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "In this article TOC",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide until needed"
+                }
+              ],
+              "text": "Do you use the right table of contents?"
+            }
+          ],
+          "summary": "Hides the Baseline compatibility box as requested, compacts both sidebars for faster scanning.",
+          "template": {
+            "pageKind": "docs",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n5",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Top topics menu",
+            "members": [
+              "n6",
+              "n7",
+              "n8",
+              "n9",
+              "n10",
+              "n11",
+              "n12",
+              "n13",
+              "n14"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation, keep as is.",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+          },
+          {
+            "container": "n16",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Breadcrumb trail",
+            "members": [
+              "n17",
+              "n19",
+              "n21",
+              "n23",
+              "n25"
+            ],
+            "operation": "none",
+            "reason": "Orientation for docs hierarchy, keep as is.",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+          },
+          {
+            "container": "n27",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Baseline compatibility box",
+            "members": [
+              "n29"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Requested to hide per user goal.",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/Array"
+          },
+          {
+            "container": "n40",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "In this article TOC",
+            "members": [
+              "n41",
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51",
+              "n53",
+              "n55",
+              "n57",
+              "n59"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed on repeat visits, tighten spacing.",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/*"
+          },
+          {
+            "container": "n76",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Left reference sidebar",
+            "members": [
+              "n77",
+              "n79",
+              "n81",
+              "n87",
+              "n99",
+              "n105"
+            ],
+            "operation": "compact",
+            "reason": "Long method list skimmed, tighten spacing.",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 4487,
+            "model": "spark",
+            "ms": 10308,
+            "outputTokens": 2448,
+            "purpose": "layout plan",
+            "reasoningTokens": 1705
+          }
+        ],
+        "ms": 10315
+      },
+      "layout": {
+        "labels": [
+          "Baseline compatibility box",
+          "In this article TOC",
+          "Left reference sidebar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n30",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n28",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n27",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Baseline compatibility box",
+              "members": [
+                "n29"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide this box",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/{name}"
+            },
+            {
+              "container": "n76",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Left reference sidebar",
+              "members": [
+                "n77",
+                "n79",
+                "n81",
+                "n87",
+                "n99",
+                "n105"
+              ],
+              "operation": "compact",
+              "reason": "Long method list to skim",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+            },
+            {
+              "container": "n40",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Table of contents sidebar",
+              "members": [
+                "n41",
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51",
+                "n53",
+                "n55",
+                "n57",
+                "n59"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed anchor list",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/Array"
+            }
+          ],
+          "questions": [
+            {
+              "id": "sidebars",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left reference sidebar",
+                      "operation": "hide-secondary"
+                    },
+                    {
+                      "group": "Table of contents sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide both"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left reference sidebar",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Table of contents sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "Do you use the side navigation when reading this doc?"
+            },
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left reference sidebar",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Table of contents sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser lists"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left reference sidebar",
+                      "operation": "none"
+                    },
+                    {
+                      "group": "Table of contents sidebar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier lists"
+                }
+              ],
+              "text": "Prefer denser or roomier sidebars?"
+            }
+          ],
+          "summary": "Hides the Baseline box and compacts both sidebars for faster reading.",
+          "template": {
+            "pageKind": "reference-doc",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/{name}"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n27",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Baseline compatibility box",
+            "members": [
+              "n29"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide this box",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/{name}"
+          },
+          {
+            "container": "n76",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Left reference sidebar",
+            "members": [
+              "n77",
+              "n79",
+              "n81",
+              "n87",
+              "n99",
+              "n105"
+            ],
+            "operation": "compact",
+            "reason": "Long method list to skim",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/*"
+          },
+          {
+            "container": "n40",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Table of contents sidebar",
+            "members": [
+              "n41",
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51",
+              "n53",
+              "n55",
+              "n57",
+              "n59"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed anchor list",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "developer.mozilla.org/{locale}/docs/Web/JavaScript/Reference/Global_Objects/Array"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1187,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 2034,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 923,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1392,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4499,
+            "model": "spark",
+            "ms": 7807,
+            "outputTokens": 1854,
+            "purpose": "layout plan",
+            "reasoningTokens": 1249
+          }
+        ],
+        "ms": 9858
+      },
+      "layout": {
+        "labels": [
+          "Baseline compatibility box",
+          "Left reference sidebar",
+          "Table of contents sidebar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": false,
+          "id": "n30",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n28",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

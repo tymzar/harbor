@@ -1,0 +1,689 @@
+{
+  "scenario": {
+    "id": "booking-hide-product-tabs",
+    "site": "booking-search",
+    "goal": "I only book stays. Hide the Flights / Car rental / Cruises tabs.",
+    "tags": [
+      "travel",
+      "hide",
+      "navigation",
+      "partial-page"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "What are you looking for?"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "form",
+          "attr": {
+            "aria-label": "Search properties"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "booking-search",
+    "url": "https://www.booking.com/searchresults.html?ss=Zurich",
+    "finalUrl": "https://www.booking.com/searchresults.html?ss=Zurich&chal_t=1793226853939&force_referer="
+  },
+  "at": "2026-10-28T22:34:54.395Z",
+  "scanNodes": 178,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "What are you looking for?"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n16",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "What are you looking for?"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "form",
+        "attr": {
+          "aria-label": "Search properties"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n41",
+        "tag": "form",
+        "kind": "landmark",
+        "text": "Search properties"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n16",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "hasContent": true,
+      "id": "n41",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Non-stays header tabs",
+              "members": [
+                "n21",
+                "n27",
+                "n30"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User only books stays; hide Flights, Car rental, Cruises",
+              "reorderable": false,
+              "role": "tabs",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Footer flight and car links",
+              "members": [
+                "n120",
+                "n122"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Same non-stays actions repeated in footer",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Footer quick links",
+              "members": [
+                "n63",
+                "n65",
+                "n67",
+                "n69",
+                "n71",
+                "n73",
+                "n75",
+                "n77",
+                "n79",
+                "n81",
+                "n83",
+                "n85",
+                "n87",
+                "n89",
+                "n91",
+                "n93"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value footer navigation rarely needed for booking",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n42",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Stays search controls",
+              "members": [
+                "n43",
+                "n46",
+                "n50",
+                "n53"
+              ],
+              "operation": "emphasize",
+              "reason": "Core for stays booking goal",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.booking.com/searchresults.html*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "extra-tabs",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Non-stays header tabs",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Yes, stays only"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Non-stays header tabs",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep them"
+                }
+              ],
+              "text": "Also hide Flight + Hotel, Attractions, transfers?"
+            },
+            {
+              "id": "page-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Stays search controls",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser layout"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Stays search controls",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier focus"
+                }
+              ],
+              "text": "Prefer denser stays search or larger focus?"
+            }
+          ],
+          "summary": "Hide Flights, Car rental, Cruises in header and footer, hide footer links, emphasize stays search.",
+          "template": {
+            "pageKind": "search-results",
+            "urlPattern": "www.booking.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Non-stays header tabs",
+            "members": [
+              "n21",
+              "n27",
+              "n30"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User only books stays; hide Flights, Car rental, Cruises",
+            "reorderable": false,
+            "role": "tabs",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Footer flight and car links",
+            "members": [
+              "n120",
+              "n122"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Same non-stays actions repeated in footer",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Footer quick links",
+            "members": [
+              "n63",
+              "n65",
+              "n67",
+              "n69",
+              "n71",
+              "n73",
+              "n75",
+              "n77",
+              "n79",
+              "n81",
+              "n83",
+              "n85",
+              "n87",
+              "n89",
+              "n91",
+              "n93"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value footer navigation rarely needed for booking",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n42",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Stays search controls",
+            "members": [
+              "n43",
+              "n46",
+              "n50",
+              "n53"
+            ],
+            "operation": "emphasize",
+            "reason": "Core for stays booking goal",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.booking.com/searchresults.html*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 6282,
+            "model": "spark",
+            "ms": 12740,
+            "outputTokens": 3061,
+            "purpose": "layout plan",
+            "reasoningTokens": 2427
+          },
+          {
+            "inputTokens": 6928,
+            "model": "spark",
+            "ms": 3960,
+            "outputTokens": 1360,
+            "purpose": "repair",
+            "reasoningTokens": 720
+          }
+        ],
+        "ms": 16718
+      },
+      "layout": {
+        "labels": [
+          "Non-stays header tabs",
+          "Footer flight and car links",
+          "Footer quick links",
+          "Stays search controls"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n16",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [
+            "emphasize"
+          ],
+          "found": true,
+          "hasContent": true,
+          "id": "n41",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Stays-excluded product tabs",
+              "members": [
+                "n21",
+                "n27",
+                "n30"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User only books stays; Flights/Car rental/Cruises rarely needed.",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Footer flight and car links",
+              "members": [
+                "n120",
+                "n122"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Same flight/car actions repeated in footer; not needed for stays.",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n95",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Footer link columns",
+              "members": [
+                "n96",
+                "n105",
+                "n128",
+                "n143",
+                "n154"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing navigation rarely needed for repeat stay booking.",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n42",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Stay search controls",
+              "members": [
+                "n43",
+                "n46",
+                "n50",
+                "n53"
+              ],
+              "operation": "emphasize",
+              "reason": "Core to booking stays in Zurich.",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.booking.com/searchresults.html"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q_search_density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Stay search controls",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Prominent"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Stay search controls",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact"
+                }
+              ],
+              "text": "How should the stay search bar appear?"
+            },
+            {
+              "id": "q_footer",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Footer link columns",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide footer"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Footer link columns",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Show footer"
+                }
+              ],
+              "text": "Keep the site footer visible?"
+            }
+          ],
+          "summary": "Hide Flights, Car rental, Cruises tabs in header and footer, hide marketing footer, emphasize stay search for Zurich.",
+          "template": {
+            "pageKind": "search results",
+            "urlPattern": "www.booking.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Stays-excluded product tabs",
+            "members": [
+              "n21",
+              "n27",
+              "n30"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User only books stays; Flights/Car rental/Cruises rarely needed.",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Footer flight and car links",
+            "members": [
+              "n120",
+              "n122"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Same flight/car actions repeated in footer; not needed for stays.",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n95",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Footer link columns",
+            "members": [
+              "n96",
+              "n105",
+              "n128",
+              "n143",
+              "n154"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing navigation rarely needed for repeat stay booking.",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n42",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Stay search controls",
+            "members": [
+              "n43",
+              "n46",
+              "n50",
+              "n53"
+            ],
+            "operation": "emphasize",
+            "reason": "Core to booking stays in Zurich.",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.booking.com/searchresults.html"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 810,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 715,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1141,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1139,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 6317,
+            "model": "spark",
+            "ms": 12361,
+            "outputTokens": 3056,
+            "purpose": "layout plan",
+            "reasoningTokens": 2467
+          },
+          {
+            "inputTokens": 6930,
+            "model": "spark",
+            "ms": 4090,
+            "outputTokens": 1334,
+            "purpose": "repair",
+            "reasoningTokens": 879
+          }
+        ],
+        "ms": 17614
+      },
+      "layout": {
+        "labels": [
+          "Stays-excluded product tabs",
+          "Footer flight and car links",
+          "Footer link columns",
+          "Stay search controls"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "hasContent": true,
+          "id": "n16",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [
+            "emphasize"
+          ],
+          "found": true,
+          "hasContent": true,
+          "id": "n41",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    }
+  ]
+}

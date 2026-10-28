@@ -1,0 +1,95 @@
+{
+  "scenario": {
+    "id": "pypi-hide-announcement",
+    "site": "pypi-package",
+    "goal": "Hide the announcement bar at the top.",
+    "tags": [
+      "code",
+      "hide",
+      "banner"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "div",
+          "area": {
+            "maxX": 0,
+            "maxY": 0
+          }
+        },
+        "note": "the whole announcement bar at the very top; its text changes"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "requests"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "pypi-package",
+    "url": "https://pypi.org/project/requests/",
+    "finalUrl": "https://pypi.org/project/requests/"
+  },
+  "at": "2026-10-28T22:36:13.915Z",
+  "scanNodes": 9,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "div",
+        "area": {
+          "maxX": 0,
+          "maxY": 0
+        }
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "requests"
+      },
+      "matches": 0
+    }
+  ],
+  "before": [
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    }
+  ],
+  "baseline": [
+    "unresolved",
+    "unresolved"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "error": "None of the scenario's elements are on the page.",
+      "verdicts": [
+        "unresolved",
+        "unresolved"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "error": "None of the scenario's elements are on the page.",
+      "verdicts": [
+        "unresolved",
+        "unresolved"
+      ]
+    }
+  ]
+}
