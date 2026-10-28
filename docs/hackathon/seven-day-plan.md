@@ -89,6 +89,16 @@ toolbar click
 
 Re-record or fix one blocker only. Publish repo, post X clip, submit by 18:00 Zurich.
 
+## Extra time at the end (only if ahead of schedule)
+
+Deferred on 28 Oct after evaluation round 3 (`evaluation/README.md`, Results). None of these blocks the core loop or the submission.
+
+- **Prompt optimisation with DSPy.** The evaluation set is a ready-made metric (54 scenarios, scored checks). A DSPy optimiser (e.g. MIPROv2 or GEPA) could tune `SYSTEM_PROMPT` against it. Cost is the catch: one live round is ~140 Spark calls (~830k input / ~285k output tokens) and 13 minutes, and an optimiser needs many. Make it affordable first: score plans offline against the collected snapshots (plan + scan → which anchors fall inside hidden/marked groups) instead of applying them on live pages, and hold out sites so the prompt isn't tuned to the test set.
+- **Partial hides under a heading.** Twitch's sidebar, Steam's tags and Bluesky's trending column: the plan names the inner list, its heading stays. Also hide a heading that only labels a hidden region.
+- **Fewer repair rounds.** About half the plans need a second Spark call. Count which validator rejections are most common and fix them in the prompt or schema.
+- **Logged-in GitHub top bar** (Unpin/Watch/Fork/Star not hidden for a signed-in user). Diagnostic snippet still pending; the picker is the fallback.
+- **Temperature for plan consistency.** Offered, not tried.
+
 ## If a day slips
 
 Cut in this order, never the core loop:
