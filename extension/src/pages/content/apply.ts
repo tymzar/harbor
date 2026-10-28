@@ -12,6 +12,11 @@ const PREVIEW = "data-smart-web-preview";
 // Every element Smart Web marked, so restore can unmark exactly those.
 const owned = new Set<Element>();
 let onEscape: ((event: KeyboardEvent) => void) | undefined;
+// Watches an applied layout for the site replacing the elements it marked (single-page apps
+// re-render whole regions); the background then reads the page again and re-applies the plan.
+let redrawWatch: MutationObserver | undefined;
+// Mutations arrive in bursts while a site re-renders; report once it has settled.
+const REDRAW_SETTLE_MS = 300;
 
 const resolve = (id: string) => nodeRegistry.get(id)?.deref();
 
@@ -74,7 +79,24 @@ export function restoreLayout(): number {
   document.documentElement.removeAttribute(PREVIEW);
   if (onEscape) globalThis.removeEventListener("keydown", onEscape, true);
   onEscape = undefined;
+  redrawWatch?.disconnect();
+  redrawWatch = undefined;
   return count;
+}
+
+function watchForRedraw() {
+  let pending: ReturnType<typeof setTimeout> | undefined;
+  redrawWatch = new MutationObserver(() => {
+    if (pending) return;
+    pending = setTimeout(() => {
+      pending = undefined;
+      if (![...owned].some((element) => !element.isConnected)) return;
+      // Reported once; the rescan re-injects this script and the new layout watches again.
+      redrawWatch?.disconnect();
+      void chrome.runtime.sendMessage({ type: "page-redrawn" });
+    }, REDRAW_SETTLE_MS);
+  });
+  redrawWatch.observe(document.body, { childList: true, subtree: true });
 }
 
 // Marks the plan's elements; the inserted stylesheet does the rest. In preview, regions are
@@ -104,6 +126,7 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
     result.applied.push(group.label);
   }
 
+  if (!preview && result.applied.length > 0) watchForRedraw();
   if (preview && result.applied.length > 0) {
     document.documentElement.setAttribute(PREVIEW, "");
     onEscape = (event) => {

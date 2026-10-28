@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pinewood Community — Feed</title>
+<style>
+  body { margin: 0; font: 15px/1.5 system-ui, sans-serif; color: #222; background: #f7f7f5; }
+  header { display: flex; gap: 18px; align-items: center; padding: 12px 20px; background: #1f3a2f; color: #fff; }
+  header a { color: #fff; text-decoration: none; }
+  .layout { display: flex; gap: 24px; padding: 20px; }
+  main { flex: 1; }
+  .post { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; }
+  aside { width: 260px; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 16px; }
+  aside h2 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; color: #777; }
+  aside a { display: block; color: #335; text-decoration: none; padding: 3px 0; }
+</style>
+</head>
+<body>
+  <header><strong>Pinewood</strong><a href="#">Feed</a><a href="#">Groups</a><a href="#">Events</a><button id="refresh" type="button">Refresh trending</button></header>
+  <div class="layout">
+    <main>
+      <article class="post"><h3>Trail cleanup on Saturday</h3><p>Meet at the north gate at 9.</p></article>
+      <article class="post"><h3>Lost: blue water bottle</h3><p>Near the lake path, yesterday evening.</p></article>
+      <article class="post"><h3>New bike racks at the library</h3><p>Twelve spaces, covered.</p></article>
+    </main>
+    <aside id="trending"></aside>
+  </div>
+<script>
+  // Renders the sidebar the way a single-page app does: the whole element is replaced.
+  let round = 0;
+  function renderTrending() {
+    round += 1;
+    const aside = document.createElement("aside");
+    aside.id = "trending";
+    aside.setAttribute("aria-label", "Trending");
+    aside.innerHTML = '<h2>Trending</h2>' + ["Farmers market", "Bridge repairs", "Summer concerts", "Dog park rules"]
+      .map((topic) => `<a href="#">${topic} · ${round}</a>`).join("");
+    document.getElementById("trending").replaceWith(aside);
+  }
+  renderTrending();
+  document.getElementById("refresh").addEventListener("click", renderTrending);
+</script>
+</body>
+</html>

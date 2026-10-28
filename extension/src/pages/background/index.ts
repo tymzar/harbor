@@ -135,6 +135,27 @@ function scheduleRescan(tabId: number) {
   );
 }
 
+// A site that redraws an applied region gets it re-applied from the saved plan, a few times at
+// most: a page that redraws because of the change itself would otherwise loop.
+const REDRAW_LIMIT = 5;
+const REDRAW_WINDOW_MS = 30_000;
+const REDRAW_NOTICE = "This page keeps redrawing, so Smart Web stopped re-applying your layout. Rescan to try again.";
+const redraws = new Map<number, Array<number>>();
+
+async function redrawn(tabId: number) {
+  const session = await readSession(tabId);
+  // Only a kept layout is restored; a preview or a plan in progress is left to the user.
+  if (session?.layout?.state !== "applied" || session.picking || session.proposal?.status === "running") return;
+  const now = Date.now();
+  const recent = (redraws.get(tabId) ?? []).filter((at) => now - at < REDRAW_WINDOW_MS);
+  if (recent.length >= REDRAW_LIMIT) {
+    await saveSession({ ...session, notice: REDRAW_NOTICE, updatedAt: now });
+    return;
+  }
+  redraws.set(tabId, [...recent, now]);
+  scheduleRescan(tabId);
+}
+
 async function forget(tabId: number) {
   const key = sessionKey(tabId);
   const stored = await chrome.storage.session.get(key);
@@ -268,10 +289,12 @@ chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
   if (message.type === "layout") void changeLayout(message.tabId, message.action, message.labels);
   // Escape on the page already undid the preview; the stylesheet and session follow.
   if (message.type === "page-restored" && sender.tab?.id !== undefined) void changeLayout(sender.tab.id, "restore");
+  if (message.type === "page-redrawn" && sender.tab?.id !== undefined) void redrawn(sender.tab.id);
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   clearTimeout(pendingRescans.get(tabId));
+  redraws.delete(tabId);
   void chrome.storage.session.remove([sessionKey(tabId), shotKey(tabId)]);
   void unfollow(tabId);
 });

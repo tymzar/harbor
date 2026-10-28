@@ -120,7 +120,9 @@ export type PanelRequest =
   | { type: "hide-node"; tabId: number; nodeId: string }
   | { type: "layout"; tabId: number; action: "preview" | "apply" | "restore"; labels?: Array<string> }
   // From the page: Escape during a preview already restored it.
-  | { type: "page-restored" };
+  | { type: "page-restored" }
+  // From the page: the site replaced elements an applied layout had marked.
+  | { type: "page-redrawn" };
 
 export const sessionKey = (tabId: number) => `session:${tabId}`;
 export const shotKey = (tabId: number) => `shot:${tabId}`;
