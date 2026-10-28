@@ -2,6 +2,7 @@
 
 import type { LayoutPlan, PlanGroup } from "./plan";
 import type { VisualGroup } from "./prompt";
+import type { Suggestion } from "./learning";
 import type { Answers } from "./questions";
 
 export type Rect = { x: number; y: number; w: number; h: number };
@@ -106,6 +107,8 @@ export type TabSession = {
   // The site this tab was last read on; Chrome hides the URL once access is gone.
   lastOrigin?: string;
   proposal?: Proposal;
+  // Learned from use: an item the user keeps opening, offered for emphasis until they decide.
+  suggestion?: Suggestion & { nodeId: string; scannedAt: number };
   updatedAt: number;
 };
 
@@ -122,7 +125,10 @@ export type PanelRequest =
   // From the page: Escape during a preview already restored it.
   | { type: "page-restored" }
   // From the page: the site replaced elements an applied layout had marked.
-  | { type: "page-redrawn" };
+  | { type: "page-redrawn" }
+  // From the page: a deliberate click on an item of a kept layout's group.
+  | { type: "activation"; label: string; nodeId: string }
+  | { type: "learning"; tabId: number; action: "enable" | "disable" | "reset" | "accept" | "dismiss" };
 
 export const sessionKey = (tabId: number) => `session:${tabId}`;
 export const shotKey = (tabId: number) => `shot:${tabId}`;

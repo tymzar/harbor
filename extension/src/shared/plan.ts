@@ -33,7 +33,7 @@ export type PlanGroup = {
   identity: { source: (typeof IDENTITY_SOURCES)[number]; attribute: string };
   reason: string;
   // Set on groups the user made with "Hide something else"; Spark's groups leave it out.
-  origin?: "user";
+  origin?: "user" | "learned";
 };
 
 // A question Spark asks after reading the page. Each option states the group changes it implies,
@@ -235,7 +235,9 @@ export function validatePlan(plan: LayoutPlan, scan: PageScan): Validation {
       // A single picked element is both the region and its only member.
       else if (container && id !== container.id && !isInside(id, container.id, byId))
         errors.push(`${at}: member ${id} is not inside container ${container.id}`);
-      if (claimed.has(id)) errors.push(`${at}: member ${id} already belongs to another group`);
+      // The model's groups must not overlap. The user's own hides and accepted suggestions are
+      // layered over them (one card of a planned grid, emphasised), so they may.
+      if (!group.origin && claimed.has(id)) errors.push(`${at}: member ${id} already belongs to another group`);
     }
     if (new Set(group.members).size !== group.members.length) errors.push(`${at}: lists a member twice`);
 
@@ -255,7 +257,7 @@ export function validatePlan(plan: LayoutPlan, scan: PageScan): Validation {
 
     if (errors.length === before) {
       accepted.push(group);
-      for (const id of group.members) claimed.add(id);
+      if (!group.origin) for (const id of group.members) claimed.add(id);
     }
   }
 

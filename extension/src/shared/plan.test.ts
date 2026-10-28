@@ -99,6 +99,11 @@ describe("validatePlan", () => {
     expect(errors.some((error) => error.includes("already belongs"))).toBe(true);
   });
 
+  it("lets the user's own groups sit over the plan's", () => {
+    const emphasised = { ...tabsGroup, label: "You open most: Code", members: [tabsGroup.members[0]], reorderable: false, origin: "learned" as const };
+    expect(validatePlan(plan([tabsGroup, emphasised]), scan).accepted).toEqual([tabsGroup, emphasised]);
+  });
+
   it("rejects a grid of one", () => {
     const group = { ...tabsGroup, members: ["n2"], operation: "grid" as const, reorderable: false };
     expect(validatePlan(plan([group]), scan).errors[0]).toMatch(/grid needs at least 2/);

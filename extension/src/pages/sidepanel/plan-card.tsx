@@ -6,6 +6,7 @@ import type { LayoutPlan, PlanGroup } from "../../shared/plan";
 import { groupPattern } from "../../shared/plan";
 import type { Answers } from "../../shared/questions";
 import { applyAnswers, usableQuestions } from "../../shared/questions";
+import { LearningCard } from "./learning-card";
 import { PickControls } from "./pick-controls";
 import { Questions } from "./questions-card";
 import type { CallLog, PanelRequest, ProposalStep, TabSession } from "../../shared/types";
@@ -300,6 +301,8 @@ export function PlanCard({ session }: { session: TabSession }) {
             )}
           </div>
         )}
+
+        {layout?.state === "applied" && <LearningCard session={session} />}
 
         <PickControls session={session} disabled={running} />
 

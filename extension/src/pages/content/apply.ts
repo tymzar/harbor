@@ -17,6 +17,9 @@ let onEscape: ((event: KeyboardEvent) => void) | undefined;
 let redrawWatch: MutationObserver | undefined;
 // Mutations arrive in bursts while a site re-renders; report once it has settled.
 const REDRAW_SETTLE_MS = 300;
+// Items of a kept layout, for learning which ones the user opens: element → its group and node.
+const itemOf = new Map<Element, { label: string; nodeId: string }>();
+let onActivate: ((event: MouseEvent) => void) | undefined;
 
 const resolve = (id: string) => nodeRegistry.get(id)?.deref();
 
@@ -81,7 +84,25 @@ export function restoreLayout(): number {
   onEscape = undefined;
   redrawWatch?.disconnect();
   redrawWatch = undefined;
+  if (onActivate) globalThis.removeEventListener("click", onActivate, true);
+  onActivate = undefined;
+  itemOf.clear();
   return count;
+}
+
+// Reports real clicks (not scripted ones) on items of a kept layout; the background counts them
+// only where the user turned learning on. Nothing about the click itself is sent.
+function watchActivations() {
+  onActivate = (event) => {
+    if (!event.isTrusted || !(event.target instanceof Element)) return;
+    for (let current: Element | null = event.target; current; current = current.parentElement) {
+      const item = itemOf.get(current);
+      if (!item) continue;
+      void chrome.runtime.sendMessage({ type: "activation", ...item });
+      return;
+    }
+  };
+  globalThis.addEventListener("click", onActivate, true);
 }
 
 function watchForRedraw() {
@@ -109,7 +130,11 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
 
   for (const [index, group] of groups.entries()) {
     const container = resolve(group.container);
-    const members = group.members.flatMap((id) => resolve(id) ?? []);
+    const found = group.members.flatMap((id) => {
+      const element = resolve(id);
+      return element ? [{ id, element }] : [];
+    });
+    const members = found.map(({ element }) => element);
     // Removed by the site since the scan: report it rather than guess.
     if (!container?.isConnected || members.length === 0) {
       result.missing.push(group.label);
@@ -122,11 +147,17 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
       mark(target, GROUP, String(index));
       mark(target, OP, group.operation);
     }
-    for (const member of members) mark(member, MEMBER, "");
+    for (const { id, element } of found) {
+      mark(element, MEMBER, "");
+      if (group.operation !== "hide-secondary") itemOf.set(element, { label: group.label, nodeId: id });
+    }
     result.applied.push(group.label);
   }
 
-  if (!preview && result.applied.length > 0) watchForRedraw();
+  if (!preview && result.applied.length > 0) {
+    watchForRedraw();
+    watchActivations();
+  }
   if (preview && result.applied.length > 0) {
     document.documentElement.setAttribute(PREVIEW, "");
     onEscape = (event) => {

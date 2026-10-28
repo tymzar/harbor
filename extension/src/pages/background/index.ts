@@ -4,6 +4,7 @@ import { sessionKey, shotKey } from "../../shared/types";
 import { STALE_SCAN, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
 import { forgetPlan, rememberAnswers, reusePlan } from "./saved-plans";
+import { decide, recordActivation, setLearning } from "./learning";
 import { hideNode } from "./user-groups";
 
 // Pages Chrome never lets extensions script, even with activeTab.
@@ -156,6 +157,28 @@ async function redrawn(tabId: number) {
   scheduleRescan(tabId);
 }
 
+async function activated(tabId: number, label: string, nodeId: string) {
+  const session = await readSession(tabId);
+  if (!session) return;
+  const next = await recordActivation(session, label, nodeId);
+  if (next) await saveSession(next);
+}
+
+async function learning(tabId: number, action: "enable" | "disable" | "reset" | "accept" | "dismiss") {
+  const session = await readSession(tabId);
+  if (!session) return;
+  try {
+    if (action === "accept" || action === "dismiss") {
+      await saveSession(await decide(session, action === "accept"));
+      return;
+    }
+    await setLearning(session, action);
+    if (action !== "enable") await saveSession({ ...session, suggestion: undefined, updatedAt: Date.now() });
+  } catch (error) {
+    await fail(session, error);
+  }
+}
+
 async function forget(tabId: number) {
   const key = sessionKey(tabId);
   const stored = await chrome.storage.session.get(key);
@@ -290,6 +313,8 @@ chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
   // Escape on the page already undid the preview; the stylesheet and session follow.
   if (message.type === "page-restored" && sender.tab?.id !== undefined) void changeLayout(sender.tab.id, "restore");
   if (message.type === "page-redrawn" && sender.tab?.id !== undefined) void redrawn(sender.tab.id);
+  if (message.type === "activation" && sender.tab?.id !== undefined) void activated(sender.tab.id, message.label, message.nodeId);
+  if (message.type === "learning") void learning(message.tabId, message.action);
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
