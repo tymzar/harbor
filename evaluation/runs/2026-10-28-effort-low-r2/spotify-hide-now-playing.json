@@ -1,0 +1,642 @@
+{
+  "scenario": {
+    "id": "spotify-hide-now-playing",
+    "site": "spotify-artist",
+    "goal": "Hide the Now playing panel on the right.",
+    "tags": [
+      "music",
+      "hide",
+      "sidebar"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "aria-label": "Now playing view"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Main"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "spotify-artist",
+    "url": "https://open.spotify.com/artist/0OdUWJ0sBjDrqHygGUXeCF",
+    "finalUrl": "https://open.spotify.com/artist/0OdUWJ0sBjDrqHygGUXeCF",
+    "consent": "REJECT ALL (reject)"
+  },
+  "at": "2026-10-28T22:10:22.591Z",
+  "scanNodes": 137,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "aria-label": "Now playing view"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n133",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": "Now playing view"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Main"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n22",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Main"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n133",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n22",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n132",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Now playing panel",
+              "members": [
+                "n133",
+                "n137"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Right panel user asked to hide",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "open.spotify.com/artist/{artistId}"
+            },
+            {
+              "container": "n91",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Popular tracks",
+              "members": [
+                "n92",
+                "n100",
+                "n108",
+                "n116",
+                "n124"
+              ],
+              "operation": "emphasize",
+              "reason": "Core artist content to keep prominent",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "open.spotify.com/artist/{artistId}"
+            },
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n3",
+                "n4",
+                "n12"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "open.spotify.com/*"
+            },
+            {
+              "container": "n37",
+              "identity": {
+                "attribute": "href",
+                "source": "none"
+              },
+              "label": "Sidebar legal footer",
+              "members": [
+                "n39",
+                "n53"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value metadata rarely needed",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "open.spotify.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar legal footer",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide footers"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar legal footer",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep footers"
+                }
+              ],
+              "text": "Keep sidebar legal links visible?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tracks",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier focus"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tracks",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                }
+              ],
+              "text": "Popular tracks roomier or denser?"
+            }
+          ],
+          "summary": "Hides the right Now playing panel, emphasizes Popular tracks, keeps top nav.",
+          "template": {
+            "pageKind": "artist",
+            "urlPattern": "open.spotify.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n132",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Now playing panel",
+            "members": [
+              "n133",
+              "n137"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Right panel user asked to hide",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "open.spotify.com/artist/{artistId}"
+          },
+          {
+            "container": "n91",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Popular tracks",
+            "members": [
+              "n92",
+              "n100",
+              "n108",
+              "n116",
+              "n124"
+            ],
+            "operation": "emphasize",
+            "reason": "Core artist content to keep prominent",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "open.spotify.com/artist/{artistId}"
+          },
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n3",
+              "n4",
+              "n12"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "open.spotify.com/*"
+          },
+          {
+            "container": "n37",
+            "identity": {
+              "attribute": "href",
+              "source": "none"
+            },
+            "label": "Sidebar legal footer",
+            "members": [
+              "n39",
+              "n53"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value metadata rarely needed",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "open.spotify.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 5892,
+            "model": "spark",
+            "ms": 7732,
+            "outputTokens": 2025,
+            "purpose": "layout plan",
+            "reasoningTokens": 1468
+          }
+        ],
+        "ms": 7741
+      },
+      "layout": {
+        "labels": [
+          "Now playing panel",
+          "Popular tracks",
+          "Sidebar legal footer"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n133",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n22",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n3",
+                "n4",
+                "n12"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "open.spotify.com/*"
+            },
+            {
+              "container": "n132",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Now playing panel",
+              "members": [
+                "n133"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Now playing panel on the right",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "open.spotify.com/*"
+            },
+            {
+              "container": "n91",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Popular tracks",
+              "members": [
+                "n92",
+                "n100",
+                "n108",
+                "n116",
+                "n124"
+              ],
+              "operation": "emphasize",
+              "reason": "Core goal content on artist page",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "open.spotify.com/artist/{id}"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Sidebar promos",
+              "members": [
+                "n31",
+                "n34"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value upsell cards rarely needed",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "open.spotify.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "popular-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tracks",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomy list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tracks",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tracks",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Grid"
+                }
+              ],
+              "text": "How should Popular tracks be shown?"
+            },
+            {
+              "id": "sidebar-promos",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar promos",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide them"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sidebar promos",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "Keep left sidebar promo cards?"
+            }
+          ],
+          "summary": "Hide Now playing panel on the right, emphasize Popular tracks, hide left sidebar promos.",
+          "template": {
+            "pageKind": "artist page",
+            "urlPattern": "open.spotify.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n3",
+              "n4",
+              "n12"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "open.spotify.com/*"
+          },
+          {
+            "container": "n132",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Now playing panel",
+            "members": [
+              "n133"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Now playing panel on the right",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "open.spotify.com/*"
+          },
+          {
+            "container": "n91",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Popular tracks",
+            "members": [
+              "n92",
+              "n100",
+              "n108",
+              "n116",
+              "n124"
+            ],
+            "operation": "emphasize",
+            "reason": "Core goal content on artist page",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "open.spotify.com/artist/{id}"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Sidebar promos",
+            "members": [
+              "n31",
+              "n34"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value upsell cards rarely needed",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "open.spotify.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 8,
+            "model": "sam",
+            "ms": 1576,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 1036,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 664,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 10,
+            "model": "sam",
+            "ms": 829,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 5913,
+            "model": "spark",
+            "ms": 11160,
+            "outputTokens": 2703,
+            "purpose": "layout plan",
+            "reasoningTokens": 2132
+          }
+        ],
+        "ms": 12760
+      },
+      "layout": {
+        "labels": [
+          "Now playing panel",
+          "Popular tracks",
+          "Sidebar promos"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n133",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n22",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

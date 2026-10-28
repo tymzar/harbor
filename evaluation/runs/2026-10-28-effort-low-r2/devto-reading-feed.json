@@ -1,0 +1,724 @@
+{
+  "scenario": {
+    "id": "devto-reading-feed",
+    "site": "devto-feed",
+    "goal": "I only read the feed: hide both sidebars.",
+    "tags": [
+      "community",
+      "hide",
+      "multiple",
+      "distraction-free"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "aria-label": "Primary sidebar"
+          }
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "id": "sidebar-additional"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "View posts by"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "devto-feed",
+    "url": "https://dev.to/",
+    "finalUrl": "https://dev.to/"
+  },
+  "at": "2026-10-28T22:13:06.515Z",
+  "scanNodes": 105,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "aria-label": "Primary sidebar"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n15",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": "Primary sidebar"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "id": "sidebar-additional"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n90",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": ".long-bb-body { max-height: calc(100vh - 200px); overflow: hidden; } .long-bb-b…"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "View posts by"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n48",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "View posts by"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n15",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n90",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n48",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n1",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n3",
+                "n10"
+              ],
+              "operation": "none",
+              "reason": "Primary site header that already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Left sidebar",
+              "members": [
+                "n16",
+                "n21"
+              ],
+              "operation": "hide-secondary",
+              "reason": "You only read the feed",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n90",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Right sidebar",
+              "members": [
+                "n91"
+              ],
+              "operation": "hide-secondary",
+              "reason": "You only read the feed",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n49",
+              "identity": {
+                "attribute": "data-text",
+                "source": "attribute"
+              },
+              "label": "Feed sort tabs",
+              "members": [
+                "n51",
+                "n53",
+                "n55"
+              ],
+              "operation": "none",
+              "reason": "Controls which feed view you read",
+              "reorderable": false,
+              "role": "tabs",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n46",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Main feed",
+              "members": [
+                "n47",
+                "n56"
+              ],
+              "operation": "emphasize",
+              "reason": "Core reading area for your goal",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "dev.to/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "feed-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "Do you want the feed denser or roomier?"
+            },
+            {
+              "id": "feed-tabs",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Feed sort tabs",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep tabs"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Feed sort tabs",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact tabs"
+                }
+              ],
+              "text": "Keep Relevant / Latest / Top tabs as is?"
+            }
+          ],
+          "summary": "Hide both sidebars and emphasize the central feed for reading.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "dev.to/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n1",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n3",
+              "n10"
+            ],
+            "operation": "none",
+            "reason": "Primary site header that already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n15",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Left sidebar",
+            "members": [
+              "n16",
+              "n21"
+            ],
+            "operation": "hide-secondary",
+            "reason": "You only read the feed",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n90",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Right sidebar",
+            "members": [
+              "n91"
+            ],
+            "operation": "hide-secondary",
+            "reason": "You only read the feed",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n49",
+            "identity": {
+              "attribute": "data-text",
+              "source": "attribute"
+            },
+            "label": "Feed sort tabs",
+            "members": [
+              "n51",
+              "n53",
+              "n55"
+            ],
+            "operation": "none",
+            "reason": "Controls which feed view you read",
+            "reorderable": false,
+            "role": "tabs",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n46",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Main feed",
+            "members": [
+              "n47",
+              "n56"
+            ],
+            "operation": "emphasize",
+            "reason": "Core reading area for your goal",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "dev.to/"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 4468,
+            "model": "spark",
+            "ms": 14231,
+            "outputTokens": 3375,
+            "purpose": "layout plan",
+            "reasoningTokens": 2768
+          }
+        ],
+        "ms": 14237
+      },
+      "layout": {
+        "labels": [
+          "Left sidebar",
+          "Right sidebar",
+          "Main feed"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n15",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n90",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n48",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n14",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Left sidebar",
+              "members": [
+                "n15"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User only reads feed; left nav/promo rarely needed",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n14",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Right sidebar",
+              "members": [
+                "n90"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User only reads feed; right events sidebar rarely needed",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "dev.to/"
+            },
+            {
+              "container": "n14",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Main feed",
+              "members": [
+                "n46"
+              ],
+              "operation": "emphasize",
+              "reason": "Core goal is reading feed; use freed space",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "dev.to/"
+            },
+            {
+              "container": "n49",
+              "identity": {
+                "attribute": "data-text",
+                "source": "attribute"
+              },
+              "label": "Feed sort tabs",
+              "members": [
+                "n51",
+                "n53",
+                "n55"
+              ],
+              "operation": "none",
+              "reason": "Primary feed navigation, keep as is",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "dev.to/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "feed-layout",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Grid cards"
+                }
+              ],
+              "text": "How should the feed look with sidebars hidden?"
+            },
+            {
+              "id": "top-challenge-card",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Keep it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main feed",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make compact"
+                }
+              ],
+              "text": "Keep the top challenge banner in the feed?"
+            }
+          ],
+          "summary": "Hide both sidebars and emphasize the central feed for reading.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "dev.to/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n14",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Left sidebar",
+            "members": [
+              "n15"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User only reads feed; left nav/promo rarely needed",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n14",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Right sidebar",
+            "members": [
+              "n90"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User only reads feed; right events sidebar rarely needed",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "dev.to/"
+          },
+          {
+            "container": "n14",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Main feed",
+            "members": [
+              "n46"
+            ],
+            "operation": "emphasize",
+            "reason": "Core goal is reading feed; use freed space",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "dev.to/"
+          },
+          {
+            "container": "n49",
+            "identity": {
+              "attribute": "data-text",
+              "source": "attribute"
+            },
+            "label": "Feed sort tabs",
+            "members": [
+              "n51",
+              "n53",
+              "n55"
+            ],
+            "operation": "none",
+            "reason": "Primary feed navigation, keep as is",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "dev.to/"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1023,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1116,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1023,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 1020,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4479,
+            "model": "spark",
+            "ms": 12926,
+            "outputTokens": 2593,
+            "purpose": "layout plan",
+            "reasoningTokens": 2039
+          },
+          {
+            "inputTokens": 4931,
+            "model": "spark",
+            "ms": 3731,
+            "outputTokens": 1090,
+            "purpose": "repair",
+            "reasoningTokens": 673
+          }
+        ],
+        "ms": 17797
+      },
+      "layout": {
+        "labels": [
+          "Left sidebar",
+          "Right sidebar",
+          "Main feed"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n15",
+          "ops": [
+            "hide-secondary",
+            "emphasize"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n90",
+          "ops": [
+            "hide-secondary",
+            "emphasize"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n48",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

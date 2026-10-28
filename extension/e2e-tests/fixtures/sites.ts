@@ -13,7 +13,7 @@ export type Site = { id: string; name: string; kind: string; url: string };
 export const SITES = JSON.parse(readFileSync(path.join(EVALUATION, "sites.json"), "utf8")) as Array<Site>;
 
 // Cookie and consent walls: answer the way a privacy-minded user would, rejecting first.
-const REJECT = /^(reject all|reject|decline|decline optional cookies|only necessary|necessary only|use necessary cookies only|refuse all)$/i;
+const REJECT = /^(reject all|reject|decline|decline optional cookies|only necessary|necessary only|use necessary cookies only|refuse all|i do not agree)$/i;
 const ACCEPT = /^(accept all|accept|i agree|agree|allow all|accept all cookies|accept cookies|ok)$/i;
 
 // Opens the site at 1280×800 with the panel pinned to it, and answers a cookie wall if one shows.

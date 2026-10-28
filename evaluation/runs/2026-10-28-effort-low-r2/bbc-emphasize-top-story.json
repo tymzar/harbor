@@ -1,0 +1,66 @@
+{
+  "scenario": {
+    "id": "bbc-emphasize-top-story",
+    "site": "bbc-news",
+    "goal": "Make the top story block stand out.",
+    "tags": [
+      "news",
+      "emphasize"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "attr": {
+            "data-testid": "connecticut-grid-1"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "bbc-news",
+    "url": "https://www.bbc.com/news",
+    "finalUrl": "https://www.bbc.com/news"
+  },
+  "at": "2026-10-28T22:09:19.219Z",
+  "scanNodes": 94,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "connecticut-grid-1"
+        }
+      },
+      "matches": 0
+    }
+  ],
+  "before": [
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    }
+  ],
+  "baseline": [
+    "unresolved"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "error": "None of the scenario's elements are on the page.",
+      "verdicts": [
+        "unresolved"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "error": "None of the scenario's elements are on the page.",
+      "verdicts": [
+        "unresolved"
+      ]
+    }
+  ]
+}

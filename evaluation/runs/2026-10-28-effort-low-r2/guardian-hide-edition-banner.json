@@ -1,0 +1,549 @@
+{
+  "scenario": {
+    "id": "guardian-hide-edition-banner",
+    "site": "guardian-front",
+    "goal": "Hide the 'You are viewing the International homepage' banner.",
+    "tags": [
+      "news",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "aside",
+          "attr": {
+            "data-component": "edition-switcher-banner"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "ul",
+          "text": "News Opinion Sport Culture Lifestyle"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "guardian-front",
+    "url": "https://www.theguardian.com/international",
+    "finalUrl": "https://www.theguardian.com/international"
+  },
+  "at": "2026-10-28T22:12:59.748Z",
+  "scanNodes": 105,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "aside",
+        "attr": {
+          "data-component": "edition-switcher-banner"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n79",
+        "tag": "aside",
+        "kind": "landmark",
+        "text": "You are viewing the International homepage View the Europe homepage"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "ul",
+        "text": "News Opinion Sport Culture Lifestyle"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n41",
+        "tag": "ul",
+        "kind": "list",
+        "text": "News Opinion Sport Culture Lifestyle"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n79",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n41",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n78",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Edition banner",
+              "members": [
+                "n79"
+              ],
+              "operation": "hide-secondary",
+              "reason": "International homepage notice requested hidden",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.theguardian.com/international"
+            },
+            {
+              "container": "n11",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Highlights carousel",
+              "members": [
+                "n12",
+                "n18",
+                "n24",
+                "n30"
+              ],
+              "operation": "compact",
+              "reason": "Dense skimmable top stories",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.theguardian.com/international"
+            }
+          ],
+          "questions": [
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy cards"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact cards"
+                }
+              ],
+              "text": "How dense should top stories feel?"
+            },
+            {
+              "id": "news-focus",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Skim highlights"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Emphasize highlights"
+                }
+              ],
+              "text": "Do you return mainly for highlights?"
+            }
+          ],
+          "summary": "Hides International homepage banner and compacts highlights for faster scanning.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.theguardian.com/international"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n78",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Edition banner",
+            "members": [
+              "n79"
+            ],
+            "operation": "hide-secondary",
+            "reason": "International homepage notice requested hidden",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.theguardian.com/international"
+          },
+          {
+            "container": "n11",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Highlights carousel",
+            "members": [
+              "n12",
+              "n18",
+              "n24",
+              "n30"
+            ],
+            "operation": "compact",
+            "reason": "Dense skimmable top stories",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.theguardian.com/international"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4885,
+            "model": "spark",
+            "ms": 8901,
+            "outputTokens": 1967,
+            "purpose": "layout plan",
+            "reasoningTokens": 1593
+          },
+          {
+            "inputTokens": 5265,
+            "model": "spark",
+            "ms": 5532,
+            "outputTokens": 1408,
+            "purpose": "repair",
+            "reasoningTokens": 1124
+          }
+        ],
+        "ms": 14445
+      },
+      "layout": {
+        "labels": [
+          "Edition banner",
+          "Highlights carousel"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n79",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n41",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n78",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Edition notice banner",
+              "members": [
+                "n79"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Explicitly requested to hide 'You are viewing the International homepage' banner",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "https://www.theguardian.com/international"
+            },
+            {
+              "container": "n11",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Highlights carousel",
+              "members": [
+                "n12",
+                "n18",
+                "n24",
+                "n30"
+              ],
+              "operation": "compact",
+              "reason": "Dense scrolling carousel skimmed on repeat visits",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "https://www.theguardian.com/international"
+            },
+            {
+              "container": "n55",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Section sub-navigation",
+              "members": [
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64",
+                "n66",
+                "n68",
+                "n70",
+                "n72",
+                "n74",
+                "n76"
+              ],
+              "operation": "compact",
+              "reason": "Long topic list skimmed to jump to sections",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "https://www.theguardian.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Highlights carousel",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide completely"
+                }
+              ],
+              "text": "Do you use the Highlights carousel at the top?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Section sub-navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Section sub-navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier list"
+                }
+              ],
+              "text": "Do you want the topic sub-nav denser or roomier?"
+            }
+          ],
+          "summary": "Hides the International homepage edition banner as requested, and compacts Highlights and sub-nav for faster skimming.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "https://www.theguardian.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n78",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Edition notice banner",
+            "members": [
+              "n79"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Explicitly requested to hide 'You are viewing the International homepage' banner",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "https://www.theguardian.com/international"
+          },
+          {
+            "container": "n11",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Highlights carousel",
+            "members": [
+              "n12",
+              "n18",
+              "n24",
+              "n30"
+            ],
+            "operation": "compact",
+            "reason": "Dense scrolling carousel skimmed on repeat visits",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "https://www.theguardian.com/international"
+          },
+          {
+            "container": "n55",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Section sub-navigation",
+            "members": [
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64",
+              "n66",
+              "n68",
+              "n70",
+              "n72",
+              "n74",
+              "n76"
+            ],
+            "operation": "compact",
+            "reason": "Long topic list skimmed to jump to sections",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "https://www.theguardian.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 769,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1391,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1178,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 768,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4896,
+            "model": "spark",
+            "ms": 8909,
+            "outputTokens": 2041,
+            "purpose": "layout plan",
+            "reasoningTokens": 1523
+          },
+          {
+            "inputTokens": 5433,
+            "model": "spark",
+            "ms": 4637,
+            "outputTokens": 1215,
+            "purpose": "repair",
+            "reasoningTokens": 806
+          }
+        ],
+        "ms": 14962
+      },
+      "layout": {
+        "labels": [
+          "Edition notice banner",
+          "Highlights carousel",
+          "Section sub-navigation"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n79",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n41",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

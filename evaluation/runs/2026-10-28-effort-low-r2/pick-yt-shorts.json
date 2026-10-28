@@ -1,0 +1,163 @@
+{
+  "scenario": {
+    "id": "pick-yt-shorts",
+    "site": "youtube-home",
+    "pick": {
+      "tag": "a",
+      "attr": {
+        "aria-label": "Shorts"
+      }
+    },
+    "tags": [
+      "picker",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Shorts"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Home"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-home",
+    "url": "https://www.youtube.com/",
+    "finalUrl": "https://www.youtube.com/",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T22:05:03.391Z",
+  "scanNodes": 40,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Shorts"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n27",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Shorts"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Shorts"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n27",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Shorts"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Home"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n25",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Home"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n27",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n27",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n25",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "picker",
+      "layout": {
+        "labels": [
+          "Hidden by you: Shorts"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n25",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

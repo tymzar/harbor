@@ -1,0 +1,583 @@
+{
+  "scenario": {
+    "id": "yt-watch-emphasize-title",
+    "site": "youtube-watch",
+    "goal": "Make the video title and channel stand out; recommendations can be denser.",
+    "tags": [
+      "video",
+      "emphasize",
+      "density"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "tag": "h1",
+          "text": "Me at the zoo"
+        }
+      },
+      {
+        "op": "compact",
+        "anchor": {
+          "attr": {
+            "id": "contents"
+          },
+          "area": {
+            "minX": 900
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-watch",
+    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "finalUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T22:05:52.979Z",
+  "scanNodes": 165,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Me at the zoo"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n61",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Me at the zoo"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "contents"
+        },
+        "area": {
+          "minX": 900
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n86",
+        "tag": "div",
+        "kind": "group",
+        "text": "42:01 When Child Stars Go Off The Rails BE AMAZED 852K"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n61",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n86",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n60",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video title and channel",
+              "members": [
+                "n61",
+                "n63"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal: make title and channel stand out.",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Up next recommendations",
+              "members": [
+                "n87",
+                "n99",
+                "n111",
+                "n122",
+                "n133",
+                "n145",
+                "n157"
+              ],
+              "operation": "compact",
+              "reason": "User wants recommendations denser to skim faster.",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Header navigation",
+              "members": [
+                "n3"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works.",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [],
+                  "label": "Keep full size"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Video title and channel",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make tighter"
+                }
+              ],
+              "text": "Should the like, share and subscribe actions stay prominent or be tighter?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [],
+                  "label": "Show them"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Video title and channel",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Hide to focus"
+                }
+              ],
+              "text": "Do you read the description and comments on this video?"
+            }
+          ],
+          "summary": "Emphasize title and channel, make recommendations denser, keep header as is.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n60",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video title and channel",
+            "members": [
+              "n61",
+              "n63"
+            ],
+            "operation": "emphasize",
+            "reason": "User goal: make title and channel stand out.",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n86",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Up next recommendations",
+            "members": [
+              "n87",
+              "n99",
+              "n111",
+              "n122",
+              "n133",
+              "n145",
+              "n157"
+            ],
+            "operation": "compact",
+            "reason": "User wants recommendations denser to skim faster.",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Header navigation",
+            "members": [
+              "n3"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works.",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 6096,
+            "model": "spark",
+            "ms": 8993,
+            "outputTokens": 1968,
+            "purpose": "layout plan",
+            "reasoningTokens": 1511
+          },
+          {
+            "inputTokens": 6562,
+            "model": "spark",
+            "ms": 2673,
+            "outputTokens": 800,
+            "purpose": "repair",
+            "reasoningTokens": 448
+          }
+        ],
+        "ms": 11680
+      },
+      "layout": {
+        "labels": [
+          "Video title and channel",
+          "Up next recommendations"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n61",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n86",
+          "ops": [
+            "compact"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n60",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video title and channel",
+              "members": [
+                "n61",
+                "n63"
+              ],
+              "operation": "emphasize",
+              "reason": "Goal wants title and channel to stand out.",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video actions toolbar",
+              "members": [
+                "n76",
+                "n78",
+                "n80",
+                "n82",
+                "n84"
+              ],
+              "operation": "none",
+              "reason": "Like/share row already works; keep full-size for now.",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Up next recommendations",
+              "members": [
+                "n87",
+                "n99",
+                "n111",
+                "n122",
+                "n133",
+                "n145",
+                "n157"
+              ],
+              "operation": "compact",
+              "reason": "Goal wants recommendations denser to skim faster.",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Up next recommendations",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Up next recommendations",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Thumbnail grid"
+                }
+              ],
+              "text": "How dense should recommendations be?"
+            },
+            {
+              "id": "q-actions",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Video actions toolbar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep full size"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Video actions toolbar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Tighten up"
+                }
+              ],
+              "text": "What to do with like, share, save buttons?"
+            }
+          ],
+          "summary": "Emphasize title/channel, keep actions usable, make recommendations denser.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n60",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video title and channel",
+            "members": [
+              "n61",
+              "n63"
+            ],
+            "operation": "emphasize",
+            "reason": "Goal wants title and channel to stand out.",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video actions toolbar",
+            "members": [
+              "n76",
+              "n78",
+              "n80",
+              "n82",
+              "n84"
+            ],
+            "operation": "none",
+            "reason": "Like/share row already works; keep full-size for now.",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n86",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Up next recommendations",
+            "members": [
+              "n87",
+              "n99",
+              "n111",
+              "n122",
+              "n133",
+              "n145",
+              "n157"
+            ],
+            "operation": "compact",
+            "reason": "Goal wants recommendations denser to skim faster.",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 905,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 6,
+            "model": "sam",
+            "ms": 1076,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 505,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 1166,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 6133,
+            "model": "spark",
+            "ms": 10991,
+            "outputTokens": 2811,
+            "purpose": "layout plan",
+            "reasoningTokens": 2319
+          },
+          {
+            "inputTokens": 6625,
+            "model": "spark",
+            "ms": 3034,
+            "outputTokens": 1096,
+            "purpose": "repair",
+            "reasoningTokens": 600
+          }
+        ],
+        "ms": 15219
+      },
+      "layout": {
+        "labels": [
+          "Video title and channel",
+          "Up next recommendations"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n61",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n86",
+          "ops": [
+            "compact"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

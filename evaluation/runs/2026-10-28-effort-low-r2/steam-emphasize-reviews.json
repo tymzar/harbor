@@ -1,0 +1,731 @@
+{
+  "scenario": {
+    "id": "steam-emphasize-reviews",
+    "site": "steam-app",
+    "goal": "Before buying I check reviews; make the review summary stand out.",
+    "tags": [
+      "gaming",
+      "emphasize",
+      "goal-inference"
+    ],
+    "expect": [
+      {
+        "op": "emphasize",
+        "anchor": {
+          "attr": {
+            "id": "userReviews"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "steam-app",
+    "url": "https://store.steampowered.com/app/730/CounterStrike_2/",
+    "finalUrl": "https://store.steampowered.com/app/730/CounterStrike_2/"
+  },
+  "at": "2026-10-28T22:14:41.274Z",
+  "scanNodes": 95,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "userReviews"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n50",
+        "tag": "div",
+        "kind": "group",
+        "text": "Recent Reviews:"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n50",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n50",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Review summary",
+              "members": [
+                "n51",
+                "n53"
+              ],
+              "operation": "emphasize",
+              "reason": "Core to buying decision, needs to stand out",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Desktop app banner",
+              "members": [
+                "n30"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo banner rarely needed for checking reviews",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+            },
+            {
+              "container": "n61",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Popular tags",
+              "members": [
+                "n62",
+                "n63",
+                "n64",
+                "n65",
+                "n66",
+                "n67"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed list, tighten to keep focus on reviews",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+            },
+            {
+              "container": "n82",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Media thumbnails",
+              "members": [
+                "n83",
+                "n85",
+                "n87",
+                "n88",
+                "n89",
+                "n90",
+                "n91",
+                "n92",
+                "n93",
+                "n94",
+                "n95"
+              ],
+              "operation": "compact",
+              "reason": "Long thumbnail strip pushes reviews down, make denser",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+            },
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Global menu",
+              "members": [
+                "n8",
+                "n9",
+                "n10",
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Media thumbnails",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide videos"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tags",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide tags too"
+                }
+              ],
+              "text": "Hide media and tags to focus on reviews?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tags",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Media thumbnails",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep dense"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Popular tags",
+                      "operation": "none"
+                    },
+                    {
+                      "group": "Media thumbnails",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                }
+              ],
+              "text": "Prefer denser or roomier page?"
+            }
+          ],
+          "summary": "Emphasize review summary for pre-purchase check, tighten tags and media strip, hide desktop-app promo.",
+          "template": {
+            "pageKind": "app page",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n50",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Review summary",
+            "members": [
+              "n51",
+              "n53"
+            ],
+            "operation": "emphasize",
+            "reason": "Core to buying decision, needs to stand out",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Desktop app banner",
+            "members": [
+              "n30"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo banner rarely needed for checking reviews",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          },
+          {
+            "container": "n61",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Popular tags",
+            "members": [
+              "n62",
+              "n63",
+              "n64",
+              "n65",
+              "n66",
+              "n67"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed list, tighten to keep focus on reviews",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+          },
+          {
+            "container": "n82",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Media thumbnails",
+            "members": [
+              "n83",
+              "n85",
+              "n87",
+              "n88",
+              "n89",
+              "n90",
+              "n91",
+              "n92",
+              "n93",
+              "n94",
+              "n95"
+            ],
+            "operation": "compact",
+            "reason": "Long thumbnail strip pushes reviews down, make denser",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+          },
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Global menu",
+            "members": [
+              "n8",
+              "n9",
+              "n10",
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3660,
+            "model": "spark",
+            "ms": 9172,
+            "outputTokens": 1903,
+            "purpose": "layout plan",
+            "reasoningTokens": 1139
+          }
+        ],
+        "ms": 9179
+      },
+      "layout": {
+        "labels": [
+          "Review summary",
+          "Desktop app banner",
+          "Popular tags",
+          "Media thumbnails"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n50",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n50",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Review Summary",
+              "members": [
+                "n51",
+                "n53"
+              ],
+              "operation": "emphasize",
+              "reason": "User checks reviews before buying",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "store.steampowered.com/app/{appid}/{slug}"
+            },
+            {
+              "container": "n82",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Media thumbnails",
+              "members": [
+                "n83",
+                "n85",
+                "n87",
+                "n88",
+                "n89",
+                "n90",
+                "n91",
+                "n92",
+                "n93",
+                "n94",
+                "n95"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Videos and screenshots distract from reviews",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "store.steampowered.com/app/{appid}/{slug}"
+            },
+            {
+              "container": "n61",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Game tags",
+              "members": [
+                "n62",
+                "n63",
+                "n64",
+                "n65",
+                "n66",
+                "n67"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed tags, tighten to favor reviews",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "store.steampowered.com/app/{appid}/{slug}"
+            },
+            {
+              "container": "n18",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Store menu",
+              "members": [
+                "n19",
+                "n20",
+                "n21",
+                "n22",
+                "n23"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Marketing navigation rarely needed for review check",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/app/{appid}/{slug}/*"
+            },
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n8",
+                "n9",
+                "n10",
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/app/{appid}/{slug}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "media",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Media thumbnails",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide media"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Media thumbnails",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep media visible"
+                }
+              ],
+              "text": "Hide screenshots and videos to focus on reviews?"
+            },
+            {
+              "id": "extra",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Game tags",
+                      "operation": "hide-secondary"
+                    },
+                    {
+                      "group": "Store menu",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide both"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Game tags",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Store menu",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Game tags",
+                      "operation": "none"
+                    },
+                    {
+                      "group": "Store menu",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep full size"
+                }
+              ],
+              "text": "How much tags and store menus should show?"
+            }
+          ],
+          "summary": "Emphasized review summary for pre-purchase check, hid media gallery and store menu, compacted tags.",
+          "template": {
+            "pageKind": "product",
+            "urlPattern": "store.steampowered.com/app/{appid}/{slug}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n50",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Review Summary",
+            "members": [
+              "n51",
+              "n53"
+            ],
+            "operation": "emphasize",
+            "reason": "User checks reviews before buying",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "store.steampowered.com/app/{appid}/{slug}"
+          },
+          {
+            "container": "n82",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Media thumbnails",
+            "members": [
+              "n83",
+              "n85",
+              "n87",
+              "n88",
+              "n89",
+              "n90",
+              "n91",
+              "n92",
+              "n93",
+              "n94",
+              "n95"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Videos and screenshots distract from reviews",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "store.steampowered.com/app/{appid}/{slug}"
+          },
+          {
+            "container": "n61",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Game tags",
+            "members": [
+              "n62",
+              "n63",
+              "n64",
+              "n65",
+              "n66",
+              "n67"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed tags, tighten to favor reviews",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "store.steampowered.com/app/{appid}/{slug}"
+          },
+          {
+            "container": "n18",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Store menu",
+            "members": [
+              "n19",
+              "n20",
+              "n21",
+              "n22",
+              "n23"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Marketing navigation rarely needed for review check",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/app/{appid}/{slug}/*"
+          },
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n8",
+              "n9",
+              "n10",
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/app/{appid}/{slug}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 1223,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 725,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1056,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 977,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3671,
+            "model": "spark",
+            "ms": 11179,
+            "outputTokens": 2735,
+            "purpose": "layout plan",
+            "reasoningTokens": 1927
+          }
+        ],
+        "ms": 12415
+      },
+      "layout": {
+        "labels": [
+          "Review Summary",
+          "Media thumbnails",
+          "Game tags",
+          "Store menu"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n50",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

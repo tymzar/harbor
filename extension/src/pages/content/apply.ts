@@ -45,21 +45,21 @@ function scannedChildren(element: Element): Array<Element> {
   return [...element.children].flatMap((child) => (scanned(child) ? [child] : scannedChildren(child)));
 }
 
-// True when hiding the members would leave nothing the scan saw in this element still showing.
-function coveredBy(element: Element, members: Set<Element>): boolean {
+// True when the members are most of what the scan saw in this element: more than half of its
+// visible scanned children are members or mostly members themselves. A heading or a toggle beside
+// a hidden list doesn't keep the list's box on screen; one item out of a menu of three does.
+function mostlyMembers(element: Element, members: Set<Element>): boolean {
   if (members.has(element)) return true;
-  const children = scannedChildren(element);
-  return (
-    children.length > 0 &&
-    children.every((child) => !child.checkVisibility({ checkVisibilityCSS: true }) || coveredBy(child, members))
-  );
+  const children = scannedChildren(element).filter((child) => child.checkVisibility({ checkVisibilityCSS: true }));
+  const covered = children.filter((child) => mostlyMembers(child, members)).length;
+  return covered * 2 > children.length;
 }
 
 // A plan may name a wide container for one member (the whole left menu, to hide Shorts). Hiding
-// the container would take the rest with it, so the region goes only when its members are all of
-// it; otherwise just the members are hidden.
+// the container would take the rest with it, so the region goes only when the members are most
+// of it; otherwise just the members are hidden.
 function hideTargets(container: Element, members: Array<Element>): Array<Element> {
-  return coveredBy(container, new Set(members)) ? [regionOf(container)] : members;
+  return mostlyMembers(container, new Set(members)) ? [regionOf(container)] : members;
 }
 
 function mark(element: Element, name: string, value: string) {

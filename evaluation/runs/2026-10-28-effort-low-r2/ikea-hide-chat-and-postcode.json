@@ -1,0 +1,670 @@
+{
+  "scenario": {
+    "id": "ikea-hide-chat-and-postcode",
+    "site": "ikea-category",
+    "goal": "Hide the chat button and the postcode / store pickers.",
+    "tags": [
+      "commerce",
+      "hide",
+      "multiple",
+      "floating"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "aria-label": "Open chat window"
+          }
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "aria-label": "Enter postcode"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "form",
+          "text": "Search"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "ikea-category",
+    "url": "https://www.ikea.com/ch/en/cat/sofas-fu003/",
+    "finalUrl": "https://www.ikea.com/ch/en/cat/sofas-fu003/",
+    "consent": "Reject (reject)"
+  },
+  "at": "2026-10-28T22:16:14.870Z",
+  "scanNodes": 87,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Open chat window"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n38",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Open chat window"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Enter postcode"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n8",
+        "tag": "button",
+        "kind": "interactive",
+        "text": "Enter postcode"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "form",
+        "text": "Search"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n22",
+        "tag": "form",
+        "kind": "landmark",
+        "text": "Clear the search input field Search"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n38",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n8",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n22",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Postcode and store pickers",
+              "members": [
+                "n8",
+                "n10"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide postcode / store pickers",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.ikea.com/{country}/{lang}/*"
+            },
+            {
+              "container": "n37",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Chat button",
+              "members": [
+                "n38"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide chat button",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.ikea.com/{country}/{lang}/*"
+            },
+            {
+              "container": "n45",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sofa category links",
+              "members": [
+                "n46",
+                "n48",
+                "n51",
+                "n54",
+                "n57",
+                "n60",
+                "n63"
+              ],
+              "operation": "none",
+              "reason": "Main category navigation for browsing sofa types",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}"
+            },
+            {
+              "container": "n78",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sofa promo banner",
+              "members": [
+                "n79"
+              ],
+              "operation": "none",
+              "reason": "Discount marketing banner",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa promo banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide promo"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa promo banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep promo"
+                }
+              ],
+              "text": "Do you use the sofa discount promo banner?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa category links",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa category links",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                }
+              ],
+              "text": "Make sofa category links denser or roomy?"
+            }
+          ],
+          "summary": "Hides chat button and postcode/store pickers as requested.",
+          "template": {
+            "pageKind": "category",
+            "urlPattern": "www.ikea.com/{country}/{lang}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Postcode and store pickers",
+            "members": [
+              "n8",
+              "n10"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide postcode / store pickers",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.ikea.com/{country}/{lang}/*"
+          },
+          {
+            "container": "n37",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Chat button",
+            "members": [
+              "n38"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide chat button",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.ikea.com/{country}/{lang}/*"
+          },
+          {
+            "container": "n78",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sofa promo banner",
+            "members": [
+              "n79"
+            ],
+            "operation": "none",
+            "reason": "Discount marketing banner",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}"
+          }
+        ],
+        "errors": [
+          "groups[2] \"Sofa category links\": some members have no href identity (href)"
+        ],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4298,
+            "model": "spark",
+            "ms": 6256,
+            "outputTokens": 1496,
+            "purpose": "layout plan",
+            "reasoningTokens": 1110
+          },
+          {
+            "inputTokens": 4708,
+            "model": "spark",
+            "ms": 7832,
+            "outputTokens": 2019,
+            "purpose": "repair",
+            "reasoningTokens": 1421
+          }
+        ],
+        "ms": 14095
+      },
+      "layout": {
+        "labels": [
+          "Postcode and store pickers",
+          "Chat button"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n38",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n8",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n22",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n37",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Chat button",
+              "members": [
+                "n38"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide chat button",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.ikea.com/{country}/{lang}/*"
+            },
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Postcode and store pickers",
+              "members": [
+                "n8",
+                "n10"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide postcode/store pickers",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.ikea.com/{country}/{lang}/*"
+            },
+            {
+              "container": "n45",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Sofa category shortcuts",
+              "members": [
+                "n47",
+                "n49",
+                "n52",
+                "n55",
+                "n58",
+                "n61",
+                "n64"
+              ],
+              "operation": "none",
+              "reason": "Main navigation for sofa types",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}/*"
+            },
+            {
+              "container": "n78",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Promo banner",
+              "members": [
+                "n79"
+              ],
+              "operation": "none",
+              "reason": "Marketing banner below heading",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Promo banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Promo banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep it"
+                }
+              ],
+              "text": "Hide the 15% off promo banner?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa category shortcuts",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa category shortcuts",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How should sofa category shortcuts look?"
+            }
+          ],
+          "summary": "Hid chat button and postcode/store pickers per goal, left categories and promo unchanged.",
+          "template": {
+            "pageKind": "category",
+            "urlPattern": "www.ikea.com/{country}/{lang}/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n37",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Chat button",
+            "members": [
+              "n38"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide chat button",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.ikea.com/{country}/{lang}/*"
+          },
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Postcode and store pickers",
+            "members": [
+              "n8",
+              "n10"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide postcode/store pickers",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.ikea.com/{country}/{lang}/*"
+          },
+          {
+            "container": "n45",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Sofa category shortcuts",
+            "members": [
+              "n47",
+              "n49",
+              "n52",
+              "n55",
+              "n58",
+              "n61",
+              "n64"
+            ],
+            "operation": "none",
+            "reason": "Main navigation for sofa types",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}/*"
+          },
+          {
+            "container": "n78",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Promo banner",
+            "members": [
+              "n79"
+            ],
+            "operation": "none",
+            "reason": "Marketing banner below heading",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.ikea.com/{country}/{lang}/cat/{category}/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1011,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 6,
+            "model": "sam",
+            "ms": 1323,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 951,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 863,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4309,
+            "model": "spark",
+            "ms": 10436,
+            "outputTokens": 2270,
+            "purpose": "layout plan",
+            "reasoningTokens": 1695
+          },
+          {
+            "inputTokens": 4947,
+            "model": "spark",
+            "ms": 4373,
+            "outputTokens": 1298,
+            "purpose": "repair",
+            "reasoningTokens": 713
+          }
+        ],
+        "ms": 16166
+      },
+      "layout": {
+        "labels": [
+          "Chat button",
+          "Postcode and store pickers"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n38",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n8",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n22",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

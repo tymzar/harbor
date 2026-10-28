@@ -1,0 +1,583 @@
+{
+  "scenario": {
+    "id": "yt-home-no-shorts",
+    "site": "youtube-home",
+    "goal": "I never watch Shorts. Remove Shorts from the left menu.",
+    "tags": [
+      "video",
+      "hide",
+      "navigation",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Shorts"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Home"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "a",
+          "attr": {
+            "aria-label": "Subscriptions"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-home",
+    "url": "https://www.youtube.com/",
+    "finalUrl": "https://www.youtube.com/",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T22:04:27.703Z",
+  "scanNodes": 40,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Shorts"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n27",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Shorts"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Home"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n25",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Home"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "a",
+        "attr": {
+          "aria-label": "Subscriptions"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n29",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Subscriptions"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n27",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n25",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n29",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Shorts menu item",
+              "members": [
+                "n27"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never watches Shorts, remove from left menu",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Main sidebar items",
+              "members": [
+                "n25",
+                "n29",
+                "n31"
+              ],
+              "operation": "compact",
+              "reason": "Tighten remaining menu after Shorts removal",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main sidebar items",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep them"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main sidebar items",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide them too"
+                }
+              ],
+              "text": "Do you use Home, Subscriptions, and You in the left menu?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main sidebar items",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main sidebar items",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy"
+                }
+              ],
+              "text": "How should the left menu spacing feel?"
+            }
+          ],
+          "summary": "Removed Shorts from YouTube left menu and tightened remaining navigation.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Shorts menu item",
+            "members": [
+              "n27"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never watches Shorts, remove from left menu",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Main sidebar items",
+            "members": [
+              "n25",
+              "n29",
+              "n31"
+            ],
+            "operation": "compact",
+            "reason": "Tighten remaining menu after Shorts removal",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 2239,
+            "model": "spark",
+            "ms": 8402,
+            "outputTokens": 1857,
+            "purpose": "layout plan",
+            "reasoningTokens": 1474
+          },
+          {
+            "inputTokens": 2617,
+            "model": "spark",
+            "ms": 1954,
+            "outputTokens": 612,
+            "purpose": "repair",
+            "reasoningTokens": 226
+          }
+        ],
+        "ms": 10363
+      },
+      "layout": {
+        "labels": [
+          "Shorts menu item",
+          "Main sidebar items"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [
+            "hide-secondary",
+            "compact"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n25",
+          "ops": [
+            "compact"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n29",
+          "ops": [
+            "compact"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Shorts menu item",
+              "members": [
+                "n27"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User never watches Shorts, remove from left menu",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n24",
+              "identity": {
+                "attribute": "aria-label",
+                "source": "attribute"
+              },
+              "label": "Primary mini-guide links",
+              "members": [
+                "n25",
+                "n29",
+                "n31"
+              ],
+              "operation": "none",
+              "reason": "Keep Home, Subscriptions and You as-is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.youtube.com/*"
+            },
+            {
+              "container": "n33",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "History notice",
+              "members": [
+                "n34"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Info banner rarely needed on repeat visits",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.youtube.com/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "history-banner",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "History notice",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "History notice",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "Keep the history-off message on home?"
+            },
+            {
+              "id": "menu-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Primary mini-guide links",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Primary mini-guide links",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "Make left menu denser or roomier?"
+            }
+          ],
+          "summary": "Remove Shorts from left menu and declutter home banner.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "www.youtube.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Shorts menu item",
+            "members": [
+              "n27"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User never watches Shorts, remove from left menu",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n24",
+            "identity": {
+              "attribute": "aria-label",
+              "source": "attribute"
+            },
+            "label": "Primary mini-guide links",
+            "members": [
+              "n25",
+              "n29",
+              "n31"
+            ],
+            "operation": "none",
+            "reason": "Keep Home, Subscriptions and You as-is",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.youtube.com/*"
+          },
+          {
+            "container": "n33",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "History notice",
+            "members": [
+              "n34"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Info banner rarely needed on repeat visits",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.youtube.com/"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1310,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 2190,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1720,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1670,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 2250,
+            "model": "spark",
+            "ms": 7680,
+            "outputTokens": 2142,
+            "purpose": "layout plan",
+            "reasoningTokens": 1689
+          },
+          {
+            "inputTokens": 2701,
+            "model": "spark",
+            "ms": 3210,
+            "outputTokens": 824,
+            "purpose": "repair",
+            "reasoningTokens": 367
+          }
+        ],
+        "ms": 13091
+      },
+      "layout": {
+        "labels": [
+          "Shorts menu item",
+          "History notice"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n27",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n25",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n29",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

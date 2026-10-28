@@ -1,0 +1,656 @@
+{
+  "scenario": {
+    "id": "devto-hide-account-links",
+    "site": "devto-feed",
+    "goal": "Hide Log in and Create account in the top bar; keep the search.",
+    "tags": [
+      "community",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "text": "Create account",
+          "attr": {
+            "data-tracking-id": "ca_top_nav"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "form",
+          "text": "Search"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "devto-feed",
+    "url": "https://dev.to/",
+    "finalUrl": "https://dev.to/"
+  },
+  "at": "2026-10-28T22:13:46.109Z",
+  "scanNodes": 105,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "a",
+        "text": "Create account",
+        "attr": {
+          "data-tracking-id": "ca_top_nav"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n12",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Create account"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "form",
+        "text": "Search"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n5",
+        "tag": "form",
+        "kind": "landmark",
+        "text": "Search"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n12",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n5",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Top bar auth actions",
+              "members": [
+                "n11",
+                "n12"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Goal hides Log in and Create account, keeps search",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n18",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Sidebar account promo",
+              "members": [
+                "n19",
+                "n20"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Same login actions repeated in sidebar, rarely needed",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "dev.to/"
+            },
+            {
+              "container": "n49",
+              "identity": {
+                "attribute": "data-text",
+                "source": "attribute"
+              },
+              "label": "Feed sort tabs",
+              "members": [
+                "n51",
+                "n53",
+                "n55"
+              ],
+              "operation": "none",
+              "reason": "Primary feed sorting, works as is",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "dev.to/"
+            },
+            {
+              "container": "n22",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Primary sidebar nav",
+              "members": [
+                "n24",
+                "n26",
+                "n29",
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n42",
+                "n45"
+              ],
+              "operation": "none",
+              "reason": "Main navigation, keep accessible",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "dev.to/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "nav-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Primary sidebar nav",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Primary sidebar nav",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact list"
+                }
+              ],
+              "text": "How should left navigation look?"
+            },
+            {
+              "id": "feed-focus",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Feed sort tabs",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Just browse"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Feed sort tabs",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Highlight sorter"
+                }
+              ],
+              "text": "Which posts matter most?"
+            }
+          ],
+          "summary": "Hide login and signup in top bar and sidebar, keep search and main navigation.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "dev.to/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Top bar auth actions",
+            "members": [
+              "n11",
+              "n12"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Goal hides Log in and Create account, keeps search",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n18",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Sidebar account promo",
+            "members": [
+              "n19",
+              "n20"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Same login actions repeated in sidebar, rarely needed",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "dev.to/"
+          },
+          {
+            "container": "n49",
+            "identity": {
+              "attribute": "data-text",
+              "source": "attribute"
+            },
+            "label": "Feed sort tabs",
+            "members": [
+              "n51",
+              "n53",
+              "n55"
+            ],
+            "operation": "none",
+            "reason": "Primary feed sorting, works as is",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "dev.to/"
+          },
+          {
+            "container": "n22",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Primary sidebar nav",
+            "members": [
+              "n24",
+              "n26",
+              "n29",
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n42",
+              "n45"
+            ],
+            "operation": "none",
+            "reason": "Main navigation, keep accessible",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "dev.to/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4472,
+            "model": "spark",
+            "ms": 15037,
+            "outputTokens": 3138,
+            "purpose": "layout plan",
+            "reasoningTokens": 2571
+          },
+          {
+            "inputTokens": 4953,
+            "model": "spark",
+            "ms": 5449,
+            "outputTokens": 1410,
+            "purpose": "repair",
+            "reasoningTokens": 839
+          }
+        ],
+        "ms": 20497
+      },
+      "layout": {
+        "labels": [
+          "Top bar auth actions",
+          "Sidebar account promo"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n5",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Top bar login actions",
+              "members": [
+                "n11",
+                "n12"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Log in and Create account, keep search",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n18",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Sidebar account prompt",
+              "members": [
+                "n19",
+                "n20"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Same login actions in sidebar, apply hide everywhere",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n21",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Left sidebar navigation",
+              "members": [
+                "n24",
+                "n26",
+                "n29",
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n42",
+                "n45"
+              ],
+              "operation": "compact",
+              "reason": "Long link list skimmed on repeat visits",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "dev.to/*"
+            },
+            {
+              "container": "n90",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Right sidebar events",
+              "members": [
+                "n91"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Promo events rarely needed for feed readers",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "dev.to/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Left sidebar navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Left sidebar navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How do you use the left sidebar links?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Right sidebar events",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide events"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Right sidebar events",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep events"
+                }
+              ],
+              "text": "Do the right sidebar livestreams help you?"
+            }
+          ],
+          "summary": "Hid login and account prompts in top bar and sidebar, kept search, tightened navigation and hid events sidebar.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "dev.to/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Top bar login actions",
+            "members": [
+              "n11",
+              "n12"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Log in and Create account, keep search",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n18",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Sidebar account prompt",
+            "members": [
+              "n19",
+              "n20"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Same login actions in sidebar, apply hide everywhere",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n21",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Left sidebar navigation",
+            "members": [
+              "n24",
+              "n26",
+              "n29",
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n42",
+              "n45"
+            ],
+            "operation": "compact",
+            "reason": "Long link list skimmed on repeat visits",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "dev.to/*"
+          },
+          {
+            "container": "n90",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Right sidebar events",
+            "members": [
+              "n91"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Promo events rarely needed for feed readers",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "dev.to/"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1372,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1370,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 813,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 946,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4483,
+            "model": "spark",
+            "ms": 11496,
+            "outputTokens": 2751,
+            "purpose": "layout plan",
+            "reasoningTokens": 2178
+          }
+        ],
+        "ms": 12883
+      },
+      "layout": {
+        "labels": [
+          "Top bar login actions",
+          "Sidebar account prompt",
+          "Left sidebar navigation",
+          "Right sidebar events"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n5",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

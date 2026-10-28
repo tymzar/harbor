@@ -1,0 +1,558 @@
+{
+  "scenario": {
+    "id": "yt-watch-only-video",
+    "site": "youtube-watch",
+    "goal": "I just want to watch the video. Hide the recommended videos column.",
+    "tags": [
+      "video",
+      "hide",
+      "distraction-free"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "contents"
+          },
+          "area": {
+            "minX": 900
+          }
+        },
+        "note": "recommendations column"
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "YouTube Video Player"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Me at the zoo"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "youtube-watch",
+    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "finalUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "consent": "Reject all (reject)"
+  },
+  "at": "2026-10-28T22:04:31.335Z",
+  "scanNodes": 154,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "contents"
+        },
+        "area": {
+          "minX": 900
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n86",
+        "tag": "div",
+        "kind": "group",
+        "text": "17:09 Why Hitler Was Impossible To Kill Atrium 1.2M 3mo ago"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "YouTube Video Player"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n29",
+        "tag": "div",
+        "kind": "group",
+        "text": "YouTube Video Player"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Me at the zoo"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n61",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Me at the zoo"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n86",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n29",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n61",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Site header",
+              "members": [
+                "n4",
+                "n11",
+                "n16"
+              ],
+              "operation": "none",
+              "reason": "Main navigation and search, keep as is",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "https://www.youtube.com/watch*"
+            },
+            {
+              "container": "n25",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Main video",
+              "members": [
+                "n26",
+                "n59"
+              ],
+              "operation": "emphasize",
+              "reason": "User goal is just to watch the video",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "https://www.youtube.com/watch?v={videoId}"
+            },
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Recommended videos",
+              "members": [
+                "n87",
+                "n99",
+                "n110",
+                "n122",
+                "n133",
+                "n144"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide recommended column",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "https://www.youtube.com/watch?v={videoId}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Site header",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide header too"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Site header",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep header"
+                }
+              ],
+              "text": "Hide header and search for full focus?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Main video",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Just player"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Main video",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep full details"
+                }
+              ],
+              "text": "Keep title, likes, and comments under video?"
+            }
+          ],
+          "summary": "Hide recommended sidebar, emphasize main video player.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "https://www.youtube.com/watch*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Site header",
+            "members": [
+              "n4",
+              "n11",
+              "n16"
+            ],
+            "operation": "none",
+            "reason": "Main navigation and search, keep as is",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "https://www.youtube.com/watch*"
+          }
+        ],
+        "errors": [
+          "groups[1] \"Main video\": urlPattern \"https://www.youtube.com/watch?v={videoId}\" does not match the current URL",
+          "groups[2] \"Recommended videos\": urlPattern \"https://www.youtube.com/watch?v={videoId}\" does not match the current URL"
+        ],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 5767,
+            "model": "spark",
+            "ms": 8535,
+            "outputTokens": 2005,
+            "purpose": "layout plan",
+            "reasoningTokens": 1531
+          },
+          {
+            "inputTokens": 6249,
+            "model": "spark",
+            "ms": 4097,
+            "outputTokens": 1069,
+            "purpose": "repair",
+            "reasoningTokens": 583
+          }
+        ],
+        "ms": 12643
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n86",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n29",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n61",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Recommended videos",
+              "members": [
+                "n87",
+                "n99",
+                "n110",
+                "n122",
+                "n133",
+                "n144"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Up-next column distracts from watching",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n26",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video player",
+              "members": [
+                "n28"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is watching the video",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.youtube.com/watch*"
+            },
+            {
+              "container": "n59",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Video details",
+              "members": [
+                "n60"
+              ],
+              "operation": "none",
+              "reason": "Title and actions below player",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.youtube.com/watch*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Video details",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Yes, hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Video details",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "Also hide title, channel and actions below the video?"
+            }
+          ],
+          "summary": "Hid the recommended column and emphasized the player for distraction-free watching.",
+          "template": {
+            "pageKind": "watch",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n86",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Recommended videos",
+            "members": [
+              "n87",
+              "n99",
+              "n110",
+              "n122",
+              "n133",
+              "n144"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Up-next column distracts from watching",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n26",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video player",
+            "members": [
+              "n28"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is watching the video",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.youtube.com/watch*"
+          },
+          {
+            "container": "n59",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Video details",
+            "members": [
+              "n60"
+            ],
+            "operation": "none",
+            "reason": "Title and actions below player",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.youtube.com/watch*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 940,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 2275,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1104,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 1711,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 5807,
+            "model": "spark",
+            "ms": 8510,
+            "outputTokens": 2181,
+            "purpose": "layout plan",
+            "reasoningTokens": 1801
+          },
+          {
+            "inputTokens": 6209,
+            "model": "spark",
+            "ms": 3660,
+            "outputTokens": 889,
+            "purpose": "repair",
+            "reasoningTokens": 505
+          }
+        ],
+        "ms": 14476
+      },
+      "layout": {
+        "labels": [
+          "Recommended videos",
+          "Video player"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n86",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n29",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n61",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,564 @@
+{
+  "scenario": {
+    "id": "verge-compact-nav",
+    "site": "theverge-front",
+    "goal": "Make the top navigation more compact.",
+    "tags": [
+      "news",
+      "density"
+    ],
+    "expect": [
+      {
+        "op": "compact",
+        "anchor": {
+          "tag": "nav",
+          "attr": {
+            "aria-label": "Top Navigation"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "theverge-front",
+    "url": "https://www.theverge.com/",
+    "finalUrl": "https://www.theverge.com/"
+  },
+  "at": "2026-10-28T22:10:27.574Z",
+  "scanNodes": 61,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "nav",
+        "attr": {
+          "aria-label": "Top Navigation"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n6",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Top Navigation"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n6",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top Navigation Links",
+              "members": [
+                "n10",
+                "n12",
+                "n14",
+                "n16",
+                "n18",
+                "n20"
+              ],
+              "operation": "compact",
+              "reason": "Goal is more compact top nav; tighten link spacing",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Subscribe Sign In",
+              "members": [
+                "n4",
+                "n5"
+              ],
+              "operation": "compact",
+              "reason": "Part of top header; tighten to save vertical space",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n53",
+              "identity": {
+                "attribute": "none",
+                "source": "none"
+              },
+              "label": "Privacy Notice",
+              "members": [
+                "n54"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value banner that crowds header and content",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.theverge.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top Navigation Links",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Subscribe Sign In",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Icons only"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top Navigation Links",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Subscribe Sign In",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep short labels"
+                }
+              ],
+              "text": "Should Subscribe and Sign In stay visible in the compact header?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Privacy Notice",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Privacy Notice",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "Keep the privacy notice banner on screen?"
+            }
+          ],
+          "summary": "Compact the top navigation and header actions, hide the privacy banner to reduce clutter.",
+          "template": {
+            "pageKind": "home",
+            "urlPattern": "www.theverge.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top Navigation Links",
+            "members": [
+              "n10",
+              "n12",
+              "n14",
+              "n16",
+              "n18",
+              "n20"
+            ],
+            "operation": "compact",
+            "reason": "Goal is more compact top nav; tighten link spacing",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Subscribe Sign In",
+            "members": [
+              "n4",
+              "n5"
+            ],
+            "operation": "compact",
+            "reason": "Part of top header; tighten to save vertical space",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n53",
+            "identity": {
+              "attribute": "none",
+              "source": "none"
+            },
+            "label": "Privacy Notice",
+            "members": [
+              "n54"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value banner that crowds header and content",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.theverge.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3134,
+            "model": "spark",
+            "ms": 9785,
+            "outputTokens": 2258,
+            "purpose": "layout plan",
+            "reasoningTokens": 1745
+          }
+        ],
+        "ms": 9789
+      },
+      "layout": {
+        "labels": [
+          "Top Navigation Links",
+          "Subscribe Sign In",
+          "Privacy Notice"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [
+            "compact"
+          ],
+          "found": true,
+          "id": "n6",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top Navigation Links",
+              "members": [
+                "n10",
+                "n12",
+                "n14",
+                "n16",
+                "n18",
+                "n20"
+              ],
+              "operation": "compact",
+              "reason": "User wants top nav more compact",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Subscribe and Sign In",
+              "members": [
+                "n4",
+                "n5"
+              ],
+              "operation": "compact",
+              "reason": "Part of top header to tighten alongside nav",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n53",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Privacy Notice Banner",
+              "members": [
+                "n54"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value notice rarely needed after seen",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.theverge.com/*"
+            },
+            {
+              "container": "n38",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Latest Stories List",
+              "members": [
+                "n39",
+                "n45"
+              ],
+              "operation": "compact",
+              "reason": "Dense news list easier to skim when tightened",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "www.theverge.com/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Latest Stories List",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Latest Stories List",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomier"
+                }
+              ],
+              "text": "How should the Latest stories feed feel?"
+            },
+            {
+              "id": "q-distractions",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Privacy Notice Banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Privacy Notice Banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "Keep the privacy notice banner on screen?"
+            }
+          ],
+          "summary": "Compact top nav and header actions, hide privacy banner, tighten Latest list.",
+          "template": {
+            "pageKind": "homepage",
+            "urlPattern": "www.theverge.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top Navigation Links",
+            "members": [
+              "n10",
+              "n12",
+              "n14",
+              "n16",
+              "n18",
+              "n20"
+            ],
+            "operation": "compact",
+            "reason": "User wants top nav more compact",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Subscribe and Sign In",
+            "members": [
+              "n4",
+              "n5"
+            ],
+            "operation": "compact",
+            "reason": "Part of top header to tighten alongside nav",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n53",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Privacy Notice Banner",
+            "members": [
+              "n54"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value notice rarely needed after seen",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.theverge.com/*"
+          },
+          {
+            "container": "n38",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Latest Stories List",
+            "members": [
+              "n39",
+              "n45"
+            ],
+            "operation": "compact",
+            "reason": "Dense news list easier to skim when tightened",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "www.theverge.com/"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1304,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 875,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 531,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 1108,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3145,
+            "model": "spark",
+            "ms": 9293,
+            "outputTokens": 2087,
+            "purpose": "layout plan",
+            "reasoningTokens": 1527
+          },
+          {
+            "inputTokens": 3604,
+            "model": "spark",
+            "ms": 6182,
+            "outputTokens": 1324,
+            "purpose": "repair",
+            "reasoningTokens": 901
+          }
+        ],
+        "ms": 16791
+      },
+      "layout": {
+        "labels": [
+          "Top Navigation Links",
+          "Subscribe and Sign In",
+          "Privacy Notice Banner",
+          "Latest Stories List"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [
+            "compact"
+          ],
+          "found": true,
+          "id": "n6",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass"
+      ]
+    }
+  ]
+}

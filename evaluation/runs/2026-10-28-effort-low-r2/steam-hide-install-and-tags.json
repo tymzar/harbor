@@ -1,0 +1,689 @@
+{
+  "scenario": {
+    "id": "steam-hide-install-and-tags",
+    "site": "steam-app",
+    "goal": "Hide the Install Steam button and the user-defined tags.",
+    "tags": [
+      "gaming",
+      "hide",
+      "multiple",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "a",
+          "text": "Install Steam"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "div",
+          "textStart": "Popular user-defined tags"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "aria-label": "Store menu"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "steam-app",
+    "url": "https://store.steampowered.com/app/730/CounterStrike_2/",
+    "finalUrl": "https://store.steampowered.com/app/730/CounterStrike_2/"
+  },
+  "at": "2026-10-28T22:15:11.942Z",
+  "scanNodes": 95,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "a",
+        "text": "Install Steam"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n13",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Install Steam"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "div",
+        "textStart": "Popular user-defined tags"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n60",
+        "tag": "div",
+        "kind": "group",
+        "text": "Popular user-defined tags for this product:"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "aria-label": "Store menu"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n16",
+        "tag": "div",
+        "kind": "landmark",
+        "text": "Store menu"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n13",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n60",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n16",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n12",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Install Steam button",
+              "members": [
+                "n13"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Goal explicitly asks to hide it",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "store.steampowered.com/*"
+            },
+            {
+              "container": "n61",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "User-defined tags",
+              "members": [
+                "n62",
+                "n63",
+                "n64",
+                "n65",
+                "n66",
+                "n67"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Goal explicitly asks to hide user tags",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+            },
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Top navigation",
+              "members": [
+                "n8",
+                "n9",
+                "n10",
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            },
+            {
+              "container": "n18",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Store menu bar",
+              "members": [
+                "n19",
+                "n20",
+                "n21",
+                "n22",
+                "n23"
+              ],
+              "operation": "none",
+              "reason": "Primary store navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Store menu bar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Store menu bar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make denser"
+                }
+              ],
+              "text": "How dense should the store menu be?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep full"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make compact"
+                }
+              ],
+              "text": "How much header navigation do you use?"
+            }
+          ],
+          "summary": "Hide Install Steam button and user-defined tags per goal, keep primary navigation unchanged.",
+          "template": {
+            "pageKind": "app",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n12",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Install Steam button",
+            "members": [
+              "n13"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Goal explicitly asks to hide it",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "store.steampowered.com/*"
+          },
+          {
+            "container": "n61",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "User-defined tags",
+            "members": [
+              "n62",
+              "n63",
+              "n64",
+              "n65",
+              "n66",
+              "n67"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Goal explicitly asks to hide user tags",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "store.steampowered.com/app/{appId}/{slug}"
+          },
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Top navigation",
+            "members": [
+              "n8",
+              "n9",
+              "n10",
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          },
+          {
+            "container": "n18",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Store menu bar",
+            "members": [
+              "n19",
+              "n20",
+              "n21",
+              "n22",
+              "n23"
+            ],
+            "operation": "none",
+            "reason": "Primary store navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 3658,
+            "model": "spark",
+            "ms": 11945,
+            "outputTokens": 2704,
+            "purpose": "layout plan",
+            "reasoningTokens": 2128
+          }
+        ],
+        "ms": 11952
+      },
+      "layout": {
+        "labels": [
+          "Install Steam button",
+          "User-defined tags"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n13",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n60",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n16",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "fail",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n12",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Install Steam button",
+              "members": [
+                "n13"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Explicitly requested to hide per user goal",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            },
+            {
+              "container": "n61",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Popular user-defined tags",
+              "members": [
+                "n62",
+                "n63",
+                "n64",
+                "n65",
+                "n66",
+                "n67",
+                "n68"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Explicitly requested to hide per user goal",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "store.steampowered.com/app/{appId}/*"
+            },
+            {
+              "container": "n7",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Global menu",
+              "members": [
+                "n8",
+                "n9",
+                "n10",
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation, keep as is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            },
+            {
+              "container": "n18",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Store menu",
+              "members": [
+                "n19",
+                "n20",
+                "n21",
+                "n22",
+                "n23"
+              ],
+              "operation": "none",
+              "reason": "Primary store navigation, keep as is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "store.steampowered.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Store menu",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Store menu",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Tighter spacing"
+                }
+              ],
+              "text": "How dense should store browsing controls be?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Global menu",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Global menu",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide extras"
+                }
+              ],
+              "text": "Do you use the top global links often?"
+            }
+          ],
+          "summary": "Hides Install Steam button and user-defined tags as requested, leaves main navigation untouched.",
+          "template": {
+            "pageKind": "store-app",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n12",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Install Steam button",
+            "members": [
+              "n13"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Explicitly requested to hide per user goal",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          },
+          {
+            "container": "n61",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Popular user-defined tags",
+            "members": [
+              "n62",
+              "n63",
+              "n64",
+              "n65",
+              "n66",
+              "n67",
+              "n68"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Explicitly requested to hide per user goal",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "store.steampowered.com/app/{appId}/*"
+          },
+          {
+            "container": "n7",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Global menu",
+            "members": [
+              "n8",
+              "n9",
+              "n10",
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation, keep as is",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          },
+          {
+            "container": "n18",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Store menu",
+            "members": [
+              "n19",
+              "n20",
+              "n21",
+              "n22",
+              "n23"
+            ],
+            "operation": "none",
+            "reason": "Primary store navigation, keep as is",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "store.steampowered.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 1506,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 886,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1038,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 887,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 3669,
+            "model": "spark",
+            "ms": 11426,
+            "outputTokens": 2789,
+            "purpose": "layout plan",
+            "reasoningTokens": 2195
+          }
+        ],
+        "ms": 12943
+      },
+      "layout": {
+        "labels": [
+          "Install Steam button",
+          "Popular user-defined tags"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n13",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n60",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n16",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "fail",
+        "pass"
+      ]
+    }
+  ]
+}

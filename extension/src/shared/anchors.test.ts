@@ -63,6 +63,11 @@ describe("judge", () => {
     expect(judge("emphasize", seen(), seen({ visible: false, ops: ["emphasize"] }))).toBe("fail");
   });
 
+  it("counts a wrapper whose contents were all hidden as hidden", () => {
+    expect(judge("hide", seen({ hasContent: true }), seen({ hasContent: false }))).toBe("pass");
+    expect(judge("keep", seen({ hasContent: true }), seen({ hasContent: false }))).toBe("fail");
+  });
+
   it("does not score elements it could not find or that were hidden to begin with", () => {
     expect(judge("hide")).toBe("unresolved");
     expect(judge("hide", seen({ visible: false }), seen({ visible: false }))).toBe("not-visible");

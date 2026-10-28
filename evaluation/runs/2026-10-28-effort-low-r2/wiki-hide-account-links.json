@@ -1,0 +1,620 @@
+{
+  "scenario": {
+    "id": "wiki-hide-account-links",
+    "site": "wikipedia-article",
+    "goal": "Hide Donate, Create account and Log in; keep the search box.",
+    "tags": [
+      "reading",
+      "hide",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "ul",
+          "text": "Donate Create account Log in"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "id": "searchform"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "wikipedia-article",
+    "url": "https://en.wikipedia.org/wiki/Web_browser",
+    "finalUrl": "https://en.wikipedia.org/wiki/Web_browser"
+  },
+  "at": "2026-10-28T22:06:50.520Z",
+  "scanNodes": 172,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "ul",
+        "text": "Donate Create account Log in"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n17",
+        "tag": "ul",
+        "kind": "list",
+        "text": "Donate Create account Log in"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "searchform"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n12",
+        "tag": "form",
+        "kind": "landmark",
+        "text": "Search"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n17",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n12",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Personal tools",
+              "members": [
+                "n18",
+                "n20",
+                "n22"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Donate, Create account, Log in",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/*"
+            },
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Site search",
+              "members": [
+                "n11"
+              ],
+              "operation": "none",
+              "reason": "User asked to keep search box as is",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "en.wikipedia.org/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Contents sidebar",
+              "members": [
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n45",
+                "n51",
+                "n53",
+                "n55"
+              ],
+              "operation": "compact",
+              "reason": "Dense TOC they skim repeatedly",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            },
+            {
+              "container": "n82",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Appearance settings",
+              "members": [
+                "n85",
+                "n92",
+                "n98"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Rarely needed reading prefs",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "en.wikipedia.org/wiki/{title}"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q-toc",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Contents sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Contents sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Contents sidebar",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Full size"
+                }
+              ],
+              "text": "How do you use the Contents sidebar on articles?"
+            },
+            {
+              "id": "q-reading",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Appearance settings",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide for speed"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Appearance settings",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                }
+              ],
+              "text": "Do you change text size, width, or color when reading?"
+            }
+          ],
+          "summary": "Hide Personal tools per goal, keep search unchanged, compact Contents and hide Appearance for faster reading.",
+          "template": {
+            "pageKind": "article",
+            "urlPattern": "en.wikipedia.org/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Personal tools",
+            "members": [
+              "n18",
+              "n20",
+              "n22"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Donate, Create account, Log in",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/*"
+          },
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Site search",
+            "members": [
+              "n11"
+            ],
+            "operation": "none",
+            "reason": "User asked to keep search box as is",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "en.wikipedia.org/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "text",
+              "source": "text"
+            },
+            "label": "Contents sidebar",
+            "members": [
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n45",
+              "n51",
+              "n53",
+              "n55"
+            ],
+            "operation": "compact",
+            "reason": "Dense TOC they skim repeatedly",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          },
+          {
+            "container": "n82",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Appearance settings",
+            "members": [
+              "n85",
+              "n92",
+              "n98"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Rarely needed reading prefs",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "en.wikipedia.org/wiki/{title}"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "inputTokens": 6439,
+            "model": "spark",
+            "ms": 10291,
+            "outputTokens": 2258,
+            "purpose": "layout plan",
+            "reasoningTokens": 1652
+          }
+        ],
+        "ms": 10302
+      },
+      "layout": {
+        "labels": [
+          "Personal tools",
+          "Contents sidebar",
+          "Appearance settings"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n17",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Personal tools",
+              "members": [
+                "n18",
+                "n20",
+                "n22"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Donate, Create account, Log in",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/wiki/*"
+            },
+            {
+              "container": "n10",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Search",
+              "members": [
+                "n11"
+              ],
+              "operation": "emphasize",
+              "reason": "User asked to keep search accessible",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "en.wikipedia.org/wiki/*"
+            },
+            {
+              "container": "n30",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Contents",
+              "members": [
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n45",
+                "n51",
+                "n53",
+                "n55"
+              ],
+              "operation": "compact",
+              "reason": "Dense section list to skim while reading",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "en.wikipedia.org/wiki/Web_browser"
+            }
+          ],
+          "questions": [
+            {
+              "id": "toc-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Contents",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Slim list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Contents",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Roomy list"
+                }
+              ],
+              "text": "How should the Contents list look while reading?"
+            },
+            {
+              "id": "search-promo",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Highlighted"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Normal"
+                }
+              ],
+              "text": "How prominent should search be?"
+            }
+          ],
+          "summary": "Hide Personal tools, keep Search prominent, slim Contents for reading.",
+          "template": {
+            "pageKind": "article",
+            "urlPattern": "en.wikipedia.org/wiki/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Personal tools",
+            "members": [
+              "n18",
+              "n20",
+              "n22"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Donate, Create account, Log in",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/wiki/*"
+          },
+          {
+            "container": "n10",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Search",
+            "members": [
+              "n11"
+            ],
+            "operation": "emphasize",
+            "reason": "User asked to keep search accessible",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "en.wikipedia.org/wiki/*"
+          },
+          {
+            "container": "n30",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Contents",
+            "members": [
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n45",
+              "n51",
+              "n53",
+              "n55"
+            ],
+            "operation": "compact",
+            "reason": "Dense section list to skim while reading",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "en.wikipedia.org/wiki/Web_browser"
+          }
+        ],
+        "errors": [],
+        "repaired": false,
+        "calls": [
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 736,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 798,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 918,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1911,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 6450,
+            "model": "spark",
+            "ms": 12899,
+            "outputTokens": 2971,
+            "purpose": "layout plan",
+            "reasoningTokens": 2494
+          }
+        ],
+        "ms": 14832
+      },
+      "layout": {
+        "labels": [
+          "Personal tools",
+          "Search",
+          "Contents"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n17",
+          "ops": [
+            "hide-secondary",
+            "emphasize"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

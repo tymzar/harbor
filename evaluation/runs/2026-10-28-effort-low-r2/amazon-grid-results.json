@@ -1,0 +1,66 @@
+{
+  "scenario": {
+    "id": "amazon-grid-results",
+    "site": "amazon-search",
+    "goal": "Show the results as a compact grid so I can compare more at once.",
+    "tags": [
+      "commerce",
+      "grid",
+      "density"
+    ],
+    "expect": [
+      {
+        "op": "grid",
+        "anchor": {
+          "tag": "h2",
+          "textStart": "Anker USB C to USB C Cable"
+        },
+        "note": "compact on the results list is a partial pass; see README"
+      }
+    ]
+  },
+  "site": {
+    "id": "amazon-search",
+    "url": "https://www.amazon.com/s?k=usb+c+cable",
+    "finalUrl": "https://www.amazon.com/checkpoint/continue?token=v1.Czjt47IX1gKPfVC7g-wQwUqB5xuWG5fz7v1H1aceDl8l2sCl_btCzVHSnylTXmVp1ORZPYDgfZ6PHg97Mk64eOTAxgyL2rnq6-54XoBuNxJgE1DT358_R7mP7ZsJTAkq41ubJ4dVGvRhU_bsB8nNyziZMVIxi7s_dY-63nCJt7RKWdkTsWktRXP0lLRAV5dNi94jPgp2u5Dj4GV9HD1lI1IsIciqo-9N5P3Ke93E06V_vECFYULPznWrmz8OwiVame-oz8jaGg"
+  },
+  "at": "2026-10-28T22:08:33.901Z",
+  "scanNodes": 61,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "h2",
+        "textStart": "Anker USB C to USB C Cable"
+      },
+      "matches": 0
+    }
+  ],
+  "before": [
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    }
+  ],
+  "baseline": [
+    "unresolved"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "error": "None of the scenario's elements are on the page.",
+      "verdicts": [
+        "unresolved"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "error": "None of the scenario's elements are on the page.",
+      "verdicts": [
+        "unresolved"
+      ]
+    }
+  ]
+}

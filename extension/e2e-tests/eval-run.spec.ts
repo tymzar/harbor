@@ -130,9 +130,14 @@ function defineScenario(site: Site, scenario: Scenario) {
       const proposed = await waitFor(
         panel,
         tabId,
-        (session) => (session.proposal?.startedAt ?? 0) >= sentAt && session.proposal?.status !== "running",
+        (session) =>
+          session.scan?.scannedAt !== scan.scannedAt ||
+          ((session.proposal?.startedAt ?? 0) >= sentAt && session.proposal?.status !== "running"),
         540_000
       );
+      // The site navigated (Stack Overflow rewrites its URL) and the extension read the page again,
+      // dropping this plan; the scenario is reported as rescanned.
+      if (proposed.scan?.scannedAt !== scan.scannedAt) break;
       const proposal = proposed.proposal!;
       const applied = await layout(panel, tabId, "apply");
       const after = await observe();

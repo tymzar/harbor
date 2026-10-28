@@ -1,0 +1,636 @@
+{
+  "scenario": {
+    "id": "bbc-hide-region-nav",
+    "site": "bbc-news",
+    "goal": "Hide the second row of the navigation (US & Canada, UK, Africa...).",
+    "tags": [
+      "news",
+      "hide",
+      "navigation",
+      "precision"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "data-testid": "level2-navigation-container"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "data-testid": "level1-navigation-container"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "bbc-news",
+    "url": "https://www.bbc.com/news",
+    "finalUrl": "https://www.bbc.com/news"
+  },
+  "at": "2026-10-28T22:09:14.738Z",
+  "scanNodes": 94,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "level2-navigation-container"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n42",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "US & Canada UK Africa Asia Australia Europe Latin America Middle East In Pictur…"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "level1-navigation-container"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n12",
+        "tag": "nav",
+        "kind": "landmark",
+        "text": "Home News Sport Business Technology Health Culture Arts Travel Earth Audio Video"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n42",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n12",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Primary navigation",
+              "members": [
+                "n17",
+                "n19",
+                "n21",
+                "n23",
+                "n25",
+                "n27",
+                "n29",
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n41"
+              ],
+              "operation": "none",
+              "reason": "Main site sections; keep as is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/*"
+            },
+            {
+              "container": "n44",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Regional sub-navigation",
+              "members": [
+                "n46",
+                "n48",
+                "n50",
+                "n52",
+                "n54",
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64",
+                "n66"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Second nav row user asked to hide",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/news"
+            },
+            {
+              "container": "n71",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Top stories",
+              "members": [
+                "n74",
+                "n79"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal of News homepage visit",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.bbc.com/news"
+            }
+          ],
+          "questions": [
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top stories",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Denser grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top stories",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier featured"
+                }
+              ],
+              "text": "How should top stories be arranged?"
+            },
+            {
+              "id": "primary-compact",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Primary navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Yes, tighten"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Primary navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "No, keep as is"
+                }
+              ],
+              "text": "Tighten the main navigation to save space?"
+            }
+          ],
+          "summary": "Hides the regional second-row nav per request, keeps primary nav, emphasizes top stories.",
+          "template": {
+            "pageKind": "news-home",
+            "urlPattern": "www.bbc.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n15",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Primary navigation",
+            "members": [
+              "n17",
+              "n19",
+              "n21",
+              "n23",
+              "n25",
+              "n27",
+              "n29",
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n41"
+            ],
+            "operation": "none",
+            "reason": "Main site sections; keep as is",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/*"
+          },
+          {
+            "container": "n44",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Regional sub-navigation",
+            "members": [
+              "n46",
+              "n48",
+              "n50",
+              "n52",
+              "n54",
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64",
+              "n66"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Second nav row user asked to hide",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/news"
+          },
+          {
+            "container": "n71",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Top stories",
+            "members": [
+              "n74",
+              "n79"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal of News homepage visit",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.bbc.com/news"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4207,
+            "model": "spark",
+            "ms": 10583,
+            "outputTokens": 2374,
+            "purpose": "layout plan",
+            "reasoningTokens": 1831
+          },
+          {
+            "inputTokens": 4769,
+            "model": "spark",
+            "ms": 6116,
+            "outputTokens": 1659,
+            "purpose": "repair",
+            "reasoningTokens": 1244
+          }
+        ],
+        "ms": 16709
+      },
+      "layout": {
+        "labels": [
+          "Regional sub-navigation",
+          "Top stories"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n42",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Primary navigation",
+              "members": [
+                "n17",
+                "n19",
+                "n21",
+                "n23",
+                "n25",
+                "n27",
+                "n29",
+                "n31",
+                "n33",
+                "n35",
+                "n37",
+                "n39",
+                "n41"
+              ],
+              "operation": "none",
+              "reason": "Main sections already work as primary nav",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/*"
+            },
+            {
+              "container": "n44",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Regional sub-navigation",
+              "members": [
+                "n46",
+                "n48",
+                "n50",
+                "n52",
+                "n54",
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64",
+                "n66"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Second nav row user asked to hide",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.bbc.com/news*"
+            },
+            {
+              "container": "n71",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Top stories",
+              "members": [
+                "n72",
+                "n78"
+              ],
+              "operation": "none",
+              "reason": "Main headlines for this view",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.bbc.com/news"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top stories",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Show as grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top stories",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Make top stories easier to scan?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Primary navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Tighter spacing"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Primary navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Tighten the main navigation?"
+            }
+          ],
+          "summary": "Hid the regional second-row nav per goal, kept primary nav and top stories unchanged.",
+          "template": {
+            "pageKind": "news front page",
+            "urlPattern": "www.bbc.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n15",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Primary navigation",
+            "members": [
+              "n17",
+              "n19",
+              "n21",
+              "n23",
+              "n25",
+              "n27",
+              "n29",
+              "n31",
+              "n33",
+              "n35",
+              "n37",
+              "n39",
+              "n41"
+            ],
+            "operation": "none",
+            "reason": "Main sections already work as primary nav",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/*"
+          },
+          {
+            "container": "n44",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Regional sub-navigation",
+            "members": [
+              "n46",
+              "n48",
+              "n50",
+              "n52",
+              "n54",
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64",
+              "n66"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Second nav row user asked to hide",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.bbc.com/news*"
+          },
+          {
+            "container": "n71",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Top stories",
+            "members": [
+              "n72",
+              "n78"
+            ],
+            "operation": "none",
+            "reason": "Main headlines for this view",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.bbc.com/news"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 652,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 1,
+            "model": "sam",
+            "ms": 1207,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 713,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1354,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4218,
+            "model": "spark",
+            "ms": 10178,
+            "outputTokens": 2131,
+            "purpose": "layout plan",
+            "reasoningTokens": 1599
+          },
+          {
+            "inputTokens": 4768,
+            "model": "spark",
+            "ms": 6010,
+            "outputTokens": 1446,
+            "purpose": "repair",
+            "reasoningTokens": 1041
+          }
+        ],
+        "ms": 17569
+      },
+      "layout": {
+        "labels": [
+          "Regional sub-navigation"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n42",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n12",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    }
+  ]
+}

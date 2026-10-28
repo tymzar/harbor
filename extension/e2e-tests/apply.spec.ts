@@ -142,7 +142,7 @@ test("hidden regions are dimmed in preview, hidden after Keep, and shown again f
 });
 
 // A plan may name a wide container for one member: hiding "Privacy" in the footer must not take
-// Terms and Security with it. When the members are all of the region, the region itself goes.
+// Terms and Security with it. When the members are most of the region, the region itself goes.
 test("hiding one member of a region leaves the rest of the region", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
   await panel.getByRole("button", { name: "Scan page" }).click();
@@ -152,21 +152,27 @@ test("hiding one member of a region leaves the rest of the region", async ({ con
   const nodes = session.scan!.nodes;
   const footer = nodes.find((node) => node.text.startsWith("Privacy Terms"))!;
   const privacy = nodes.find((node) => node.parent === footer.id && node.text === "Privacy")!;
+  const toc = nodes.find((node) => node.text.startsWith("On this page"))!;
+  // The heading is scanned too, so the links are most of the box but not all of it.
+  expect(nodes.some((node) => node.parent === toc.id && node.tag !== "a")).toBe(true);
+  const hide = (label: string, container: string, members: Array<string>): PlanGroup => ({
+    label,
+    urlPattern: "127.0.0.1:4317/*",
+    role: "other",
+    container,
+    members,
+    operation: "hide-secondary",
+    reorderable: false,
+    identity: { source: "none", attribute: "" },
+    reason: "",
+  });
   const plan: LayoutPlan = {
     summary: "Docs page",
     template: { urlPattern: "127.0.0.1:4317/*", pageKind: "docs" },
     groups: [
-      {
-        label: "Privacy link",
-        urlPattern: "127.0.0.1:4317/*",
-        role: "other",
-        container: footer.id,
-        members: [privacy.id],
-        operation: "hide-secondary",
-        reorderable: false,
-        identity: { source: "none", attribute: "" },
-        reason: "",
-      },
+      hide("Privacy link", footer.id, [privacy.id]),
+      // Its links, not its "On this page" heading: the links are most of it, so the box goes too.
+      hide("On this page", toc.id, nodes.filter((node) => node.parent === toc.id && node.tag === "a").map((node) => node.id)),
     ],
   };
   await panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
@@ -179,4 +185,5 @@ test("hiding one member of a region leaves the rest of the region", async ({ con
   await expect(foot.getByRole("link", { name: "Privacy" })).toBeHidden();
   await expect(foot.getByRole("link", { name: "Terms" })).toBeVisible();
   await expect(foot).toBeVisible();
+  await expect(site.locator(".toc")).toBeHidden();
 });

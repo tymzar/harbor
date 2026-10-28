@@ -1,0 +1,622 @@
+{
+  "scenario": {
+    "id": "ikea-hide-promo",
+    "site": "ikea-category",
+    "goal": "Hide the 15% off / IKEA Family promotion block.",
+    "tags": [
+      "commerce",
+      "hide",
+      "promo"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "section",
+          "textStart": "15% off sofas"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Sofas"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "ikea-category",
+    "url": "https://www.ikea.com/ch/en/cat/sofas-fu003/",
+    "finalUrl": "https://www.ikea.com/ch/en/cat/sofas-fu003/",
+    "consent": "Reject (reject)"
+  },
+  "at": "2026-10-28T22:15:35.315Z",
+  "scanNodes": 88,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "section",
+        "textStart": "15% off sofas"
+      },
+      "matches": 2,
+      "node": {
+        "id": "n80",
+        "tag": "section",
+        "kind": "landmark",
+        "text": "15% off sofas and footstools* IKEA Family and IKEA Business Network offer from …"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Sofas"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n67",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "Sofas"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n80",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n67",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Primary navigation",
+              "members": [
+                "n18",
+                "n19",
+                "n20",
+                "n21",
+                "n22"
+              ],
+              "operation": "none",
+              "reason": "Main site navigation already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.ikea.com/ch/en/*"
+            },
+            {
+              "container": "n46",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sofa category shortcuts",
+              "members": [
+                "n48",
+                "n50",
+                "n53",
+                "n56",
+                "n59",
+                "n62",
+                "n65"
+              ],
+              "operation": "compact",
+              "reason": "Dense skim list of sofa types",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.ikea.com/ch/en/cat/{category}/"
+            },
+            {
+              "container": "n79",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "15% off IKEA Family promotion",
+              "members": [
+                "n80"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide promotion block",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.ikea.com/ch/en/cat/{category}/"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa category shortcuts",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa category shortcuts",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide completely"
+                }
+              ],
+              "text": "Do you use the sofa type shortcuts to filter?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Primary navigation",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep visible"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Primary navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make denser"
+                }
+              ],
+              "text": "Do you want the top menu tightened?"
+            }
+          ],
+          "summary": "Hides the 15% off IKEA Family banner and tightens sofa category shortcuts.",
+          "template": {
+            "pageKind": "category listing",
+            "urlPattern": "www.ikea.com/ch/en/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Primary navigation",
+            "members": [
+              "n18",
+              "n19",
+              "n20",
+              "n21",
+              "n22"
+            ],
+            "operation": "none",
+            "reason": "Main site navigation already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.ikea.com/ch/en/*"
+          },
+          {
+            "container": "n46",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sofa category shortcuts",
+            "members": [
+              "n48",
+              "n50",
+              "n53",
+              "n56",
+              "n59",
+              "n62",
+              "n65"
+            ],
+            "operation": "compact",
+            "reason": "Dense skim list of sofa types",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.ikea.com/ch/en/cat/{category}/"
+          },
+          {
+            "container": "n79",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "15% off IKEA Family promotion",
+            "members": [
+              "n80"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide promotion block",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.ikea.com/ch/en/cat/{category}/"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4326,
+            "model": "spark",
+            "ms": 8728,
+            "outputTokens": 1899,
+            "purpose": "layout plan",
+            "reasoningTokens": 1391
+          },
+          {
+            "inputTokens": 4751,
+            "model": "spark",
+            "ms": 4813,
+            "outputTokens": 1045,
+            "purpose": "repair",
+            "reasoningTokens": 655
+          }
+        ],
+        "ms": 13560
+      },
+      "layout": {
+        "labels": [
+          "Sofa category shortcuts",
+          "15% off IKEA Family promotion"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n80",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n67",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n41",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "15% off sofas promo",
+              "members": [
+                "n79"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide this IKEA Family promotion",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "https://www.ikea.com/ch/en/cat/sofas-fu003/"
+            },
+            {
+              "container": "n46",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Sofa type shortcuts",
+              "members": [
+                "n48",
+                "n50",
+                "n53",
+                "n56",
+                "n59",
+                "n62",
+                "n65"
+              ],
+              "operation": "emphasize",
+              "reason": "Core way to narrow sofa browsing",
+              "reorderable": true,
+              "role": "tabs",
+              "urlPattern": "https://www.ikea.com/ch/en/cat/sofas-fu003/"
+            },
+            {
+              "container": "n17",
+              "identity": {
+                "attribute": "",
+                "source": "href"
+              },
+              "label": "Main navigation",
+              "members": [
+                "n18",
+                "n19",
+                "n20",
+                "n21",
+                "n22"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already works",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "https://www.ikea.com/ch/en/*"
+            },
+            {
+              "container": "n2",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Top utility bar",
+              "members": [
+                "n3",
+                "n6",
+                "n8"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed planning and store pickers",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "https://www.ikea.com/ch/en/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa type shortcuts",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Keep prominent"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sofa type shortcuts",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser row"
+                }
+              ],
+              "text": "How should the sofa type shortcuts look?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top utility bar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top utility bar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep slim"
+                }
+              ],
+              "text": "Do you use the top planning and store bar?"
+            }
+          ],
+          "summary": "Hide the 15% off promo, emphasize sofa type shortcuts, slim the top bar.",
+          "template": {
+            "pageKind": "category",
+            "urlPattern": "https://www.ikea.com/ch/en/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n41",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "15% off sofas promo",
+            "members": [
+              "n79"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide this IKEA Family promotion",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "https://www.ikea.com/ch/en/cat/sofas-fu003/"
+          },
+          {
+            "container": "n46",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Sofa type shortcuts",
+            "members": [
+              "n48",
+              "n50",
+              "n53",
+              "n56",
+              "n59",
+              "n62",
+              "n65"
+            ],
+            "operation": "emphasize",
+            "reason": "Core way to narrow sofa browsing",
+            "reorderable": true,
+            "role": "tabs",
+            "urlPattern": "https://www.ikea.com/ch/en/cat/sofas-fu003/"
+          },
+          {
+            "container": "n17",
+            "identity": {
+              "attribute": "",
+              "source": "href"
+            },
+            "label": "Main navigation",
+            "members": [
+              "n18",
+              "n19",
+              "n20",
+              "n21",
+              "n22"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already works",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "https://www.ikea.com/ch/en/*"
+          },
+          {
+            "container": "n2",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Top utility bar",
+            "members": [
+              "n3",
+              "n6",
+              "n8"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed planning and store pickers",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "https://www.ikea.com/ch/en/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1137,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 6,
+            "model": "sam",
+            "ms": 1421,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1100,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 796,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4337,
+            "model": "spark",
+            "ms": 10736,
+            "outputTokens": 2420,
+            "purpose": "layout plan",
+            "reasoningTokens": 1827
+          },
+          {
+            "inputTokens": 4974,
+            "model": "spark",
+            "ms": 7193,
+            "outputTokens": 1984,
+            "purpose": "repair",
+            "reasoningTokens": 1368
+          }
+        ],
+        "ms": 19388
+      },
+      "layout": {
+        "labels": [
+          "15% off sofas promo",
+          "Sofa type shortcuts",
+          "Top utility bar"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n80",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n67",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

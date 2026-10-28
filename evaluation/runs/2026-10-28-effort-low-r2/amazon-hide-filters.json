@@ -1,0 +1,715 @@
+{
+  "scenario": {
+    "id": "amazon-hide-filters",
+    "site": "amazon-search",
+    "goal": "Hide the left filter column; I just scan results.",
+    "tags": [
+      "commerce",
+      "hide",
+      "sidebar"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "kind": "heading",
+          "text": "Popular Shopping Ideas"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "kind": "heading",
+          "text": "Brands",
+          "area": {
+            "maxX": 250
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h2",
+          "textStart": "Anker USB C to USB C Cable"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "amazon-search",
+    "url": "https://www.amazon.com/s?k=usb+c+cable",
+    "finalUrl": "https://www.amazon.com/s?k=usb+c+cable"
+  },
+  "at": "2026-10-28T22:07:51.322Z",
+  "scanNodes": 179,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "kind": "heading",
+        "text": "Popular Shopping Ideas"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n109",
+        "tag": "div",
+        "kind": "heading",
+        "text": "Popular Shopping Ideas"
+      }
+    },
+    {
+      "anchor": {
+        "kind": "heading",
+        "text": "Brands",
+        "area": {
+          "maxX": 250
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n154",
+        "tag": "div",
+        "kind": "heading",
+        "text": "Brands"
+      }
+    },
+    {
+      "anchor": {
+        "tag": "h2",
+        "textStart": "Anker USB C to USB C Cable"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n78",
+        "tag": "h2",
+        "kind": "heading",
+        "text": "Anker USB C to USB C Cable, 60W Fast Charging Cable (5-Pack, 6 ft, Black)"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n109",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n154",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n78",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Header navigation",
+              "members": [
+                "n39",
+                "n41",
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51"
+              ],
+              "operation": "none",
+              "reason": "Primary site navigation already minimal",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.amazon.com/*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Filter sidebar",
+              "members": [
+                "n108",
+                "n122",
+                "n153"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Left filter column user wants hidden to scan results",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.amazon.com/s*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "data-asin",
+                "source": "attribute"
+              },
+              "label": "Search results",
+              "members": [
+                "n69",
+                "n89"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is scanning results",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.amazon.com/s*"
+            },
+            {
+              "container": "n63",
+              "identity": {
+                "attribute": "id",
+                "source": "none"
+              },
+              "label": "Featured promo banner",
+              "members": [
+                "n64",
+                "n66"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Distraction from scanning results",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.amazon.com/s*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Grid of cards"
+                }
+              ],
+              "text": "How should results be laid out for scanning?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Header navigation",
+                      "operation": "compact"
+                    },
+                    {
+                      "group": "Featured promo banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide extras"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Header navigation",
+                      "operation": "none"
+                    },
+                    {
+                      "group": "Featured promo banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Hide header links and promos too?"
+            }
+          ],
+          "summary": "Hide left filters and promo banner, emphasize results for fast scanning.",
+          "template": {
+            "pageKind": "search-results",
+            "urlPattern": "www.amazon.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n36",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Header navigation",
+            "members": [
+              "n39",
+              "n41",
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51"
+            ],
+            "operation": "none",
+            "reason": "Primary site navigation already minimal",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.amazon.com/*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Filter sidebar",
+            "members": [
+              "n108",
+              "n122",
+              "n153"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Left filter column user wants hidden to scan results",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.amazon.com/s*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "data-asin",
+              "source": "attribute"
+            },
+            "label": "Search results",
+            "members": [
+              "n69",
+              "n89"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is scanning results",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.amazon.com/s*"
+          },
+          {
+            "container": "n63",
+            "identity": {
+              "attribute": "id",
+              "source": "none"
+            },
+            "label": "Featured promo banner",
+            "members": [
+              "n64",
+              "n66"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Distraction from scanning results",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.amazon.com/s*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 7681,
+            "model": "spark",
+            "ms": 9945,
+            "outputTokens": 2363,
+            "purpose": "layout plan",
+            "reasoningTokens": 1779
+          },
+          {
+            "inputTokens": 8256,
+            "model": "spark",
+            "ms": 3059,
+            "outputTokens": 1000,
+            "purpose": "repair",
+            "reasoningTokens": 411
+          }
+        ],
+        "ms": 13026
+      },
+      "layout": {
+        "labels": [
+          "Filter sidebar",
+          "Search results",
+          "Featured promo banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n109",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n154",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n78",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n3",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Header search and navigation",
+              "members": [
+                "n4",
+                "n36"
+              ],
+              "operation": "none",
+              "reason": "Primary site chrome for search and departments",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.amazon.com/*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Left filter column",
+              "members": [
+                "n108",
+                "n122",
+                "n153"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User wants to hide to just scan results",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.amazon.com/s*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "data-asin",
+                "source": "attribute"
+              },
+              "label": "Search results",
+              "members": [
+                "n69",
+                "n89"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is scanning results",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.amazon.com/s*"
+            },
+            {
+              "container": "n63",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Sponsored promo banner",
+              "members": [
+                "n64",
+                "n66"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value promo distracts from scanning",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.amazon.com/s*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Image grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomy cards"
+                }
+              ],
+              "text": "How dense should results be for scanning?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Sponsored promo banner",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide it"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Sponsored promo banner",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep it"
+                }
+              ],
+              "text": "Keep the top promo banner?"
+            }
+          ],
+          "summary": "Hide left filters and promo, emphasize results for fast scanning.",
+          "template": {
+            "pageKind": "search results",
+            "urlPattern": "www.amazon.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n3",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Header search and navigation",
+            "members": [
+              "n4",
+              "n36"
+            ],
+            "operation": "none",
+            "reason": "Primary site chrome for search and departments",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.amazon.com/*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Left filter column",
+            "members": [
+              "n108",
+              "n122",
+              "n153"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User wants to hide to just scan results",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.amazon.com/s*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "data-asin",
+              "source": "attribute"
+            },
+            "label": "Search results",
+            "members": [
+              "n69",
+              "n89"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is scanning results",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.amazon.com/s*"
+          },
+          {
+            "container": "n63",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Sponsored promo banner",
+            "members": [
+              "n64",
+              "n66"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value promo distracts from scanning",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.amazon.com/s*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 791,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 789,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1040,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 1169,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 7692,
+            "model": "spark",
+            "ms": 8351,
+            "outputTokens": 2129,
+            "purpose": "layout plan",
+            "reasoningTokens": 1567
+          },
+          {
+            "inputTokens": 8255,
+            "model": "spark",
+            "ms": 3177,
+            "outputTokens": 930,
+            "purpose": "repair",
+            "reasoningTokens": 363
+          }
+        ],
+        "ms": 12735
+      },
+      "layout": {
+        "labels": [
+          "Left filter column",
+          "Search results",
+          "Sponsored promo banner"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n109",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n154",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n78",
+          "ops": [
+            "emphasize"
+          ],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}

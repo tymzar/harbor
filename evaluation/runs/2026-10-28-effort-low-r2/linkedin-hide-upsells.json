@@ -1,0 +1,644 @@
+{
+  "scenario": {
+    "id": "linkedin-hide-upsells",
+    "site": "linkedin-jobs",
+    "goal": "Hide 'Get notified when a new job is posted' and the 'Use AI to assess how you fit' box.",
+    "tags": [
+      "jobs",
+      "hide",
+      "multiple",
+      "promo"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "section",
+          "text": "Get notified when a new job is posted"
+        }
+      },
+      {
+        "op": "hide",
+        "anchor": {
+          "tag": "section",
+          "text": "Use AI to assess how you fit"
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "tag": "h1",
+          "text": "Frontend Engineer Jobs"
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "linkedin-jobs",
+    "url": "https://www.linkedin.com/jobs/search?keywords=frontend%20engineer",
+    "finalUrl": "https://www.linkedin.com/jobs/search?keywords=frontend%20engineer&position=1&pageNum=0"
+  },
+  "at": "2026-10-28T22:09:31.037Z",
+  "scanNodes": 96,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "tag": "section",
+        "text": "Get notified when a new job is posted"
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "section",
+        "text": "Use AI to assess how you fit"
+      },
+      "matches": 0
+    },
+    {
+      "anchor": {
+        "tag": "h1",
+        "text": "Frontend Engineer Jobs"
+      },
+      "matches": 1,
+      "node": {
+        "id": "n48",
+        "tag": "h1",
+        "kind": "heading",
+        "text": "10,000+ Frontend Engineer Jobs in United States"
+      }
+    }
+  ],
+  "before": [
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "found": false,
+      "visible": false,
+      "ops": [],
+      "coveringOps": []
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n48",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "unresolved",
+    "unresolved",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n43",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Job alert signup",
+              "members": [
+                "n44"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide Get notified box",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.linkedin.com/jobs/search"
+            },
+            {
+              "container": "n1",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Privacy consent banner",
+              "members": [
+                "n2"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Low-value cookie notice rarely needed",
+              "reorderable": false,
+              "role": "other",
+              "urlPattern": "www.linkedin.com/jobs/*"
+            },
+            {
+              "container": "n31",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Search filters",
+              "members": [
+                "n32",
+                "n34",
+                "n36",
+                "n38"
+              ],
+              "operation": "compact",
+              "reason": "Skimmed toolbar benefits from tightening",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.linkedin.com/jobs/*"
+            },
+            {
+              "container": "n50",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Job results list",
+              "members": [
+                "n51",
+                "n60"
+              ],
+              "operation": "emphasize",
+              "reason": "Core goal is browsing frontend roles",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "www.linkedin.com/jobs/search"
+            }
+          ],
+          "questions": [
+            {
+              "id": "results-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Job results list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Job results list",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Roomy grid"
+                }
+              ],
+              "text": "How should job results be laid out?"
+            },
+            {
+              "id": "filters-need",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search filters",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide them"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search filters",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                }
+              ],
+              "text": "Do you use the Date posted and Company filters?"
+            }
+          ],
+          "summary": "Hid Get notified alert per request, hid cookie banner, compacted filters, emphasized job results. AI fit box not in current elements so no group created for it.",
+          "template": {
+            "pageKind": "job search results",
+            "urlPattern": "www.linkedin.com/jobs/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n43",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Job alert signup",
+            "members": [
+              "n44"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide Get notified box",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.linkedin.com/jobs/search"
+          },
+          {
+            "container": "n1",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Privacy consent banner",
+            "members": [
+              "n2"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Low-value cookie notice rarely needed",
+            "reorderable": false,
+            "role": "other",
+            "urlPattern": "www.linkedin.com/jobs/*"
+          },
+          {
+            "container": "n31",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Search filters",
+            "members": [
+              "n32",
+              "n34",
+              "n36",
+              "n38"
+            ],
+            "operation": "compact",
+            "reason": "Skimmed toolbar benefits from tightening",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.linkedin.com/jobs/*"
+          },
+          {
+            "container": "n50",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Job results list",
+            "members": [
+              "n51",
+              "n60"
+            ],
+            "operation": "emphasize",
+            "reason": "Core goal is browsing frontend roles",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "www.linkedin.com/jobs/search"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 4032,
+            "model": "spark",
+            "ms": 9890,
+            "outputTokens": 2076,
+            "purpose": "layout plan",
+            "reasoningTokens": 1514
+          },
+          {
+            "inputTokens": 4624,
+            "model": "spark",
+            "ms": 5886,
+            "outputTokens": 1347,
+            "purpose": "repair",
+            "reasoningTokens": 914
+          }
+        ],
+        "ms": 15787
+      },
+      "layout": {
+        "labels": [
+          "Job alert signup",
+          "Privacy consent banner",
+          "Search filters",
+          "Job results list"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n48",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "unresolved",
+        "unresolved",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n43",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Get notified job alert banner",
+              "members": [
+                "n44"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide job-posted notification prompt",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.linkedin.com/jobs/search/*"
+            },
+            {
+              "container": "n70",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Use AI to assess fit box",
+              "members": [
+                "n92"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide AI fit assessment box",
+              "reorderable": false,
+              "role": "promo",
+              "urlPattern": "www.linkedin.com/jobs/search/*"
+            },
+            {
+              "container": "n50",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Job results list",
+              "members": [
+                "n51",
+                "n60"
+              ],
+              "operation": "emphasize",
+              "reason": "Core goal is browsing frontend engineer roles",
+              "reorderable": false,
+              "role": "list",
+              "urlPattern": "www.linkedin.com/jobs/search/*"
+            },
+            {
+              "container": "n12",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Header navigation",
+              "members": [
+                "n13"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation already works",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.linkedin.com/jobs/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Job results list",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Denser list"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Job results list",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier list"
+                }
+              ],
+              "text": "How do you scan job results?"
+            },
+            {
+              "id": "filters",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Header navigation",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep filters visible"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Header navigation",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide filter help"
+                }
+              ],
+              "text": "Do you use the filter bar often?"
+            }
+          ],
+          "summary": "Hide job-alert banner and AI fit box, emphasize job results for faster scanning.",
+          "template": {
+            "pageKind": "jobs search",
+            "urlPattern": "www.linkedin.com/jobs/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n43",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Get notified job alert banner",
+            "members": [
+              "n44"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide job-posted notification prompt",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.linkedin.com/jobs/search/*"
+          },
+          {
+            "container": "n70",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Use AI to assess fit box",
+            "members": [
+              "n92"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide AI fit assessment box",
+            "reorderable": false,
+            "role": "promo",
+            "urlPattern": "www.linkedin.com/jobs/search/*"
+          },
+          {
+            "container": "n50",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Job results list",
+            "members": [
+              "n51",
+              "n60"
+            ],
+            "operation": "emphasize",
+            "reason": "Core goal is browsing frontend engineer roles",
+            "reorderable": false,
+            "role": "list",
+            "urlPattern": "www.linkedin.com/jobs/search/*"
+          },
+          {
+            "container": "n12",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Header navigation",
+            "members": [
+              "n13"
+            ],
+            "operation": "none",
+            "reason": "Primary navigation already works",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.linkedin.com/jobs/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 12,
+            "model": "sam",
+            "ms": 979,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 11,
+            "model": "sam",
+            "ms": 980,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1163,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 1112,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 4122,
+            "model": "spark",
+            "ms": 7505,
+            "outputTokens": 1753,
+            "purpose": "layout plan",
+            "reasoningTokens": 1220
+          },
+          {
+            "inputTokens": 4693,
+            "model": "spark",
+            "ms": 4878,
+            "outputTokens": 1223,
+            "purpose": "repair",
+            "reasoningTokens": 813
+          }
+        ],
+        "ms": 13567
+      },
+      "layout": {
+        "labels": [
+          "Get notified job alert banner",
+          "Use AI to assess fit box",
+          "Job results list"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "found": false,
+          "visible": false,
+          "ops": [],
+          "coveringOps": []
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n48",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "unresolved",
+        "unresolved",
+        "pass"
+      ]
+    }
+  ]
+}

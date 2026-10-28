@@ -1,0 +1,709 @@
+{
+  "scenario": {
+    "id": "booking-hide-footer-links",
+    "site": "booking-search",
+    "goal": "Hide the big footer link lists.",
+    "tags": [
+      "travel",
+      "hide",
+      "footer",
+      "partial-page"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "data-testid": "full-footer"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "data-testid": "header-booking-logo"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "booking-search",
+    "url": "https://www.booking.com/searchresults.html?ss=Zurich",
+    "finalUrl": "https://www.booking.com/searchresults.html"
+  },
+  "at": "2026-10-28T22:11:43.848Z",
+  "scanNodes": 176,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "full-footer"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n51",
+        "tag": "footer",
+        "kind": "landmark",
+        "text": "Countries Regions Cities Districts Airports Hotels Places of interest Vacation …"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "data-testid": "header-booking-logo"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n4",
+        "tag": "a",
+        "kind": "interactive",
+        "text": "Booking.com"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n51",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n4",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "text",
+                "source": "text"
+              },
+              "label": "Product tabs",
+              "members": [
+                "n16",
+                "n19",
+                "n22",
+                "n25",
+                "n28",
+                "n31",
+                "n33"
+              ],
+              "operation": "none",
+              "reason": "Primary navigation for search task",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n5",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Header utilities",
+              "members": [
+                "n6",
+                "n7",
+                "n10",
+                "n11",
+                "n12",
+                "n13"
+              ],
+              "operation": "none",
+              "reason": "Account and settings controls already compact",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n53",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Quick links",
+              "members": [
+                "n55",
+                "n57",
+                "n59",
+                "n61",
+                "n63",
+                "n65",
+                "n67",
+                "n69",
+                "n71",
+                "n73",
+                "n75",
+                "n77",
+                "n79",
+                "n81",
+                "n83",
+                "n85"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Big footer link list user wants hidden",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.booking.com/searchresults.html"
+            },
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Footer link columns",
+              "members": [
+                "n87",
+                "n96",
+                "n119",
+                "n134",
+                "n145"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Big footer link lists user wants hidden",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.booking.com/searchresults.html"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Header utilities",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Header utilities",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make tighter"
+                }
+              ],
+              "text": "Do you want the top header controls tighter to focus on results?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Product tabs",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep as is"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Product tabs",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make tighter"
+                }
+              ],
+              "text": "Should Stays, Flights and other product tabs take less space?"
+            }
+          ],
+          "summary": "Hides Quick links and Footer link columns per your goal, keeps header and product navigation unchanged.",
+          "template": {
+            "pageKind": "search results",
+            "urlPattern": "www.booking.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n5",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Header utilities",
+            "members": [
+              "n6",
+              "n7",
+              "n10",
+              "n11",
+              "n12",
+              "n13"
+            ],
+            "operation": "none",
+            "reason": "Account and settings controls already compact",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n53",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Quick links",
+            "members": [
+              "n55",
+              "n57",
+              "n59",
+              "n61",
+              "n63",
+              "n65",
+              "n67",
+              "n69",
+              "n71",
+              "n73",
+              "n75",
+              "n77",
+              "n79",
+              "n81",
+              "n83",
+              "n85"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Big footer link list user wants hidden",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.booking.com/searchresults.html"
+          },
+          {
+            "container": "n86",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Footer link columns",
+            "members": [
+              "n87",
+              "n96",
+              "n119",
+              "n134",
+              "n145"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Big footer link lists user wants hidden",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.booking.com/searchresults.html"
+          }
+        ],
+        "errors": [
+          "groups[0] \"Product tabs\": text identity is not unique across members"
+        ],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 6106,
+            "model": "spark",
+            "ms": 7431,
+            "outputTokens": 1851,
+            "purpose": "layout plan",
+            "reasoningTokens": 1201
+          },
+          {
+            "inputTokens": 6631,
+            "model": "spark",
+            "ms": 7301,
+            "outputTokens": 1592,
+            "purpose": "repair",
+            "reasoningTokens": 1100
+          }
+        ],
+        "ms": 14747
+      },
+      "layout": {
+        "labels": [
+          "Quick links",
+          "Footer link columns"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n51",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n4",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n15",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Top service tabs",
+              "members": [
+                "n16",
+                "n19",
+                "n22",
+                "n25",
+                "n28",
+                "n31",
+                "n34"
+              ],
+              "operation": "none",
+              "reason": "Primary service navigation, keep as is",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n5",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Header utility actions",
+              "members": [
+                "n6",
+                "n7",
+                "n10",
+                "n11",
+                "n12",
+                "n13"
+              ],
+              "operation": "none",
+              "reason": "Account and settings controls",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n53",
+              "identity": {
+                "attribute": "href",
+                "source": "href"
+              },
+              "label": "Footer quick links",
+              "members": [
+                "n54",
+                "n56",
+                "n58",
+                "n60",
+                "n62",
+                "n64",
+                "n66",
+                "n68",
+                "n70",
+                "n72",
+                "n74",
+                "n76",
+                "n78",
+                "n80",
+                "n82",
+                "n84"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Big footer link list user wants hidden",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.booking.com/*"
+            },
+            {
+              "container": "n86",
+              "identity": {
+                "attribute": "data-testid",
+                "source": "attribute"
+              },
+              "label": "Footer link columns",
+              "members": [
+                "n87",
+                "n96",
+                "n119",
+                "n134",
+                "n145"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Big footer link lists user wants hidden",
+              "reorderable": false,
+              "role": "footer",
+              "urlPattern": "www.booking.com/*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "tabs-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Top service tabs",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep full tabs"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Top service tabs",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Compact tabs"
+                }
+              ],
+              "text": "How should the Stays / Flights tabs look when searching?"
+            },
+            {
+              "id": "header-density",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Header utility actions",
+                      "operation": "none"
+                    }
+                  ],
+                  "label": "Keep roomy"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Header utility actions",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Make compact"
+                }
+              ],
+              "text": "How dense should the top header controls be?"
+            }
+          ],
+          "summary": "Hide both footer quick links and footer link columns per goal, keep header navigation intact.",
+          "template": {
+            "pageKind": "search-results",
+            "urlPattern": "www.booking.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n15",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Top service tabs",
+            "members": [
+              "n16",
+              "n19",
+              "n22",
+              "n25",
+              "n28",
+              "n31",
+              "n34"
+            ],
+            "operation": "none",
+            "reason": "Primary service navigation, keep as is",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n5",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Header utility actions",
+            "members": [
+              "n6",
+              "n7",
+              "n10",
+              "n11",
+              "n12",
+              "n13"
+            ],
+            "operation": "none",
+            "reason": "Account and settings controls",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n53",
+            "identity": {
+              "attribute": "href",
+              "source": "href"
+            },
+            "label": "Footer quick links",
+            "members": [
+              "n54",
+              "n56",
+              "n58",
+              "n60",
+              "n62",
+              "n64",
+              "n66",
+              "n68",
+              "n70",
+              "n72",
+              "n74",
+              "n76",
+              "n78",
+              "n80",
+              "n82",
+              "n84"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Big footer link list user wants hidden",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.booking.com/*"
+          },
+          {
+            "container": "n86",
+            "identity": {
+              "attribute": "data-testid",
+              "source": "attribute"
+            },
+            "label": "Footer link columns",
+            "members": [
+              "n87",
+              "n96",
+              "n119",
+              "n134",
+              "n145"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Big footer link lists user wants hidden",
+            "reorderable": false,
+            "role": "footer",
+            "urlPattern": "www.booking.com/*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 879,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 6,
+            "model": "sam",
+            "ms": 944,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 841,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 2,
+            "model": "sam",
+            "ms": 882,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 6158,
+            "model": "spark",
+            "ms": 12468,
+            "outputTokens": 2877,
+            "purpose": "layout plan",
+            "reasoningTokens": 2235
+          },
+          {
+            "inputTokens": 6777,
+            "model": "spark",
+            "ms": 4192,
+            "outputTokens": 1180,
+            "purpose": "repair",
+            "reasoningTokens": 691
+          }
+        ],
+        "ms": 17627
+      },
+      "layout": {
+        "labels": [
+          "Footer quick links",
+          "Footer link columns"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n51",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n4",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    }
+  ]
+}

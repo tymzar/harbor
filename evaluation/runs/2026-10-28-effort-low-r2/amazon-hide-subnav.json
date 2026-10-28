@@ -1,0 +1,620 @@
+{
+  "scenario": {
+    "id": "amazon-hide-subnav",
+    "site": "amazon-search",
+    "goal": "Hide the second navigation bar (All, Today's Deals, ...); keep the search bar.",
+    "tags": [
+      "commerce",
+      "hide",
+      "navigation"
+    ],
+    "expect": [
+      {
+        "op": "hide",
+        "anchor": {
+          "attr": {
+            "id": "nav-main"
+          }
+        }
+      },
+      {
+        "op": "keep",
+        "anchor": {
+          "attr": {
+            "id": "nav-search-bar-form"
+          }
+        }
+      }
+    ]
+  },
+  "site": {
+    "id": "amazon-search",
+    "url": "https://www.amazon.com/s?k=usb+c+cable",
+    "finalUrl": "https://www.amazon.com/s?k=usb+c+cable"
+  },
+  "at": "2026-10-28T22:08:29.015Z",
+  "scanNodes": 179,
+  "rescanned": false,
+  "anchors": [
+    {
+      "anchor": {
+        "attr": {
+          "id": "nav-main"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n36",
+        "tag": "div",
+        "kind": "group",
+        "text": "window.navmet.tmp=+new Date(); All var hmenu = document.getElementById(\"nav-ham…"
+      }
+    },
+    {
+      "anchor": {
+        "attr": {
+          "id": "nav-search-bar-form"
+        }
+      },
+      "matches": 1,
+      "node": {
+        "id": "n9",
+        "tag": "form",
+        "kind": "landmark",
+        "text": "All Select the department you want to search in"
+      }
+    }
+  ],
+  "before": [
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n36",
+      "ops": [],
+      "visible": true
+    },
+    {
+      "coveringOps": [],
+      "found": true,
+      "id": "n9",
+      "ops": [],
+      "visible": true
+    }
+  ],
+  "baseline": [
+    "fail",
+    "pass"
+  ],
+  "runs": [
+    {
+      "mode": "dom-only",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": false,
+        "plan": {
+          "groups": [
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "data-csa-c-content-id",
+                "source": "attribute"
+              },
+              "label": "Secondary navigation bar",
+              "members": [
+                "n39",
+                "n41",
+                "n43",
+                "n45",
+                "n47",
+                "n49",
+                "n51"
+              ],
+              "operation": "hide-secondary",
+              "reason": "User asked to hide All, Today's Deals, etc.",
+              "reorderable": false,
+              "role": "navigation",
+              "urlPattern": "www.amazon.com/*"
+            },
+            {
+              "container": "n4",
+              "identity": {
+                "attribute": "",
+                "source": "none"
+              },
+              "label": "Header with search bar",
+              "members": [
+                "n5",
+                "n14"
+              ],
+              "operation": "none",
+              "reason": "Keep search bar as requested",
+              "reorderable": false,
+              "role": "toolbar",
+              "urlPattern": "www.amazon.com/*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Filter sidebar",
+              "members": [
+                "n108",
+                "n122",
+                "n153"
+              ],
+              "operation": "compact",
+              "reason": "Long skimmed filter list",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "www.amazon.com/s*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "data-asin",
+                "source": "attribute"
+              },
+              "label": "Search results",
+              "members": [
+                "n69",
+                "n89"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal on search page",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "www.amazon.com/s*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "results-layout",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Denser grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search results",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomy detailed list"
+                }
+              ],
+              "text": "How should search results be shown?"
+            },
+            {
+              "id": "filters-need",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide filters"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact filters"
+                }
+              ],
+              "text": "Do you use the left filters?"
+            }
+          ],
+          "summary": "Hide secondary nav, keep header search, compact filters, emphasize results.",
+          "template": {
+            "pageKind": "search-results",
+            "urlPattern": "www.amazon.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n36",
+            "identity": {
+              "attribute": "data-csa-c-content-id",
+              "source": "attribute"
+            },
+            "label": "Secondary navigation bar",
+            "members": [
+              "n39",
+              "n41",
+              "n43",
+              "n45",
+              "n47",
+              "n49",
+              "n51"
+            ],
+            "operation": "hide-secondary",
+            "reason": "User asked to hide All, Today's Deals, etc.",
+            "reorderable": false,
+            "role": "navigation",
+            "urlPattern": "www.amazon.com/*"
+          },
+          {
+            "container": "n4",
+            "identity": {
+              "attribute": "",
+              "source": "none"
+            },
+            "label": "Header with search bar",
+            "members": [
+              "n5",
+              "n14"
+            ],
+            "operation": "none",
+            "reason": "Keep search bar as requested",
+            "reorderable": false,
+            "role": "toolbar",
+            "urlPattern": "www.amazon.com/*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Filter sidebar",
+            "members": [
+              "n108",
+              "n122",
+              "n153"
+            ],
+            "operation": "compact",
+            "reason": "Long skimmed filter list",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "www.amazon.com/s*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "data-asin",
+              "source": "attribute"
+            },
+            "label": "Search results",
+            "members": [
+              "n69",
+              "n89"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal on search page",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "www.amazon.com/s*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "inputTokens": 7683,
+            "model": "spark",
+            "ms": 12355,
+            "outputTokens": 3065,
+            "purpose": "layout plan",
+            "reasoningTokens": 2503
+          },
+          {
+            "inputTokens": 8246,
+            "model": "spark",
+            "ms": 3939,
+            "outputTokens": 1028,
+            "purpose": "repair",
+            "reasoningTokens": 599
+          }
+        ],
+        "ms": 16313
+      },
+      "layout": {
+        "labels": [
+          "Secondary navigation bar",
+          "Filter sidebar",
+          "Search results"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n36",
+          "ops": [],
+          "visible": true
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n9",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "fail",
+        "pass"
+      ]
+    },
+    {
+      "mode": "dom+sam",
+      "proposal": {
+        "status": "done",
+        "usedScreenshot": true,
+        "plan": {
+          "groups": [
+            {
+              "container": "n36",
+              "identity": {
+                "attribute": "",
+                "source": "text"
+              },
+              "label": "Secondary navigation links",
+              "members": [
+                "n37",
+                "n38",
+                "n40",
+                "n42",
+                "n44",
+                "n46",
+                "n48",
+                "n50"
+              ],
+              "operation": "hide-secondary",
+              "reason": "Second bar requested hidden; keep search bar visible",
+              "reorderable": true,
+              "role": "navigation",
+              "urlPattern": "https://www.amazon.com/*"
+            },
+            {
+              "container": "n107",
+              "identity": {
+                "attribute": "id",
+                "source": "attribute"
+              },
+              "label": "Filter sidebar sections",
+              "members": [
+                "n108",
+                "n122",
+                "n153"
+              ],
+              "operation": "compact",
+              "reason": "Dense filters to skim faster",
+              "reorderable": false,
+              "role": "sidebar",
+              "urlPattern": "https://www.amazon.com/s*"
+            },
+            {
+              "container": "n62",
+              "identity": {
+                "attribute": "data-asin",
+                "source": "attribute"
+              },
+              "label": "Search result cards",
+              "members": [
+                "n69",
+                "n89"
+              ],
+              "operation": "emphasize",
+              "reason": "Main goal is choosing a cable",
+              "reorderable": false,
+              "role": "content-cards",
+              "urlPattern": "https://www.amazon.com/s*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "q1",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar sections",
+                      "operation": "hide-secondary"
+                    }
+                  ],
+                  "label": "Hide filters"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Filter sidebar sections",
+                      "operation": "compact"
+                    }
+                  ],
+                  "label": "Keep compact"
+                }
+              ],
+              "text": "How often do you use the left filters?"
+            },
+            {
+              "id": "q2",
+              "multiple": false,
+              "options": [
+                {
+                  "effects": [
+                    {
+                      "group": "Search result cards",
+                      "operation": "grid"
+                    }
+                  ],
+                  "label": "Denser grid"
+                },
+                {
+                  "effects": [
+                    {
+                      "group": "Search result cards",
+                      "operation": "emphasize"
+                    }
+                  ],
+                  "label": "Roomier list"
+                }
+              ],
+              "text": "Prefer denser or roomier results?"
+            }
+          ],
+          "summary": "Hide the All / Today's Deals second bar, keep search bar untouched, tighten filters and highlight results.",
+          "template": {
+            "pageKind": "search",
+            "urlPattern": "https://www.amazon.com/*"
+          }
+        },
+        "accepted": [
+          {
+            "container": "n36",
+            "identity": {
+              "attribute": "",
+              "source": "text"
+            },
+            "label": "Secondary navigation links",
+            "members": [
+              "n37",
+              "n38",
+              "n40",
+              "n42",
+              "n44",
+              "n46",
+              "n48",
+              "n50"
+            ],
+            "operation": "hide-secondary",
+            "reason": "Second bar requested hidden; keep search bar visible",
+            "reorderable": true,
+            "role": "navigation",
+            "urlPattern": "https://www.amazon.com/*"
+          },
+          {
+            "container": "n107",
+            "identity": {
+              "attribute": "id",
+              "source": "attribute"
+            },
+            "label": "Filter sidebar sections",
+            "members": [
+              "n108",
+              "n122",
+              "n153"
+            ],
+            "operation": "compact",
+            "reason": "Dense filters to skim faster",
+            "reorderable": false,
+            "role": "sidebar",
+            "urlPattern": "https://www.amazon.com/s*"
+          },
+          {
+            "container": "n62",
+            "identity": {
+              "attribute": "data-asin",
+              "source": "attribute"
+            },
+            "label": "Search result cards",
+            "members": [
+              "n69",
+              "n89"
+            ],
+            "operation": "emphasize",
+            "reason": "Main goal is choosing a cable",
+            "reorderable": false,
+            "role": "content-cards",
+            "urlPattern": "https://www.amazon.com/s*"
+          }
+        ],
+        "errors": [],
+        "repaired": true,
+        "calls": [
+          {
+            "matches": 5,
+            "model": "sam",
+            "ms": 1058,
+            "purpose": "segment \"button\""
+          },
+          {
+            "matches": 4,
+            "model": "sam",
+            "ms": 1656,
+            "purpose": "segment \"rounded rectangle\""
+          },
+          {
+            "matches": 0,
+            "model": "sam",
+            "ms": 1296,
+            "purpose": "segment \"gray box\""
+          },
+          {
+            "matches": 3,
+            "model": "sam",
+            "ms": 1294,
+            "purpose": "segment \"icon\""
+          },
+          {
+            "inputTokens": 7694,
+            "model": "spark",
+            "ms": 6791,
+            "outputTokens": 1607,
+            "purpose": "layout plan",
+            "reasoningTokens": 1115
+          },
+          {
+            "inputTokens": 8184,
+            "model": "spark",
+            "ms": 4899,
+            "outputTokens": 1295,
+            "purpose": "repair",
+            "reasoningTokens": 791
+          }
+        ],
+        "ms": 13376
+      },
+      "layout": {
+        "labels": [
+          "Secondary navigation links",
+          "Filter sidebar sections",
+          "Search result cards"
+        ],
+        "missing": [],
+        "state": "applied"
+      },
+      "after": [
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n36",
+          "ops": [
+            "hide-secondary"
+          ],
+          "visible": false
+        },
+        {
+          "coveringOps": [],
+          "found": true,
+          "id": "n9",
+          "ops": [],
+          "visible": true
+        }
+      ],
+      "verdicts": [
+        "pass",
+        "pass"
+      ]
+    }
+  ]
+}
