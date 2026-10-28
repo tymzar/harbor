@@ -55,8 +55,8 @@ export function matchesAnchor(node: ScanNode, anchor: Anchor): boolean {
 export function resolveAnchor(nodes: Array<ScanNode>, anchor: Anchor): { node?: ScanNode; matches: number } {
   const matches = nodes.filter((node) => matchesAnchor(node, anchor));
   const ids = new Set(matches.map((node) => node.id));
-  const deepest = matches.filter((node) => !matches.some((other) => other.parent === node.id || isBelow(other, node.id, nodes, ids)));
-  return { node: deepest[0] ?? matches[0], matches: matches.length };
+  const deepest = matches.find((node) => !matches.some((other) => other.parent === node.id || isBelow(other, node.id, nodes, ids)));
+  return { node: deepest ?? matches[0], matches: matches.length };
 }
 
 function isBelow(node: ScanNode, ancestorId: string, nodes: Array<ScanNode>, among: Set<string>): boolean {
