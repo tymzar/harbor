@@ -1,0 +1,284 @@
+{
+  "fixture": "docs.html",
+  "mode": "dom+sam",
+  "at": "2026-10-28T08:26:59.777Z",
+  "scanNodes": 52,
+  "proposal": {
+    "accepted": [
+      {
+        "container": "n1",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Top navigation",
+        "members": [
+          "n2",
+          "n3",
+          "n4",
+          "n5",
+          "n6",
+          "n7",
+          "n8",
+          "n9"
+        ],
+        "operation": "none",
+        "reason": "Primary site sections; keep as is.",
+        "reorderable": true,
+        "role": "navigation"
+      },
+      {
+        "container": "n12",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Docs sidebar",
+        "members": [
+          "n13",
+          "n14",
+          "n15",
+          "n16",
+          "n17",
+          "n18",
+          "n19",
+          "n20",
+          "n21",
+          "n22",
+          "n23",
+          "n24",
+          "n25",
+          "n26",
+          "n27",
+          "n28",
+          "n29"
+        ],
+        "operation": "none",
+        "reason": "Guide order is pedagogical; leave as is.",
+        "reorderable": false,
+        "role": "sidebar"
+      },
+      {
+        "container": "n35",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Next steps cards",
+        "members": [
+          "n36",
+          "n38",
+          "n40",
+          "n42"
+        ],
+        "operation": "grid",
+        "reason": "Look-alike links; grid evens layout.",
+        "reorderable": true,
+        "role": "content-cards"
+      },
+      {
+        "container": "n44",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "On this page",
+        "members": [
+          "n45",
+          "n46",
+          "n47",
+          "n48"
+        ],
+        "operation": "none",
+        "reason": "Anchors follow article order.",
+        "reorderable": false,
+        "role": "navigation"
+      },
+      {
+        "container": "n49",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Footer links",
+        "members": [
+          "n50",
+          "n51",
+          "n52"
+        ],
+        "operation": "none",
+        "reason": "Legal links; no change.",
+        "reorderable": false,
+        "role": "footer"
+      }
+    ],
+    "calls": [
+      {
+        "matches": 0,
+        "model": "sam",
+        "ms": 1396,
+        "purpose": "segment \"button\""
+      },
+      {
+        "matches": 6,
+        "model": "sam",
+        "ms": 1972,
+        "purpose": "segment \"rounded rectangle\""
+      },
+      {
+        "matches": 0,
+        "model": "sam",
+        "ms": 1464,
+        "purpose": "segment \"gray box\""
+      },
+      {
+        "matches": 0,
+        "model": "sam",
+        "ms": 1419,
+        "purpose": "segment \"icon\""
+      },
+      {
+        "inputTokens": 2045,
+        "model": "spark",
+        "ms": 14272,
+        "outputTokens": 3568,
+        "purpose": "layout plan",
+        "reasoningTokens": 3053
+      }
+    ],
+    "errors": [],
+    "finishedAt": 1793176019527,
+    "plan": {
+      "groups": [
+        {
+          "container": "n1",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Top navigation",
+          "members": [
+            "n2",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7",
+            "n8",
+            "n9"
+          ],
+          "operation": "none",
+          "reason": "Primary site sections; keep as is.",
+          "reorderable": true,
+          "role": "navigation"
+        },
+        {
+          "container": "n12",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Docs sidebar",
+          "members": [
+            "n13",
+            "n14",
+            "n15",
+            "n16",
+            "n17",
+            "n18",
+            "n19",
+            "n20",
+            "n21",
+            "n22",
+            "n23",
+            "n24",
+            "n25",
+            "n26",
+            "n27",
+            "n28",
+            "n29"
+          ],
+          "operation": "none",
+          "reason": "Guide order is pedagogical; leave as is.",
+          "reorderable": false,
+          "role": "sidebar"
+        },
+        {
+          "container": "n35",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Next steps cards",
+          "members": [
+            "n36",
+            "n38",
+            "n40",
+            "n42"
+          ],
+          "operation": "grid",
+          "reason": "Look-alike links; grid evens layout.",
+          "reorderable": true,
+          "role": "content-cards"
+        },
+        {
+          "container": "n44",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "On this page",
+          "members": [
+            "n45",
+            "n46",
+            "n47",
+            "n48"
+          ],
+          "operation": "none",
+          "reason": "Anchors follow article order.",
+          "reorderable": false,
+          "role": "navigation"
+        },
+        {
+          "container": "n49",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Footer links",
+          "members": [
+            "n50",
+            "n51",
+            "n52"
+          ],
+          "operation": "none",
+          "reason": "Legal links; no change.",
+          "reorderable": false,
+          "role": "footer"
+        }
+      ],
+      "summary": "Docs article with top nav, left guide tree, next-step cards, TOC, and footer.",
+      "template": {
+        "pageKind": "docs",
+        "urlPattern": "127.0.0.1:4317/docs.html"
+      }
+    },
+    "repaired": false,
+    "scannedAt": 1793176003082,
+    "startedAt": 1793176003275,
+    "status": "done",
+    "usedScreenshot": true,
+    "visualGroups": [
+      {
+        "concept": "rounded rectangle",
+        "nodeIds": [
+          "n40",
+          "n38",
+          "n42",
+          "n36"
+        ],
+        "parent": "n35"
+      }
+    ]
+  }
+}

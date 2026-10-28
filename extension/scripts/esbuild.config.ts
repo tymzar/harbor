@@ -18,6 +18,21 @@ function makeHtmlEntries(paths: Array<string>) {
   ];
 }
 
+function readProxyEnvironment(): Record<string, string> {
+  const values: Record<string, string> = {};
+  try {
+    for (const line of readFileSync("../.env.local", "utf8").split("\n")) {
+      const match = /^(SMART_WEB_PROXY_\w+)=(.*)$/.exec(line.trim());
+      if (match) values[match[1]] = match[2];
+    }
+  } catch {
+    console.warn("No ../.env.local; the extension will not be able to reach the model proxy.");
+  }
+  return values;
+}
+
+const proxyEnvironment = readProxyEnvironment();
+
 const config: BuildOptions = {
   platform: "browser",
   outdir: "./build",
@@ -72,6 +87,14 @@ const config: BuildOptions = {
     }),
   ],
   define: {
+    // Local proxy address and its local key (never the Meta key), from the repo's .env.local.
+    __PROXY_URL__: JSON.stringify(proxyEnvironment.SMART_WEB_PROXY_URL ?? "http://127.0.0.1:4000"),
+    __PROXY_KEY__: JSON.stringify(proxyEnvironment.SMART_WEB_PROXY_KEY ?? ""),
+    // "low" halved Spark latency with the same plans on both fixtures (evidence/day2-effort-low).
+    // SMART_WEB_REASONING_EFFORT=default uses the model's own default.
+    __REASONING_EFFORT__: JSON.stringify(
+      process.env.SMART_WEB_REASONING_EFFORT === "default" ? "" : (process.env.SMART_WEB_REASONING_EFFORT ?? "low")
+    ),
     "process.env.NODE_ENV": `"${process.env.NODE_ENV}"`,
     "process.env.PORT": `"${process.env.PORT}"`,
     "process.env.ESBUILD_EVENT_SOURCE": `"${process.env.ESBUILD_EVENT_SOURCE}"`,
@@ -89,7 +112,8 @@ async function createEsbuildContext(
 function grantTestHosts() {
   const manifestPath = "./build/manifest.json";
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-  manifest.host_permissions = ["<all_urls>"]; // captureVisibleTab needs <all_urls> without activeTab
+  // captureVisibleTab needs <all_urls> when there is no activeTab grant.
+  manifest.host_permissions = [...(manifest.host_permissions ?? []), "<all_urls>"];
   writeFileSync(manifestPath, JSON.stringify(manifest, undefined, 2));
 }
 

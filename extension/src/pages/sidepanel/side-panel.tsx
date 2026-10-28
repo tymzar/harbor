@@ -4,6 +4,7 @@ import { Magnifier } from "@gravity-ui/icons";
 
 import type { NodeKind, PanelRequest, ScanNode, TabSession } from "../../shared/types";
 import { sessionKey } from "../../shared/types";
+import { PlanCard } from "./plan-card";
 
 const KIND_LABEL: Record<NodeKind, string> = {
   landmark: "Landmarks",
@@ -170,6 +171,8 @@ export function SidePanel() {
           )}
         </Card.Footer>
       </Card>
+
+      {scan && session && <PlanCard session={session} />}
 
       {scan && (scan.truncated || scan.skipped.iframes > 0 || scan.skipped.shadowHosts > 0) && (
         <Alert status="warning" data-testid="scan-gaps">

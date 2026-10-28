@@ -1,0 +1,190 @@
+{
+  "fixture": "catalog.html",
+  "mode": "dom-only",
+  "at": "2026-10-28T08:28:22.903Z",
+  "scanNodes": 49,
+  "proposal": {
+    "accepted": [
+      {
+        "container": "n1",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Primary categories",
+        "members": [
+          "n2",
+          "n3",
+          "n4",
+          "n5",
+          "n6",
+          "n7"
+        ],
+        "operation": "none",
+        "reason": "Main nav, leave stable for repeat visits",
+        "reorderable": true,
+        "role": "navigation"
+      },
+      {
+        "container": "n12",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Filter sections",
+        "members": [
+          "n13",
+          "n17",
+          "n21"
+        ],
+        "operation": "none",
+        "reason": "Filter facets, keep as is",
+        "reorderable": false,
+        "role": "sidebar"
+      },
+      {
+        "container": "n28",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Backpack results",
+        "members": [
+          "n29",
+          "n31",
+          "n33",
+          "n35",
+          "n37",
+          "n39",
+          "n41",
+          "n43"
+        ],
+        "operation": "grid",
+        "reason": "Repeated product cards suit grid layout",
+        "reorderable": false,
+        "role": "content-cards"
+      },
+      {
+        "container": "n45",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Pagination",
+        "members": [
+          "n46",
+          "n47",
+          "n48",
+          "n49"
+        ],
+        "operation": "none",
+        "reason": "Page navigation, no change needed",
+        "reorderable": false,
+        "role": "navigation"
+      }
+    ],
+    "calls": [
+      {
+        "inputTokens": 1903,
+        "model": "spark",
+        "ms": 7769,
+        "outputTokens": 1651,
+        "purpose": "layout plan",
+        "reasoningTokens": 1265
+      }
+    ],
+    "errors": [],
+    "finishedAt": 1793176102714,
+    "plan": {
+      "groups": [
+        {
+          "container": "n1",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Primary categories",
+          "members": [
+            "n2",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7"
+          ],
+          "operation": "none",
+          "reason": "Main nav, leave stable for repeat visits",
+          "reorderable": true,
+          "role": "navigation"
+        },
+        {
+          "container": "n12",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Filter sections",
+          "members": [
+            "n13",
+            "n17",
+            "n21"
+          ],
+          "operation": "none",
+          "reason": "Filter facets, keep as is",
+          "reorderable": false,
+          "role": "sidebar"
+        },
+        {
+          "container": "n28",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Backpack results",
+          "members": [
+            "n29",
+            "n31",
+            "n33",
+            "n35",
+            "n37",
+            "n39",
+            "n41",
+            "n43"
+          ],
+          "operation": "grid",
+          "reason": "Repeated product cards suit grid layout",
+          "reorderable": false,
+          "role": "content-cards"
+        },
+        {
+          "container": "n45",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Pagination",
+          "members": [
+            "n46",
+            "n47",
+            "n48",
+            "n49"
+          ],
+          "operation": "none",
+          "reason": "Page navigation, no change needed",
+          "reorderable": false,
+          "role": "navigation"
+        }
+      ],
+      "summary": "Catalog listing with header nav, filter sidebar, product grid, and pagination.",
+      "template": {
+        "pageKind": "catalog",
+        "urlPattern": "127.0.0.1:4317/catalog.html"
+      }
+    },
+    "repaired": false,
+    "scannedAt": 1793176094813,
+    "startedAt": 1793176094931,
+    "status": "done",
+    "usedScreenshot": false
+  }
+}

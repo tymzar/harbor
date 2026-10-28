@@ -112,9 +112,36 @@ function snippet(element: Element, sensitive: boolean): string {
   return text.length > TEXT_LIMIT ? `${text.slice(0, TEXT_LIMIT - 1)}…` : text;
 }
 
+const ATTR_VALUE_LIMIT = 40;
+const MAX_ATTRS = 4;
+
+function linkPath(element: Element): string | undefined {
+  if (!(element instanceof HTMLAnchorElement) || !element.href) return undefined;
+  const url = new URL(element.href);
+  return url.origin === location.origin ? url.pathname : `${url.host}${url.pathname}`;
+}
+
+function identityAttributes(element: Element): Record<string, string> | undefined {
+  const attributes: Record<string, string> = {};
+  let count = 0;
+  for (const { name, value } of element.attributes) {
+    if (count >= MAX_ATTRS) break;
+    if (name !== "id" && !name.startsWith("data-")) continue;
+    if (!value || value.length > ATTR_VALUE_LIMIT) continue;
+    attributes[name] = value;
+    count += 1;
+  }
+  return count > 0 ? attributes : undefined;
+}
+
 // Element handles for this scan, keyed by transient node ID. Later stages
 // (hit-testing SAM boxes, applying a plan) resolve IDs through this map.
 export const nodeRegistry = new Map<string, WeakRef<Element>>();
+// The reverse direction, for hit-testing: element → node ID.
+export const elementIds = new WeakMap<Element, string>();
+// Scroll position at scan time; boxes from the screenshot are only valid at this offset.
+let scannedScroll = { x: 0, y: 0 };
+export const scannedScrollOffset = () => scannedScroll;
 
 export function scanPage(): PageScan {
   const started = performance.now();
@@ -124,6 +151,7 @@ export function scanPage(): PageScan {
   let truncated = false;
 
   nodeRegistry.clear();
+  scannedScroll = { x: scrollX, y: scrollY };
 
   const nearestKept = (element: Element): string | undefined => {
     for (
@@ -184,6 +212,7 @@ export function scanPage(): PageScan {
 
     idOf.set(element, id);
     nodeRegistry.set(id, new WeakRef(element));
+    elementIds.set(element, id);
     nodes.push({
       id,
       parent,
@@ -199,6 +228,8 @@ export function scanPage(): PageScan {
         h: Math.round(rect.height),
       },
       sensitive,
+      href: sensitive ? undefined : linkPath(element),
+      attrs: sensitive ? undefined : identityAttributes(element),
     });
   }
 

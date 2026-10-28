@@ -1,5 +1,6 @@
 import type { PageScan, PanelRequest, TabSession } from "../../shared/types";
 import { sessionKey } from "../../shared/types";
+import { propose } from "./propose";
 
 // Pages Chrome never lets extensions script, even with activeTab.
 const RESTRICTED =
@@ -75,6 +76,7 @@ chrome.action.onClicked.addListener((tab) => {
 
 chrome.runtime.onMessage.addListener((message: PanelRequest) => {
   if (message.type === "rescan") void scanTab(message.tabId, false);
+  if (message.type === "propose") void propose(message.tabId, message.includeScreenshot);
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {

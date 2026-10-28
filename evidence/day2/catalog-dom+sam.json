@@ -1,0 +1,234 @@
+{
+  "fixture": "catalog.html",
+  "mode": "dom+sam",
+  "at": "2026-10-28T08:27:25.662Z",
+  "scanNodes": 49,
+  "proposal": {
+    "accepted": [
+      {
+        "container": "n1",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Top category navigation",
+        "members": [
+          "n2",
+          "n3",
+          "n4",
+          "n5",
+          "n6",
+          "n7"
+        ],
+        "operation": "none",
+        "reason": "Primary repeat entry points; keep layout, allow custom order",
+        "reorderable": true,
+        "role": "navigation"
+      },
+      {
+        "container": "n28",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Backpack product cards",
+        "members": [
+          "n29",
+          "n31",
+          "n33",
+          "n35",
+          "n37",
+          "n39",
+          "n41",
+          "n43"
+        ],
+        "operation": "grid",
+        "reason": "Core content; grid improves scanning of many items",
+        "reorderable": false,
+        "role": "content-cards"
+      },
+      {
+        "container": "n12",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Filter categories",
+        "members": [
+          "n13",
+          "n17",
+          "n21"
+        ],
+        "operation": "none",
+        "reason": "Useful refinements; leave visible as is",
+        "reorderable": false,
+        "role": "sidebar"
+      },
+      {
+        "container": "n45",
+        "identity": {
+          "attribute": "",
+          "source": "text"
+        },
+        "label": "Pagination",
+        "members": [
+          "n46",
+          "n47",
+          "n48",
+          "n49"
+        ],
+        "operation": "none",
+        "reason": "Page navigation; keep as is",
+        "reorderable": false,
+        "role": "navigation"
+      }
+    ],
+    "calls": [
+      {
+        "matches": 13,
+        "model": "sam",
+        "ms": 1440,
+        "purpose": "segment \"button\""
+      },
+      {
+        "matches": 11,
+        "model": "sam",
+        "ms": 1526,
+        "purpose": "segment \"rounded rectangle\""
+      },
+      {
+        "matches": 0,
+        "model": "sam",
+        "ms": 916,
+        "purpose": "segment \"gray box\""
+      },
+      {
+        "matches": 0,
+        "model": "sam",
+        "ms": 1438,
+        "purpose": "segment \"icon\""
+      },
+      {
+        "inputTokens": 1944,
+        "model": "spark",
+        "ms": 22859,
+        "outputTokens": 5315,
+        "purpose": "layout plan",
+        "reasoningTokens": 4918
+      }
+    ],
+    "errors": [],
+    "finishedAt": 1793176045448,
+    "plan": {
+      "groups": [
+        {
+          "container": "n1",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Top category navigation",
+          "members": [
+            "n2",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7"
+          ],
+          "operation": "none",
+          "reason": "Primary repeat entry points; keep layout, allow custom order",
+          "reorderable": true,
+          "role": "navigation"
+        },
+        {
+          "container": "n28",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Backpack product cards",
+          "members": [
+            "n29",
+            "n31",
+            "n33",
+            "n35",
+            "n37",
+            "n39",
+            "n41",
+            "n43"
+          ],
+          "operation": "grid",
+          "reason": "Core content; grid improves scanning of many items",
+          "reorderable": false,
+          "role": "content-cards"
+        },
+        {
+          "container": "n12",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Filter categories",
+          "members": [
+            "n13",
+            "n17",
+            "n21"
+          ],
+          "operation": "none",
+          "reason": "Useful refinements; leave visible as is",
+          "reorderable": false,
+          "role": "sidebar"
+        },
+        {
+          "container": "n45",
+          "identity": {
+            "attribute": "",
+            "source": "text"
+          },
+          "label": "Pagination",
+          "members": [
+            "n46",
+            "n47",
+            "n48",
+            "n49"
+          ],
+          "operation": "none",
+          "reason": "Page navigation; keep as is",
+          "reorderable": false,
+          "role": "navigation"
+        }
+      ],
+      "summary": "Backpack catalog with top nav, filter sidebar, product grid, pagination.",
+      "template": {
+        "pageKind": "catalog",
+        "urlPattern": "127.0.0.1:4317/catalog.html"
+      }
+    },
+    "repaired": false,
+    "scannedAt": 1793176020865,
+    "startedAt": 1793176021054,
+    "status": "done",
+    "usedScreenshot": true,
+    "visualGroups": [
+      {
+        "concept": "button",
+        "nodeIds": [
+          "n49",
+          "n46",
+          "n48",
+          "n47"
+        ],
+        "parent": "n45"
+      },
+      {
+        "concept": "rounded rectangle",
+        "nodeIds": [
+          "n48",
+          "n49"
+        ],
+        "parent": "n45"
+      }
+    ]
+  }
+}

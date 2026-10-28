@@ -1,0 +1,248 @@
+{
+  "fixture": "docs.html",
+  "mode": "dom-only",
+  "at": "2026-10-28T08:28:23.920Z",
+  "scanNodes": 52,
+  "proposal": {
+    "accepted": [
+      {
+        "container": "n1",
+        "identity": {
+          "attribute": "text",
+          "source": "text"
+        },
+        "label": "Top docs navigation",
+        "members": [
+          "n2",
+          "n3",
+          "n4",
+          "n5",
+          "n6",
+          "n7",
+          "n8",
+          "n9"
+        ],
+        "operation": "none",
+        "reason": "Primary nav is small and stable, no change needed.",
+        "reorderable": false,
+        "role": "navigation"
+      },
+      {
+        "container": "n12",
+        "identity": {
+          "attribute": "text",
+          "source": "text"
+        },
+        "label": "Docs sidebar sections",
+        "members": [
+          "n13",
+          "n14",
+          "n15",
+          "n16",
+          "n17",
+          "n18",
+          "n19",
+          "n20",
+          "n21",
+          "n22",
+          "n23",
+          "n24",
+          "n25",
+          "n26",
+          "n27",
+          "n28",
+          "n29"
+        ],
+        "operation": "compact",
+        "reason": "Long repeated list used for frequent navigation, tighten spacing.",
+        "reorderable": false,
+        "role": "sidebar"
+      },
+      {
+        "container": "n35",
+        "identity": {
+          "attribute": "text",
+          "source": "text"
+        },
+        "label": "Next steps cards",
+        "members": [
+          "n36",
+          "n38",
+          "n40",
+          "n42"
+        ],
+        "operation": "grid",
+        "reason": "Repeated related cards, lay out in grid for scanning.",
+        "reorderable": true,
+        "role": "content-cards"
+      },
+      {
+        "container": "n44",
+        "identity": {
+          "attribute": "text",
+          "source": "text"
+        },
+        "label": "On this page TOC",
+        "members": [
+          "n45",
+          "n46",
+          "n47",
+          "n48"
+        ],
+        "operation": "none",
+        "reason": "Short anchor list, leave as is.",
+        "reorderable": false,
+        "role": "navigation"
+      },
+      {
+        "container": "n49",
+        "identity": {
+          "attribute": "text",
+          "source": "text"
+        },
+        "label": "Footer links",
+        "members": [
+          "n50",
+          "n51",
+          "n52"
+        ],
+        "operation": "none",
+        "reason": "Low-use legal links, no change.",
+        "reorderable": false,
+        "role": "footer"
+      }
+    ],
+    "calls": [
+      {
+        "inputTokens": 2017,
+        "model": "spark",
+        "ms": 8745,
+        "outputTokens": 1747,
+        "purpose": "layout plan",
+        "reasoningTokens": 1210
+      }
+    ],
+    "errors": [],
+    "finishedAt": 1793176103764,
+    "plan": {
+      "groups": [
+        {
+          "container": "n1",
+          "identity": {
+            "attribute": "text",
+            "source": "text"
+          },
+          "label": "Top docs navigation",
+          "members": [
+            "n2",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7",
+            "n8",
+            "n9"
+          ],
+          "operation": "none",
+          "reason": "Primary nav is small and stable, no change needed.",
+          "reorderable": false,
+          "role": "navigation"
+        },
+        {
+          "container": "n12",
+          "identity": {
+            "attribute": "text",
+            "source": "text"
+          },
+          "label": "Docs sidebar sections",
+          "members": [
+            "n13",
+            "n14",
+            "n15",
+            "n16",
+            "n17",
+            "n18",
+            "n19",
+            "n20",
+            "n21",
+            "n22",
+            "n23",
+            "n24",
+            "n25",
+            "n26",
+            "n27",
+            "n28",
+            "n29"
+          ],
+          "operation": "compact",
+          "reason": "Long repeated list used for frequent navigation, tighten spacing.",
+          "reorderable": false,
+          "role": "sidebar"
+        },
+        {
+          "container": "n35",
+          "identity": {
+            "attribute": "text",
+            "source": "text"
+          },
+          "label": "Next steps cards",
+          "members": [
+            "n36",
+            "n38",
+            "n40",
+            "n42"
+          ],
+          "operation": "grid",
+          "reason": "Repeated related cards, lay out in grid for scanning.",
+          "reorderable": true,
+          "role": "content-cards"
+        },
+        {
+          "container": "n44",
+          "identity": {
+            "attribute": "text",
+            "source": "text"
+          },
+          "label": "On this page TOC",
+          "members": [
+            "n45",
+            "n46",
+            "n47",
+            "n48"
+          ],
+          "operation": "none",
+          "reason": "Short anchor list, leave as is.",
+          "reorderable": false,
+          "role": "navigation"
+        },
+        {
+          "container": "n49",
+          "identity": {
+            "attribute": "text",
+            "source": "text"
+          },
+          "label": "Footer links",
+          "members": [
+            "n50",
+            "n51",
+            "n52"
+          ],
+          "operation": "none",
+          "reason": "Low-use legal links, no change.",
+          "reorderable": false,
+          "role": "footer"
+        }
+      ],
+      "summary": "Docs article with top nav, left sidebar, next-step cards, right TOC, and footer.",
+      "template": {
+        "pageKind": "docs",
+        "urlPattern": "127.0.0.1:4317/docs.html"
+      }
+    },
+    "repaired": false,
+    "scannedAt": 1793176094817,
+    "startedAt": 1793176095013,
+    "status": "done",
+    "usedScreenshot": false
+  }
+}

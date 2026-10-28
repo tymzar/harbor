@@ -15,3 +15,5 @@ Notes for the submission's feedback fields. Add entries as they happen, dated.
 
 - **SAM works through LiteLLM.** `meta/sam-3.1` streams through the LiteLLM proxy `/v1/responses` unchanged (11 boxes, same as direct). Not in LiteLLM's Meta docs.
 - **LiteLLM auth status codes.** Missing key → 500, wrong key → 400 "No connected db"; both refused, but neither is a 401.
+- **Spark latency vs reasoning effort.** Layout plans took 13–23 s at default effort with 85–92% reasoning tokens; `reasoning_effort: low` gave the same plans in 8–9 s on two pages. A per-request latency hint or a faster structured-output tier would help interactive use.
+- **SAM non-streaming works.** Plain `POST /v1/responses` (no `stream`) returns the full token text; docs only show streaming.
