@@ -171,6 +171,13 @@ export function PlanCard({ session }: { session: TabSession }) {
               ))}
             </ul>
 
+            {changeable.length === 0 && (current.accepted?.length ?? 0) > 0 && (
+              <p className="rounded-xl border border-border p-3 text-sm text-muted" data-testid="no-changes">
+                Meta found these regions but proposed no visible change for any of them, so there is nothing to
+                preview. Ask again for another plan.
+              </p>
+            )}
+
             {changeable.length > 0 && (
               <div className="flex flex-col gap-2 rounded-xl border border-border p-3" data-testid="layout-controls">
                 {!layout && (
@@ -187,9 +194,11 @@ export function PlanCard({ session }: { session: TabSession }) {
                 )}
                 {layout?.state === "preview" && (
                   <>
-                    <p className="text-xs text-muted">
-                      Changed regions are outlined. Use the page as usual; press Esc on it to cancel.
+                    <p className="text-sm" data-testid="preview-summary">
+                      {layout.labels.length} {layout.labels.length === 1 ? "region" : "regions"} changed and outlined
+                      on the page: {layout.labels.join(", ")}.
                     </p>
+                    <p className="text-xs text-muted">Use the page as usual; press Esc on it to cancel.</p>
                     <div className="flex gap-2">
                       <Button size="sm" variant="primary" onPress={() => sendLayout("apply")} data-testid="keep-layout">
                         <Check />
