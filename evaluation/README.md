@@ -4,8 +4,8 @@ Real websites, real requests, checkable outcomes. Built 28 October 2026 for the 
 
 | File | What it is |
 |---|---|
-| `sites.json` | 20 pages: URL, site, page kind |
-| `scenarios.json` | 40 scenarios: what the user asks, and what must (and must not) happen |
+| `sites.json` | 20 pages: URL, site, page kind; all load in the automated browser |
+| `scenarios.json` | 54 scenarios: what the user asks, and what must (and must not) happen |
 | `snapshots/<site>/` | What the extension saw: `scan.json`, `meta.json`, `page.jpg`. **Not committed** (third-party content); regenerate with the collector |
 | `validation.md` | Last validator report: every anchor checked against the snapshots |
 | `validate.ts` | The validator |
@@ -28,18 +28,18 @@ Collected logged out, from Switzerland, 1280×800, in Playwright's Chromium with
 | BBC News | news front page | `bbc-news` | 88 | banner left open | scanned | 2 |
 | LinkedIn | job search | `linkedin-jobs` | 121 | banner left open | scanned (sign-in overlay present) | 1 |
 | The Verge | news front page | `theverge-front` | 60 | banner left open | scanned | 2 |
-| Spotify | artist page | `spotify-artist` | 137 | Reject all | scanned | 2 |
+| Spotify | music artist page | `spotify-artist` | 137 | Reject all | scanned | 2 |
 | Booking.com | travel search | `booking-search` | 176 | – | partial: no results rendered | 2 |
-| X | social profile | `x-profile` | – | – | blocked: HTTP error | 1 (real browser) |
-| Reddit | community feed | `reddit-subreddit` | 4 | – | blocked: empty page | 1 (real browser) |
-| Hacker News | link aggregator | `hackernews-front` | 17 | – | blocked: rate limited | 1 (real browser) |
-| npm | package page | `npm-package` | 9 | – | blocked: Cloudflare check | 1 (real browser) |
-| IMDb | title page | `imdb-title` | 1 | – | blocked: 403 | 0 |
-| eBay | product search | `ebay-search` | 4 | – | blocked: error page | 0 |
+| Bluesky | social profile | `bluesky-profile` | 139 | – | scanned | 3 |
+| DEV Community | community feed | `devto-feed` | 105 | – | scanned | 3 |
+| The Guardian | news front page | `guardian-front` | 106 | – | scanned | 3 |
+| PyPI | package page | `pypi-package` | 75 | – | scanned | 2 |
+| Steam | game store page | `steam-app` | 95 | – | scanned | 4 |
+| IKEA | product listing | `ikea-category` | 87 | Reject | scanned | 3 |
 
-"Blocked" means the site refused the automated browser. The extension in a normal Chrome profile is not affected; those scenarios are marked `"requires": "real-browser"` and are run by hand.
+**Replaced.** Six sites first chosen refuse automated browsers and were swapped for popular sites of the same kind (28 Oct): X → Bluesky (HTTP error), Reddit → DEV Community (empty page), Hacker News → The Guardian (rate limited), npm → PyPI (Cloudflare check), IMDb → Steam (403), eBay → IKEA (error page). They work in a normal Chrome profile; scenarios for them can be added back with `"requires": "real-browser"` and run by hand.
 
-Scenarios that would hide sign-in walls or cookie prompts are deliberately absent: that is getting around a site's own controls, not personalising its layout.
+Scenarios that would hide sign-in walls or cookie prompts are deliberately absent: that is getting around a site's own controls, not personalising its layout. One scenario hides an ad slot (`guardian-hide-ad-and-subs`), as ad blockers commonly do; leave it out if that matters for how results are presented.
 
 ## Scenario format
 
@@ -60,7 +60,9 @@ Scenarios that would hide sign-in walls or cookie prompts are deliberately absen
 
 An **anchor** names an element the way a person would point at it, and is matched against the scan by `extension/src/shared/anchors.ts` (unit-tested). Fields: `tag`, `kind`, `text` (substring), `textStart`, `href` (substring), `attr` (exact), `area` (viewport position bounds). Text ignores case, whitespace and digits, so counters don't break anchors. A text anchor resolves to the deepest element carrying the text.
 
-Scenario mix: 36 goal scenarios (mainly hide 28, emphasize 4, density/grid 4), 4 picker scenarios, 4 of all of them real-browser only, 9 with more than one region to change, 1 with the same controls in two places (the GitHub request from 28 Oct, verbatim), and `keep` checks in 33 scenarios (39 checks) to catch over-hiding. 89 expectations in total: hide 41, keep 39, emphasize 4, compact 4, grid 1.
+Scenario mix: 48 goal scenarios (mainly hide 38, emphasize 7, density/grid 3) and 6 picker scenarios; 16 change more than one region; 1 has the same controls in two places (the GitHub request from 28 Oct, verbatim); 46 include `keep` checks (52 in all) to catch over-hiding. 124 expectations in total: hide 60, keep 52, emphasize 8, compact 3, grid 1.
+
+Every anchor was also checked by eye against what it resolves to, so that a `hide` names the region and not just its heading; where only a heading was available, a second element of the same region is required as well (e.g. Amazon's filter column: "Popular Shopping Ideas" and "Brands").
 
 ## Scoring
 
@@ -87,12 +89,12 @@ Known judgement calls: for "fit more on screen" (`twitch-dir-dense-grid`) both `
 ```bash
 cd extension
 E2E=1 npm run build
-COLLECT=1 npx playwright test eval-collect --workers=1    # refresh snapshots (visits 20 sites)
+COLLECT=1 npx playwright test eval-collect --workers=1    # refresh snapshots (visits the 20 sites)
 COLLECT=1 SITES=github-repo,youtube-watch npx playwright test eval-collect --workers=1
 cd .. && node evaluation/validate.ts                      # every anchor must resolve
 ```
 
-Use one worker: parallel visits got Hacker News to rate-limit the run. Sites change; re-collect and re-validate before an evaluation run, and fix anchors the validator flags.
+Use one worker: parallel visits got a site (Hacker News, since replaced) to rate-limit the run. Sites change; re-collect and re-validate before an evaluation run, and fix anchors the validator flags.
 
 ## Limits
 
