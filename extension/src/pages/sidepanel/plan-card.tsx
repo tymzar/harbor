@@ -120,7 +120,7 @@ function Progress({ proposal, elements }: { proposal: Proposal; elements: number
   else if (sam === "active") spark = "pending";
   const check: StepState = step === "repairing" ? "active" : "pending";
   return (
-    <Card className="gap-3 rounded-2xl p-4" data-testid="plan-progress">
+    <Card className="gap-3 rounded-3xl p-3.5" data-testid="plan-progress">
       <p className="text-base font-medium">Drafting a layout for this page</p>
       <ul className="flex flex-col gap-2.5">
         <Step state="done">{`Read ${elements} elements`}</Step>
@@ -192,7 +192,7 @@ export function PlanCard({ session }: { session: TabSession }) {
   return (
     <div className="flex flex-col gap-3" data-testid="plan-card">
       {layout?.state === "applied" && (
-        <div className="flex flex-col gap-1 rounded-2xl bg-accent-soft px-4 py-3 text-accent-soft-foreground" data-testid="layout-controls">
+        <div className="flex flex-col gap-1 rounded-3xl bg-accent-soft px-3.5 py-3 text-accent-soft-foreground" data-testid="layout-controls">
           <div className="flex items-center gap-2">
             <Check />
             <span className="flex-1 text-sm font-medium" data-testid="layout-applied">
@@ -213,7 +213,7 @@ export function PlanCard({ session }: { session: TabSession }) {
       )}
 
       {!layout && (
-        <Card className="gap-3 rounded-2xl p-4">
+        <Card className="gap-3 rounded-3xl p-3.5">
           <TextField value={goal} onChange={setGoal} isDisabled={running} data-testid="goal" className="flex flex-col gap-2">
             <Label className="text-sm font-medium">I come here to…</Label>
             <TextArea rows={3} placeholder="e.g. review pull requests and check Actions" />
@@ -240,7 +240,7 @@ export function PlanCard({ session }: { session: TabSession }) {
       {running && current && <Progress proposal={current} elements={scan.nodes.length} />}
 
       {current?.status === "error" && (
-        <Alert status="danger" data-testid="plan-error" className="rounded-2xl">
+        <Alert status="danger" data-testid="plan-error" className="rounded-3xl">
           <Alert.Indicator />
           <Alert.Content>
             <Alert.Title>No plan this time</Alert.Title>
@@ -251,7 +251,7 @@ export function PlanCard({ session }: { session: TabSession }) {
 
       {done && (
         <div className="flex flex-col gap-3" data-testid="plan-result">
-          <Card className="gap-2 rounded-2xl p-4">
+          <Card className="gap-2 rounded-3xl p-3.5">
             <p className="text-base font-medium">{plural(changeable.length, "change", "changes")} for this page</p>
             {done.plan!.summary && <p className="text-sm text-muted">{done.plan!.summary}</p>}
             <div className="flex flex-wrap items-center gap-1.5">
@@ -280,7 +280,7 @@ export function PlanCard({ session }: { session: TabSession }) {
 
           {questions.length > 0 && <Questions questions={questions} answers={answers} onAnswer={answer} />}
 
-          <Card className="rounded-2xl px-4 py-1.5">
+          <Card className="rounded-3xl px-3.5 py-1.5">
             <ul className="flex flex-col divide-y divide-separator" aria-label="Proposed changes">
               {groups.map((group) => (
                 <GroupRow
@@ -295,7 +295,7 @@ export function PlanCard({ session }: { session: TabSession }) {
           </Card>
 
           {changeable.length === 0 && (done.accepted?.length ?? 0) > 0 && (
-            <p className="rounded-2xl bg-surface-secondary p-4 text-sm text-muted" data-testid="no-changes">
+            <p className="rounded-3xl bg-surface-secondary p-3.5 text-sm text-muted" data-testid="no-changes">
               {questions.length > 0
                 ? "Nothing changes yet. Answer a question above, or ask again for another plan."
                 : "Muse Spark found these regions but proposed no visible change for any of them, so there is nothing to preview. Ask again for another plan."}
@@ -312,7 +312,7 @@ export function PlanCard({ session }: { session: TabSession }) {
           )}
 
           {layout?.state === "preview" && (
-            <Card className="gap-2 rounded-2xl p-4" data-testid="layout-controls">
+            <Card className="gap-2 rounded-3xl p-3.5" data-testid="layout-controls">
               <p className="text-sm font-medium" data-testid="preview-summary">
                 {plural(layout.labels.length, "region", "regions")} changed and outlined on the page: {layout.labels.join(", ")}.
               </p>
@@ -330,7 +330,7 @@ export function PlanCard({ session }: { session: TabSession }) {
           )}
 
           {hidden.length > 0 && (
-            <Card className="gap-1 rounded-2xl p-4" data-testid="layout-hidden">
+            <Card className="gap-1 rounded-3xl p-3.5" data-testid="layout-hidden">
               <p className="text-sm font-medium">Hidden on the page</p>
               <ul className="flex flex-col">
                 {hidden.map((group) => (
@@ -347,7 +347,7 @@ export function PlanCard({ session }: { session: TabSession }) {
           )}
 
           {(done.errors?.length ?? 0) > 0 && (
-            <Alert status="warning" data-testid="plan-rejected" className="rounded-2xl">
+            <Alert status="warning" data-testid="plan-rejected" className="rounded-3xl">
               <Alert.Indicator />
               <Alert.Content>
                 <Alert.Title>

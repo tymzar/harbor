@@ -16,7 +16,7 @@ export function Questions({ questions, answers, onAnswer }: QuestionsProperties)
     onAnswer({ ...answers, [question.id]: [...keys].map(Number).toSorted((a, b) => a - b) });
 
   return (
-    <Card className="gap-4 rounded-2xl p-4" aria-label="Questions about how you use this page" data-testid="questions">
+    <Card className="gap-4 rounded-3xl p-3.5" aria-label="Questions about how you use this page" data-testid="questions">
       {questions.map((question) => (
         <fieldset key={question.id} className="flex flex-col gap-2" data-testid="question">
           <legend className="mb-2 text-sm font-medium">{question.text}</legend>

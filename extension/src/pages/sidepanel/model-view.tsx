@@ -130,7 +130,7 @@ export function ModelView({ session }: { session: TabSession }) {
       <p className="text-xs text-muted">Left: how you click, time of day, group · middle: {view.hiddenN} hidden units · right: each item's score</p>
       <div className="grid grid-cols-3 items-stretch gap-2">
         {tiles.map(([value, label]) => (
-          <div key={label} className="flex h-full flex-col justify-start rounded-xl bg-surface-secondary px-2.5 py-2">
+          <div key={label} className="flex h-full flex-col justify-start rounded-lg bg-surface-secondary px-2.5 py-2">
             <p className="text-base font-medium tabular-nums">{value}</p>
             <p className="text-xs text-muted">{label}</p>
           </div>

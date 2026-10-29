@@ -62,7 +62,7 @@ const ElementList = memo(
     };
     return (
       <details
-        className="rounded-2xl px-4 py-3 text-sm text-muted"
+        className="rounded-3xl px-3.5 py-3 text-sm text-muted"
         onToggle={(event) => setOpen(event.currentTarget.open)}
         data-testid="element-list"
       >
@@ -138,7 +138,7 @@ const hostOf = (origin: string | undefined) => origin?.replace(/^https?:\/\//, "
 function PanelHeader({ site, busy }: { site: string | undefined; busy: boolean }) {
   return (
     <header className="flex items-center gap-2">
-      <span className="flex size-8 items-center justify-center rounded-[10px] bg-accent-soft text-accent-soft-foreground">
+      <span className="flex size-8 items-center justify-center rounded-lg bg-accent-soft text-accent-soft-foreground">
         <MagicWand />
       </span>
       <h1 data-testid="extension-panel-title" className="text-base font-semibold tracking-tight">
@@ -168,7 +168,7 @@ function PanelHeader({ site, busy }: { site: string | undefined; busy: boolean }
 // Before anything is read: one action, and what it will and won't read.
 function FirstOpen({ onRead, isPending, isDisabled }: { onRead: () => void; isPending: boolean; isDisabled: boolean }) {
   return (
-    <Card className="gap-3 rounded-2xl p-4">
+    <Card className="gap-3 rounded-3xl p-3.5">
       <h2 className="text-xl font-semibold tracking-tight">Make this page work your way</h2>
       <p className="text-sm text-muted">
         Smart Web reads the part of the page you can see, asks Muse Spark for a layout, and changes nothing until you
@@ -185,7 +185,7 @@ function FirstOpen({ onRead, isPending, isDisabled }: { onRead: () => void; isPe
 
 function PageCard({ session, scan, screenshot, onRescan, scanning }: { session: TabSession; scan: PageScan; screenshot: string | undefined; onRescan: () => void; scanning: boolean }) {
   return (
-    <Card className="gap-2 rounded-2xl p-4">
+    <Card className="gap-2 rounded-3xl p-3.5">
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <p className="truncate text-base font-medium" data-testid="page-title">
@@ -219,7 +219,7 @@ function PageCard({ session, scan, screenshot, onRescan, scanning }: { session: 
 
 function Warning({ status, title, description, testId }: { status: "warning" | "danger" | "default"; title: string; description?: string; testId?: string }) {
   return (
-    <Alert status={status} data-testid={testId} className="rounded-2xl">
+    <Alert status={status} data-testid={testId} className="rounded-3xl">
       <Alert.Indicator />
       <Alert.Content>
         <Alert.Title>{title}</Alert.Title>
@@ -252,7 +252,7 @@ export function SidePanel() {
     ].filter(Boolean);
 
   return (
-    <main className="flex min-h-full flex-col gap-3 bg-background p-4">
+    <main className="flex min-h-full flex-col gap-2.5 bg-background p-3.5">
       <PanelHeader site={hostOf(session?.lastOrigin)} busy={isScanning} />
 
       {scan && session ? (

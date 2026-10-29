@@ -21,6 +21,10 @@
  * HeroUI's zinc, with navy ink and navy-tinted shadows. HeroUI derives hovers and soft fills from these.
  */
 :root {
+  /* Precise shapes: HeroUI's radii are multiples of this (cards and buttons 12, chips 8, tooltips 6). */
+  --radius: 0.25rem;
+  --field-radius: 0.5rem;
+
   --accent: oklch(0.52 0.11 195);
   --accent-foreground: oklch(0.99 0 0);
 
@@ -80,6 +84,34 @@
   --backdrop: oklch(0.1 0.014 230 / 0.6);
   --surface-shadow: 0 0 0 0 transparent inset;
   --field-shadow: 0 0 0 0 transparent inset;
+}
+
+/* Compact density, as in SmartWebDS: controls 32 / 36 / 40 (HeroUI: 36 / 40 / 44), cards 14 padding, 10 gap. */
+@layer components {
+  .button,
+  .toggle-button {
+    height: calc(var(--spacing) * 9);
+  }
+  .button--sm,
+  .toggle-button--sm {
+    height: calc(var(--spacing) * 8);
+  }
+  .button--lg,
+  .toggle-button--lg {
+    height: calc(var(--spacing) * 10);
+  }
+  .button--icon-only,
+  .toggle-button--icon-only {
+    width: calc(var(--spacing) * 9);
+  }
+  .button--icon-only.button--sm,
+  .toggle-button--icon-only.toggle-button--sm {
+    width: calc(var(--spacing) * 8);
+  }
+  .card {
+    padding: calc(var(--spacing) * 3.5);
+    gap: calc(var(--spacing) * 2.5);
+  }
 }
 
 html,

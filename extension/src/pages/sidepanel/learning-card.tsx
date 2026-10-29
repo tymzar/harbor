@@ -38,7 +38,7 @@ export function LearningCard({ session }: { session: TabSession }) {
   const offer = session.suggestion;
 
   return (
-    <Card className="gap-3 rounded-2xl p-4" data-testid="learning">
+    <Card className="gap-3 rounded-3xl p-3.5" data-testid="learning">
       <Switch isSelected={learning.enabled} onChange={(on) => send(on ? "enable" : "disable")} size="sm">
         <Switch.Content className="text-sm">
           <Switch.Control>
@@ -63,7 +63,7 @@ export function LearningCard({ session }: { session: TabSession }) {
       )}
       {learning.enabled && showModel && <ModelView session={session} />}
       {offer && (
-        <Alert status="accent" data-testid="suggestion" className="rounded-2xl">
+        <Alert status="accent" data-testid="suggestion" className="rounded-3xl">
           <Alert.Indicator>
             <Sparkles />
           </Alert.Indicator>

@@ -23,7 +23,7 @@ export function PickControls({ session, disabled }: { session: TabSession; disab
 
   if (picking.phase === "pointing")
     return (
-      <Alert status="default" role="status" className="rounded-2xl" data-testid="pick-pointing">
+      <Alert status="default" role="status" className="rounded-3xl" data-testid="pick-pointing">
         <Alert.Indicator />
         <Alert.Content>
           <Alert.Title>Point at it on the page</Alert.Title>
@@ -36,7 +36,7 @@ export function PickControls({ session, disabled }: { session: TabSession; disab
     );
 
   return (
-    <Card role="status" className="gap-2.5 rounded-2xl p-4" data-testid="pick-selected">
+    <Card role="status" className="gap-2.5 rounded-3xl p-3.5" data-testid="pick-selected">
       <p className="text-xs font-medium text-muted">Selected</p>
       <p className="text-base font-medium">{picking.description}</p>
       <p className="text-xs text-muted">Not quite the right box? Widen to the surrounding block, or narrow back.</p>

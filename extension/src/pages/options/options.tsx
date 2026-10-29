@@ -131,7 +131,7 @@ function SavedPlanRow({ saved, onForget }: { saved: SavedPlan; onForget: () => v
         </Button>
       </div>
       {open && (
-        <ul className="flex flex-col gap-1 rounded-xl bg-surface-secondary p-3 text-xs">
+        <ul className="flex flex-col gap-1 rounded-lg bg-surface-secondary p-3 text-xs">
           {saved.plan.groups.map((group) => (
             <li key={`${group.container}-${group.label}`} className="flex items-center gap-2">
               <Chip size="sm" variant={group.operation === "none" ? "secondary" : "soft"} color={group.operation === "none" ? "default" : "accent"}>
@@ -151,7 +151,7 @@ function SavedPlanRow({ saved, onForget }: { saved: SavedPlan; onForget: () => v
 
 function Section({ title, description, children, action }: { title: string; description: string; children: ReactNode; action?: ReactNode }) {
   return (
-    <Card className="gap-1 rounded-2xl p-5">
+    <Card className="gap-1 rounded-3xl p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-base font-medium">{title}</h2>
@@ -174,7 +174,7 @@ export function Options() {
     <main className="min-h-screen bg-background">
       <div className="mx-auto flex max-w-[720px] flex-col gap-5 px-6 py-10">
         <header className="flex items-center gap-3">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-accent-soft text-accent-soft-foreground">
+          <span className="flex size-9 items-center justify-center rounded-lg bg-accent-soft text-accent-soft-foreground">
             <MagicWand />
           </span>
           <div>
