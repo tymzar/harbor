@@ -9,7 +9,7 @@ import { FIXTURE_ORIGIN } from "../playwright.config";
 // instead of an endless loop.
 test("a kept layout is re-applied when the site redraws the region", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/feed.html`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
 
   const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;

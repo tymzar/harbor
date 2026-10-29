@@ -14,7 +14,7 @@ test("a followed tab is rescanned after full and in-page navigation", async ({ c
     context.waitForEvent("page", (page) => page.url().startsWith(panelUrl)),
     worker.evaluate((url) => chrome.windows.create({ url }), panelUrl),
   ]);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("page-title")).toHaveText(/Lattice Docs/);
 
   // Full page load to another page on the site.

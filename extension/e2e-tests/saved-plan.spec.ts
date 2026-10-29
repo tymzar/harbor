@@ -16,7 +16,7 @@ test("a saved plan is reused after a rescan and can be forgotten", async ({ cont
     context.waitForEvent("page", (page) => page.url().startsWith(panelUrl)),
     worker.evaluate((url) => chrome.windows.create({ url }), panelUrl),
   ]);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
 
   const session = (await panel.evaluate(async (key) => {

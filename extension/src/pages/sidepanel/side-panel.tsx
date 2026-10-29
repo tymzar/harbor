@@ -1,21 +1,11 @@
-import { memo, useEffect, useMemo, useState } from "react";
-import { Alert, Button, Card, Chip, Spinner } from "@heroui/react";
-import { EyeSlash, Gear, Magnifier } from "@gravity-ui/icons";
+import { memo, useEffect, useState } from "react";
+import { Alert, Button, Card, Chip, Separator, Spinner } from "@heroui/react";
+import { ArrowsRotateRight, Eye, EyeSlash, Gear, MagicWand } from "@gravity-ui/icons";
 
 import type { NodeKind, PageScan, PanelRequest, ScanNode, TabSession } from "../../shared/types";
 import { sessionKey, shotKey } from "../../shared/types";
 import { PlanCard } from "./plan-card";
 import { NeedsAccess, SiteAccessSwitch } from "./site-access";
-
-const KIND_LABEL: Record<NodeKind, string> = {
-  landmark: "Landmarks",
-  heading: "Headings",
-  interactive: "Controls",
-  list: "Lists",
-  item: "Items",
-  media: "Media",
-  group: "Groups",
-};
 
 const KIND_COLOR: Record<NodeKind, "accent" | "default" | "success" | "warning"> = {
   landmark: "accent",
@@ -72,11 +62,11 @@ const ElementList = memo(
     };
     return (
       <details
-        className="rounded-xl border border-border px-3 py-2"
+        className="rounded-2xl px-4 py-3 text-sm text-muted"
         onToggle={(event) => setOpen(event.currentTarget.open)}
         data-testid="element-list"
       >
-        <summary className="cursor-pointer text-sm">All {scan.nodes.length} elements on this page</summary>
+        <summary className="cursor-pointer">All {scan.nodes.length} elements on this page</summary>
         {open && (
           <ul aria-label="Elements found" className="mt-2 flex flex-col">
             {scan.nodes.map((node) => (
@@ -143,6 +133,102 @@ function NodeRow({ node, onHide }: { node: ScanNode; onHide: () => void }) {
   );
 }
 
+const hostOf = (origin: string | undefined) => origin?.replace(/^https?:\/\//, "");
+
+function PanelHeader({ site, busy }: { site: string | undefined; busy: boolean }) {
+  return (
+    <header className="flex items-center gap-2">
+      <span className="flex size-8 items-center justify-center rounded-[10px] bg-accent-soft text-accent-soft-foreground">
+        <MagicWand />
+      </span>
+      <h1 data-testid="extension-panel-title" className="text-base font-semibold tracking-tight">
+        Smart Web
+      </h1>
+      {site && (
+        <Chip size="sm" variant="soft" className="min-w-0 truncate">
+          {site}
+        </Chip>
+      )}
+      <span className="ml-auto flex items-center gap-1">
+        {busy && <Spinner size="sm" aria-label="Reading the page" />}
+        <Button
+          isIconOnly
+          size="sm"
+          variant="ghost"
+          aria-label="Saved layouts and settings"
+          onPress={() => void chrome.runtime.openOptionsPage()}
+        >
+          <Gear />
+        </Button>
+      </span>
+    </header>
+  );
+}
+
+// Before anything is read: one action, and what it will and won't read.
+function FirstOpen({ onRead, isPending, isDisabled }: { onRead: () => void; isPending: boolean; isDisabled: boolean }) {
+  return (
+    <Card className="gap-3 rounded-2xl p-4">
+      <h2 className="text-xl font-semibold tracking-tight">Make this page work your way</h2>
+      <p className="text-sm text-muted">
+        Smart Web reads the part of the page you can see, asks Muse Spark for a layout, and changes nothing until you
+        keep it.
+      </p>
+      <Button variant="primary" onPress={onRead} isPending={isPending} isDisabled={isDisabled} fullWidth>
+        <Eye />
+        Read this page
+      </Button>
+      <p className="text-xs text-muted">Runs only when you click. Form fields are never read.</p>
+    </Card>
+  );
+}
+
+function PageCard({ session, scan, screenshot, onRescan, scanning }: { session: TabSession; scan: PageScan; screenshot: string | undefined; onRescan: () => void; scanning: boolean }) {
+  return (
+    <Card className="gap-2 rounded-2xl p-4">
+      <div className="flex items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-base font-medium" data-testid="page-title">
+            {scan.title || scan.url}
+          </p>
+          <p className="truncate text-xs text-muted">{scan.url}</p>
+        </div>
+        <Button isIconOnly size="sm" variant="ghost" aria-label="Rescan" onPress={onRescan} isPending={scanning}>
+          <ArrowsRotateRight />
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        <Chip size="sm" variant="soft">
+          <span data-testid="node-count">{scan.nodes.length}</span> elements
+        </Chip>
+        {screenshot && (
+          <Chip size="sm" variant="soft" data-testid="screenshot">
+            Screenshot ready
+          </Chip>
+        )}
+      </div>
+      {session.lastOrigin && session.status !== "needs-access" && (
+        <>
+          <Separator className="my-1" />
+          <SiteAccessSwitch origin={session.lastOrigin} />
+        </>
+      )}
+    </Card>
+  );
+}
+
+function Warning({ status, title, description, testId }: { status: "warning" | "danger" | "default"; title: string; description?: string; testId?: string }) {
+  return (
+    <Alert status={status} data-testid={testId} className="rounded-2xl">
+      <Alert.Indicator />
+      <Alert.Content>
+        <Alert.Title>{title}</Alert.Title>
+        {description && <Alert.Description>{description}</Alert.Description>}
+      </Alert.Content>
+    </Alert>
+  );
+}
+
 export function SidePanel() {
   const tabId = useActiveTabId();
   const session = useSession(tabId);
@@ -150,156 +236,48 @@ export function SidePanel() {
   const isScanning = session?.status === "scanning";
   const screenshot = useScreenshot(tabId, scan?.scannedAt);
 
-  const counts = useMemo(() => {
-    const result = new Map<NodeKind, number>();
-    for (const node of scan?.nodes ?? []) result.set(node.kind, (result.get(node.kind) ?? 0) + 1);
-    return [...result];
-  }, [scan]);
-
   const requestScan = () => {
     if (tabId === undefined) return;
     const request: PanelRequest = { type: "rescan", tabId };
     void chrome.runtime.sendMessage(request);
   };
 
+  const unreadable = session?.status === "restricted" || session?.status === "needs-access";
+  const gaps =
+    scan &&
+    [
+      scan.truncated && "the element list was cut off",
+      scan.skipped.iframes > 0 && `${scan.skipped.iframes} embedded frames`,
+      scan.skipped.shadowHosts > 0 && `${scan.skipped.shadowHosts} shadow components`,
+    ].filter(Boolean);
+
   return (
-    <main className="flex flex-col gap-4 p-4">
-      <header className="flex items-center justify-between gap-3">
-        <h1 data-testid="extension-panel-title" className="text-lg font-semibold tracking-tight">
-          Smart Web
-        </h1>
-        <div className="flex items-center gap-2">
-          {isScanning && <Spinner size="sm" aria-label="Reading the page" />}
-          <Button
-            isIconOnly
-            size="sm"
-            variant="ghost"
-            aria-label="Saved layouts and settings"
-            onPress={() => void chrome.runtime.openOptionsPage()}
-          >
-            <Gear />
-          </Button>
-        </div>
-      </header>
+    <main className="flex min-h-full flex-col gap-3 bg-background p-4">
+      <PanelHeader site={hostOf(session?.lastOrigin)} busy={isScanning} />
 
-      <Card className="rounded-2xl p-4">
-        <Card.Header className="gap-0.5">
-          <Card.Title className="truncate text-base" data-testid="page-title">
-            {scan?.title || session?.url || "Nothing read yet"}
-          </Card.Title>
-          <Card.Description className="truncate text-sm text-muted">
-            {scan?.url ?? "Click the Smart Web toolbar icon on a page to read it."}
-          </Card.Description>
-        </Card.Header>
-
-        {scan && screenshot && (
-          <img
-            data-testid="screenshot"
-            src={screenshot}
-            alt="The visible part of the page when it was read"
-            className="mt-3 w-full rounded-xl border border-border"
-          />
-        )}
-
-        {scan && (
-          <Card.Content className="pt-3">
-            <dl className="grid grid-cols-2 gap-2">
-              <div className="rounded-xl bg-default/60 px-3 py-2">
-                <dt className="text-xs text-muted">Elements</dt>
-                <dd data-testid="node-count" className="text-lg font-semibold tabular-nums">
-                  {scan.nodes.length}
-                </dd>
-              </div>
-              {counts.map(([kind, count]) => (
-                <div key={kind} className="rounded-xl bg-default/60 px-3 py-2">
-                  <dt className="text-xs text-muted">{KIND_LABEL[kind]}</dt>
-                  <dd className="text-lg font-semibold tabular-nums">{count}</dd>
-                </div>
-              ))}
-            </dl>
-          </Card.Content>
-        )}
-
-        <Card.Footer className="flex items-center justify-between gap-2 pt-4">
-          <span className="text-xs text-muted">
-            {scan
-              ? `Visible area · ${scan.viewport.w}×${scan.viewport.h} · ${scan.durationMs} ms`
-              : ""}
-          </span>
-          {session?.status !== "restricted" && session?.status !== "needs-access" && (
-            <Button
-              size="sm"
-              variant="primary"
-              isDisabled={tabId === undefined}
-              isPending={isScanning}
-              onPress={requestScan}
-            >
-              <Magnifier />
-              {scan ? "Rescan" : "Scan page"}
-            </Button>
-          )}
-        </Card.Footer>
-
-        {session?.lastOrigin && session.status !== "needs-access" && (
-          <div className="border-t border-border pt-3">
-            <SiteAccessSwitch origin={session.lastOrigin} />
-          </div>
-        )}
-      </Card>
+      {scan && session ? (
+        <PageCard session={session} scan={scan} screenshot={screenshot} onRescan={requestScan} scanning={isScanning} />
+      ) : (
+        !unreadable && <FirstOpen onRead={requestScan} isPending={isScanning} isDisabled={tabId === undefined} />
+      )}
 
       {session?.status === "needs-access" && <NeedsAccess tabId={session.tabId} origin={session.lastOrigin} />}
-
-      {session?.notice && (
-        <Alert status="warning" data-testid="notice">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Description>{session.notice}</Alert.Description>
-          </Alert.Content>
-        </Alert>
+      {session?.notice && <Warning status="warning" title={session.notice} testId="notice" />}
+      {session?.status === "restricted" && (
+        <Warning
+          status="default"
+          title="Chrome doesn't allow extensions here"
+          description="Browser pages and the Web Store can't be changed. Open a regular website."
+        />
+      )}
+      {session?.status === "error" && (
+        <Warning status="danger" title="Couldn't read this page" description={session.error} testId="scan-error" />
+      )}
+      {gaps && gaps.length > 0 && (
+        <Warning status="default" title="Parts of this page weren't read" description={`${gaps.join(", ")} can't be changed.`} testId="scan-gaps" />
       )}
 
       {scan && session && <PlanCard session={session} />}
-
-      {scan && (scan.truncated || scan.skipped.iframes > 0 || scan.skipped.shadowHosts > 0) && (
-        <Alert status="warning" data-testid="scan-gaps">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>Parts of this page weren't read</Alert.Title>
-            <Alert.Description>
-              {[
-                scan.truncated && "the element list was cut off",
-                scan.skipped.iframes > 0 && `${scan.skipped.iframes} embedded frames`,
-                scan.skipped.shadowHosts > 0 && `${scan.skipped.shadowHosts} shadow components`,
-              ]
-                .filter(Boolean)
-                .join(", ")}
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
-
-      {session?.status === "restricted" && (
-        <Alert status="warning">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>Chrome doesn't allow extensions here</Alert.Title>
-            <Alert.Description>
-              Browser pages and the Web Store can't be read. Open a regular website.
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
-
-      {session?.status === "error" && (
-        <Alert status="danger" data-testid="scan-error">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>Couldn't read this page</Alert.Title>
-            <Alert.Description>{session.error}</Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
-
       {scan && session && <ElementList scan={scan} tabId={session.tabId} />}
     </main>
   );

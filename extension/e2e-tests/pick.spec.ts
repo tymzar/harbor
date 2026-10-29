@@ -5,7 +5,7 @@ import { FIXTURE_ORIGIN } from "../playwright.config";
 // "Hide something else" works without any plan from Meta: point, click, widen, hide.
 test("pick an element on the page, widen the selection and hide it", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
 
   await panel.getByTestId("pick-start").click();
@@ -57,7 +57,7 @@ test("pick an element on the page, widen the selection and hide it", async ({ co
 // marking whatever elements now carry those IDs (seen live on GitHub: a rescan mid-pick).
 test("the page refuses node IDs from an earlier scan", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
 
   const [worker] = context.serviceWorkers();

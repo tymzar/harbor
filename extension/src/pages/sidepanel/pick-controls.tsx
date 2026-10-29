@@ -1,4 +1,4 @@
-import { Button } from "@heroui/react";
+import { Alert, Button, Card } from "@heroui/react";
 import { ChevronsCollapseUpRight, ChevronsExpandUpRight, EyeSlash, Target } from "@gravity-ui/icons";
 
 import type { PanelRequest, TabSession } from "../../shared/types";
@@ -15,7 +15,7 @@ export function PickControls({ session, disabled }: { session: TabSession; disab
 
   if (!picking)
     return (
-      <Button size="sm" variant="tertiary" isDisabled={disabled} onPress={() => send("start")} data-testid="pick-start">
+      <Button variant="secondary" isDisabled={disabled} onPress={() => send("start")} data-testid="pick-start" fullWidth>
         <Target />
         Hide something else…
       </Button>
@@ -23,37 +23,42 @@ export function PickControls({ session, disabled }: { session: TabSession; disab
 
   if (picking.phase === "pointing")
     return (
-      <div role="status" className="flex items-center justify-between gap-2 rounded-xl bg-default/60 p-3 text-sm" data-testid="pick-pointing">
-        <span>Point at the element on the page and click it. Esc on the page cancels.</span>
-        <Button size="sm" variant="ghost" onPress={() => send("cancel")}>
-          Cancel
-        </Button>
-      </div>
+      <Alert status="default" role="status" className="rounded-2xl" data-testid="pick-pointing">
+        <Alert.Indicator />
+        <Alert.Content>
+          <Alert.Title>Point at it on the page</Alert.Title>
+          <Alert.Description>Click the element to hide. Esc on the page cancels.</Alert.Description>
+          <Button size="sm" variant="ghost" className="mt-2 self-start" onPress={() => send("cancel")}>
+            Cancel
+          </Button>
+        </Alert.Content>
+      </Alert>
     );
 
   return (
-    <div role="status" className="flex flex-col gap-2 rounded-xl bg-default/60 p-3" data-testid="pick-selected">
-      <p className="text-sm">
-        Selected: <span className="font-medium">{picking.description}</span>
-      </p>
-      <p className="text-xs text-muted">Not quite the right box? Widen to the surrounding block or narrow back.</p>
+    <Card role="status" className="gap-2.5 rounded-2xl p-4" data-testid="pick-selected">
+      <p className="text-xs font-medium text-muted">Selected</p>
+      <p className="text-base font-medium">{picking.description}</p>
+      <p className="text-xs text-muted">Not quite the right box? Widen to the surrounding block, or narrow back.</p>
       <div className="flex flex-wrap gap-2">
-        <Button size="sm" variant="tertiary" onPress={() => send("wider")} data-testid="pick-wider">
+        <Button size="sm" variant="secondary" onPress={() => send("wider")} data-testid="pick-wider">
           <ChevronsExpandUpRight />
           Wider
         </Button>
-        <Button size="sm" variant="tertiary" onPress={() => send("narrower")} data-testid="pick-narrower">
+        <Button size="sm" variant="secondary" onPress={() => send("narrower")} data-testid="pick-narrower">
           <ChevronsCollapseUpRight />
           Narrower
         </Button>
-        <Button size="sm" variant="primary" onPress={() => send("hide")} data-testid="pick-hide">
+      </div>
+      <div className="flex gap-2">
+        <Button variant="primary" onPress={() => send("hide")} data-testid="pick-hide" className="flex-1">
           <EyeSlash />
           Hide it
         </Button>
-        <Button size="sm" variant="ghost" onPress={() => send("cancel")}>
+        <Button variant="ghost" onPress={() => send("cancel")}>
           Cancel
         </Button>
       </div>
-    </div>
+    </Card>
   );
 }

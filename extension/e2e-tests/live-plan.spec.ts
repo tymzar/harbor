@@ -31,7 +31,7 @@ for (const fixture of ["docs.html", "catalog.html"]) {
         worker.evaluate((url) => chrome.windows.create({ url, width: 440, height: 1000 }), panelUrl),
       ]);
 
-      await panel.getByRole("button", { name: "Scan page" }).click();
+      await panel.getByRole("button", { name: "Read this page" }).click();
       await expect(panel.getByTestId("screenshot")).toBeVisible();
 
       if (includeScreenshot) await panel.getByText("Also send the screenshot").click();

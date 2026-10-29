@@ -10,7 +10,7 @@ import { FIXTURE_ORIGIN } from "../playwright.config";
 // restore leaves nothing. Scripted clicks are not counted; nothing happens before the user accepts.
 test("clicks on one item lead to a suggestion that changes the page once accepted", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/catalog.html`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
 
   const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
@@ -106,7 +106,7 @@ test("clicks on one item lead to a suggestion that changes the page once accepte
 // "no change", and Pull requests is what the user opens most.
 test("clicks in a region the plan leaves alone still teach the model", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/catalog.html`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
   const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
   const nodes = session.scan!.nodes;

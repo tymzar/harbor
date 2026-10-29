@@ -8,7 +8,7 @@ import { FIXTURE_ORIGIN } from "../playwright.config";
 // and the answer is kept with the saved plan.
 test("answering a question changes the plan and the page", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
 
   const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
@@ -53,10 +53,11 @@ test("answering a question changes the plan and the page", async ({ context, ext
   await expect(panel.getByTestId("question")).toHaveText(/What do you come here for\?/);
   await expect(panel.getByTestId("no-changes")).toBeVisible();
 
-  const option = (name: string) => panel.getByTestId("question").getByRole("button", { name });
+  // A single-choice question is a radio group (the kit's ToggleButtonGroup).
+  const option = (name: string) => panel.getByTestId("question").getByRole("radio", { name });
   await option("Start building").click();
-  await expect(option("Start building")).toHaveAttribute("aria-pressed", "true");
-  await expect(panel.getByTestId("plan-group").filter({ hasText: "Next steps cards" })).toContainText("grid");
+  await expect(option("Start building")).toBeChecked();
+  await expect(panel.getByTestId("plan-group").filter({ hasText: "Next steps cards" })).toContainText("Grid");
   if (process.env.SHOT) await panel.getByTestId("plan-card").screenshot({ path: process.env.SHOT });
 
   const display = () => site.locator(".grid").evaluate((element) => getComputedStyle(element).display);
@@ -78,7 +79,7 @@ test("answering a question changes the plan and the page", async ({ context, ext
   const lastScan = await scannedAt();
   await panel.getByRole("button", { name: "Rescan" }).click();
   await expect.poll(scannedAt).toBeGreaterThan(lastScan);
-  await expect(option("Look things up")).toHaveAttribute("aria-pressed", "true");
+  await expect(option("Look things up")).toBeChecked();
   await expect(panel.getByTestId("layout-applied")).toBeVisible();
   await expect.poll(tocMarked).toBe("emphasize");
 });

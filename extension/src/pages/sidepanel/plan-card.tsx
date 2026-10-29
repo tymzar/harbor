@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Card, Checkbox, Chip, Description, Input, Label, Spinner, Switch, TextField } from "@heroui/react";
-import { ArrowUturnCcwLeft, Check, Eye, PaperPlane, TrashBin } from "@gravity-ui/icons";
+import { Alert, Button, Card, Checkbox, Chip, Label, Separator, Spinner, Switch, TextArea, TextField } from "@heroui/react";
+import { ArrowUturnCcwLeft, Check, Eye, MagicWand, PaperPlane, TrashBin } from "@gravity-ui/icons";
 
-import type { LayoutPlan, PlanGroup } from "../../shared/plan";
+import type { LayoutPlan, Operation, PlanGroup } from "../../shared/plan";
 import { groupPattern } from "../../shared/plan";
 import type { Answers } from "../../shared/questions";
 import { applyAnswers, usableQuestions } from "../../shared/questions";
 import { LearningCard } from "./learning-card";
 import { PickControls } from "./pick-controls";
 import { Questions } from "./questions-card";
-import type { CallLog, PanelRequest, ProposalStep, TabSession } from "../../shared/types";
+import type { CallLog, PanelRequest, Proposal, TabSession } from "../../shared/types";
 
-const STEP_LABEL: Record<ProposalStep, string> = {
-  segmenting: "SAM 3.1 is looking at the screenshot…",
-  matching: "Matching what SAM found to the page…",
-  planning: "Muse Spark is drafting a layout…",
-  repairing: "Fixing parts the validator rejected…",
+// What each operation means to the user.
+const OPERATION_LABEL: Record<Operation, string> = {
+  "hide-secondary": "Hide",
+  compact: "Compact",
+  grid: "Grid",
+  emphasize: "Emphasize",
+  none: "No change",
 };
 
 function callSummary(call: CallLog): string {
@@ -25,6 +27,8 @@ function callSummary(call: CallLog): string {
   return parts.join(" · ");
 }
 
+const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
+
 type GroupRowProperties = {
   group: PlanGroup;
   plan: LayoutPlan;
@@ -32,40 +36,44 @@ type GroupRowProperties = {
   onSelect: (selected: boolean) => void;
 };
 
+// One proposed change: include it or not, what it is, why, where it applies, and what it does.
 function GroupRow({ group, plan, selected, onSelect }: GroupRowProperties) {
   const changes = group.operation !== "none";
   const pattern = groupPattern(plan, group);
+  const details = (
+    <span className="flex min-w-0 flex-col gap-0.5">
+      <span className="text-sm font-medium">{group.label}</span>
+      {group.reason && <span className="text-xs text-muted">{group.reason}</span>}
+      <span className="text-xs text-muted">
+        {pattern === plan.template.urlPattern ? "Wherever this layout applies" : `Only on ${pattern}`}
+      </span>
+    </span>
+  );
 
   return (
-    <li data-testid="plan-group" className="flex flex-col gap-1 rounded-xl bg-default/60 px-3 py-2">
-      <div className="flex items-center justify-between gap-2">
-        {changes ? (
-          <Checkbox
-            isSelected={selected}
-            onChange={onSelect}
-            aria-label={`Include ${group.label}`}
-            className="flex min-w-0 flex-row items-center gap-2"
-          >
-            <Checkbox.Control>
-              <Checkbox.Indicator />
-            </Checkbox.Control>
-            <Checkbox.Content className="truncate text-sm font-medium">{group.label}</Checkbox.Content>
-          </Checkbox>
-        ) : (
-          <span className="truncate text-sm font-medium">{group.label}</span>
-        )}
-        <Chip size="sm" variant="soft" color={changes ? "accent" : "default"}>
-          {changes ? group.operation : "no change"}
-        </Chip>
-      </div>
-      <span className="text-xs text-muted">
-        {group.role} · {group.members.length} {group.members.length === 1 ? "item" : "items"}
-        {group.reorderable && ` · reorderable by ${group.identity.attribute || group.identity.source}`}
-      </span>
-      <span className="text-xs text-muted">{group.reason}</span>
-      {pattern !== plan.template.urlPattern && (
-        <span className="text-xs text-muted">Only on {pattern}</span>
+    <li data-testid="plan-group" className="flex items-start gap-3 py-2.5">
+      {changes ? (
+        // The whole row's text is the checkbox's label, so clicking the name toggles it too.
+        <Checkbox
+          isSelected={selected}
+          onChange={onSelect}
+          aria-label={`Include ${group.label}`}
+          className="flex min-w-0 flex-1 flex-row items-start gap-3"
+        >
+          <Checkbox.Control className="mt-0.5 shrink-0">
+            <Checkbox.Indicator />
+          </Checkbox.Control>
+          <Checkbox.Content>{details}</Checkbox.Content>
+        </Checkbox>
+      ) : (
+        <div className="flex min-w-0 flex-1 flex-row items-start gap-3">
+          <span className="size-5 shrink-0" aria-hidden />
+          {details}
+        </div>
       )}
+      <Chip size="sm" variant={changes ? "soft" : "secondary"} color={changes ? "accent" : "default"}>
+        {OPERATION_LABEL[group.operation]}
+      </Chip>
     </li>
   );
 }
@@ -84,6 +92,45 @@ function useSiteGoal(origin: string | undefined) {
     void chrome.storage.local.set({ [goalKey(origin)]: next });
   };
   return [goal, save] as const;
+}
+
+type StepState = "done" | "active" | "pending";
+
+const STEP_TEXT: Record<StepState, string> = { done: "", active: "font-medium", pending: "text-muted" };
+
+function Step({ state, children }: { state: StepState; children: string }) {
+  return (
+    <li className="flex items-center gap-2.5 text-sm">
+      <span className="flex size-4 shrink-0 items-center justify-center">
+        {state === "done" && <Check />}
+        {state === "active" && <Spinner size="sm" />}
+        {state === "pending" && <span className="size-2 rounded-full bg-separator" />}
+      </span>
+      <span className={STEP_TEXT[state]}>{children}</span>
+    </li>
+  );
+}
+
+// While Meta works: what happened, what is happening, what is next. Nothing on the page changes yet.
+function Progress({ proposal, elements }: { proposal: Proposal; elements: number }) {
+  const step = proposal.step;
+  const sam: StepState = step === "segmenting" || step === "matching" ? "active" : "done";
+  let spark: StepState = "done";
+  if (step === "planning") spark = "active";
+  else if (sam === "active") spark = "pending";
+  const check: StepState = step === "repairing" ? "active" : "pending";
+  return (
+    <Card className="gap-3 rounded-2xl p-4" data-testid="plan-progress">
+      <p className="text-base font-medium">Drafting a layout for this page</p>
+      <ul className="flex flex-col gap-2.5">
+        <Step state="done">{`Read ${elements} elements`}</Step>
+        {proposal.usedScreenshot && <Step state={sam}>SAM 3.1 looks for groups that look alike</Step>}
+        <Step state={spark}>{spark === "active" ? "Muse Spark is drafting a layout…" : "Muse Spark drafts a layout"}</Step>
+        <Step state={check}>{check === "active" ? "Fixing parts the check rejected…" : "Check the plan against the page"}</Step>
+      </ul>
+      <p className="text-xs text-muted">Usually 10–20 seconds. Nothing on the page changes yet.</p>
+    </Card>
+  );
 }
 
 export function PlanCard({ session }: { session: TabSession }) {
@@ -140,173 +187,193 @@ export function PlanCard({ session }: { session: TabSession }) {
     void chrome.runtime.sendMessage(request);
   };
 
+  const done = current?.status === "done" && current.plan ? current : undefined;
+
   return (
-    <Card className="rounded-2xl p-4" data-testid="plan-card">
-      <Card.Header className="gap-0.5">
-        <Card.Title className="text-base">Layout plan</Card.Title>
-        <Card.Description className="text-sm text-muted">
-          Sent to Meta: {scan.nodes.length} elements with their tags, positions, short text, link paths and
-          id/data attributes. Form fields are listed without their contents.
-        </Card.Description>
-      </Card.Header>
-
-      <Card.Content className="flex flex-col gap-3 pt-3">
-        <TextField value={goal} onChange={setGoal} isDisabled={running} data-testid="goal">
-          <Label className="text-sm">I come here to… (optional)</Label>
-          <Input placeholder="e.g. review pull requests and check Actions" />
-          <Description className="text-xs text-muted">Sent with the request, so the plan favours what you use.</Description>
-        </TextField>
-        <Switch isSelected={includeScreenshot} onChange={setIncludeScreenshot} isDisabled={running || !session.hasScreenshot}>
-          <Switch.Content className="text-sm">
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Also send the screenshot, so SAM 3.1 can find visual groups
-          </Switch.Content>
-        </Switch>
-
-        {running && current.step && (
-          <div className="flex items-center gap-2 text-sm" data-testid="plan-progress">
-            <Spinner size="sm" />
-            {STEP_LABEL[current.step]}
+    <div className="flex flex-col gap-3" data-testid="plan-card">
+      {layout?.state === "applied" && (
+        <div className="flex flex-col gap-1 rounded-2xl bg-accent-soft px-4 py-3 text-accent-soft-foreground" data-testid="layout-controls">
+          <div className="flex items-center gap-2">
+            <Check />
+            <span className="flex-1 text-sm font-medium" data-testid="layout-applied">
+              {plural(layout.labels.length, "change", "changes")} on the page
+            </span>
+            <Button size="sm" variant="tertiary" onPress={() => sendLayout("restore")} data-testid="restore-layout">
+              <ArrowUturnCcwLeft />
+              Restore
+            </Button>
           </div>
-        )}
+          <p className="text-xs">Comes back wherever this layout applies, with no Meta call.</p>
+          {layout.missing.length > 0 && (
+            <p className="text-xs text-warning" data-testid="layout-missing">
+              Not found on the page any more: {layout.missing.join(", ")}. Rescan to read it again.
+            </p>
+          )}
+        </div>
+      )}
 
-        {current?.status === "error" && (
-          <Alert status="danger" data-testid="plan-error">
-            <Alert.Indicator />
-            <Alert.Content>
-              <Alert.Title>No plan this time</Alert.Title>
-              <Alert.Description>{current.error}</Alert.Description>
-            </Alert.Content>
-          </Alert>
-        )}
+      {!layout && (
+        <Card className="gap-3 rounded-2xl p-4">
+          <TextField value={goal} onChange={setGoal} isDisabled={running} data-testid="goal" className="flex flex-col gap-2">
+            <Label className="text-sm font-medium">I come here to…</Label>
+            <TextArea rows={3} placeholder="e.g. review pull requests and check Actions" />
+          </TextField>
+          <Switch isSelected={includeScreenshot} onChange={setIncludeScreenshot} isDisabled={running || !session.hasScreenshot} size="sm">
+            <Switch.Content className="text-sm">
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+              Also send the screenshot to SAM 3.1
+            </Switch.Content>
+          </Switch>
+          <p className="text-xs text-muted">
+            Sent to Meta: {scan.nodes.length} elements with tags, positions and short text. Form fields go without
+            their contents.
+          </p>
+          <Button variant={done ? "tertiary" : "primary"} isPending={running} onPress={send} data-testid="send-plan" fullWidth>
+            {done ? <PaperPlane /> : <MagicWand />}
+            {done ? "Ask again" : "Suggest a layout"}
+          </Button>
+        </Card>
+      )}
 
-        {current?.status === "done" && current.plan && (
-          <div className="flex flex-col gap-3" data-testid="plan-result">
-            {current.reused && (
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted" data-testid="plan-reused">
-                <Chip size="sm" variant="soft" color="success">
-                  Saved plan · no Meta call
+      {running && current && <Progress proposal={current} elements={scan.nodes.length} />}
+
+      {current?.status === "error" && (
+        <Alert status="danger" data-testid="plan-error" className="rounded-2xl">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>No plan this time</Alert.Title>
+            <Alert.Description>{current.error}</Alert.Description>
+          </Alert.Content>
+        </Alert>
+      )}
+
+      {done && (
+        <div className="flex flex-col gap-3" data-testid="plan-result">
+          <Card className="gap-2 rounded-2xl p-4">
+            <p className="text-base font-medium">{plural(changeable.length, "change", "changes")} for this page</p>
+            {done.plan!.summary && <p className="text-sm text-muted">{done.plan!.summary}</p>}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Chip size="sm" variant="soft" color="accent" data-testid="plan-template">
+                Applies to {done.plan!.template.urlPattern}
+              </Chip>
+              {done.reused && (
+                <Chip size="sm" variant="soft" color="success" data-testid="plan-reused">
+                  Saved layout · no Meta call
                 </Chip>
-                {current.reused.match === "page"
-                  ? "saved for this page"
-                  : `saved on ${current.reused.fromUrl.replace(/^https?:\/\//, "")}`}{" "}
-                · {new Date(current.reused.savedAt).toLocaleString()}
+              )}
+            </div>
+            {done.reused && (
+              <div className="flex items-center justify-between gap-2 text-xs text-muted">
+                <span className="truncate">
+                  {done.reused.match === "page" ? "Saved for this page" : `Saved on ${done.reused.fromUrl.replace(/^https?:\/\//, "")}`} ·{" "}
+                  {new Date(done.reused.savedAt).toLocaleDateString()}
+                </span>
+                <Button size="sm" variant="ghost" onPress={forget} data-testid="forget-plan">
+                  <TrashBin />
+                  Forget
+                </Button>
               </div>
             )}
-            <p className="text-sm">{current.plan.summary}</p>
-            {questions.length > 0 && <Questions questions={questions} answers={answers} onAnswer={answer} />}
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-              Applies to
-              <Chip size="sm" variant="soft" color="accent" data-testid="plan-template">
-                {current.plan.template.urlPattern}
-              </Chip>
-            </div>
+          </Card>
 
-            <ul className="flex flex-col gap-2" aria-label="Proposed groups">
+          {questions.length > 0 && <Questions questions={questions} answers={answers} onAnswer={answer} />}
+
+          <Card className="rounded-2xl px-4 py-1.5">
+            <ul className="flex flex-col divide-y divide-separator" aria-label="Proposed changes">
               {groups.map((group) => (
                 <GroupRow
                   key={`${group.container}-${group.label}`}
                   group={group}
-                  plan={current.plan!}
+                  plan={done.plan!}
                   selected={selected.includes(group.label)}
                   onSelect={(include) => toggle(group.label, include)}
                 />
               ))}
             </ul>
+          </Card>
 
-            {changeable.length === 0 && (current.accepted?.length ?? 0) > 0 && (
-              <p className="rounded-xl border border-border p-3 text-sm text-muted" data-testid="no-changes">
-                {questions.length > 0
-                  ? "Nothing changes yet. Answer a question above, or ask again for another plan."
-                  : "Meta found these regions but proposed no visible change for any of them, so there is nothing to preview. Ask again for another plan."}
+          {changeable.length === 0 && (done.accepted?.length ?? 0) > 0 && (
+            <p className="rounded-2xl bg-surface-secondary p-4 text-sm text-muted" data-testid="no-changes">
+              {questions.length > 0
+                ? "Nothing changes yet. Answer a question above, or ask again for another plan."
+                : "Muse Spark found these regions but proposed no visible change for any of them, so there is nothing to preview. Ask again for another plan."}
+            </p>
+          )}
+
+          {changeable.length > 0 && !layout && (
+            <div data-testid="layout-controls">
+              <Button variant="primary" isDisabled={selected.length === 0} onPress={() => sendLayout("preview")} data-testid="preview-layout" fullWidth>
+                <Eye />
+                Preview on the page
+              </Button>
+            </div>
+          )}
+
+          {layout?.state === "preview" && (
+            <Card className="gap-2 rounded-2xl p-4" data-testid="layout-controls">
+              <p className="text-sm font-medium" data-testid="preview-summary">
+                {plural(layout.labels.length, "region", "regions")} changed and outlined on the page: {layout.labels.join(", ")}.
               </p>
-            )}
-
-            {changeable.length > 0 && (
-              <div className="flex flex-col gap-2 rounded-xl border border-border p-3" data-testid="layout-controls">
-                {!layout && (
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    isDisabled={selected.length === 0}
-                    onPress={() => sendLayout("preview")}
-                    data-testid="preview-layout"
-                  >
-                    <Eye />
-                    Preview on the page
-                  </Button>
-                )}
-                {layout?.state === "preview" && (
-                  <>
-                    <p className="text-sm" data-testid="preview-summary">
-                      {layout.labels.length} {layout.labels.length === 1 ? "region" : "regions"} changed and outlined
-                      on the page: {layout.labels.join(", ")}.
-                    </p>
-                    <p className="text-xs text-muted">Use the page as usual; press Esc on it to cancel.</p>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="primary" onPress={() => sendLayout("apply")} data-testid="keep-layout">
-                        <Check />
-                        Keep
-                      </Button>
-                      <Button size="sm" variant="ghost" onPress={() => sendLayout("restore")} data-testid="cancel-layout">
-                        Cancel
-                      </Button>
-                    </div>
-                  </>
-                )}
-                {layout?.state === "applied" && (
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm" data-testid="layout-applied">
-                      {layout.labels.length} {layout.labels.length === 1 ? "change" : "changes"} on the page
-                    </span>
-                    <Button size="sm" variant="tertiary" onPress={() => sendLayout("restore")} data-testid="restore-layout">
-                      <ArrowUturnCcwLeft />
-                      Restore original
-                    </Button>
-                  </div>
-                )}
-                {hidden.length > 0 && (
-                  <p className="text-xs text-muted" data-testid="layout-hidden">
-                    Hidden on the page: {hidden.map((group) => group.label).join(", ")}. Untick one above to show it
-                    again.
-                  </p>
-                )}
-                {layout && layout.missing.length > 0 && (
-                  <p className="text-xs text-warning" data-testid="layout-missing">
-                    Not found on the page any more: {layout.missing.join(", ")}. Rescan to read it again.
-                  </p>
-                )}
+              <p className="text-xs text-muted">Use the page as usual; press Esc on it to cancel.</p>
+              <div className="flex gap-2">
+                <Button variant="primary" onPress={() => sendLayout("apply")} data-testid="keep-layout" className="flex-1">
+                  <Check />
+                  Keep
+                </Button>
+                <Button variant="ghost" onPress={() => sendLayout("restore")} data-testid="cancel-layout">
+                  Cancel
+                </Button>
               </div>
-            )}
+            </Card>
+          )}
 
-            {(current.errors?.length ?? 0) > 0 && (
-              <Alert status="warning" data-testid="plan-rejected">
-                <Alert.Indicator />
-                <Alert.Content>
-                  <Alert.Title>
-                    {current.plan.groups.length - (current.accepted?.length ?? 0)} proposed groups were set aside
-                    {current.repaired && " after one repair attempt"}
-                  </Alert.Title>
-                  <Alert.Description>
-                    <ul className="list-disc pl-4">
-                      {current.errors!.map((error) => (
-                        <li key={error}>{error}</li>
-                      ))}
-                    </ul>
-                  </Alert.Description>
-                </Alert.Content>
-              </Alert>
-            )}
-          </div>
-        )}
+          {hidden.length > 0 && (
+            <Card className="gap-1 rounded-2xl p-4" data-testid="layout-hidden">
+              <p className="text-sm font-medium">Hidden on the page</p>
+              <ul className="flex flex-col">
+                {hidden.map((group) => (
+                  <li key={group.label} className="flex items-center gap-2 py-1 text-sm">
+                    <span className="min-w-0 flex-1 truncate">{group.label}</span>
+                    <Button size="sm" variant="ghost" onPress={() => toggle(group.label, false)} aria-label={`Show ${group.label} again`}>
+                      <Eye />
+                      Show
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
 
-        {layout?.state === "applied" && <LearningCard session={session} />}
+          {(done.errors?.length ?? 0) > 0 && (
+            <Alert status="warning" data-testid="plan-rejected" className="rounded-2xl">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Title>
+                  {done.plan!.groups.length - (done.accepted?.length ?? 0)} proposed groups were set aside
+                  {done.repaired && " after one repair attempt"}
+                </Alert.Title>
+                <Alert.Description>
+                  <ul className="list-disc pl-4">
+                    {done.errors!.map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
+                </Alert.Description>
+              </Alert.Content>
+            </Alert>
+          )}
+        </div>
+      )}
 
-        <PickControls session={session} disabled={running} />
+      {layout?.state === "applied" && <LearningCard session={session} />}
 
-        {current && current.calls.length > 0 && (
+      <PickControls session={session} disabled={running} />
+
+      {current && current.calls.length > 0 && (
+        <>
+          <Separator />
           <ul className="flex flex-col gap-0.5 text-xs text-muted" aria-label="Model calls" data-testid="plan-calls">
             {current.calls.map((call, index) => (
               <li key={index}>
@@ -314,21 +381,8 @@ export function PlanCard({ session }: { session: TabSession }) {
               </li>
             ))}
           </ul>
-        )}
-      </Card.Content>
-
-      <Card.Footer className="flex justify-end gap-2 pt-4">
-        {current?.reused && (
-          <Button size="sm" variant="ghost" onPress={forget} data-testid="forget-plan">
-            <TrashBin />
-            Forget
-          </Button>
-        )}
-        <Button size="sm" variant="primary" isPending={running} onPress={send} data-testid="send-plan">
-          <PaperPlane />
-          {current?.status === "done" ? "Ask again" : "Send to Meta"}
-        </Button>
-      </Card.Footer>
-    </Card>
+        </>
+      )}
+    </div>
   );
 }

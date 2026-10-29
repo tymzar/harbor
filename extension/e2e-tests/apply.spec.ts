@@ -8,7 +8,7 @@ import { FIXTURE_ORIGIN } from "../playwright.config";
 // the original links and tab order still work → restore → re-apply survives a reload.
 test("preview, apply and restore a layout on the real page", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
 
   const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
@@ -97,7 +97,7 @@ test("preview, apply and restore a layout on the real page", async ({ context, e
 // Keep shows it again without restoring the rest.
 test("hidden regions are dimmed in preview, hidden after Keep, and shown again from the panel", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
 
   const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
@@ -132,7 +132,7 @@ test("hidden regions are dimmed in preview, hidden after Keep, and shown again f
 
   await panel.getByTestId("keep-layout").click();
   await expect.poll(style).toEqual({ display: "none", opacity: "1" });
-  await expect(panel.getByTestId("layout-hidden")).toHaveText(/Hidden on the page: Footer links/);
+  await expect(panel.getByTestId("layout-hidden")).toContainText("Footer links");
 
   // Untick while applied: the footer comes back, the emphasized TOC stays.
   await panel.getByTestId("plan-group").filter({ hasText: "Footer links" }).getByText("Footer links", { exact: true }).click();
@@ -145,7 +145,7 @@ test("hidden regions are dimmed in preview, hidden after Keep, and shown again f
 // Terms and Security with it. When the members are most of the region, the region itself goes.
 test("hiding one member of a region leaves the rest of the region", async ({ context, extensionId }) => {
   const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/docs.html`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
   await expect(panel.getByTestId("screenshot")).toBeVisible();
 
   const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;

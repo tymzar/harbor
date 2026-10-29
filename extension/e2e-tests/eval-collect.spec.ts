@@ -23,7 +23,7 @@ for (const site of SITES.filter((candidate) => !only || only.includes(candidate.
   test(`collect ${site.id}`, async ({ context, extensionId }) => {
     const { site: page, panel, tabId, consent, loadMs } = await openSite(context, extensionId, site);
 
-    await panel.getByRole("button", { name: /^(Scan page|Rescan)$/ }).click();
+    await panel.getByRole("button", { name: /^(Read this page|Rescan)$/ }).click();
     await expect(panel.getByTestId("node-count").or(panel.getByTestId("scan-error"))).toBeVisible({ timeout: 30_000 });
     const session = (await readSession(panel, tabId))!;
     const scan = session.scan;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Switch } from "@heroui/react";
-import { Check, Eye, EyeSlash, Sparkles } from "@gravity-ui/icons";
+import { Alert, Button, Card, Switch } from "@heroui/react";
+import { Eye, EyeSlash, MagicWand, Sparkles } from "@gravity-ui/icons";
 
 import type { SiteLearning } from "../../shared/learning";
 import { LEARNING_KEY, emptyLearning } from "../../shared/learning";
@@ -38,8 +38,8 @@ export function LearningCard({ session }: { session: TabSession }) {
   const offer = session.suggestion;
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl bg-default/60 p-3" data-testid="learning">
-      <Switch isSelected={learning.enabled} onChange={(on) => send(on ? "enable" : "disable")}>
+    <Card className="gap-3 rounded-2xl p-4" data-testid="learning">
+      <Switch isSelected={learning.enabled} onChange={(on) => send(on ? "enable" : "disable")} size="sm">
         <Switch.Content className="text-sm">
           <Switch.Control>
             <Switch.Thumb />
@@ -49,7 +49,7 @@ export function LearningCard({ session }: { session: TabSession }) {
       </Switch>
       <p className="text-xs text-muted" data-testid="learning-status">
         {learning.enabled
-          ? `${uses} ${uses === 1 ? "click" : "clicks"} counted on this device. Smart Web suggests a change; nothing moves without you.`
+          ? `${uses} ${uses === 1 ? "click" : "clicks"} counted on this device. Smart Web only suggests; nothing moves until you say so.`
           : "Off. When on, clicks on items in your layout are counted on this device only."}
       </p>
       {learning.enabled && (
@@ -63,17 +63,18 @@ export function LearningCard({ session }: { session: TabSession }) {
       )}
       {learning.enabled && showModel && <ModelView session={session} />}
       {offer && (
-        <Alert status="accent" data-testid="suggestion">
+        <Alert status="accent" data-testid="suggestion" className="rounded-2xl">
           <Alert.Indicator>
             <Sparkles />
           </Alert.Indicator>
           <Alert.Content>
             <Alert.Title>
-              You opened “{offer.text}” {offer.uses} times. Highlight it in {offer.group}?
+              You opened “{offer.text}” {offer.uses} times
             </Alert.Title>
+            <Alert.Description>Highlight it in {offer.group}?</Alert.Description>
             <div className="mt-2 flex gap-2">
               <Button size="sm" variant="primary" onPress={() => send("accept")} data-testid="suggestion-accept">
-                <Check />
+                <MagicWand />
                 Highlight it
               </Button>
               <Button size="sm" variant="ghost" onPress={() => send("dismiss")} data-testid="suggestion-dismiss">
@@ -88,6 +89,6 @@ export function LearningCard({ session }: { session: TabSession }) {
           Reset what was learned
         </Button>
       )}
-    </div>
+    </Card>
   );
 }

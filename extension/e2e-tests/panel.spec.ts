@@ -31,7 +31,7 @@ test("side panel renders with HeroUI v3 styles", async ({ page, extensionId }) =
   await page.goto(`chrome-extension://${extensionId}/${PAGE_TO_PAGE_URL.SIDEPANEL}`);
 
   await expect(page.getByTestId("extension-panel-title")).toHaveText("Smart Web");
-  const scanButton = page.getByRole("button", { name: "Scan page" });
+  const scanButton = page.getByRole("button", { name: "Read this page" });
   await expect(scanButton).toBeVisible();
 
   // Primary buttons take the accent colour only if Tailwind + @heroui/styles were bundled.
@@ -43,7 +43,7 @@ for (const fixture of ["docs.html", "catalog.html"]) {
   test(`scans ${fixture}: elements, screenshot, no form text`, async ({ context, extensionId }) => {
     const { panel } = await openFixtureWithPanel(context, extensionId, fixture);
 
-    await panel.getByRole("button", { name: "Scan page" }).click();
+    await panel.getByRole("button", { name: "Read this page" }).click();
 
     await expect(panel.getByTestId("screenshot")).toBeVisible();
     const count = Number(await panel.getByTestId("node-count").textContent());
@@ -69,7 +69,7 @@ test("restricted pages are reported, not scanned", async ({ context, extensionId
 
   const panel = await context.newPage();
   await panel.goto(`chrome-extension://${extensionId}/${PAGE_TO_PAGE_URL.SIDEPANEL}?tabId=${tabId}`);
-  await panel.getByRole("button", { name: "Scan page" }).click();
+  await panel.getByRole("button", { name: "Read this page" }).click();
 
   await expect(panel.getByText("Chrome doesn't allow extensions here")).toBeVisible();
 });
