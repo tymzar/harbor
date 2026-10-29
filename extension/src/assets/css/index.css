@@ -13,14 +13,71 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Same harbor-teal accent as the Smart Web app (src/index.css in the repo root). */
+/*
+ * Harbor theme, matching SmartWebDS (02_Theme in Figma). Same harbor-teal accent as the Smart Web
+ * app (src/index.css in the repo root); the neutrals lean toward it (hue 200-235) instead of
+ * HeroUI's zinc, with navy ink and navy-tinted shadows. HeroUI derives hovers and soft fills from these.
+ */
 :root {
   --accent: oklch(0.52 0.11 195);
   --accent-foreground: oklch(0.99 0 0);
+
+  --background: oklch(0.972 0.006 200);
+  --foreground: oklch(0.23 0.03 235);
+  --muted: oklch(0.52 0.025 225);
+  --surface: oklch(1 0 0);
+  --surface-secondary: oklch(0.955 0.008 200);
+  --surface-tertiary: oklch(0.935 0.01 200);
+  --overlay: oklch(1 0 0);
+  --segment: oklch(1 0 0);
+  --segment-foreground: var(--foreground);
+  --default: oklch(0.935 0.01 205);
+  --default-foreground: var(--foreground);
+  --border: oklch(0.905 0.012 205);
+  --separator: oklch(0.925 0.01 205);
+  --field-background: oklch(1 0 0);
+  --field-foreground: var(--foreground);
+
+  --success: oklch(0.64 0.13 165);
+  --success-foreground: var(--foreground);
+  --warning: oklch(0.79 0.14 75);
+  --warning-foreground: var(--foreground);
+  --danger: oklch(0.6 0.19 25);
+
+  --backdrop: oklch(0.23 0.03 235 / 0.45);
+  --surface-shadow:
+    0 2px 4px 0 rgb(14 31 41 / 0.04), 0 1px 2px 0 rgb(14 31 41 / 0.06), 0 0 1px 0 rgb(14 31 41 / 0.08);
+  --overlay-shadow:
+    0 2px 8px 0 rgb(14 31 41 / 0.06), 0 -6px 12px 0 rgb(14 31 41 / 0.03), 0 14px 28px 0 rgb(14 31 41 / 0.1);
+  --field-shadow:
+    0 2px 4px 0 rgb(14 31 41 / 0.04), 0 1px 2px 0 rgb(14 31 41 / 0.06), 0 0 1px 0 rgb(14 31 41 / 0.08);
 }
 .dark {
   --accent: oklch(0.68 0.11 195);
   --accent-foreground: oklch(0.18 0.03 195);
+
+  --background: oklch(0.155 0.014 230);
+  --foreground: oklch(0.965 0.006 200);
+  --muted: oklch(0.72 0.022 215);
+  --surface: oklch(0.2 0.016 230);
+  --surface-secondary: oklch(0.24 0.016 230);
+  --surface-tertiary: oklch(0.265 0.016 230);
+  --overlay: oklch(0.215 0.016 230);
+  --segment: oklch(0.33 0.018 230);
+  --default: oklch(0.26 0.016 230);
+  --border: oklch(0.29 0.016 230);
+  --separator: oklch(0.25 0.016 230);
+  --field-background: oklch(0.2 0.016 230);
+
+  --success: oklch(0.72 0.13 165);
+  --success-foreground: oklch(0.23 0.03 235);
+  --warning: oklch(0.82 0.13 78);
+  --warning-foreground: oklch(0.23 0.03 235);
+  --danger: oklch(0.66 0.18 25);
+
+  --backdrop: oklch(0.1 0.014 230 / 0.6);
+  --surface-shadow: 0 0 0 0 transparent inset;
+  --field-shadow: 0 0 0 0 transparent inset;
 }
 
 html,
