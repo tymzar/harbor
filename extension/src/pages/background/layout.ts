@@ -5,7 +5,7 @@ import type { LayoutState, TabSession } from "../../shared/types";
 
 import type { LayoutGroup, LayoutResult } from "../content/apply";
 
-export const STALE_SCAN = "The page changed since Smart Web read it. Rescan, then try again.";
+export const STALE_SCAN = "The page changed since Harbor read it. Rescan, then try again.";
 
 async function removeSheet(tabId: number) {
   await chrome.scripting.removeCSS({ target: { tabId }, css: LAYOUT_CSS }).catch(() => {});

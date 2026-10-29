@@ -66,7 +66,7 @@ function isBelow(node: ScanNode, ancestorId: string, nodes: Array<ScanNode>, amo
   return false;
 }
 
-// What the page showed for an anchor's element before and after Smart Web changed it
+// What the page showed for an anchor's element before and after Harbor changed it
 // (content/inspect.ts). ops: operations marked on the element or an ancestor; coveringOps: on a
 // descendant covering most of it. hasContent: still shows visible text or media (absent in
 // results from before 29 Oct).

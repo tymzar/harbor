@@ -10,7 +10,7 @@ const OP = "data-smart-web-op";
 const MEMBER = "data-smart-web-member";
 const PREVIEW = "data-smart-web-preview";
 
-// Every element Smart Web marked, so restore can unmark exactly those.
+// Every element Harbor marked, so restore can unmark exactly those.
 const owned = new Set<Element>();
 let onEscape: ((event: KeyboardEvent) => void) | undefined;
 // Watches an applied layout for the site replacing the elements it marked (single-page apps

@@ -1,4 +1,4 @@
-// The only styles Smart Web adds to a page. Inserted with chrome.scripting.insertCSS (not
+// The only styles Harbor adds to a page. Inserted with chrome.scripting.insertCSS (not
 // subject to the page's CSP) and keyed on attributes the executor sets on the page's own
 // elements, so removing the attributes restores the page even if the sheet lingers.
 // Nothing here moves elements in the DOM: reading and tab order stay the site's own.

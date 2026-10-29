@@ -1,7 +1,8 @@
 import { memo, useEffect, useState } from "react";
 import { Alert, Button, Card, Chip, Separator, Spinner } from "@heroui/react";
-import { ArrowsRotateRight, Eye, EyeSlash, Gear, MagicWand } from "@gravity-ui/icons";
+import { ArrowsRotateRight, Eye, EyeSlash, Gear } from "@gravity-ui/icons";
 
+import { HarborLogo } from "../../components/HarborLogo/harbor-logo";
 import type { NodeKind, PageScan, PanelRequest, ScanNode, TabSession } from "../../shared/types";
 import { sessionKey, shotKey } from "../../shared/types";
 import { PlanCard } from "./plan-card";
@@ -138,11 +139,9 @@ const hostOf = (origin: string | undefined) => origin?.replace(/^https?:\/\//, "
 function PanelHeader({ site, busy }: { site: string | undefined; busy: boolean }) {
   return (
     <header className="flex items-center gap-2">
-      <span className="flex size-8 items-center justify-center rounded-lg bg-accent-soft text-accent-soft-foreground">
-        <MagicWand />
-      </span>
+      <HarborLogo size={32} />
       <h1 data-testid="extension-panel-title" className="text-base font-semibold tracking-tight">
-        Smart Web
+        Harbor
       </h1>
       {site && (
         <Chip size="sm" variant="soft" className="min-w-0 truncate">
@@ -171,7 +170,7 @@ function FirstOpen({ onRead, isPending, isDisabled }: { onRead: () => void; isPe
     <Card className="gap-3 rounded-3xl p-3.5">
       <h2 className="text-xl font-semibold tracking-tight">Make this page work your way</h2>
       <p className="text-sm text-muted">
-        Smart Web reads the part of the page you can see, asks Muse Spark for a layout, and changes nothing until you
+        Harbor reads the part of the page you can see, asks Muse Spark for a layout, and changes nothing until you
         keep it.
       </p>
       <Button variant="primary" onPress={onRead} isPending={isPending} isDisabled={isDisabled} fullWidth>

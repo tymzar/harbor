@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Button, Card, Chip } from "@heroui/react";
-import { MagicWand, TrashBin } from "@gravity-ui/icons";
+import { TrashBin } from "@gravity-ui/icons";
+
+import { HarborLogo } from "../../components/HarborLogo/harbor-logo";
 
 import type { SavedPlan } from "../../shared/cache";
 import { SAVED_PLANS_KEY } from "../../shared/cache";
@@ -174,12 +176,10 @@ export function Options() {
     <main className="min-h-screen bg-background">
       <div className="mx-auto flex max-w-[720px] flex-col gap-5 px-6 py-10">
         <header className="flex items-center gap-3">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-accent-soft text-accent-soft-foreground">
-            <MagicWand />
-          </span>
+          <HarborLogo size={36} />
           <div>
             <h1 data-testid="options-title" className="text-xl font-semibold tracking-tight">
-              Smart Web settings
+              Harbor settings
             </h1>
             <p className="text-sm text-muted">Everything here stays on this device.</p>
           </div>
@@ -209,7 +209,7 @@ export function Options() {
           )}
         </Section>
 
-        <Section title="Sites Smart Web follows" description="Read again when you navigate, so saved layouts follow you without a click.">
+        <Section title="Sites Harbor follows" description="Read again when you navigate, so saved layouts follow you without a click.">
           {sites.origins.length === 0 ? (
             <p className="py-3 text-sm text-muted">None. Turn on “Follow me” in the side panel for a site.</p>
           ) : (

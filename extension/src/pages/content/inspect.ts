@@ -1,7 +1,7 @@
 import { nodeRegistry } from "./scan";
 
 // What the evaluation runner checks on the page for one scanned element: is it still visible,
-// and which operations Smart Web put on it or around it. Read-only.
+// and which operations Harbor put on it or around it. Read-only.
 export type Inspection = {
   id: string;
   found: boolean;

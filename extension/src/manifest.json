@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "version": "0.1.0",
-  "name": "Smart Web",
-  "description": "Reads an unfamiliar page, proposes a layout plan, and applies it locally.",
+  "name": "Harbor",
+  "description": "A calm place on a busy web: Harbor reshapes any page around what you use, and changes nothing until you keep it.",
   "minimum_chrome_version": "121",
   "permissions": [
     "activeTab",
@@ -14,15 +14,20 @@
     "service_worker": "background/index.js"
   },
   "action": {
-    "default_title": "Smart Web: read this page",
-    "default_icon": "32x32.png"
+    "default_title": "Harbor: read this page",
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png"
+    }
   },
   "side_panel": {
     "default_path": "sidepanel/sidepanel.html"
   },
   "icons": {
-    "32": "32x32.png",
-    "128": "128x128.png"
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
   },
   "host_permissions": [
     "http://127.0.0.1:4000/*"

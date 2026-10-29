@@ -30,7 +30,7 @@ async function openFixtureWithPanel(
 test("side panel renders with HeroUI v3 styles", async ({ page, extensionId }) => {
   await page.goto(`chrome-extension://${extensionId}/${PAGE_TO_PAGE_URL.SIDEPANEL}`);
 
-  await expect(page.getByTestId("extension-panel-title")).toHaveText("Smart Web");
+  await expect(page.getByTestId("extension-panel-title")).toHaveText("Harbor");
   const scanButton = page.getByRole("button", { name: "Read this page" });
   await expect(scanButton).toBeVisible();
 

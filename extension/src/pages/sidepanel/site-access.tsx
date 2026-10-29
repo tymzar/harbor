@@ -4,7 +4,7 @@ import { Alert, Button, Switch } from "@heroui/react";
 import type { PanelRequest } from "../../shared/types";
 
 // Persistent access to one site, granted only through Chrome's own prompt. Without it,
-// Smart Web keeps a page only until the tab loads a new document (activeTab).
+// Harbor keeps a page only until the tab loads a new document (activeTab).
 const pattern = (origin: string) => `${origin}/*`;
 const hostOf = (origin: string) => origin.replace(/^https?:\/\//, "");
 
@@ -73,10 +73,10 @@ export function NeedsAccess({ tabId, origin }: { tabId: number; origin: string |
     <Alert status="warning" data-testid="needs-access">
       <Alert.Indicator />
       <Alert.Content>
-        <Alert.Title>This page loaded after Smart Web last read it</Alert.Title>
+        <Alert.Title>This page loaded after Harbor last read it</Alert.Title>
         <Alert.Description>
-          Chrome ends Smart Web's access when a tab loads a new page. Click the toolbar icon to read it
-          {origin ? `, or let Smart Web follow you on ${hostOf(origin)}.` : "."}
+          Chrome ends Harbor's access when a tab loads a new page. Click the toolbar icon to read it
+          {origin ? `, or let Harbor follow you on ${hostOf(origin)}.` : "."}
         </Alert.Description>
         {origin && /^https?:/.test(origin) && (
           <Button size="sm" variant="primary" className="mt-2" onPress={() => void allow()} data-testid="allow-site">

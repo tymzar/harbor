@@ -49,7 +49,7 @@ export function LearningCard({ session }: { session: TabSession }) {
       </Switch>
       <p className="text-xs text-muted" data-testid="learning-status">
         {learning.enabled
-          ? `${uses} ${uses === 1 ? "click" : "clicks"} counted on this device. Smart Web only suggests; nothing moves until you say so.`
+          ? `${uses} ${uses === 1 ? "click" : "clicks"} counted on this device. Harbor only suggests; nothing moves until you say so.`
           : "Off. When on, clicks on items in your layout are counted on this device only."}
       </p>
       {learning.enabled && (

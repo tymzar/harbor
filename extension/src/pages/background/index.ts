@@ -40,7 +40,7 @@ async function readSession(tabId: number): Promise<TabSession | undefined> {
   return stored[key] as TabSession | undefined;
 }
 
-// Tabs the user has read with Smart Web; they are rescanned when they navigate.
+// Tabs the user has read with Harbor; they are rescanned when they navigate.
 const FOLLOWED_KEY = "followedTabs";
 // Navigation settles (SPA content swap, late layout) before an automatic rescan.
 const NAVIGATION_SETTLE_MS = 600;
@@ -140,7 +140,7 @@ function scheduleRescan(tabId: number) {
 // most: a page that redraws because of the change itself would otherwise loop.
 const REDRAW_LIMIT = 5;
 const REDRAW_WINDOW_MS = 30_000;
-const REDRAW_NOTICE = "This page keeps redrawing, so Smart Web stopped re-applying your layout. Rescan to try again.";
+const REDRAW_NOTICE = "This page keeps redrawing, so Harbor stopped re-applying your layout. Rescan to try again.";
 const redraws = new Map<number, Array<number>>();
 
 async function redrawn(tabId: number) {
