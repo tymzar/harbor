@@ -9,6 +9,8 @@
 /* The design system's typeface (SmartWebDS text styles use Inter). */
 @theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  /* SmartWebDS heading styles track at -1.5%. */
+  --tracking-tight: -0.015em;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
