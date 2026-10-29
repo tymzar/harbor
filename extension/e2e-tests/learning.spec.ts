@@ -59,6 +59,18 @@ test("clicks on one item lead to a suggestion that changes the page once accepte
 
   await name.click();
   await expect(panel.getByTestId("suggestion")).toContainText("Summit 45");
+
+  // The suggestion came from the site's neural ranker, trained on these three presses: its
+  // network has one output per card and was fed the presses' pointer features.
+  const saved = await panel.evaluate(async () => (await chrome.storage.local.get("rankers")).rankers);
+  const model = saved[FIXTURE_ORIGIN];
+  expect(model.catalog.groups).toHaveLength(1);
+  expect(model.catalog.groups[0].items).toHaveLength(cards.length);
+  expect(model.model.examples).toBe(3);
+  // Three presses on top of the normaliser's 20 prior observations; Playwright presses are much
+  // shorter than the ~100 ms prior, so the press-length mean moved: real features reached the model.
+  expect(model.model.normStats.count).toBe(23);
+  expect(model.model.normStats.mean[0]).toBeLessThan(4.6);
   expect(await card.getAttribute("data-smart-web-op")).toBeNull();
 
   await panel.getByTestId("suggestion-accept").click();

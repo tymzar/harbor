@@ -62,16 +62,18 @@ export function recordUse(counts: GroupCounts | undefined, item: string): GroupC
 }
 
 // The item worth suggesting in this group, if one clearly leads among the items on the page.
+// score ranks the items (the learning model's blended score); without it, the decayed counts do.
 export function suggest(
   learning: SiteLearning,
   group: PlanGroup,
-  members: Array<{ node: ScanNode; key: string }>
+  members: Array<{ node: ScanNode; key: string }>,
+  score?: (key: string) => number
 ): Suggestion | undefined {
   const counts = learning.groups[group.label];
   if (!counts || members.length < MIN_ITEMS || group.operation === "hide-secondary") return undefined;
   const onPage = members.map(({ node, key }) => {
     const index = counts.items.indexOf(key);
-    return { node, key, weight: counts.counts[index] ?? 0, uses: counts.uses[index] ?? 0 };
+    return { node, key, weight: score ? score(key) : (counts.counts[index] ?? 0), uses: counts.uses[index] ?? 0 };
   });
   const total = onPage.reduce((sum, entry) => sum + entry.weight, 0);
   const best = onPage.toSorted((a, b) => b.weight - a.weight)[0];

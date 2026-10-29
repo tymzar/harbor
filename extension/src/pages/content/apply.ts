@@ -1,5 +1,6 @@
 import type { Operation } from "../../shared/plan";
 import { currentScan, elementIds, nodeRegistry } from "./scan";
+import { pressFeatures, startSignals, stopSignals } from "./signals";
 
 export type LayoutGroup = { label: string; container: string; members: Array<string>; operation: Operation };
 export type LayoutResult = { applied: Array<string>; missing: Array<string>; stale?: true };
@@ -86,21 +87,32 @@ export function restoreLayout(): number {
   redrawWatch = undefined;
   if (onActivate) globalThis.removeEventListener("click", onActivate, true);
   onActivate = undefined;
+  stopSignals();
   itemOf.clear();
   return count;
 }
 
-// Reports real clicks (not scripted ones) on items of a kept layout; the background counts them
-// only where the user turned learning on. Nothing about the click itself is sent.
+// The kept layout's item at or around a page element.
+function itemAt(target: EventTarget | null): { element: Element; label: string; nodeId: string } | undefined {
+  if (!(target instanceof Element)) return undefined;
+  for (let current: Element | null = target; current; current = current.parentElement) {
+    const item = itemOf.get(current);
+    if (item) return { element: current, ...item };
+  }
+  return undefined;
+}
+
+// Reports real clicks (not scripted ones) on items of a kept layout, with how the press was made;
+// the background learns from them only where the user turned learning on.
 function watchActivations() {
+  startSignals((target) => {
+    const item = itemAt(target);
+    return item && { key: item.nodeId, element: item.element };
+  });
   onActivate = (event) => {
-    if (!event.isTrusted || !(event.target instanceof Element)) return;
-    for (let current: Element | null = event.target; current; current = current.parentElement) {
-      const item = itemOf.get(current);
-      if (!item) continue;
-      void chrome.runtime.sendMessage({ type: "activation", ...item });
-      return;
-    }
+    const item = event.isTrusted ? itemAt(event.target) : undefined;
+    if (!item) return;
+    void chrome.runtime.sendMessage({ type: "activation", label: item.label, nodeId: item.nodeId, features: pressFeatures(event.timeStamp) });
   };
   globalThis.addEventListener("click", onActivate, true);
 }

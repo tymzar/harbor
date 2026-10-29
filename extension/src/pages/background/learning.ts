@@ -1,5 +1,8 @@
 import type { SiteLearning } from "../../shared/learning";
 import { LEARNING_KEY, decision, emptyLearning, itemKey, recordUse, suggest } from "../../shared/learning";
+import { RAW_MODEL_FEATURES } from "../../../../src/signals/features";
+import type { SiteRanker } from "../../shared/page-ranker";
+import { RANKERS_KEY, blendedScores, itemId, mergeCatalog, rankerFor } from "../../shared/page-ranker";
 import type { PlanGroup } from "../../shared/plan";
 import { validatePlan } from "../../shared/plan";
 import type { TabSession } from "../../shared/types";
@@ -24,9 +27,73 @@ async function writeLearning(origin: string, learning: SiteLearning) {
   await chrome.storage.local.set({ [LEARNING_KEY]: { ...(await readAll()), [origin]: learning } });
 }
 
+async function readRankers(): Promise<Record<string, SiteRanker>> {
+  const stored = await chrome.storage.local.get(RANKERS_KEY);
+  return (stored[RANKERS_KEY] as Record<string, SiteRanker> | undefined) ?? {};
+}
+
+async function writeRanker(origin: string, ranker: SiteRanker) {
+  await chrome.storage.local.set({ [RANKERS_KEY]: { ...(await readRankers()), [origin]: ranker } });
+}
+
+async function forgetRanker(origin: string) {
+  const all = await readRankers();
+  delete all[origin];
+  await chrome.storage.local.set({ [RANKERS_KEY]: all });
+}
+
+// The groups whose items the model ranks: every kept group with a choice of items in it.
+function rankedGroups(session: TabSession): Array<PlanGroup> {
+  const kept = new Set(session.layout?.labels ?? []);
+  return effectiveGroups(session).filter(
+    (group) => kept.has(group.label) && group.operation !== "hide-secondary" && !group.origin && group.members.length >= 2
+  );
+}
+
+// One training step of the site's model on this click: its catalog follows this page's groups
+// and items, growing the network where needed. Returns each on-page item's blended score.
+async function train(
+  origin: string,
+  session: TabSession,
+  learning: SiteLearning,
+  label: string,
+  key: string,
+  features: Array<number>
+): Promise<(group: string, key: string) => number> {
+  const byId = new Map(session.scan!.nodes.map((node) => [node.id, node]));
+  const page = {
+    groups: rankedGroups(session).map((group) => ({
+      id: group.label,
+      items: [...new Set(group.members.flatMap((id) => (byId.get(id) ? [itemId(group.label, itemKey(byId.get(id)!, group))] : [])))],
+    })),
+  };
+  const uses = (id: string) => {
+    const [group, item] = id.split("\n");
+    const counts = learning.groups[group];
+    return counts?.uses[counts.items.indexOf(item)] ?? 0;
+  };
+  const groupUses = (group: string) => (learning.groups[group]?.uses ?? []).reduce((sum, count) => sum + count, 0);
+  const rankers = await readRankers();
+  const saved = rankers[origin];
+  const catalog = mergeCatalog(saved?.catalog, page, uses, groupUses);
+  const ranker = rankerFor(catalog, saved);
+  const id = itemId(label, key);
+  // A press without pointer data (keyboard) still counts, with neutral features.
+  const press = features.length === RAW_MODEL_FEATURES ? Float32Array.from(features) : new Float32Array(RAW_MODEL_FEATURES);
+  if (ranker.index.ids.includes(id)) ranker.step(press, id, "open", label, Date.now());
+  await writeRanker(origin, { catalog, model: ranker.toPersisted() });
+  const scores = blendedScores(ranker);
+  return (group, item) => scores.get(itemId(group, item)) ?? 0;
+}
+
 // A real click on an item of a kept layout. Returns the session with a suggestion when one item
 // now clearly leads its group, or undefined when nothing changed for the panel.
-export async function recordActivation(session: TabSession, label: string, nodeId: string): Promise<TabSession | undefined> {
+export async function recordActivation(
+  session: TabSession,
+  label: string,
+  nodeId: string,
+  features: Array<number>
+): Promise<TabSession | undefined> {
   const origin = originOf(session);
   const scan = session.scan;
   if (!origin || !scan || session.layout?.state !== "applied") return undefined;
@@ -37,15 +104,17 @@ export async function recordActivation(session: TabSession, label: string, nodeI
   const byId = new Map(scan.nodes.map((node) => [node.id, node]));
   const node = byId.get(nodeId);
   if (!group || !node) return undefined;
-  const next: SiteLearning = { ...learning, groups: { ...learning.groups, [label]: recordUse(learning.groups[label], itemKey(node, group)) } };
+  const key = itemKey(node, group);
+  const next: SiteLearning = { ...learning, groups: { ...learning.groups, [label]: recordUse(learning.groups[label], key) } };
   await writeLearning(origin, next);
+  const score = await train(origin, session, next, label, key, features);
 
   if (session.suggestion) return undefined;
   const members = group.members.flatMap((id) => {
     const member = byId.get(id);
     return member ? [{ node: member, key: itemKey(member, group) }] : [];
   });
-  const offer = suggest(next, group, members);
+  const offer = suggest(next, group, members, (item) => score(label, item));
   const target = offer && members.find((member) => member.key === offer.item);
   if (!offer || !target) return undefined;
   return { ...session, suggestion: { ...offer, nodeId: target.node.id, scannedAt: scan.scannedAt }, updatedAt: Date.now() };
@@ -59,6 +128,7 @@ export async function setLearning(session: TabSession, change: "enable" | "disab
     origin,
     change === "reset" ? { ...emptyLearning(), enabled: learning.enabled } : { ...learning, enabled: change === "enable" }
   );
+  if (change === "reset") await forgetRanker(origin);
 }
 
 // Accepting emphasises the item on the page as a group of its own, saved with the plan so it comes

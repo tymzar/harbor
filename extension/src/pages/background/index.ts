@@ -157,10 +157,10 @@ async function redrawn(tabId: number) {
   scheduleRescan(tabId);
 }
 
-async function activated(tabId: number, label: string, nodeId: string) {
+async function activated(tabId: number, label: string, nodeId: string, features: Array<number>) {
   const session = await readSession(tabId);
   if (!session) return;
-  const next = await recordActivation(session, label, nodeId);
+  const next = await recordActivation(session, label, nodeId, features);
   if (next) await saveSession(next);
 }
 
@@ -313,7 +313,7 @@ chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
   // Escape on the page already undid the preview; the stylesheet and session follow.
   if (message.type === "page-restored" && sender.tab?.id !== undefined) void changeLayout(sender.tab.id, "restore");
   if (message.type === "page-redrawn" && sender.tab?.id !== undefined) void redrawn(sender.tab.id);
-  if (message.type === "activation" && sender.tab?.id !== undefined) void activated(sender.tab.id, message.label, message.nodeId);
+  if (message.type === "activation" && sender.tab?.id !== undefined) void activated(sender.tab.id, message.label, message.nodeId, message.features);
   if (message.type === "learning") void learning(message.tabId, message.action);
 });
 

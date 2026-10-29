@@ -127,7 +127,8 @@ export type PanelRequest =
   // From the page: the site replaced elements an applied layout had marked.
   | { type: "page-redrawn" }
   // From the page: a deliberate click on an item of a kept layout's group.
-  | { type: "activation"; label: string; nodeId: string }
+  // features: the press's model features (pointer dynamics, time of day), for the learning model.
+  | { type: "activation"; label: string; nodeId: string; features: Array<number> }
   | { type: "learning"; tabId: number; action: "enable" | "disable" | "reset" | "accept" | "dismiss" };
 
 export const sessionKey = (tabId: number) => `session:${tabId}`;
