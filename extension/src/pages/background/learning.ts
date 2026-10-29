@@ -42,11 +42,11 @@ async function forgetRanker(origin: string) {
   await chrome.storage.local.set({ [RANKERS_KEY]: all });
 }
 
-// The groups whose items the model ranks: every kept group with a choice of items in it.
+// The groups whose items the model ranks: every group of the plan with a choice of items in it,
+// whether the layout changed it or left it as it is. Hidden groups can't be clicked.
 function rankedGroups(session: TabSession): Array<PlanGroup> {
-  const kept = new Set(session.layout?.labels ?? []);
   return effectiveGroups(session).filter(
-    (group) => kept.has(group.label) && group.operation !== "hide-secondary" && !group.origin && group.members.length >= 2
+    (group) => group.operation !== "hide-secondary" && !group.origin && group.members.length >= 2
   );
 }
 

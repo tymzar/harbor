@@ -37,6 +37,11 @@ const config: BuildOptions = {
   platform: "browser",
   outdir: "./build",
   bundle: true,
+  // Code reused from the repo-root app (src/app/NetworkView.tsx) must share this React, not the
+  // root's own copy: two Reacts in one bundle break hooks.
+  alias: { react: "./node_modules/react", "react-dom": "./node_modules/react-dom" },
+  // The same JSX transform for every file, including reused ones whose nearest tsconfig differs.
+  jsx: "automatic",
   entryPoints: (() => {
     const isDevelopment = process.env.NODE_ENV !== "production";
     const baseEntries = [

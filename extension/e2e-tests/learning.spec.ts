@@ -1,4 +1,5 @@
 import { savePlan } from "../src/shared/cache";
+import type { SiteRanker } from "../src/shared/page-ranker";
 import type { LayoutPlan } from "../src/shared/plan";
 import type { TabSession } from "../src/shared/types";
 import { test, expect, openWithPanel } from "./fixtures";
@@ -62,7 +63,7 @@ test("clicks on one item lead to a suggestion that changes the page once accepte
 
   // The suggestion came from the site's neural ranker, trained on these three presses: its
   // network has one output per card and was fed the presses' pointer features.
-  const saved = await panel.evaluate(async () => (await chrome.storage.local.get("rankers")).rankers);
+  const saved = (await panel.evaluate(async () => (await chrome.storage.local.get("rankers")).rankers)) as Record<string, SiteRanker>;
   const model = saved[FIXTURE_ORIGIN];
   expect(model.catalog.groups).toHaveLength(1);
   expect(model.catalog.groups[0].items).toHaveLength(cards.length);
@@ -72,6 +73,14 @@ test("clicks on one item lead to a suggestion that changes the page once accepte
   expect(model.model.normStats.count).toBe(23);
   expect(model.model.normStats.mean[0]).toBeLessThan(4.6);
   expect(await card.getAttribute("data-smart-web-op")).toBeNull();
+
+  // The model, live in the panel: the reused network picture, with Summit as the top card.
+  await panel.getByTestId("model-toggle").click();
+  const network = panel.getByTestId("network-view");
+  await expect(network).toBeVisible();
+  await expect(network).toHaveAttribute("data-top", /Summit/);
+  await expect(panel.getByTestId("network-output")).toHaveCount(5);
+  await expect(panel.getByTestId("network-output").first()).toContainText("Summit 45");
 
   await panel.getByTestId("suggestion-accept").click();
   await expect.poll(() => card.getAttribute("data-smart-web-op")).toBe("emphasize");
@@ -91,4 +100,48 @@ test("clicks on one item lead to a suggestion that changes the page once accepte
 
   await panel.getByTestId("restore-layout").click();
   await expect.poll(() => site.locator("[data-smart-web-op], [data-smart-web-member]").count()).toBe(0);
+});
+
+// Learning also covers regions the plan leaves as they are: on GitHub the repository tabs are
+// "no change", and Pull requests is what the user opens most.
+test("clicks in a region the plan leaves alone still teach the model", async ({ context, extensionId }) => {
+  const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/catalog.html`);
+  await panel.getByRole("button", { name: "Scan page" }).click();
+  await expect(panel.getByTestId("screenshot")).toBeVisible();
+  const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  const summit = nodes.find((node) => node.text.startsWith("Summit 45"))!;
+  const pages = nodes.find((node) => node.text.startsWith("1 2 3 Next"))!;
+  const group = (label: string, container: string, members: Array<string>, operation: LayoutPlan["groups"][number]["operation"]) => ({
+    label,
+    urlPattern: "127.0.0.1:4317/catalog.html",
+    role: "other" as const,
+    container,
+    members,
+    operation,
+    reorderable: false,
+    identity: { source: "none" as const, attribute: "" },
+    reason: "",
+  });
+  const plan: LayoutPlan = {
+    summary: "Catalog",
+    template: { urlPattern: "127.0.0.1:4317/*", pageKind: "catalog" },
+    groups: [
+      group("Backpack cards", summit.parent!, nodes.filter((node) => node.parent === summit.parent).map((node) => node.id), "none"),
+      group("Pagination", pages.id, nodes.filter((node) => node.parent === pages.id).map((node) => node.id), "hide-secondary"),
+    ],
+  };
+  await panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect(panel.getByTestId("plan-reused")).toBeVisible();
+  await panel.getByTestId("preview-layout").click();
+  await panel.getByTestId("keep-layout").click();
+  await panel.getByText("Learn what I open on this site").click();
+
+  const card = site.locator(".p").filter({ hasText: "Summit 45" });
+  for (let click = 0; click < 3; click += 1) await card.locator(".name").click();
+  await expect(panel.getByTestId("suggestion")).toContainText("Summit 45");
+  // Watched, not changed: nothing on the cards was marked.
+  expect(await card.getAttribute("data-smart-web-op")).toBeNull();
+  await expect(panel.getByTestId("layout-missing")).toHaveCount(0);
 });

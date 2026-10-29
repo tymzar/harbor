@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Alert, Button, Switch } from "@heroui/react";
-import { Check, Sparkles } from "@gravity-ui/icons";
+import { Check, Eye, EyeSlash, Sparkles } from "@gravity-ui/icons";
 
 import type { SiteLearning } from "../../shared/learning";
 import { LEARNING_KEY, emptyLearning } from "../../shared/learning";
 import type { PanelRequest, TabSession } from "../../shared/types";
+import { ModelView } from "./model-view";
 
 type LearningAction = Extract<PanelRequest, { type: "learning" }>["action"];
 
@@ -28,6 +29,7 @@ function useSiteLearning(origin: string | undefined): SiteLearning {
 export function LearningCard({ session }: { session: TabSession }) {
   const origin = session.lastOrigin;
   const learning = useSiteLearning(origin);
+  const [showModel, setShowModel] = useState(false);
   const send = (action: LearningAction) => {
     const request: PanelRequest = { type: "learning", tabId: session.tabId, action };
     void chrome.runtime.sendMessage(request);
@@ -50,6 +52,16 @@ export function LearningCard({ session }: { session: TabSession }) {
           ? `${uses} ${uses === 1 ? "click" : "clicks"} counted on this device. Smart Web suggests a change; nothing moves without you.`
           : "Off. When on, clicks on items in your layout are counted on this device only."}
       </p>
+      {learning.enabled && (
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm font-medium">How it learns</span>
+          <Button size="sm" variant="ghost" onPress={() => setShowModel(!showModel)} data-testid="model-toggle">
+            {showModel ? <EyeSlash /> : <Eye />}
+            {showModel ? "Hide the model" : "Show the model"}
+          </Button>
+        </div>
+      )}
+      {learning.enabled && showModel && <ModelView session={session} />}
       {offer && (
         <Alert status="accent" data-testid="suggestion">
           <Alert.Indicator>

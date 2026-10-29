@@ -147,6 +147,11 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
       return element ? [{ id, element }] : [];
     });
     const members = found.map(({ element }) => element);
+    // Left as it is: nothing is marked, its items are only watched for learning.
+    if (group.operation === "none") {
+      for (const { id, element } of found) itemOf.set(element, { label: group.label, nodeId: id });
+      continue;
+    }
     // Removed by the site since the scan: report it rather than guess.
     if (!container?.isConnected || members.length === 0) {
       result.missing.push(group.label);

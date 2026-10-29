@@ -21,10 +21,15 @@ export async function showLayout(
   const tabId = session.tabId;
   const chosen = groups.filter((group) => group.operation !== "none");
   if (chosen.length === 0) return undefined;
+  // Regions the plan leaves alone are still watched for clicks, so learning sees them
+  // (the user's tabs are usually left as they are, and are what they open most).
+  const watched = effectiveGroups(session).filter(
+    (group) => group.operation === "none" && !chosen.some((other) => other.label === group.label)
+  );
 
   await removeSheet(tabId);
   await chrome.scripting.insertCSS({ target: { tabId }, css: LAYOUT_CSS });
-  const layout: Array<LayoutGroup> = chosen.map(({ label, container, members, operation }) => ({
+  const layout: Array<LayoutGroup> = [...chosen, ...watched].map(({ label, container, members, operation }) => ({
     label,
     container,
     members,

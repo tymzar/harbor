@@ -3,6 +3,8 @@
 
 /* Scan the extension sources for utility classes (paths are relative to this file). */
 @source "../../";
+/* The network picture reused from the pre-event app (src/app/NetworkView.tsx). */
+@source "../../../../src/app/NetworkView.tsx";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
