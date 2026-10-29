@@ -6,6 +6,11 @@
 /* The network picture reused from the pre-event app (src/app/NetworkView.tsx). */
 @source "../../../../src/app/NetworkView.tsx";
 
+/* The design system's typeface (SmartWebDS text styles use Inter). */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Same harbor-teal accent as the Smart Web app (src/index.css in the repo root). */
@@ -24,6 +29,7 @@ body,
   height: 100%;
 }
 
+/* font-sans on body as well: Chrome gives extension pages a default body font (system-ui). */
 body {
-  @apply bg-background text-foreground antialiased;
+  @apply bg-background font-sans text-foreground antialiased;
 }

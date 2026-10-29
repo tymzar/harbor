@@ -42,6 +42,8 @@ const config: BuildOptions = {
   alias: { react: "./node_modules/react", "react-dom": "./node_modules/react-dom" },
   // The same JSX transform for every file, including reused ones whose nearest tsconfig differs.
   jsx: "automatic",
+  // Font files from @fontsource-variable/inter are copied into the build, not inlined.
+  loader: { ".woff2": "file" },
   entryPoints: (() => {
     const isDevelopment = process.env.NODE_ENV !== "production";
     const baseEntries = [

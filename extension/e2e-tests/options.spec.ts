@@ -53,3 +53,19 @@ test("settings page lists saved layouts and forgets them", async ({ page, extens
   await expect(page.getByTestId("no-saved-plans")).toBeVisible();
   expect(await page.evaluate(() => chrome.storage.local.get("savedPlans"))).toEqual({ savedPlans: [] });
 });
+
+// The design's typeface ships with the extension: no network request, no fallback to the system font.
+test("pages render in the bundled Inter", async ({ page, extensionId }) => {
+  await page.goto(`chrome-extension://${extensionId}/${PAGE_TO_PAGE_URL.OPTIONS}`);
+  await expect(page.getByTestId("options-title")).toBeVisible();
+  const font = await page.evaluate(async () => {
+    await document.fonts.ready;
+    const title = document.querySelector('[data-testid="options-title"]')!;
+    return {
+      family: getComputedStyle(title).fontFamily,
+      loaded: [...document.fonts].some((face) => face.family.includes("Inter Variable") && face.status === "loaded"),
+    };
+  });
+  expect(font.family).toContain("Inter Variable");
+  expect(font.loaded).toBe(true);
+});

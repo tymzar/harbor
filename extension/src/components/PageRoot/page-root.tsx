@@ -1,5 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { Toast } from "@heroui/react";
+// Inter, bundled with the extension (no network request), as in the SmartWebDS design.
+import "@fontsource-variable/inter/wght.css";
 import "../../assets/css/index.css";
 
 // Extension pages can't run an inline theme script (MV3 CSP), so follow the OS scheme here.
