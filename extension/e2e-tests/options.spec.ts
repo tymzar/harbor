@@ -46,7 +46,7 @@ test("settings page lists saved layouts and forgets them", async ({ page, extens
   await expect(row).toContainText("github.com/{owner}/{repo}/*");
   await row.getByRole("button", { name: "Show 2 groups" }).click();
   await expect(row).toContainText("reorderable by data-tab-item");
-  await expect(row).toContainText("hide-secondary");
+  await expect(row).toContainText("Hide");
   if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT });
 
   await row.getByRole("button", { name: /Forget the plan/ }).click();

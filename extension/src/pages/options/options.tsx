@@ -1,9 +1,13 @@
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Button, Card, Chip } from "@heroui/react";
-import { TrashBin } from "@gravity-ui/icons";
+import { MagicWand, TrashBin } from "@gravity-ui/icons";
 
 import type { SavedPlan } from "../../shared/cache";
 import { SAVED_PLANS_KEY } from "../../shared/cache";
+import type { SiteLearning } from "../../shared/learning";
+import { LEARNING_KEY, emptyLearning } from "../../shared/learning";
+import { RANKERS_KEY } from "../../shared/page-ranker";
 
 // Hosts the manifest itself requires (the model proxy) aren't sites the user chose to follow.
 const REQUIRED_HOSTS = new Set(chrome.runtime.getManifest().host_permissions ?? []);
@@ -52,44 +56,89 @@ function useFollowedSites() {
   return { origins, remove: unfollowSite };
 }
 
+const OPERATION_LABEL: Record<string, string> = {
+  "hide-secondary": "Hide",
+  compact: "Compact",
+  grid: "Grid",
+  emphasize: "Emphasize",
+  none: "No change",
+};
+
+const forgetLearning = async (origin: string) => {
+  const stored = await chrome.storage.local.get([LEARNING_KEY, RANKERS_KEY]);
+  const learning = { ...(stored[LEARNING_KEY] as Record<string, SiteLearning> | undefined) };
+  const rankers = { ...(stored[RANKERS_KEY] as Record<string, unknown> | undefined) };
+  if (learning[origin]) learning[origin] = { ...emptyLearning(), enabled: learning[origin].enabled };
+  delete rankers[origin];
+  await chrome.storage.local.set({ [LEARNING_KEY]: learning, [RANKERS_KEY]: rankers });
+};
+
+function useLearning() {
+  const [sites, setSites] = useState<Record<string, SiteLearning>>({});
+  useEffect(() => {
+    const read = async () => {
+      const stored = await chrome.storage.local.get(LEARNING_KEY);
+      setSites((stored[LEARNING_KEY] as Record<string, SiteLearning> | undefined) ?? {});
+    };
+    void read();
+    const onChanged = (changes: Record<string, chrome.storage.StorageChange>) => {
+      if (LEARNING_KEY in changes) void read();
+    };
+    chrome.storage.local.onChanged.addListener(onChanged);
+    return () => chrome.storage.local.onChanged.removeListener(onChanged);
+  }, []);
+  return sites;
+}
+
+const host = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/\*$/, "");
+
+// One settings row: what, its state, one action.
+function Row({ title, detail, children, testId }: { title: string; detail: string; children: ReactNode; testId?: string }) {
+  return (
+    <li data-testid={testId} className="flex flex-col gap-2 py-3">
+      <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium">{title}</p>
+          <p className="truncate text-xs text-muted">{detail}</p>
+        </div>
+        {children}
+      </div>
+    </li>
+  );
+}
+
 function SavedPlanRow({ saved, onForget }: { saved: SavedPlan; onForget: () => void }) {
   const [open, setOpen] = useState(false);
+  const changes = saved.plan.groups.filter((group) => group.operation !== "none").length;
 
   return (
-    <li data-testid="saved-plan" className="flex flex-col gap-2 rounded-xl bg-default/60 px-4 py-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{saved.plan.summary || saved.url}</p>
+    <li data-testid="saved-plan" className="flex flex-col gap-2 py-3">
+      <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium">{saved.plan.template.urlPattern}</p>
           <p className="truncate text-xs text-muted">
-            Saved on {saved.url.replace(/^https?:\/\//, "")} · {new Date(saved.savedAt).toLocaleString()}
+            {saved.plan.summary || host(saved.url)} · {changes} {changes === 1 ? "change" : "changes"} · saved{" "}
+            {new Date(saved.savedAt).toLocaleDateString()}
             {saved.usedScreenshot && " · used the screenshot"}
           </p>
         </div>
+        <Button size="sm" variant="ghost" onPress={() => setOpen(!open)}>
+          {open ? "Hide" : "Show"} {saved.plan.groups.length} groups
+        </Button>
         <Button size="sm" variant="ghost" onPress={onForget} aria-label={`Forget the plan for ${saved.url}`}>
           <TrashBin />
           Forget
         </Button>
       </div>
-
-      <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-        Applies to
-        <Chip size="sm" variant="soft" color="accent">
-          {saved.plan.template.urlPattern}
-        </Chip>
-        <button type="button" className="underline" onClick={() => setOpen(!open)}>
-          {open ? "Hide" : "Show"} {saved.plan.groups.length} groups
-        </button>
-      </div>
-
       {open && (
-        <ul className="flex flex-col gap-1 text-xs">
+        <ul className="flex flex-col gap-1 rounded-xl bg-surface-secondary p-3 text-xs">
           {saved.plan.groups.map((group) => (
             <li key={`${group.container}-${group.label}`} className="flex items-center gap-2">
-              <Chip size="sm" variant="soft" color={group.operation === "none" ? "default" : "accent"}>
-                {group.operation === "none" ? "no change" : group.operation}
+              <Chip size="sm" variant={group.operation === "none" ? "secondary" : "soft"} color={group.operation === "none" ? "default" : "accent"}>
+                {OPERATION_LABEL[group.operation] ?? group.operation}
               </Chip>
               <span className="truncate">
-                {group.label} · {group.role} · {group.members.length} {group.members.length === 1 ? "item" : "items"}
+                {group.label} · {group.members.length} {group.members.length === 1 ? "item" : "items"}
                 {group.reorderable && ` · reorderable by ${group.identity.attribute || group.identity.source}`}
               </span>
             </li>
@@ -100,77 +149,116 @@ function SavedPlanRow({ saved, onForget }: { saved: SavedPlan; onForget: () => v
   );
 }
 
+function Section({ title, description, children, action }: { title: string; description: string; children: ReactNode; action?: ReactNode }) {
+  return (
+    <Card className="gap-1 rounded-2xl p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-base font-medium">{title}</h2>
+          <p className="text-xs text-muted">{description}</p>
+        </div>
+        {action}
+      </div>
+      {children}
+    </Card>
+  );
+}
+
 export function Options() {
   const { plans, remove, removeAll } = useSavedPlans();
   const sites = useFollowedSites();
+  const learning = useLearning();
+  const learned = Object.entries(learning);
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
-      <header>
-        <h1 data-testid="options-title" className="text-xl font-semibold tracking-tight">
-          Smart Web settings
-        </h1>
-        <p className="text-sm text-muted">Everything here is stored only in this browser.</p>
-      </header>
-
-      <Card className="rounded-2xl p-5">
-        <Card.Header className="flex-row items-start justify-between gap-3">
+    <main className="min-h-screen bg-background">
+      <div className="mx-auto flex max-w-[720px] flex-col gap-5 px-6 py-10">
+        <header className="flex items-center gap-3">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-accent-soft text-accent-soft-foreground">
+            <MagicWand />
+          </span>
           <div>
-            <Card.Title className="text-base">Saved layouts</Card.Title>
-            <Card.Description className="text-sm text-muted">
-              Plans from Meta, reused on matching pages without another request.
-            </Card.Description>
+            <h1 data-testid="options-title" className="text-xl font-semibold tracking-tight">
+              Smart Web settings
+            </h1>
+            <p className="text-sm text-muted">Everything here stays on this device.</p>
           </div>
-          {plans.length > 0 && (
-            <Button size="sm" variant="danger-soft" onPress={() => void removeAll()} data-testid="forget-all">
-              Forget all
-            </Button>
-          )}
-        </Card.Header>
-        <Card.Content className="pt-4">
+        </header>
+
+        <Section
+          title="Saved layouts"
+          description="Come back automatically, with no Meta call, on every page their pattern covers."
+          action={
+            plans.length > 0 && (
+              <Button size="sm" variant="danger-soft" onPress={() => void removeAll()} data-testid="forget-all">
+                Forget all
+              </Button>
+            )
+          }
+        >
           {plans.length === 0 ? (
-            <p className="text-sm text-muted" data-testid="no-saved-plans">
-              No saved layouts yet. Ask Meta for a plan from the side panel and it appears here.
+            <p className="py-3 text-sm text-muted" data-testid="no-saved-plans">
+              No saved layouts yet. Ask for a layout from the side panel and it appears here.
             </p>
           ) : (
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col divide-y divide-separator">
               {plans.map((saved) => (
                 <SavedPlanRow key={saved.url} saved={saved} onForget={() => void remove(saved.url)} />
               ))}
             </ul>
           )}
-        </Card.Content>
-      </Card>
+        </Section>
 
-      <Card className="rounded-2xl p-5">
-        <Card.Header>
-          <Card.Title className="text-base">Sites Smart Web follows</Card.Title>
-          <Card.Description className="text-sm text-muted">
-            On these sites pages are read again when you navigate. Elsewhere a toolbar click is needed after
-            a full page load.
-          </Card.Description>
-        </Card.Header>
-        <Card.Content className="pt-4">
+        <Section title="Sites Smart Web follows" description="Read again when you navigate, so saved layouts follow you without a click.">
           {sites.origins.length === 0 ? (
-            <p className="text-sm text-muted">None. Turn on “Follow me” in the side panel for a site.</p>
+            <p className="py-3 text-sm text-muted">None. Turn on “Follow me” in the side panel for a site.</p>
           ) : (
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col divide-y divide-separator">
               {sites.origins.map((origin) => (
-                <li
-                  key={origin}
-                  data-testid="followed-site"
-                  className="flex items-center justify-between gap-3 rounded-xl bg-default/60 px-4 py-2 text-sm"
-                >
-                  <span className="truncate">{origin.replace(/\/\*$/, "")}</span>
+                <Row key={origin} title={host(origin)} detail="Rescans when you navigate" testId="followed-site">
                   <Button size="sm" variant="ghost" onPress={() => void sites.remove(origin)}>
-                    Remove
+                    Stop following
                   </Button>
-                </li>
+                </Row>
               ))}
             </ul>
           )}
-        </Card.Content>
-      </Card>
+        </Section>
+
+        <Section title="Learning" description="Counts what you open, per site, on this device. Suggestions change the page only when you accept them.">
+          {learned.length === 0 ? (
+            <p className="py-3 text-sm text-muted">Nothing learned yet. Turn on learning in the side panel after keeping a layout.</p>
+          ) : (
+            <ul className="flex flex-col divide-y divide-separator">
+              {learned.map(([origin, site]) => {
+                const clicks = Object.values(site.groups).reduce((total, group) => total + group.uses.reduce((sum, count) => sum + count, 0), 0);
+                return (
+                  <Row key={origin} title={host(origin)} detail={`${site.enabled ? "On" : "Off"} · ${clicks} ${clicks === 1 ? "click" : "clicks"} · ${site.decided.length} suggestions decided`} testId="learning-site">
+                    <Button size="sm" variant="ghost" onPress={() => void forgetLearning(origin)}>
+                      Reset
+                    </Button>
+                  </Row>
+                );
+              })}
+            </ul>
+          )}
+        </Section>
+
+        <Section title="Model" description="Requests go through the local proxy, which holds the Meta key and a spend cap.">
+          <ul className="flex flex-col divide-y divide-separator">
+            <Row title="Muse Spark 1.3 plans the layout" detail="Reasoning effort is set when the extension is built (low by default).">
+              <Chip size="sm" variant="soft" color="accent">
+                Muse Spark 1.3
+              </Chip>
+            </Row>
+            <Row title="SAM 3.1 finds groups in the screenshot" detail="Only when you switch on “Also send the screenshot” in the panel.">
+              <Chip size="sm" variant="soft">
+                Optional
+              </Chip>
+            </Row>
+          </ul>
+        </Section>
+      </div>
     </main>
   );
 }
