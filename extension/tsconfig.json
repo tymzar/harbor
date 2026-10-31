@@ -19,6 +19,6 @@
     // Reused repo-root code resolves React from the root; type it against this package's React.
     "paths": { "react": ["./node_modules/@types/react"], "react/*": ["./node_modules/@types/react/*"] }
   },
-  "include": ["src", "scripts", "e2e-tests", "playwright.config.ts"],
+  "include": ["src", "scripts", "e2e-tests", "eval", "playwright.config.ts"],
   "exclude": ["build", "node_modules"]
 }

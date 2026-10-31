@@ -98,6 +98,26 @@ type StepState = "done" | "active" | "pending";
 
 const STEP_TEXT: Record<StepState, string> = { done: "", active: "font-medium", pending: "text-muted" };
 
+type Drift = NonNullable<NonNullable<Proposal["reused"]>["drift"]>;
+
+// What the page changed since the layout was saved: groups found elsewhere (applied), found too
+// unsurely to apply, and not found. Nothing is shown when every group was where it was.
+function Drift({ drift }: { drift: Drift }) {
+  const lines = [
+    drift.moved.length > 0 && `Found after the page changed: ${drift.moved.join(", ")}`,
+    drift.skipped.length > 0 && `Not applied, not sure it's the same: ${drift.skipped.join(", ")}`,
+    drift.lost.length > 0 && `No longer on this page: ${drift.lost.join(", ")}`,
+  ].filter(Boolean);
+  if (lines.length === 0) return;
+  return (
+    <ul className="flex flex-col gap-0.5 text-xs text-muted" data-testid="plan-drift">
+      {lines.map((line) => (
+        <li key={line as string}>{line}</li>
+      ))}
+    </ul>
+  );
+}
+
 function Step({ state, children }: { state: StepState; children: string }) {
   return (
     <li className="flex items-center gap-2.5 text-sm">
@@ -276,6 +296,7 @@ export function PlanCard({ session }: { session: TabSession }) {
                 </Button>
               </div>
             )}
+            {done.reused?.drift && <Drift drift={done.reused.drift} />}
           </Card>
 
           {questions.length > 0 && <Questions questions={questions} answers={answers} onAnswer={answer} />}

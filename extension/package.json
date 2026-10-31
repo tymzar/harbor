@@ -16,7 +16,8 @@
     "format": "prettier --no-editorconfig src/**/*.* --check",
     "format:fix": "prettier --no-editorconfig src/**/*.* --write",
     "test:e2e": "E2E=1 npm run build && playwright test",
-    "test": "vitest run src"
+    "test": "vitest run src",
+    "eval:region": "vitest run --config eval/fingerprint/vitest.config.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
