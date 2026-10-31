@@ -7,7 +7,7 @@ import { expect, it } from "vitest";
 
 import type { PageScan } from "../../src/shared/types";
 import type { Row } from "./harness";
-import { bands, compare, prepare, table } from "./harness";
+import { bands, compare, prepare, table, totals } from "./harness";
 import type { Mutated } from "./mutate";
 
 // Real DOM, real scanner: the owned fixtures are opened in Chromium, changed in the DOM
@@ -69,6 +69,7 @@ it("region fingerprints vs element signatures on mutated fixtures (real DOM)", a
     `Fixtures: ${PAGES.length}; groups: ${groups}; seeds: ${SEEDS.length}`,
     "",
     table(rows, mutations),
+    totals(rows),
     "",
     bands(rows),
     "",

@@ -228,6 +228,13 @@ export function table(rows: Array<Row>, mutations: Array<string>): string {
   return lines.join("\n");
 }
 
+// Absolute counts over all changes except "none".
+export function totals(rows: Array<Row>): string {
+  const changed = rows.filter((row) => row.mutation !== "none");
+  const count = (key: "baseline" | "region", outcome: Outcome) => changed.filter((row) => row[key] === outcome).length;
+  return `Totals over ${changed.length} changed groups: baseline ${count("baseline", "correct")} correct / ${count("baseline", "wrong")} wrong / ${count("baseline", "none")} none; region ${count("region", "correct")} correct / ${count("region", "wrong")} wrong / ${count("region", "none")} none`;
+}
+
 // How often each confidence band was right: the calibration behind the degradation policy.
 export function bands(rows: Array<Row>): string {
   const lines = ["| Band | Groups | Correct | Wrong (if applied) |", "|---|---|---|---|"];

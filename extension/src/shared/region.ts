@@ -396,8 +396,8 @@ type Context = { tree: Tree; anchors: Map<number, string>; textGone: boolean };
 
 // An identity without anything written in the page's language: text and aria-label.
 export function wordless<T extends Identity>(saved: T): T {
-  const attrs = saved.attrs && Object.fromEntries(Object.entries(saved.attrs).filter(([name]) => name !== "aria-label"));
-  return { ...saved, text: "", attrs };
+  const unlabelled = saved.attrs && Object.fromEntries(Object.entries(saved.attrs).filter(([name]) => name !== "aria-label"));
+  return { ...saved, text: "", attrs: unlabelled };
 }
 
 export function contextFor(tree: Tree, skeleton: Array<string>): Context {
@@ -463,8 +463,17 @@ export function matchRegions(
   const taken = new Set<string>();
   const best = (entry: (typeof ranked)[number]) => entry.scores.find(({ node }) => !taken.has(node.id));
   for (const entry of ranked.toSorted((a, b) => (best(b)?.score ?? 0) - (best(a)?.score ?? 0))) {
-    const top = best(entry);
+    let top = best(entry);
     if (!top) continue;
+    // Nested wrappers read the same (shared text, shared links); among those scoring nearly as
+    // well, the one whose box is closest to the saved region's is the region.
+    const first = top;
+    const nested = entry.scores.filter(
+      ({ node, score }) =>
+        !taken.has(node.id) && first.score - score <= NESTED && (isInside(tree, node.id, first.node.id) || isInside(tree, first.node.id, node.id))
+    );
+    for (const candidate of nested)
+      if (geometry(entry.print.box, boxOf(tree, candidate.node)) > geometry(entry.print.box, boxOf(tree, top.node))) top = candidate;
     const rival = entry.scores.find(
       ({ node }) => node.id !== top.node.id && !isInside(tree, node.id, top.node.id) && !isInside(tree, top.node.id, node.id)
     );
@@ -479,6 +488,7 @@ export function matchRegions(
 }
 
 const AMBIGUITY = 0.1;
+const NESTED = 0.05;
 
 // Rows of a whole-list group: the container's children of the saved row shape. When the site put
 // a wrapper between the container and its rows, the rows are looked for one or two levels down.
@@ -494,12 +504,12 @@ export function findRows(tree: Tree, container: string, shape: { tag: string; ki
   const wrappers = descendants(tree, container, 60).filter(
     (node) => node.depth - root.depth <= 2 && area(node) >= WRAPPER_AREA * area(root)
   );
-  let best = direct;
+  // The nearest level that holds rows again (breadth first): deeper lists are other lists (cards in a grid).
   for (const parent of wrappers) {
     const rows = kids(tree, parent.id).filter((node) => isRow(node));
-    if (rows.length > best.length) best = rows;
+    if (rows.length > 1) return rows.map((node) => node.id);
   }
-  return best.map((node) => node.id);
+  return direct.map((node) => node.id);
 }
 
 const WRAPPER_AREA = 0.6;

@@ -4,7 +4,7 @@ import { expect, it } from "vitest";
 
 import type { PageScan } from "../../src/shared/types";
 import type { Cost, Row } from "./harness";
-import { bands, calibration, evaluate, table } from "./harness";
+import { bands, calibration, evaluate, table, totals } from "./harness";
 import { MUTATIONS } from "./mutate";
 
 // Offline: real page scans (evaluation/snapshots, third-party, never committed) changed by
@@ -35,6 +35,7 @@ it.skipIf(!existsSync(SNAPSHOTS))("region fingerprints vs element signatures on 
     "",
     "All sites",
     table(rows, mutations),
+    totals(rows),
     "",
     "Held-out sites only",
     table(rows.filter((row) => !tuned.has(row.site)), mutations),
