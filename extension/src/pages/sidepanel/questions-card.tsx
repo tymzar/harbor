@@ -16,7 +16,7 @@ export function Questions({ questions, answers, onAnswer }: QuestionsProperties)
     onAnswer({ ...answers, [question.id]: [...keys].map(Number).toSorted((a, b) => a - b) });
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-surface-secondary p-3" aria-label="Questions about how you use this page" data-testid="questions">
+    <div className="flex flex-col gap-4 rounded-xl border border-separator p-3" aria-label="Questions about how you use this page" data-testid="questions">
       {questions.map((question) => (
         <fieldset key={question.id} className="flex flex-col gap-2" data-testid="question">
           <legend className="mb-2 text-sm font-medium">{question.text}</legend>
@@ -32,6 +32,8 @@ export function Questions({ questions, answers, onAnswer }: QuestionsProperties)
               <ToggleButton
                 key={option.label}
                 id={String(index)}
+                // The chosen answer in solid accent: the kit's soft selected tone is too close to the track.
+                className="data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
                 aria-description={option.effects.map((effect) => `${effect.group}: ${effect.operation}`).join(", ") || "No change"}
               >
                 {option.label}
