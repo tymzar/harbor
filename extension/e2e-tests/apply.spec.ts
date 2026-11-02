@@ -275,3 +275,53 @@ test("a kept layout comes back by itself on the next page, until Restore", async
   await expect(third.panel.getByTestId("preview-layout")).toBeVisible();
   await expect.poll(frame(third.site)).toBe("block");
 });
+
+// The page's own header is site chrome: a change to it, kept on one page, applies on another page
+// of the site even when that page has a plan of its own.
+test("a kept change to the site header follows the user to other pages", async ({ context, extensionId }) => {
+  const first = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/cards.html`);
+  await first.panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(first.panel.getByTestId("screenshot")).toBeVisible();
+  const session = (await first.panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${first.tabId}`)) as TabSession;
+  const scan = session.scan!;
+  const nav = scan.nodes.find((node) => node.tag === "nav")!;
+  const promo = scan.nodes.find((node) => node.tag === "aside")!;
+  const group = (label: string, container: string, operation: PlanGroup["operation"], urlPattern: string): PlanGroup => ({
+    label,
+    urlPattern,
+    role: "other",
+    container,
+    members: scan.nodes.filter((node) => node.parent === container).map((node) => node.id),
+    operation,
+    reorderable: false,
+    identity: { source: "none", attribute: "" },
+    reason: "",
+  });
+  // This page's plan: the header (site-wide) and its promo. The other page's own plan: only its promo.
+  const here: LayoutPlan = {
+    summary: "Feed",
+    template: { urlPattern: "127.0.0.1:4317/*", pageKind: "feed" },
+    groups: [group("Top navigation", nav.id, "emphasize", "127.0.0.1:4317/*"), group("Promoted", promo.id, "hide-secondary", "127.0.0.1:4317/cards.html")],
+  };
+  const other: LayoutPlan = {
+    summary: "Other page",
+    template: { urlPattern: "127.0.0.1:4317/b/*", pageKind: "feed" },
+    groups: [group("Promoted here", promo.id, "hide-secondary", "127.0.0.1:4317/b/*")],
+  };
+  const otherScan = { ...scan, url: `${FIXTURE_ORIGIN}/b/cards.html` };
+  await first.panel.evaluate((entries) => chrome.storage.local.set({ savedPlans: entries }), [
+    savePlan(here, scan, false, Date.now()),
+    savePlan(other, otherScan, false, Date.now() - 1000),
+  ]);
+  await first.panel.getByRole("button", { name: "Rescan" }).click();
+  await first.panel.getByTestId("preview-layout").click();
+  await first.panel.getByTestId("keep-layout").click();
+  await expect(first.panel.getByTestId("layout-applied")).toHaveText("2 changes on the page");
+
+  const second = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/b/cards.html`);
+  await second.panel.getByRole("button", { name: "Read this page" }).click();
+  // The header change is applied by itself; the page's own promo change waits for a preview.
+  await expect(second.panel.getByTestId("layout-applied")).toHaveText("1 change on the page");
+  await expect.poll(() => second.site.locator(".topnav").getAttribute("data-smart-web-op")).toBe("emphasize");
+  await expect.poll(() => second.site.locator(".frame").evaluate((element) => getComputedStyle(element).display)).toBe("block");
+});

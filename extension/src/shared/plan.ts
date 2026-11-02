@@ -174,6 +174,29 @@ export function urlPatternMatches(pattern: string, url: string): boolean {
 
 export const groupPattern = (plan: LayoutPlan, group: PlanGroup) => group.urlPattern || plan.template.urlPattern;
 
+// Site chrome (the page's own header, top navigation and footer) is the same on every page of a
+// site, so its groups get the site-wide pattern whatever the model wrote: a change to the top bar
+// follows the user from the feed to every other page. A nav or footer inside main or an article is
+// content, not chrome.
+const CHROME = (node: ScanNode) => ["header", "nav", "footer"].includes(node.tag) || ["banner", "navigation", "contentinfo"].includes(node.role ?? "");
+const CONTENT = (node: ScanNode) => ["main", "article"].includes(node.tag) || node.role === "main" || node.role === "article";
+
+export function siteWide(groups: Array<PlanGroup>, scan: PageScan): Array<PlanGroup> {
+  const byId = new Map(scan.nodes.map((node) => [node.id, node]));
+  const host = URL.canParse(scan.url) ? new URL(scan.url).host : undefined;
+  const inChrome = (id: string) => {
+    let chrome = false;
+    for (let node = byId.get(id); node; node = node.parent ? byId.get(node.parent) : undefined) {
+      if (CONTENT(node)) return false;
+      if (CHROME(node)) chrome = true;
+    }
+    return chrome;
+  };
+  return host ? groups.map((group) => (inChrome(group.container) ? { ...group, urlPattern: `${host}/*` } : group)) : groups;
+}
+
+export const isSiteWide = (pattern: string, url: string) => URL.canParse(url) && pattern === `${new URL(url).host}/*`;
+
 function identityValue(node: ScanNode, group: PlanGroup): string | undefined {
   switch (group.identity.source) {
     case "attribute": {

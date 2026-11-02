@@ -3,7 +3,7 @@ import { Alert, Button, Card, Switch } from "@heroui/react";
 import { Eye, EyeSlash, MagicWand, Sparkles } from "@gravity-ui/icons";
 
 import type { SiteLearning } from "../../shared/learning";
-import { LEARNING_KEY, emptyLearning } from "../../shared/learning";
+import { LEARNING_KEY, MIN_USES, emptyLearning } from "../../shared/learning";
 import type { PanelRequest, TabSession } from "../../shared/types";
 import { ModelView } from "./model-view";
 
@@ -71,11 +71,11 @@ export function LearningCard({ session }: { session: TabSession }) {
             <Alert.Title>
               You opened “{offer.text}” {offer.uses} times
             </Alert.Title>
-            <Alert.Description>Highlight it in {offer.group}?</Alert.Description>
+            <Alert.Description>Move it to the front of {offer.group}, on every page where it appears?</Alert.Description>
             <div className="mt-2 flex gap-2">
               <Button size="sm" variant="primary" onPress={() => send("accept")} data-testid="suggestion-accept">
                 <MagicWand />
-                Highlight it
+                Move to the front
               </Button>
               <Button size="sm" variant="ghost" onPress={() => send("dismiss")} data-testid="suggestion-dismiss">
                 Not now
@@ -83,6 +83,11 @@ export function LearningCard({ session }: { session: TabSession }) {
             </div>
           </Alert.Content>
         </Alert>
+      )}
+      {learning.enabled && uses > 0 && !offer && (
+        <p className="text-xs text-muted" data-testid="learning-threshold">
+          Harbor offers a change once one item has {MIN_USES} opens and at least half of the clicks in its group.
+        </p>
       )}
       {uses > 0 && (
         <Button size="sm" variant="ghost" className="self-start" onPress={() => send("reset")} data-testid="learning-reset">

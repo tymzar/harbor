@@ -29,6 +29,9 @@ export const LAYOUT_CSS = `
   border-radius: 8px !important; background-color: rgb(${ACCENT} / 0.06) !important;
 }
 
+/* A learned favourite moves to the front of its row, on screen only (see rowItem). */
+[data-smart-web-first] { order: -1 !important; }
+
 /* Hidden outright: no space, not focusable, not announced. The side panel lists hidden regions
    and unticking one there shows it again; that works for keyboard and screen-reader users,
    which hover-to-reveal did not. */

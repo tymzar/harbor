@@ -32,11 +32,12 @@ export async function showLayout(
 
   await removeSheet(tabId);
   await chrome.scripting.insertCSS({ target: { tabId }, css: LAYOUT_CSS });
-  const layout: Array<LayoutGroup> = [...chosen, ...watched].map(({ label, container, members, operation }) => ({
+  const layout: Array<LayoutGroup> = [...chosen, ...watched].map(({ label, container, members, operation, origin }) => ({
     label,
     container,
     members,
     operation,
+    first: origin === "learned" && operation === "emphasize",
   }));
   const [injection] = await chrome.scripting.executeScript({
     target: { tabId },
@@ -47,8 +48,8 @@ export async function showLayout(
   const result = injection?.result as LayoutResult | undefined;
   if (!result) throw new Error("The page did not answer.");
   if (result.stale) throw new Error(STALE_SCAN);
-  const pattern = session.proposal?.plan?.template.urlPattern;
-  if (state === "applied" && remember && pattern) await rememberKept(pattern, chosen.map((group) => group.label));
+  const plan = session.proposal?.plan;
+  if (state === "applied" && remember && plan) await rememberKept(plan, effectiveGroups(session), chosen.map((group) => group.label));
   return { state, labels: result.applied, missing: result.missing };
 }
 

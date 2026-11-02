@@ -1,5 +1,5 @@
 import type { LayoutPlan } from "../../shared/plan";
-import { PLAN_SCHEMA, validatePlan } from "../../shared/plan";
+import { PLAN_SCHEMA, siteWide, validatePlan } from "../../shared/plan";
 import type { VisualGroup } from "../../shared/prompt";
 import type { Profile } from "../../shared/profile";
 import { PROFILE_KEY, clampToProfile } from "../../shared/profile";
@@ -154,7 +154,8 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
 
     const carried = ownGroups.filter((own) => !plan.groups.some((group) => group.label === own.label));
     plan = { ...plan, groups: [...plan.groups, ...carried] };
-    const accepted = [...clampToProfile(validation.accepted, profile, Boolean(special)), ...carried];
+    const accepted = siteWide([...clampToProfile(validation.accepted, profile, Boolean(special)), ...carried], scan);
+    plan = { ...plan, groups: plan.groups.map((group) => accepted.find((own) => own.label === group.label) ?? group) };
 
     await updateProposal(tabId, {
       status: "done",

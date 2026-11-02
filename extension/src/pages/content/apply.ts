@@ -2,7 +2,8 @@ import type { Operation } from "../../shared/plan";
 import { currentScan, elementIds, nodeRegistry } from "./scan";
 import { pressFeatures, startSignals, stopSignals } from "./signals";
 
-export type LayoutGroup = { label: string; container: string; members: Array<string>; operation: Operation };
+// first: the members move to the front of their row (a learned "you open this most").
+export type LayoutGroup = { label: string; container: string; members: Array<string>; operation: Operation; first?: boolean };
 export type LayoutResult = { applied: Array<string>; missing: Array<string>; stale?: true };
 
 const GROUP = "data-smart-web-group";
@@ -10,6 +11,7 @@ const OP = "data-smart-web-op";
 const MEMBER = "data-smart-web-member";
 const PREVIEW = "data-smart-web-preview";
 const OPEN = "data-smart-web-open";
+const FIRST = "data-smart-web-first";
 
 // Toggles Harbor added in front of folded regions; the only elements it ever inserts. Restore removes them.
 const folds = new Set<HTMLButtonElement>();
@@ -114,6 +116,19 @@ function withShells(targets: Array<Element>): Array<Element> {
   return current;
 }
 
+// The element to move for "first": the member, or its nearest ancestor that sits in a flex or grid
+// row with siblings (a nav link inside its list item). CSS order moves it on screen only; the DOM,
+// and so reading and tab order, stay the site's own. Undefined when no such row is close by.
+function rowItem(member: Element): Element | undefined {
+  let item: Element | null = member;
+  for (let level = 0; item && level < 4; level++, item = item.parentElement) {
+    const parent: Element | null = item.parentElement;
+    if (!parent || parent === document.body) return undefined;
+    if (/^(inline-)?(flex|grid)$/.test(getComputedStyle(parent).display) && parent.children.length > 1) return item;
+  }
+  return undefined;
+}
+
 function mark(element: Element, name: string, value: string) {
   element.setAttribute(name, value);
   owned.add(element);
@@ -121,7 +136,7 @@ function mark(element: Element, name: string, value: string) {
 
 export function restoreLayout(): number {
   const count = owned.size;
-  for (const element of owned) for (const name of [GROUP, OP, MEMBER, OPEN]) element.removeAttribute(name);
+  for (const element of owned) for (const name of [GROUP, OP, MEMBER, OPEN, FIRST]) element.removeAttribute(name);
   owned.clear();
   for (const fold of folds) fold.remove();
   folds.clear();
@@ -249,6 +264,8 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
     }
     for (const { id, element } of found) {
       mark(element, MEMBER, "");
+      const item = group.first ? rowItem(element) : undefined;
+      if (item) mark(item, FIRST, "");
       if (group.operation !== "hide-secondary" && group.operation !== "collapse") itemOf.set(element, { label: group.label, nodeId: id });
     }
     result.applied.push(group.label);

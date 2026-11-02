@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { LayoutPlan, PlanGroup } from "./plan";
-import { urlPatternMatches, validatePlan } from "./plan";
+import { isSiteWide, siteWide, urlPatternMatches, validatePlan } from "./plan";
 import type { PageScan, ScanNode } from "./types";
 
 const rect = { x: 0, y: 0, w: 10, h: 10 };
@@ -112,5 +112,26 @@ describe("validatePlan", () => {
   it("accepts a single element as its own region (a group the user picked)", () => {
     const picked = { ...tabsGroup, label: "Hidden by you: Issues", container: "n3", members: ["n3"], operation: "hide-secondary" as const, reorderable: false, origin: "user" as const };
     expect(validatePlan(plan([picked]), scan).errors).toEqual([]);
+  });
+});
+
+const feedPage = (nodes: Array<ScanNode>): PageScan => ({ ...scan, url: "https://www.linkedin.com/feed/", nodes });
+const feedGroup = (container: string): PlanGroup => ({ ...tabsGroup, label: container, container, urlPattern: "www.linkedin.com/feed/*" });
+
+describe("siteWide", () => {
+  const page = feedPage;
+  const group = feedGroup;
+
+  it("gives the page's own header and top navigation the site-wide pattern", () => {
+    const nodes = [node("h", undefined, { tag: "header", kind: "landmark" }), node("nav", "h", { tag: "ul", kind: "list" }), node("feed", undefined, { tag: "div", kind: "group" })];
+    const [header, feed] = siteWide([group("nav"), group("feed")], page(nodes));
+    expect(header.urlPattern).toBe("www.linkedin.com/*");
+    expect(isSiteWide(header.urlPattern, "https://www.linkedin.com/jobs/")).toBe(true);
+    expect(feed.urlPattern).toBe("www.linkedin.com/feed/*");
+  });
+
+  it("leaves a nav or footer inside the main content to its page", () => {
+    const nodes = [node("m", undefined, { tag: "main", kind: "landmark" }), node("toc", "m", { tag: "nav", kind: "landmark" }), node("f", "m", { tag: "footer", kind: "landmark" })];
+    expect(siteWide([group("toc"), group("f")], page(nodes)).map((entry) => entry.urlPattern)).toEqual(["www.linkedin.com/feed/*", "www.linkedin.com/feed/*"]);
   });
 });

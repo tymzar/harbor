@@ -84,6 +84,9 @@ test("clicks on one item lead to a suggestion that changes the page once accepte
 
   await panel.getByTestId("suggestion-accept").click();
   await expect.poll(() => card.getAttribute("data-smart-web-op")).toBe("emphasize");
+  // Moved to the front of its row on screen; the DOM order, and so tab order, stays the site's own.
+  await expect.poll(() => card.evaluate((element) => getComputedStyle(element).order)).toBe("-1");
+  expect(await card.evaluate((element) => [...element.parentElement!.children].indexOf(element))).toBeGreaterThan(0);
   await expect(panel.getByTestId("layout-applied")).toHaveText("2 changes on the page");
   await expect(panel.getByTestId("suggestion")).toHaveCount(0);
 
