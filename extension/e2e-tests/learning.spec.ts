@@ -185,12 +185,25 @@ test("clicks on a nav bar lead to the user's own order of it", async ({ context,
     if (await panel.getByTestId("suggestion").count() && !(await panel.getByTestId("suggestion-order").count())) await panel.getByTestId("suggestion-dismiss").click();
   }
   await expect(panel.getByTestId("suggestion-order")).toContainText(/Messaging.*Jobs.*Home/);
+  // On a real site a nav click navigates and Harbor reads the page again: the offer must survive that.
+  const scannedAt = async () =>
+    ((await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession).scan?.scannedAt ?? 0;
+  let lastScan = await scannedAt();
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect.poll(scannedAt).toBeGreaterThan(lastScan);
+  await expect(panel.getByTestId("suggestion-order")).toContainText(/Messaging.*Jobs.*Home/);
   if (process.env.SHOT) await panel.getByTestId("learning").screenshot({ path: process.env.SHOT });
   await panel.getByTestId("suggestion-accept").click();
   await expect(panel.getByTestId("order-row")).toContainText("Your order is on");
 
   const left = (name: string) => site.locator(".topnav li").filter({ hasText: name }).evaluate((element) => element.getBoundingClientRect().left);
   await expect.poll(async () => (await left("Messaging")) < (await left("Jobs")) && (await left("Jobs")) < (await left("Home"))).toBe(true);
+  // Kept: reading the page again (a navigation) brings the order back, and doesn't offer it again.
+  lastScan = await scannedAt();
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect.poll(scannedAt).toBeGreaterThan(lastScan);
+  await expect.poll(async () => (await left("Messaging")) < (await left("Jobs")) && (await left("Jobs")) < (await left("Home"))).toBe(true);
+  await expect(panel.getByTestId("suggestion")).toHaveCount(0);
   // The DOM keeps the site's order.
   expect(await site.locator(".topnav li").allInnerTexts()).toEqual([expect.stringContaining("Home"), expect.stringContaining("Jobs"), expect.stringContaining("Messaging")]);
 });

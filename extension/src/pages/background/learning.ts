@@ -205,3 +205,31 @@ async function acceptOrder(session: TabSession, offer: NonNullable<TabSession["s
   await rememberPlan({ ...plan, groups: next.proposal!.accepted! }, scan, proposal.usedScreenshot);
   return next;
 }
+
+// The order offer for this page, worked out whenever Harbor reads it (not only on a click): a click
+// on a nav link usually navigates, and the read that follows starts a fresh session. Scores come
+// from the site's saved model, as they stood after the last click.
+export async function orderOffer(session: TabSession): Promise<TabSession["suggestion"]> {
+  const origin = originOf(session);
+  const scan = session.scan;
+  if (!origin || !scan) return undefined;
+  const learning = await readLearning(origin);
+  if (!learning.enabled) return undefined;
+  const rankers = await readRankers();
+  const saved = rankers[origin];
+  const scores = saved ? blendedScores(rankerFor(saved.catalog, saved)) : undefined;
+  const byId = new Map(scan.nodes.map((node) => [node.id, node]));
+  const groups = effectiveGroups(session);
+  for (const group of groups) {
+    if (!session.proposal?.orderable?.[group.label]?.ok) continue;
+    const members = group.members.flatMap((id) => {
+      const node = byId.get(id);
+      return node ? [{ node, key: itemKey(node, group) }] : [];
+    });
+    const current = groups.find((candidate) => candidate.label === orderLabel(group.label))?.orderKeys;
+    const score = scores && ((key: string) => scores.get(itemId(group.label, key)) ?? 0);
+    const offer = suggestOrder(learning, group, members, score, current);
+    if (offer) return { ...offer, nodeId: group.container, scannedAt: scan.scannedAt };
+  }
+  return undefined;
+}

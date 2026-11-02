@@ -4,7 +4,7 @@ import { sessionKey, shotKey } from "../../shared/types";
 import { STALE_SCAN, checkOrderable, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
 import { forgetPlan, keptLabels, rememberAnswers, rememberKept, reusePlan } from "./saved-plans";
-import { decide, recordActivation, setLearning } from "./learning";
+import { decide, orderOffer, recordActivation, setLearning } from "./learning";
 import { hideNode } from "./user-groups";
 
 // Pages Chrome never lets extensions script, even with activeTab.
@@ -110,6 +110,7 @@ async function scanTab(tabId: number, settle: boolean) {
     const keptHere = proposal?.plan ? await keptLabels(proposal.plan, effectiveGroups(session)) : [];
     const kept = carried ?? (keptHere.length > 0 ? { state: "applied" as const, labels: keptHere } : undefined);
     if (kept && proposal) session.layout = await showLayout(session, pickGroups(session, kept.labels), kept.state, false);
+    if (proposal) session.suggestion = await orderOffer(session);
     await saveSession(session);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
