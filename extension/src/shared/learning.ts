@@ -28,7 +28,9 @@ export type SiteLearning = {
   decided: Array<string>;
 };
 
-export type Suggestion = { group: string; item: string; text: string; uses: number };
+// kind "first" (the default) moves one item forward; "order" puts the whole row in order, item keys
+// first to last in `order`, with `item` a key for the decision ("order:a|b|c").
+export type Suggestion = { kind?: "first" | "order"; group: string; item: string; text: string; uses: number; order?: Array<string> };
 
 export const emptyLearning = (): SiteLearning => ({ enabled: false, groups: {}, decided: [] });
 
@@ -83,3 +85,34 @@ export function suggest(
 }
 
 export const decision = (group: string, item: string) => `${group}\n${item}`;
+
+// A whole order for a row the page can rearrange (see checkOrder): offered once the group has had
+// ORDER_MIN_USES clicks, with the items used so far ranked by score (the learning model's blended
+// score; the decayed counts without it) and the unused ones after them in page order. Nothing is
+// offered when that is the page's own order, the order already in place, or one the user decided on.
+export const ORDER_MIN_USES = 8;
+
+export const groupUses = (learning: SiteLearning, label: string) => (learning.groups[label]?.uses ?? []).reduce((sum, count) => sum + count, 0);
+
+export function suggestOrder(
+  learning: SiteLearning,
+  group: PlanGroup,
+  members: Array<{ node: ScanNode; key: string }>,
+  score?: (key: string) => number,
+  current?: Array<string>
+): Suggestion | undefined {
+  const counts = learning.groups[group.label];
+  const keys = [...new Set(members.map((member) => member.key))];
+  if (!counts || keys.length < MIN_ITEMS || groupUses(learning, group.label) < ORDER_MIN_USES) return undefined;
+  const at = (key: string) => counts.items.indexOf(key);
+  const used = (key: string) => counts.uses[at(key)] ?? 0;
+  const weight = (key: string) => (score ? score(key) : (counts.counts[at(key)] ?? 0));
+  const ranked = keys.filter((key) => used(key) > 0).toSorted((a, b) => weight(b) - weight(a));
+  const order = [...ranked, ...keys.filter((key) => used(key) === 0)];
+  const same = (other: Array<string>) => order.every((key, index) => key === other[index]);
+  if (same(keys) || (current && same(current))) return undefined;
+  const item = `order:${order.join("|")}`;
+  if (learning.decided.includes(decision(group.label, item))) return undefined;
+  const text = order.map((key) => members.find((member) => member.key === key)?.node.text || key).join(" · ");
+  return { kind: "order", group: group.label, item, text, uses: groupUses(learning, group.label), order };
+}

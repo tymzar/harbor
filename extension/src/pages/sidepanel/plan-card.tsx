@@ -23,6 +23,7 @@ const OPERATION_LABEL: Record<Operation, string> = {
   grid: "Grid",
   emphasize: "Emphasize",
   collapse: "Fold",
+  reorder: "Your order",
   none: "No change",
 };
 
@@ -41,10 +42,12 @@ type GroupRowProperties = {
   selected: boolean;
   onSelect: (selected: boolean) => void;
   profile: Profile | undefined;
+  // The page can put this group's items in the user's order (learning offers it).
+  orderable?: boolean;
 };
 
 // One proposed change: include it or not, what it is, why, where it applies, and what it does.
-function GroupRow({ group, plan, selected, onSelect, profile }: GroupRowProperties) {
+function GroupRow({ group, plan, selected, onSelect, profile, orderable }: GroupRowProperties) {
   const changes = group.operation !== "none";
   const pattern = groupPattern(plan, group);
   const details = (
@@ -58,6 +61,7 @@ function GroupRow({ group, plan, selected, onSelect, profile }: GroupRowProperti
       )}
       <span className="text-xs text-muted">
         {pattern === plan.template.urlPattern ? "Wherever this layout applies" : `Only on ${pattern}`}
+        {orderable && <span data-testid="group-orderable"> · learns your order</span>}
       </span>
     </span>
   );
@@ -279,6 +283,7 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
           selected={selected.includes(group.label)}
           onSelect={(include) => toggle(group.label, include)}
           profile={profile}
+          orderable={current?.orderable?.[group.label]?.ok}
         />
       ))}
     </ul>

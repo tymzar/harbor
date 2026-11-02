@@ -1,5 +1,5 @@
 import type { SiteLearning } from "../../shared/learning";
-import { LEARNING_KEY, decision, emptyLearning, itemKey, recordUse, suggest } from "../../shared/learning";
+import { LEARNING_KEY, decision, emptyLearning, itemKey, recordUse, suggest, suggestOrder } from "../../shared/learning";
 import { RAW_MODEL_FEATURES } from "../../../../src/signals/features";
 import type { SiteRanker } from "../../shared/page-ranker";
 import { RANKERS_KEY, blendedScores, itemId, mergeCatalog, rankerFor } from "../../shared/page-ranker";
@@ -10,6 +10,9 @@ import { effectiveGroups, pickGroups, showLayout } from "./layout";
 import { rememberPlan } from "./saved-plans";
 
 // Learning is per site and off until the user turns it on; counts stay on this device.
+
+// The learned order of a group is a group of its own, named after it.
+export const orderLabel = (label: string) => `Your order: ${label}`;
 
 const originOf = (session: TabSession) => session.lastOrigin ?? (session.url ? new URL(session.url).origin : undefined);
 
@@ -114,6 +117,13 @@ export async function recordActivation(
     const member = byId.get(id);
     return member ? [{ node: member, key: itemKey(member, group) }] : [];
   });
+  // A row the page can rearrange gets a whole order once there are enough clicks; until then, and
+  // anywhere else, its one favourite can be brought forward.
+  if (session.proposal?.orderable?.[label]?.ok) {
+    const current = effectiveGroups(session).find((candidate) => candidate.label === orderLabel(label))?.orderKeys;
+    const order = suggestOrder(next, group, members, (item) => score(label, item), current);
+    if (order) return { ...session, suggestion: { ...order, nodeId: group.container, scannedAt: scan.scannedAt }, updatedAt: Date.now() };
+  }
   const offer = suggest(next, group, members, (item) => score(label, item));
   const target = offer && members.find((member) => member.key === offer.item);
   if (!offer || !target) return undefined;
@@ -145,6 +155,7 @@ export async function decide(session: TabSession, accept: boolean): Promise<TabS
   const next: TabSession = { ...session, suggestion: undefined, updatedAt: Date.now() };
   if (!accept || offer.scannedAt !== scan.scannedAt) return next;
 
+  if (offer.kind === "order") return acceptOrder(next, offer, scan);
   const name = offer.text.length > 40 ? `${offer.text.slice(0, 39)}…` : offer.text;
   const group: PlanGroup = {
     label: `You open most: ${name}`,
@@ -165,5 +176,32 @@ export async function decide(session: TabSession, accept: boolean): Promise<TabS
   const labels = [...(session.layout?.labels ?? []), group.label];
   next.layout = await showLayout(next, pickGroups(next, labels), "applied");
   await rememberPlan({ ...plan, groups: next.proposal.accepted! }, scan, proposal.usedScreenshot);
+  return next;
+}
+
+// Accepting an order: a "reorder" group over the same items, replacing an earlier order of that
+// group, applied at once and saved with the plan (site-wide when its group is, like a nav bar).
+async function acceptOrder(session: TabSession, offer: NonNullable<TabSession["suggestion"]>, scan: NonNullable<TabSession["scan"]>): Promise<TabSession> {
+  const proposal = session.proposal!;
+  const source = effectiveGroups(session).find((group) => group.label === offer.group);
+  if (!source || !proposal.plan) return session;
+  const label = orderLabel(offer.group);
+  const group: PlanGroup = {
+    ...source,
+    label,
+    operation: "reorder",
+    reorderable: true,
+    reason: `Learned from ${offer.uses} clicks`,
+    rule: undefined,
+    origin: "learned",
+    orderKeys: offer.order,
+  };
+  if (validatePlan({ ...proposal.plan, groups: [group] }, scan).accepted.length === 0) return session;
+  const others = (groups: Array<PlanGroup>) => groups.filter((other) => other.label !== label);
+  const plan = { ...proposal.plan, groups: [...others(proposal.plan.groups), group] };
+  const next: TabSession = { ...session, proposal: { ...proposal, plan, accepted: [...others(proposal.accepted ?? []), group] } };
+  const labels = [...(session.layout?.labels ?? []).filter((name) => name !== label), label];
+  next.layout = await showLayout(next, pickGroups(next, labels), "applied");
+  await rememberPlan({ ...plan, groups: next.proposal!.accepted! }, scan, proposal.usedScreenshot);
   return next;
 }

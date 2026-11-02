@@ -9,7 +9,7 @@ import type { CallLog, PageScan, Proposal, TabSession } from "../../shared/types
 import { sessionKey, shotKey } from "../../shared/types";
 import type { ChatMessage } from "./meta";
 import { proposeJson, segment } from "./meta";
-import { clearLayout } from "./layout";
+import { checkOrderable, clearLayout } from "./layout";
 import { rememberPlan } from "./saved-plans";
 import { userGroups } from "./user-groups";
 
@@ -164,6 +164,7 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
       visualGroups,
       plan,
       accepted,
+      orderable: await checkOrderable(tabId, accepted),
       errors: validation.errors,
       repaired,
       finishedAt: Date.now(),

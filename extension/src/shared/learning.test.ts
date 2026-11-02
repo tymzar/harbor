@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { MIN_USES, decision, emptyLearning, itemKey, recordUse, suggest } from "./learning";
+import { MIN_USES, ORDER_MIN_USES, decision, emptyLearning, itemKey, recordUse, suggest, suggestOrder } from "./learning";
 import type { PlanGroup } from "./plan";
 import type { ScanNode } from "./types";
 
@@ -61,5 +61,47 @@ describe("learning", () => {
     const learning = used(5);
     expect(suggest({ ...learning, decided: [decision(cards.label, "Summit $")] }, cards, members)).toBeUndefined();
     expect(suggest(learning, { ...cards, operation: "hide-secondary" }, members)).toBeUndefined();
+  });
+});
+
+// Clicks in the order given, one use each: ["n4","n4","n3"] is Trail twice, then Summit.
+function clicks(ids: Array<string>) {
+  const learning = emptyLearning();
+  for (const id of ids) {
+    const node = nodes.find((entry) => entry.id === id)!;
+    learning.groups[cards.label] = recordUse(learning.groups[cards.label], itemKey(node, cards));
+  }
+  return learning;
+}
+
+const keyOf = (id: string) => itemKey(nodes.find((node) => node.id === id)!, cards);
+
+describe("suggestOrder", () => {
+  const mostTrail = [...Array.from({ length: 5 }, () => "n4"), ...Array.from({ length: 3 }, () => "n3")];
+
+  it("waits for enough clicks in the group", () => {
+    expect(suggestOrder(clicks(mostTrail.slice(0, ORDER_MIN_USES - 1)), cards, members)).toBeUndefined();
+  });
+
+  it("ranks the used items, then the unused ones in page order", () => {
+    const offer = suggestOrder(clicks(mostTrail), cards, members)!;
+    expect(offer.kind).toBe("order");
+    expect(offer.order).toEqual([keyOf("n4"), keyOf("n3"), keyOf("n2")]);
+    expect(offer.text).toBe("Trail 22 $99 · Summit 45 $219 · Ridge 28 $129");
+    expect(offer.uses).toBe(ORDER_MIN_USES);
+  });
+
+  it("offers nothing when the page's order, or the order in place, already matches", () => {
+    const pageOrder = [...Array.from({ length: 5 }, () => "n2"), ...Array.from({ length: 3 }, () => "n3")];
+    expect(suggestOrder(clicks(pageOrder), cards, members)).toBeUndefined();
+    const offer = suggestOrder(clicks(mostTrail), cards, members)!;
+    expect(suggestOrder(clicks(mostTrail), cards, members, undefined, offer.order)).toBeUndefined();
+  });
+
+  it("is not offered again once decided", () => {
+    const learning = clicks(mostTrail);
+    const offer = suggestOrder(learning, cards, members)!;
+    learning.decided.push(decision(cards.label, offer.item));
+    expect(suggestOrder(learning, cards, members)).toBeUndefined();
   });
 });

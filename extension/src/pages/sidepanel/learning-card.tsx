@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Alert, Button, Card, Switch } from "@heroui/react";
-import { Eye, EyeSlash, MagicWand, Sparkles } from "@gravity-ui/icons";
+import { ArrowRightArrowLeft, Eye, EyeSlash, MagicWand, Sparkles } from "@gravity-ui/icons";
 
 import type { SiteLearning } from "../../shared/learning";
-import { LEARNING_KEY, MIN_USES, emptyLearning } from "../../shared/learning";
+import { LEARNING_KEY, MIN_USES, ORDER_MIN_USES, emptyLearning, groupUses } from "../../shared/learning";
 import type { PanelRequest, TabSession } from "../../shared/types";
 import { ModelView } from "./model-view";
 
@@ -36,6 +36,9 @@ export function LearningCard({ session }: { session: TabSession }) {
   };
   const uses = Object.values(learning.groups).reduce((total, group) => total + group.uses.reduce((sum, count) => sum + count, 0), 0);
   const offer = session.suggestion;
+  // Rows the page can rearrange (checked on the page), and those already in a learned order.
+  const orderable = Object.entries(session.proposal?.orderable ?? {}).filter(([, check]) => check.ok);
+  const ordered = new Set((session.proposal?.accepted ?? []).flatMap((group) => (group.operation === "reorder" ? [group.label.replace(/^Your order: /, "")] : [])));
 
   return (
     <Card className="gap-3 rounded-3xl p-3.5" data-testid="learning">
@@ -61,6 +64,26 @@ export function LearningCard({ session }: { session: TabSession }) {
           </Button>
         </div>
       )}
+      {learning.enabled && orderable.length > 0 && (
+        <div className="flex flex-col gap-1" data-testid="order-rows">
+          <p className="text-xs font-medium text-muted">Where Harbor can learn your order</p>
+          <ul className="flex flex-col">
+            {orderable.map(([label, check]) => {
+              const kept = ordered.has(label);
+              const count = Math.min(groupUses(learning, label), ORDER_MIN_USES);
+              return (
+                <li key={label} className="flex items-center gap-2 py-1 text-sm" data-testid="order-row">
+                  <ArrowRightArrowLeft className="shrink-0 text-muted" />
+                  <span className="min-w-0 flex-1 truncate">
+                    {label} <span className="text-xs text-muted">· {check.items} items</span>
+                  </span>
+                  <span className="shrink-0 text-xs text-muted">{kept ? "Your order is on" : `${count} of ${ORDER_MIN_USES} clicks`}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
       {learning.enabled && showModel && <ModelView session={session} />}
       {offer && (
         <Alert status="accent" data-testid="suggestion" className="rounded-3xl">
@@ -68,14 +91,26 @@ export function LearningCard({ session }: { session: TabSession }) {
             <Sparkles />
           </Alert.Indicator>
           <Alert.Content>
-            <Alert.Title>
-              You opened “{offer.text}” {offer.uses} times
-            </Alert.Title>
-            <Alert.Description>Move it to the front of {offer.group}, on every page where it appears?</Alert.Description>
+            {offer.kind === "order" ? (
+              <>
+                <Alert.Title>Your order for {offer.group}</Alert.Title>
+                <Alert.Description>
+                  From your last {offer.uses} clicks: <span className="font-medium" data-testid="suggestion-order">{offer.text}</span>. On screen only;
+                  the keyboard keeps the site's order.
+                </Alert.Description>
+              </>
+            ) : (
+              <>
+                <Alert.Title>
+                  You opened “{offer.text}” {offer.uses} times
+                </Alert.Title>
+                <Alert.Description>Move it to the front of {offer.group}, on every page where it appears?</Alert.Description>
+              </>
+            )}
             <div className="mt-2 flex gap-2">
               <Button size="sm" variant="primary" onPress={() => send("accept")} data-testid="suggestion-accept">
                 <MagicWand />
-                Move to the front
+                {offer.kind === "order" ? "Use this order" : "Move to the front"}
               </Button>
               <Button size="sm" variant="ghost" onPress={() => send("dismiss")} data-testid="suggestion-dismiss">
                 Not now
@@ -86,7 +121,8 @@ export function LearningCard({ session }: { session: TabSession }) {
       )}
       {learning.enabled && uses > 0 && !offer && (
         <p className="text-xs text-muted" data-testid="learning-threshold">
-          Harbor offers a change once one item has {MIN_USES} opens and at least half of the clicks in its group.
+          Harbor offers a change once one item has {MIN_USES} opens and at least half of the clicks in its group, or,
+          in a row it can rearrange, a whole order after {ORDER_MIN_USES} clicks.
         </p>
       )}
       {uses > 0 && (

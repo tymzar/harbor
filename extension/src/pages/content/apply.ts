@@ -1,4 +1,5 @@
 import type { Operation } from "../../shared/plan";
+import type { OrderCheck } from "../../shared/types";
 import { currentScan, elementIds, nodeRegistry } from "./scan";
 import { pressFeatures, startSignals, stopSignals } from "./signals";
 
@@ -12,6 +13,7 @@ const MEMBER = "data-smart-web-member";
 const PREVIEW = "data-smart-web-preview";
 const OPEN = "data-smart-web-open";
 const FIRST = "data-smart-web-first";
+const ORDER = "data-smart-web-order";
 
 // Toggles Harbor added in front of folded regions; the only elements it ever inserts. Restore removes them.
 const folds = new Set<HTMLButtonElement>();
@@ -137,6 +139,24 @@ function rowItem(member: Element): Element | undefined {
   return undefined;
 }
 
+// Can a group's items be put in the user's order on this page? Only when each member sits in one
+// shared horizontal row of like items (see rowItem), at least MIN_ROW_ITEMS of them: CSS order
+// can then arrange them without touching the DOM. Read-only.
+export function checkOrder(groups: Array<{ label: string; members: Array<string> }>): Record<string, OrderCheck> {
+  const checks: Record<string, OrderCheck> = {};
+  for (const { label, members } of groups) {
+    const elements = members.flatMap((id) => resolve(id) ?? []);
+    const items = elements.map((element) => rowItem(element));
+    const found = [...new Set(items.filter((item) => item !== undefined))];
+    const rows = new Set(found.map((item) => item.parentElement));
+    if (items.includes(undefined) || found.length === 0) checks[label] = { ok: false, items: found.length, reason: "Not laid out as a row of like items" };
+    else if (rows.size > 1) checks[label] = { ok: false, items: found.length, reason: "Its items sit in separate rows" };
+    else if (found.length < MIN_ROW_ITEMS) checks[label] = { ok: false, items: found.length, reason: `Fewer than ${MIN_ROW_ITEMS} items` };
+    else checks[label] = { ok: true, items: found.length };
+  }
+  return checks;
+}
+
 function mark(element: Element, name: string, value: string) {
   element.setAttribute(name, value);
   owned.add(element);
@@ -144,7 +164,7 @@ function mark(element: Element, name: string, value: string) {
 
 export function restoreLayout(): number {
   const count = owned.size;
-  for (const element of owned) for (const name of [GROUP, OP, MEMBER, OPEN, FIRST]) element.removeAttribute(name);
+  for (const element of owned) for (const name of [GROUP, OP, MEMBER, OPEN, FIRST, ORDER]) element.removeAttribute(name);
   owned.clear();
   for (const fold of folds) fold.remove();
   folds.clear();
@@ -243,6 +263,22 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
     // Removed by the site since the scan: report it rather than guess.
     if (!container?.isConnected || members.length === 0) {
       result.missing.push(group.label);
+      continue;
+    }
+    // A learned order: each member's row item gets its place; nothing is outlined. Members come in
+    // the user's order (the background sorts them by the group's orderKeys).
+    if (group.operation === "reorder") {
+      const placed = new Set<Element>();
+      // Clicks keep counting for the group it orders, which watches the same items.
+      for (const { element } of found) {
+        const item = rowItem(element);
+        if (item && !placed.has(item)) {
+          mark(item, ORDER, String(placed.size));
+          placed.add(item);
+        }
+      }
+      if (placed.size > 0) result.applied.push(group.label);
+      else result.missing.push(group.label);
       continue;
     }
     let targets = [regionOf(container)];

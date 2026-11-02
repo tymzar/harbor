@@ -1,7 +1,7 @@
 import type { Answers } from "../../shared/questions";
 import type { PageScan, PanelRequest, SessionStatus, TabSession } from "../../shared/types";
 import { sessionKey, shotKey } from "../../shared/types";
-import { STALE_SCAN, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
+import { STALE_SCAN, checkOrderable, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
 import { forgetPlan, keptLabels, rememberAnswers, rememberKept, reusePlan } from "./saved-plans";
 import { decide, recordActivation, setLearning } from "./learning";
@@ -103,6 +103,7 @@ async function scanTab(tabId: number, settle: boolean) {
 
     // A plan saved for this page (or its template) comes back without a Meta call.
     const proposal = await reusePlan(scan);
+    if (proposal) proposal.orderable = await checkOrderable(tabId, proposal.accepted ?? []);
     await chrome.storage.session.set({ [shotKey(tabId)]: screenshot });
     const session: TabSession = { tabId, status: "ready", url, lastOrigin, scan, hasScreenshot: true, proposal, updatedAt: Date.now() };
     // Otherwise what the user kept for this kind of page comes back by itself, with no Meta call.

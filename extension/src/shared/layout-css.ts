@@ -4,6 +4,8 @@
 // Nothing here moves elements in the DOM: reading and tab order stay the site's own.
 
 const ACCENT = "14 124 134"; // Harbor teal, as rgb channels
+// Places a learned order can set; a nav bar or a tab row is far shorter.
+const MAX_ORDERED = 30;
 
 export const LAYOUT_CSS = `
 [data-smart-web-op="grid"] {
@@ -31,6 +33,8 @@ export const LAYOUT_CSS = `
 
 /* A learned favourite moves to the front of its row, on screen only (see rowItem). */
 [data-smart-web-first] { order: -1 !important; }
+/* A learned order: places 0, 1, 2… come before the items it doesn't name (order 0), in that order. */
+${Array.from({ length: MAX_ORDERED }, (_, place) => `[data-smart-web-order="${place}"] { order: ${place - MAX_ORDERED} !important; }`).join("\n")}
 
 /* Hidden outright: no space, not focusable, not announced. The side panel lists hidden regions
    and unticking one there shows it again; that works for keyboard and screen-reader users,

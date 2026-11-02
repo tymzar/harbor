@@ -148,3 +148,49 @@ test("clicks in a region the plan leaves alone still teach the model", async ({ 
   expect(await card.getAttribute("data-smart-web-op")).toBeNull();
   await expect(panel.getByTestId("layout-missing")).toHaveCount(0);
 });
+
+// Where the page can rearrange a row (LinkedIn-shaped top bar), the panel says so, and enough
+// clicks lead to a whole order: accepted, the items take that order on screen, not in the DOM.
+test("clicks on a nav bar lead to the user's own order of it", async ({ context, extensionId }) => {
+  const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/cards.html`);
+  await panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(panel.getByTestId("screenshot")).toBeVisible();
+  const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  const links = nodes.filter((node) => node.tag === "a" && /Home|Jobs|Messaging/.test(node.text));
+  const promo = nodes.find((node) => node.tag === "aside")!;
+  const base = { urlPattern: "127.0.0.1:4317/*", role: "other" as const, reorderable: true, reason: "" };
+  const plan: LayoutPlan = {
+    summary: "Feed",
+    template: { urlPattern: "127.0.0.1:4317/*", pageKind: "feed" },
+    groups: [
+      { ...base, label: "Top navigation", container: nodes.find((node) => node.tag === "ul")!.id, members: links.map((link) => link.id), operation: "none", identity: { source: "text", attribute: "" } },
+      { ...base, reorderable: false, label: "Promoted", container: promo.id, members: nodes.filter((node) => node.parent === promo.id).map((node) => node.id), operation: "hide-secondary", identity: { source: "none", attribute: "" } },
+    ],
+  };
+  await panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect(panel.getByTestId("plan-reused")).toBeVisible();
+  await expect(panel.getByTestId("plan-group").filter({ hasText: "Top navigation" }).getByTestId("group-orderable")).toBeVisible();
+  await expect(panel.getByTestId("plan-group").filter({ hasText: "Promoted" }).getByTestId("group-orderable")).toHaveCount(0);
+  await panel.getByTestId("preview-layout").click();
+  await panel.getByTestId("keep-layout").click();
+  await panel.getByText("Learn what I open on this site").click();
+  await expect(panel.getByTestId("order-row")).toContainText("0 of 8 clicks");
+
+  const link = (name: string) => site.locator(".topnav a").filter({ hasText: name });
+  // Messaging most, then Jobs; Home never. Dismiss the one-item offer if it comes first.
+  for (const name of ["Messaging", "Jobs", "Messaging", "Jobs", "Messaging", "Messaging", "Jobs", "Messaging"]) {
+    await link(name).click();
+    if (await panel.getByTestId("suggestion").count() && !(await panel.getByTestId("suggestion-order").count())) await panel.getByTestId("suggestion-dismiss").click();
+  }
+  await expect(panel.getByTestId("suggestion-order")).toContainText(/Messaging.*Jobs.*Home/);
+  if (process.env.SHOT) await panel.getByTestId("learning").screenshot({ path: process.env.SHOT });
+  await panel.getByTestId("suggestion-accept").click();
+  await expect(panel.getByTestId("order-row")).toContainText("Your order is on");
+
+  const left = (name: string) => site.locator(".topnav li").filter({ hasText: name }).evaluate((element) => element.getBoundingClientRect().left);
+  await expect.poll(async () => (await left("Messaging")) < (await left("Jobs")) && (await left("Jobs")) < (await left("Home"))).toBe(true);
+  // The DOM keeps the site's order.
+  expect(await site.locator(".topnav li").allInnerTexts()).toEqual([expect.stringContaining("Home"), expect.stringContaining("Jobs"), expect.stringContaining("Messaging")]);
+});

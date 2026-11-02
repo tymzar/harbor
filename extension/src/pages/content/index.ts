@@ -1,4 +1,4 @@
-import { applyLayout, restoreLayout } from "./apply";
+import { applyLayout, checkOrder, restoreLayout } from "./apply";
 import { inspectNodes } from "./inspect";
 import { matchBoxes } from "./match";
 import { adjustPick, endPick, pickElement } from "./pick";
@@ -12,6 +12,7 @@ const api = {
   match: matchBoxes,
   apply: applyLayout,
   restore: restoreLayout,
+  checkOrder,
   pick: pickElement,
   adjustPick,
   endPick,

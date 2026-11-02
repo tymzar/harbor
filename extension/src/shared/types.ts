@@ -57,8 +57,14 @@ export type CallLog = {
 
 export type ProposalStep = "segmenting" | "matching" | "planning" | "repairing";
 
+// Can a group's items take the user's own order on this page (checkOrder in the content script)?
+export type OrderCheck = { ok: boolean; items: number; reason?: string };
+
 export type Proposal = {
   status: "running" | "done" | "error";
+  // Per group label: can its items be put in the user's own order on this page (a row of like
+  // items)? Checked on the page once the plan is ready; only groups of 3+ items that stay visible.
+  orderable?: Record<string, OrderCheck>;
   step?: ProposalStep;
   // The scan this proposal was built from; a rescan makes it stale.
   scannedAt: number;

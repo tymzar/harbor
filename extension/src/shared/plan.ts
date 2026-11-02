@@ -18,7 +18,8 @@ export const GROUP_ROLES = [
 ] as const;
 export const IDENTITY_SOURCES = ["attribute", "href", "text", "none"] as const;
 
-export type Operation = (typeof OPERATIONS)[number];
+// "reorder" is Harbor's own, from learning: never offered to the model, so not in OPERATIONS.
+export type Operation = (typeof OPERATIONS)[number] | "reorder";
 
 export type PlanGroup = {
   label: string;
@@ -38,6 +39,9 @@ export type PlanGroup = {
   rule?: string;
   // Set on groups the user made with "Hide something else"; Spark's groups leave it out.
   origin?: "user" | "learned";
+  // A learned order ("reorder"): item keys (see itemKey) first to last. Kept as keys, not node IDs,
+  // so the order survives the items being found again on another page or visit.
+  orderKeys?: Array<string>;
 };
 
 // A question Spark asks after reading the page. Each option states the group changes it implies,
