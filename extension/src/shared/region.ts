@@ -496,8 +496,9 @@ export function findRows(tree: Tree, container: string, shape: { tag: string; ki
   const isRow = (node: ScanNode) =>
     node.kind === shape.kind && (node.tag === shape.tag || (print !== undefined && dice(print, shapeOf(tree, node.id)) >= 0.6));
   const direct = kids(tree, container).filter((node) => isRow(node));
-  // One "row" may be the wrapper itself, when it has the rows' tag and kind.
-  if (direct.length > 1) return direct.map((node) => node.id);
+  // A wrapper with the rows' own tag and kind (a <div> around a run of <div> rows) passes as a
+  // row: it is taken apart into the rows it holds.
+  if (direct.length > 1) return unwrapRows(tree, direct, isRow, print).map((node) => node.id);
   const root = tree.byId.get(container);
   if (!root) return [];
   // A wrapper fills most of the region; a smaller box inside is another list (a toolbar next to it).
@@ -509,9 +510,32 @@ export function findRows(tree: Tree, container: string, shape: { tag: string; ki
     const rows = kids(tree, parent.id).filter((node) => isRow(node));
     if (rows.length > 1) return rows.map((node) => node.id);
   }
-  return direct.map((node) => node.id);
+  // The one "row" is a same-tag wrapper too small to pass as one above: its rows, if it holds any.
+  return unwrapRows(tree, direct, isRow, print).map((node) => node.id);
 }
 
+// Rows found as a list's children, with any same-tag wrapper among them replaced by the rows it
+// holds (two levels at most). A candidate is such a wrapper when it holds two or more rows, every
+// one of them looks like a row (the saved row shape, else the candidates that hold no rows), and
+// they look more like one than the candidate itself does. Rows whose own parts share their tag
+// (nested replies, a card with a same-tag footer) stay rows.
+function unwrapRows(tree: Tree, candidates: Array<ScanNode>, isRow: (node: ScanNode) => boolean, print?: Array<string>, level = 0): Array<ScanNode> {
+  const inner = candidates.map((node) => kids(tree, node.id).filter((kid) => isRow(kid)));
+  if (level >= 2 || inner.every((rows) => rows.length < 2)) return candidates;
+  const references = print ? [print] : candidates.flatMap((node, index) => (inner[index].length < 2 ? [shapeOf(tree, node.id)] : []));
+  // Every candidate holds rows and there is nothing to compare with: only a lone one is taken apart.
+  if (references.length === 0 && candidates.length > 1) return candidates;
+  const likeness = (node: ScanNode) => Math.max(0, ...references.map((reference) => dice(reference, shapeOf(tree, node.id))));
+  const isWrapper = (node: ScanNode, rows: Array<ScanNode>) => {
+    if (rows.length < 2) return false;
+    if (references.length === 0) return true;
+    const each = rows.map((row) => likeness(row));
+    return each.every((value) => value >= ROW_LIKE) && each.reduce((sum, value) => sum + value, 0) / each.length > likeness(node);
+  };
+  return candidates.flatMap((node, index) => (isWrapper(node, inner[index]) ? unwrapRows(tree, inner[index], isRow, print, level + 1) : [node]));
+}
+
+const ROW_LIKE = 0.6;
 const WRAPPER_AREA = 0.6;
 const area = (node: ScanNode) => node.rect.w * node.rect.h;
 const NO_HOLD = { marks: false, words: false };

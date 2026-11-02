@@ -4,7 +4,7 @@ import type { SavedPlan } from "./cache";
 import { remapPlan, remapRegions, savePlan } from "./cache";
 import type { LayoutPlan } from "./plan";
 import { validatePlan } from "./plan";
-import { alignSkeleton, dice, pageChanged, pagePrint, treeOf } from "./region";
+import { alignSkeleton, dice, findRows, pageChanged, pagePrint, shapeOf, treeOf } from "./region";
 import type { NodeKind, PageScan, ScanNode } from "./types";
 
 // A small page: header nav, a "Latest" heading, a list of articles, a "Sponsored" sidebar.
@@ -169,5 +169,44 @@ describe("region fingerprints", () => {
     expect(dice(["a", "b"], ["a", "b"])).toBe(1);
     expect(dice(["a", "b"], ["c"])).toBe(0);
     expect(dice(["a", "b", "c", "d"], ["a", "b"])).toBeCloseTo(2 / 3);
+  });
+});
+
+// Rows that have the same tag and kind as the wrapper the site put around some of them (a <div>
+// around a run of <div> rows): the wrapper is not a row, the rows inside it are.
+const card = (title: string, y: number): Spec => ({
+  tag: "div",
+  kind: "group",
+  text: title,
+  rect: [20, y, 800, 90],
+  kids: [{ tag: "h3", kind: "heading", text: title }, { tag: "a", kind: "interactive", text: "Read more", href: `/${title}` }],
+});
+const replies = (title: string, y: number): Spec => ({ ...card(title, y), kids: [card(`${title} a`, y), card(`${title} b`, y + 45)] });
+const titles = ["Rates rise", "Storm warning", "Cup final", "New bridge", "Late goal"];
+const cards = () => titles.map((title, index) => card(title, 140 + index * 100));
+const textsOf = (scan: PageScan, found: Array<string>) => found.map((id) => scan.nodes.find((node) => node.id === id)!.text);
+const listOf = (kids: Array<Spec>) => page([{ tag: "div", kind: "group", text: "Rates rise", rect: [20, 140, 800, 500], kids }]);
+const rowShape = { tag: "div", kind: "group" as NodeKind };
+
+describe("findRows with a same-tag wrapper", () => {
+  const before = listOf(cards());
+  const print = shapeOf(treeOf(before), "n2");
+
+  it("takes the rows inside a wrapper around a run of them, not the wrapper", () => {
+    const rows = cards();
+    const wrapped = listOf([rows[0], { tag: "div", kind: "group", text: "Storm warning Cup final New bridge", rect: [20, 240, 800, 290], kids: rows.slice(1, 4) }, rows[4]]);
+    for (const saved of [undefined, print]) expect(textsOf(wrapped, findRows(treeOf(wrapped), "n1", rowShape, saved))).toEqual(titles);
+  });
+
+  it("takes the rows inside a wrapper around all of them, even a small one", () => {
+    const wrapped = listOf([{ tag: "div", kind: "group", text: "Rates rise", rect: [20, 140, 300, 200], kids: cards() }]);
+    for (const saved of [undefined, print]) expect(textsOf(wrapped, findRows(treeOf(wrapped), "n1", rowShape, saved))).toEqual(titles);
+  });
+
+  it("keeps rows that each hold same-tag parts as rows", () => {
+    const scan = listOf(titles.slice(0, 3).map((title, index) => replies(title, 140 + index * 100)));
+    expect(textsOf(scan, findRows(treeOf(scan), "n1", rowShape))).toEqual(titles.slice(0, 3));
+    const nestedPrint = shapeOf(treeOf(scan), "n2");
+    expect(textsOf(scan, findRows(treeOf(scan), "n1", rowShape, nestedPrint))).toEqual(titles.slice(0, 3));
   });
 });

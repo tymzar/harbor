@@ -1,4 +1,4 @@
-import type { LayoutPlan } from "./plan";
+import type { LayoutPlan, Operation } from "./plan";
 import type { Answers } from "./questions";
 import { groupPattern, urlPatternMatches } from "./plan";
 import type { PagePrint, RegionPrint } from "./region";
@@ -173,9 +173,13 @@ export type Remap = { plan: LayoutPlan; report: Array<GroupReport>; changed: { s
 
 export const BANDS = { same: 0.75, apply: 0.6, applyHide: 0.7, found: 0.45 };
 
-function bandOf(confidence: number, geometry: number, operation: string): Band {
+// Operations that take content out of view (hiding, folding) need the higher threshold: applied to
+// the wrong element, content disappears; a misplaced compact or emphasis is visible and harmless.
+const HIDES: ReadonlySet<Operation> = new Set<Operation>(["hide-secondary", "collapse"]);
+
+function bandOf(confidence: number, geometry: number, operation: Operation): Band {
   if (confidence >= BANDS.same && geometry >= 0.8) return "same";
-  if (confidence >= (operation === "hide-secondary" ? BANDS.applyHide : BANDS.apply)) return "moved";
+  if (confidence >= (HIDES.has(operation) ? BANDS.applyHide : BANDS.apply)) return "moved";
   return confidence >= BANDS.found ? "skipped" : "lost";
 }
 
