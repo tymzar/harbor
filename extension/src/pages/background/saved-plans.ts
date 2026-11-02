@@ -1,5 +1,5 @@
-import type { SavedPlan } from "../../shared/cache";
-import { MAX_SAVED_PLANS, SAVED_PLANS_KEY, findSavedPlan, pageKey, remapPlan, savePlan } from "../../shared/cache";
+import type { Band, SavedPlan } from "../../shared/cache";
+import { MAX_SAVED_PLANS, SAVED_PLANS_KEY, findSavedPlan, pageKey, remapPlan, remapRegions, savePlan } from "../../shared/cache";
 import type { LayoutPlan } from "../../shared/plan";
 import { validatePlan } from "../../shared/plan";
 import type { Answers } from "../../shared/questions";
@@ -34,12 +34,33 @@ export async function forgetPlan(url: string) {
   await chrome.storage.local.set({ [SAVED_PLANS_KEY]: remaining });
 }
 
+// Replaces a saved entry in place, keeping its answers.
+async function upgradePlan(old: SavedPlan, next: SavedPlan) {
+  const all = await readAll();
+  await chrome.storage.local.set({
+    [SAVED_PLANS_KEY]: all.map((saved) => (saved.url === old.url && saved.savedAt === old.savedAt ? { ...next, answers: old.answers } : saved)),
+  });
+}
+
 // A saved plan rebuilt for this scan, or undefined when none applies or nothing survives validation.
 export async function reusePlan(scan: PageScan): Promise<Proposal | undefined> {
   const found = findSavedPlan(await readAll(), scan.url);
   if (!found) return undefined;
 
-  const plan = remapPlan(found.saved, scan);
+  // Plans saved with region fingerprints are matched region by region and say what moved; older
+  // ones element by element, and are re-saved with fingerprints once all their groups are found.
+  let plan: LayoutPlan;
+  let drift: NonNullable<Proposal["reused"]>["drift"];
+  if (found.saved.regions) {
+    const remap = remapRegions(found.saved, scan);
+    plan = remap.plan;
+    const labels = (band: Band) => remap.report.filter((entry) => entry.band === band).map((entry) => entry.label);
+    drift = { moved: labels("moved"), skipped: labels("skipped"), lost: labels("lost"), changed: remap.changed.skeleton || remap.changed.structure };
+  } else {
+    plan = remapPlan(found.saved, scan);
+    if (found.match === "page" && plan.groups.length === found.saved.plan.groups.length)
+      await upgradePlan(found.saved, savePlan(plan, scan, found.saved.usedScreenshot, found.saved.savedAt));
+  }
   const { accepted, errors } = validatePlan(plan, scan);
   if (accepted.length === 0) return undefined;
 
@@ -54,7 +75,7 @@ export async function reusePlan(scan: PageScan): Promise<Proposal | undefined> {
     errors,
     repaired: false,
     answers: found.saved.answers,
-    reused: { match: found.match, savedAt: found.saved.savedAt, fromUrl: found.saved.url },
+    reused: { match: found.match, savedAt: found.saved.savedAt, fromUrl: found.saved.url, drift },
     startedAt: now,
     finishedAt: now,
   };

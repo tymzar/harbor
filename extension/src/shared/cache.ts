@@ -1,6 +1,8 @@
 import type { LayoutPlan } from "./plan";
 import type { Answers } from "./questions";
 import { groupPattern, urlPatternMatches } from "./plan";
+import type { PagePrint, RegionPrint } from "./region";
+import { contextFor, distinctIdentity, findMembers, findRows, matchRegions, pageChanged, pagePrint, regionHolds, regionPrint, treeOf } from "./region";
 import type { NodeKind, PageScan, Rect, ScanNode } from "./types";
 
 // Saved plans outlive the scan they came from, but node IDs don't. Each referenced node is
@@ -26,6 +28,11 @@ export type SavedPlan = {
   signatures: Record<string, NodeSignature>;
   // Per group, aligned with plan.groups; undefined where items are matched one by one.
   rows?: Array<RowShape | undefined>;
+  // Per group, aligned with plan.groups: what the region looked like (region.ts). Plans saved
+  // before region fingerprints lack it and are matched element by element only.
+  regions?: Array<RegionPrint | undefined>;
+  // The page's landmark/heading skeleton when saved; a different hash means the page changed.
+  page?: PagePrint;
   usedScreenshot: boolean;
   // The user's answers to the plan's questions, reused with the plan.
   answers?: Answers;
@@ -57,7 +64,9 @@ export function savePlan(plan: LayoutPlan, scan: PageScan, usedScreenshot: boole
     const node = byId.get(id);
     if (node) signatures[id] = signatureOf(node);
   }
-  return { url: pageKey(scan.url), plan, signatures, rows, usedScreenshot, savedAt: now };
+  const tree = treeOf(scan);
+  const regions = plan.groups.map((group, index) => regionPrint(tree, group.container, group.members, Boolean(rows[index])));
+  return { url: pageKey(scan.url), plan, signatures, rows, regions, page: pagePrint(scan), usedScreenshot, savedAt: now };
 }
 
 // Groups with a stable per-item identity (tabs) keep it; other groups whose members are every
@@ -131,6 +140,11 @@ export function locateNodes(signatures: Record<string, NodeSignature>, scan: Pag
 // page. Item groups drop members that no longer exist; row groups take the container's current
 // rows. Groups whose container is gone are dropped. The result still has to pass validatePlan.
 export function remapPlan(saved: SavedPlan, scan: PageScan): LayoutPlan {
+  return saved.regions ? remapRegions(saved, scan).plan : remapNodes(saved, scan);
+}
+
+// Element by element: exact attributes, link and text (plans saved before region fingerprints).
+export function remapNodes(saved: SavedPlan, scan: PageScan): LayoutPlan {
   const found = locateNodes(saved.signatures, scan);
   const groups = saved.plan.groups.flatMap((group, index) => {
     if (!urlPatternMatches(groupPattern(saved.plan, group), scan.url)) return [];
@@ -146,4 +160,69 @@ export function remapPlan(saved: SavedPlan, scan: PageScan): LayoutPlan {
     return members.length > 0 ? [{ ...group, container, members }] : [];
   });
   return { ...saved.plan, groups };
+}
+
+// What happened to each saved group on this page, by confidence:
+//   same    found where it was: applied silently;
+//   moved   found less surely or elsewhere: applied, and named in the panel;
+//   skipped found too unsurely for its operation (hiding needs more): not applied, named;
+//   lost    not found, or the region was redesigned: the groups to ask Spark for again.
+export type Band = "same" | "moved" | "skipped" | "lost";
+export type GroupReport = { label: string; band: Band; confidence: number };
+export type Remap = { plan: LayoutPlan; report: Array<GroupReport>; changed: { skeleton: boolean; structure: boolean } };
+
+export const BANDS = { same: 0.75, apply: 0.6, applyHide: 0.7, found: 0.45 };
+
+function bandOf(confidence: number, geometry: number, operation: string): Band {
+  if (confidence >= BANDS.same && geometry >= 0.8) return "same";
+  if (confidence >= (operation === "hide-secondary" ? BANDS.applyHide : BANDS.apply)) return "moved";
+  return confidence >= BANDS.found ? "skipped" : "lost";
+}
+
+// Region by region: each saved group's container is found by its region fingerprint (shape, rows,
+// place among the aligned landmarks and headings, geometry, and the element's own identity), then
+// its members inside it. Only same and moved groups are in the plan.
+export function remapRegions(saved: SavedPlan, scan: PageScan, keep: Array<Band> = ["same", "moved"]): Remap {
+  const tree = treeOf(scan);
+  const page = pagePrint(scan);
+  const context = contextFor(tree, saved.page?.skeleton ?? []);
+  const wanted = saved.plan.groups.flatMap((group, index) => {
+    const print = saved.regions?.[index];
+    const signature = saved.signatures[group.container];
+    return print && signature ? [{ key: group.container, print, saved: distinctIdentity(signature, print) }] : [];
+  });
+  const containers = matchRegions(context, wanted);
+  const report: Array<GroupReport> = [];
+  const groups = saved.plan.groups.flatMap((group, index) => {
+    if (!urlPatternMatches(groupPattern(saved.plan, group), scan.url)) return [];
+    const match = containers.get(group.container);
+    const lost = () => {
+      report.push({ label: group.label, band: "lost" as const, confidence: match?.confidence ?? 0 });
+      return [];
+    };
+    if (!match) return lost();
+    const shape = saved.rows?.[index];
+    let members: Array<string>;
+    if (shape) members = findRows(tree, match.id, shape, saved.regions?.[index]?.row);
+    else {
+      const prints = saved.regions?.[index]?.members ?? {};
+      const found = findMembers(
+        tree,
+        match.id,
+        group.members.flatMap((id) => {
+          const signature = saved.signatures[id];
+          return signature ? [{ id, saved: signature, print: prints[id], isContainer: id === group.container }] : [];
+        }),
+        group.reorderable,
+        regionHolds(tree, saved.regions![index]!, match.id),
+        context.textGone
+      );
+      members = group.members.flatMap((id) => found.get(id) ?? []);
+    }
+    if (members.length === 0) return lost();
+    const band = bandOf(match.confidence, match.geometry, group.operation);
+    report.push({ label: group.label, band, confidence: Math.round(match.confidence * 100) / 100 });
+    return keep.includes(band) ? [{ ...group, container: match.id, members }] : [];
+  });
+  return { plan: { ...saved.plan, groups }, report, changed: pageChanged(saved.page, page) };
 }

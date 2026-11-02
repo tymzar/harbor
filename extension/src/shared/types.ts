@@ -73,7 +73,14 @@ export type Proposal = {
   errors?: Array<string>;
   repaired: boolean;
   // Set when this plan was loaded from storage instead of asking Meta.
-  reused?: { match: "page" | "template"; savedAt: number; fromUrl: string };
+  reused?: {
+    match: "page" | "template";
+    savedAt: number;
+    fromUrl: string;
+    // Groups found less surely or elsewhere (applied), too unsurely to apply, or not at all,
+    // by label; and whether the page's skeleton or structure differs from when it was saved.
+    drift?: { moved: Array<string>; skipped: Array<string>; lost: Array<string>; changed: boolean };
+  };
   error?: string;
   startedAt: number;
   finishedAt?: number;
