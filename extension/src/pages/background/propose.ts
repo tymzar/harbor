@@ -1,7 +1,9 @@
 import type { LayoutPlan } from "../../shared/plan";
 import { PLAN_SCHEMA, validatePlan } from "../../shared/plan";
 import type { VisualGroup } from "../../shared/prompt";
-import { SYSTEM_PROMPT, describePage } from "../../shared/prompt";
+import type { Profile } from "../../shared/profile";
+import { PROFILE_KEY, clampToProfile } from "../../shared/profile";
+import { describePage, systemPrompt } from "../../shared/prompt";
 import { parseSamBoxes, toViewportRect } from "../../shared/sam";
 import type { CallLog, PageScan, Proposal, TabSession } from "../../shared/types";
 import { sessionKey, shotKey } from "../../shared/types";
@@ -114,9 +116,13 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
     const visualGroups = usedScreenshot ? await findVisualGroups(tabId, scan, screenshot!, calls) : undefined;
     await updateProposal(tabId, { step: "planning", calls: [...calls], visualGroups });
 
+    // The user's harbor goes with every request; without one (setup skipped in tests) Spark's defaults apply.
+    const stored = await chrome.storage.local.get(PROFILE_KEY);
+    const profile = stored[PROFILE_KEY] as Profile | undefined;
+    const special = goal?.trim() || undefined;
     const messages: Array<ChatMessage> = [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: describePage(scan, visualGroups, goal?.trim() || undefined) },
+      { role: "system", content: systemPrompt(Boolean(profile)) },
+      { role: "user", content: describePage(scan, visualGroups, special, profile) },
     ];
     const first = await proposeJson(messages, PLAN_SCHEMA, "layout plan", REASONING_EFFORT);
     calls.push(first.log);
@@ -148,7 +154,7 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
 
     const carried = ownGroups.filter((own) => !plan.groups.some((group) => group.label === own.label));
     plan = { ...plan, groups: [...plan.groups, ...carried] };
-    const accepted = [...validation.accepted, ...carried];
+    const accepted = [...clampToProfile(validation.accepted, profile, Boolean(special)), ...carried];
 
     await updateProposal(tabId, {
       status: "done",

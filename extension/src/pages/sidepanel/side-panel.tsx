@@ -5,7 +5,9 @@ import { ArrowsRotateRight, Eye, EyeSlash, Gear } from "@gravity-ui/icons";
 import { HarborLogo } from "../../components/HarborLogo/harbor-logo";
 import type { NodeKind, PageScan, PanelRequest, ScanNode, TabSession } from "../../shared/types";
 import { sessionKey, shotKey } from "../../shared/types";
+import { Onboarding } from "./onboarding";
 import { PlanCard } from "./plan-card";
+import { useProfile } from "./use-profile";
 import { NeedsAccess, SiteAccessSwitch } from "./site-access";
 
 const KIND_COLOR: Record<NodeKind, "accent" | "default" | "success" | "warning"> = {
@@ -136,16 +138,16 @@ function NodeRow({ node, onHide }: { node: ScanNode; onHide: () => void }) {
 
 const hostOf = (origin: string | undefined) => origin?.replace(/^https?:\/\//, "");
 
-function PanelHeader({ site, busy }: { site: string | undefined; busy: boolean }) {
+function PanelHeader({ site, busy, status }: { site: string | undefined; busy: boolean; status?: string }) {
   return (
     <header className="flex items-center gap-2">
       <HarborLogo size={32} />
       <h1 data-testid="extension-panel-title" className="text-base font-semibold tracking-tight">
         Harbor
       </h1>
-      {site && (
+      {(status ?? site) && (
         <Chip size="sm" variant="soft" className="min-w-0 truncate">
-          {site}
+          {status ?? site}
         </Chip>
       )}
       <span className="ml-auto flex items-center gap-1">
@@ -241,6 +243,9 @@ export function SidePanel() {
     void chrome.runtime.sendMessage(request);
   };
 
+  const harbor = useProfile();
+  // First open (nothing stored yet) or Edit: the setup takes the panel until it is finished or skipped.
+  const settingUp = harbor.loaded && harbor.onboarding !== "done";
   const unreadable = session?.status === "restricted" || session?.status === "needs-access";
   const gaps =
     scan &&
@@ -252,15 +257,17 @@ export function SidePanel() {
 
   return (
     <main className="flex min-h-full flex-col gap-2.5 bg-background p-3.5">
-      <PanelHeader site={hostOf(session?.lastOrigin)} busy={isScanning} />
+      <PanelHeader site={settingUp ? undefined : hostOf(session?.lastOrigin)} busy={isScanning} status={settingUp ? "Setting up" : undefined} />
 
-      {scan && session ? (
+      {settingUp ? (
+        <Onboarding initial={harbor.onboarding === "editing" ? harbor.profile : undefined} />
+      ) : (scan && session ? (
         <PageCard session={session} scan={scan} screenshot={screenshot} onRescan={requestScan} scanning={isScanning} />
       ) : (
         !unreadable && <FirstOpen onRead={requestScan} isPending={isScanning} isDisabled={tabId === undefined} />
-      )}
+      ))}
 
-      {session?.status === "needs-access" && <NeedsAccess tabId={session.tabId} origin={session.lastOrigin} />}
+      {!settingUp && session?.status === "needs-access" && <NeedsAccess tabId={session.tabId} origin={session.lastOrigin} />}
       {session?.notice && <Warning status="warning" title={session.notice} testId="notice" />}
       {session?.status === "restricted" && (
         <Warning
@@ -276,8 +283,8 @@ export function SidePanel() {
         <Warning status="default" title="Parts of this page weren't read" description={`${gaps.join(", ")} can't be changed.`} testId="scan-gaps" />
       )}
 
-      {scan && session && <PlanCard session={session} />}
-      {scan && session && <ElementList scan={scan} tabId={session.tabId} />}
+      {!settingUp && scan && session && <PlanCard session={session} profile={harbor.profile} />}
+      {!settingUp && scan && session && <ElementList scan={scan} tabId={session.tabId} />}
     </main>
   );
 }

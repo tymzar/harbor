@@ -9,6 +9,10 @@ const GROUP = "data-smart-web-group";
 const OP = "data-smart-web-op";
 const MEMBER = "data-smart-web-member";
 const PREVIEW = "data-smart-web-preview";
+const OPEN = "data-smart-web-open";
+
+// Toggles Harbor added in front of folded regions; the only elements it ever inserts. Restore removes them.
+const folds = new Set<HTMLButtonElement>();
 
 // Every element Harbor marked, so restore can unmark exactly those.
 const owned = new Set<Element>();
@@ -78,8 +82,10 @@ function mark(element: Element, name: string, value: string) {
 
 export function restoreLayout(): number {
   const count = owned.size;
-  for (const element of owned) for (const name of [GROUP, OP, MEMBER]) element.removeAttribute(name);
+  for (const element of owned) for (const name of [GROUP, OP, MEMBER, OPEN]) element.removeAttribute(name);
   owned.clear();
+  for (const fold of folds) fold.remove();
+  folds.clear();
   document.documentElement.removeAttribute(PREVIEW);
   if (onEscape) globalThis.removeEventListener("keydown", onEscape, true);
   onEscape = undefined;
@@ -132,6 +138,25 @@ function watchForRedraw() {
   redrawWatch.observe(document.body, { childList: true, subtree: true });
 }
 
+// A one-line "Show …" toggle in front of a folded region: a real button, so keyboard and screen
+// readers reach it; aria-expanded tells them whether the region is open.
+function addFold(target: Element, label: string) {
+  const fold = document.createElement("button");
+  fold.type = "button";
+  fold.dataset.smartWebFold = "";
+  fold.setAttribute("aria-expanded", "false");
+  fold.textContent = `Show ${label}`;
+  fold.addEventListener("click", () => {
+    const open = !target.hasAttribute(OPEN);
+    if (open) target.setAttribute(OPEN, "");
+    else target.removeAttribute(OPEN);
+    fold.setAttribute("aria-expanded", String(open));
+    fold.textContent = `${open ? "Hide" : "Show"} ${label}`;
+  });
+  target.before(fold);
+  folds.add(fold);
+}
+
 // Marks the plan's elements; the inserted stylesheet does the rest. In preview, regions are
 // outlined and Escape on the page undoes everything.
 export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scannedAt: number): LayoutResult {
@@ -159,14 +184,15 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
     }
     let targets = [regionOf(container)];
     if (group.operation === "grid" || group.operation === "compact") targets = [layoutParent(container, members)];
-    if (group.operation === "hide-secondary") targets = hideTargets(container, members);
+    if (group.operation === "hide-secondary" || group.operation === "collapse") targets = hideTargets(container, members);
     for (const target of targets) {
       mark(target, GROUP, String(index));
       mark(target, OP, group.operation);
+      if (group.operation === "collapse") addFold(target, group.label);
     }
     for (const { id, element } of found) {
       mark(element, MEMBER, "");
-      if (group.operation !== "hide-secondary") itemOf.set(element, { label: group.label, nodeId: id });
+      if (group.operation !== "hide-secondary" && group.operation !== "collapse") itemOf.set(element, { label: group.label, nodeId: id });
     }
     result.applied.push(group.label);
   }

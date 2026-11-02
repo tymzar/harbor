@@ -38,6 +38,18 @@ html[data-smart-web-preview] [data-smart-web-op="hide-secondary"] {
   opacity: 0.35 !important; outline-style: dotted !important;
 }
 
+/* Folded: closed until its toggle opens it. In preview it shows dimmed, like a hidden region. */
+html:not([data-smart-web-preview]) [data-smart-web-op="collapse"]:not([data-smart-web-open]) { display: none !important; }
+html[data-smart-web-preview] [data-smart-web-op="collapse"] { opacity: 0.5 !important; }
+[data-smart-web-fold] {
+  all: revert; display: block !important; box-sizing: border-box !important; width: 100% !important;
+  margin: 0.5rem 0 !important; padding: 0.5rem 0.75rem !important; text-align: start !important;
+  font: 500 14px/1.4 system-ui, sans-serif !important; color: rgb(${ACCENT}) !important;
+  background: rgb(${ACCENT} / 0.08) !important; border: 1px solid rgb(${ACCENT} / 0.35) !important;
+  border-radius: 8px !important; cursor: pointer !important;
+}
+[data-smart-web-fold]:focus-visible { outline: 2px solid rgb(${ACCENT}) !important; outline-offset: 2px !important; }
+
 html[data-smart-web-preview] [data-smart-web-group] {
   outline: 2px dashed rgb(${ACCENT}) !important; outline-offset: 3px !important;
 }

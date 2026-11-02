@@ -10,6 +10,8 @@ import { SAVED_PLANS_KEY } from "../../shared/cache";
 import type { SiteLearning } from "../../shared/learning";
 import { LEARNING_KEY, emptyLearning } from "../../shared/learning";
 import { RANKERS_KEY } from "../../shared/page-ranker";
+import { harborName, profileBlock, profileSummary } from "../../shared/profile";
+import { editProfile, useProfile } from "../sidepanel/use-profile";
 
 // Hosts the manifest itself requires (the model proxy) aren't sites the user chose to follow.
 const REQUIRED_HOSTS = new Set(chrome.runtime.getManifest().host_permissions ?? []);
@@ -151,6 +153,43 @@ function SavedPlanRow({ saved, onForget }: { saved: SavedPlan; onForget: () => v
   );
 }
 
+// The user's harbor: what it is called, what it does, and exactly what goes to Meta with a request.
+function HarborSection() {
+  const { profile } = useProfile();
+  const [retaking, setRetaking] = useState(false);
+  return (
+    <Section
+      title="Your harbor"
+      description="Your page preferences, sent with each layout request. Anything left as is stays as the site has it."
+      action={
+        <Button size="sm" variant="secondary" onPress={() => { editProfile(); setRetaking(true); }} data-testid="retake-setup">
+          Retake setup
+        </Button>
+      }
+    >
+      {retaking && <p className="text-sm text-muted">Open Harbor's side panel to choose again.</p>}
+      {profile ? (
+        <div className="flex flex-col gap-2" data-testid="harbor-settings">
+          <p className="text-sm font-medium">{harborName(profile)}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {profileSummary(profile).map((chip) => (
+              <Chip key={chip} size="sm" variant="soft" color="accent">
+                {chip}
+              </Chip>
+            ))}
+          </div>
+          <details className="text-xs text-muted">
+            <summary className="cursor-pointer text-sm font-medium text-foreground">Exactly what goes to Meta with a request</summary>
+            <pre className="mt-2 rounded-lg bg-surface-secondary p-3 whitespace-pre-wrap font-sans">{profileBlock(profile)}</pre>
+          </details>
+        </div>
+      ) : (
+        <p className="text-sm text-muted">Not set up yet. Open Harbor's side panel to choose.</p>
+      )}
+    </Section>
+  );
+}
+
 function Section({ title, description, children, action }: { title: string; description: string; children: ReactNode; action?: ReactNode }) {
   return (
     <Card className="gap-1 rounded-3xl p-5">
@@ -184,6 +223,8 @@ export function Options() {
             <p className="text-sm text-muted">Everything here stays on this device.</p>
           </div>
         </header>
+
+        <HarborSection />
 
         <Section
           title="Saved layouts"

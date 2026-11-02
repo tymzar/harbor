@@ -30,6 +30,9 @@ export const test = base.extend<{
       serviceWorker = await context.waitForEvent("serviceworker");
 
     const extensionId = serviceWorker.url().split("/")[2];
+    // Setup counts as done, without a profile, so specs see Harbor's original behaviour;
+    // onboarding.spec clears this to walk through the setup itself.
+    await serviceWorker.evaluate(() => chrome.storage.local.set({ harborOnboarding: "done" }));
     await use(extensionId);
   },
 });

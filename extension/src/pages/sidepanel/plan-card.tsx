@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Alert, Button, Card, Checkbox, Chip, Label, Separator, Spinner, Switch, TextArea, TextField } from "@heroui/react";
-import { ArrowUturnCcwLeft, Check, Eye, MagicWand, PaperPlane, TrashBin } from "@gravity-ui/icons";
+import { ArrowUturnCcwLeft, Check, ChevronRight, Eye, MagicWand, PaperPlane, Pencil, TrashBin } from "@gravity-ui/icons";
+
+import { HarborLogo } from "../../components/HarborLogo/harbor-logo";
+import type { Profile } from "../../shared/profile";
+import { because, harborName, profileSummary } from "../../shared/profile";
+import { editProfile } from "./use-profile";
 
 import type { LayoutPlan, Operation, PlanGroup } from "../../shared/plan";
 import { groupPattern } from "../../shared/plan";
@@ -17,6 +22,7 @@ const OPERATION_LABEL: Record<Operation, string> = {
   compact: "Compact",
   grid: "Grid",
   emphasize: "Emphasize",
+  collapse: "Fold",
   none: "No change",
 };
 
@@ -34,16 +40,22 @@ type GroupRowProperties = {
   plan: LayoutPlan;
   selected: boolean;
   onSelect: (selected: boolean) => void;
+  profile: Profile | undefined;
 };
 
 // One proposed change: include it or not, what it is, why, where it applies, and what it does.
-function GroupRow({ group, plan, selected, onSelect }: GroupRowProperties) {
+function GroupRow({ group, plan, selected, onSelect, profile }: GroupRowProperties) {
   const changes = group.operation !== "none";
   const pattern = groupPattern(plan, group);
   const details = (
     <span className="flex min-w-0 flex-col gap-0.5">
       <span className="text-sm font-medium">{group.label}</span>
-      {group.reason && <span className="text-xs text-muted">{group.reason}</span>}
+      {/* Why it is there: from the profile rule when there is one, else Spark's own reason. */}
+      {group.rule ? (
+        <span className="text-xs text-muted" data-testid="group-because">{because(group, profile)}</span>
+      ) : (
+        group.reason && <span className="text-xs text-muted">{group.reason}</span>
+      )}
       <span className="text-xs text-muted">
         {pattern === plan.template.urlPattern ? "Wherever this layout applies" : `Only on ${pattern}`}
       </span>
@@ -133,7 +145,24 @@ function Progress({ proposal, elements }: { proposal: Proposal; elements: number
   );
 }
 
-export function PlanCard({ session }: { session: TabSession }) {
+// The user's harbor, sent with every request; Edit reopens the setup.
+function HarborRow({ profile }: { profile: Profile }) {
+  return (
+    <div className="flex items-center gap-2.5 rounded-xl bg-accent-soft p-2.5 text-accent-soft-foreground" data-testid="harbor-row">
+      <HarborLogo size={32} />
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium">{harborName(profile)}</span>
+        <span className="block text-xs">{profileSummary(profile).join(" · ") || "Everything as the site has it"}</span>
+      </span>
+      <Button size="sm" variant="ghost" onPress={editProfile} aria-label="Edit your harbor">
+        <Pencil />
+        Edit
+      </Button>
+    </div>
+  );
+}
+
+export function PlanCard({ session, profile }: { session: TabSession; profile: Profile | undefined }) {
   const [includeScreenshot, setIncludeScreenshot] = useState(false);
   const [goal, setGoal] = useSiteGoal(session.lastOrigin);
   const scan = session.scan!;
@@ -214,10 +243,19 @@ export function PlanCard({ session }: { session: TabSession }) {
 
       {!layout && (
         <Card className="gap-3 rounded-3xl p-3.5">
-          <TextField value={goal} onChange={setGoal} isDisabled={running} data-testid="goal" className="flex flex-col gap-2">
-            <Label className="text-sm font-medium">I come here to…</Label>
-            <TextArea rows={3} placeholder="e.g. review pull requests and check Actions" />
-          </TextField>
+          {profile && <HarborRow profile={profile} />}
+          {/* One-off wishes on top of the harbor, for this page only. Folded until wanted. */}
+          <details className="group rounded-xl border border-separator px-3 py-2" open={!profile || Boolean(goal)} data-testid="special-request">
+            <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm font-medium">
+              <ChevronRight className="shrink-0 transition-transform group-open:rotate-90" />
+              Special request
+              <span className="text-xs font-normal text-muted">optional, this page only</span>
+            </summary>
+            <TextField value={goal} onChange={setGoal} isDisabled={running} data-testid="goal" className="mt-2 flex flex-col gap-2">
+              <Label className="sr-only">Special request for this page</Label>
+              <TextArea rows={2} placeholder="e.g. keep the ingredients next to the steps" />
+            </TextField>
+          </details>
           <Switch isSelected={includeScreenshot} onChange={setIncludeScreenshot} isDisabled={running || !session.hasScreenshot} size="sm">
             <Switch.Content className="text-sm">
               <Switch.Control>
@@ -289,6 +327,7 @@ export function PlanCard({ session }: { session: TabSession }) {
                   plan={done.plan!}
                   selected={selected.includes(group.label)}
                   onSelect={(include) => toggle(group.label, include)}
+                  profile={profile}
                 />
               ))}
             </ul>

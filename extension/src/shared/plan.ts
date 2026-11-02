@@ -3,7 +3,8 @@ import type { PageScan, ScanNode } from "./types";
 // The layout plan Muse Spark returns. Every field is required (strict structured output);
 // "not applicable" is expressed with "none" or an empty string rather than a missing key.
 
-export const OPERATIONS = ["compact", "grid", "emphasize", "hide-secondary", "none"] as const;
+// collapse folds a region behind a one-tap "Show" toggle Harbor adds; restore removes it.
+export const OPERATIONS = ["compact", "grid", "emphasize", "hide-secondary", "collapse", "none"] as const;
 export const GROUP_ROLES = [
   "navigation",
   "tabs",
@@ -21,7 +22,7 @@ export type Operation = (typeof OPERATIONS)[number];
 
 export type PlanGroup = {
   label: string;
-  // Pages this group exists on. Site chrome (repo tabs) is broad; view content (a file list) is narrow.
+  // Pages this group exists on. Site chrome (section tabs) is broad; view content (an article) is narrow.
   // Plans saved before 28 Oct lack it and fall back to the plan's template.
   urlPattern: string;
   role: (typeof GROUP_ROLES)[number];
@@ -32,6 +33,9 @@ export type PlanGroup = {
   reorderable: boolean;
   identity: { source: (typeof IDENTITY_SOURCES)[number]; attribute: string };
   reason: string;
+  // The profile rule behind the change ("parts.ads"), "special", a guard, or "model". The panel
+  // explains the change from it; absent on plans saved before profiles.
+  rule?: string;
   // Set on groups the user made with "Hide something else"; Spark's groups leave it out.
   origin?: "user" | "learned";
 };
@@ -47,7 +51,7 @@ export type PlanQuestion = {
 
 export type LayoutPlan = {
   summary: string;
-  // Which pages this layout could apply to, e.g. "github.com/{owner}/{repo}/*".
+  // Which pages this layout could apply to, e.g. "example-news.com/{section}/*".
   template: { urlPattern: string; pageKind: string };
   groups: Array<PlanGroup>;
   // Absent on plans saved before questions existed.
@@ -116,6 +120,7 @@ export const PLAN_SCHEMA = {
           "reorderable",
           "identity",
           "reason",
+          "rule",
         ],
         properties: {
           label: string,
@@ -135,6 +140,7 @@ export const PLAN_SCHEMA = {
             },
           },
           reason: string,
+          rule: string,
         },
       },
     },
@@ -143,7 +149,7 @@ export const PLAN_SCHEMA = {
 
 export const LIMITS = { groups: 15, members: 200 };
 
-// "github.com/{owner}/{repo}/*" → matches github.com/react/react and github.com/react/react/issues.
+// "example-news.com/{section}/*" → matches example-news.com/world and example-news.com/world/storm.
 export function urlPatternMatches(pattern: string, url: string): boolean {
   let target: URL;
   try {
@@ -162,7 +168,7 @@ export function urlPatternMatches(pattern: string, url: string): boolean {
       return part.replaceAll(/[$()+.?[\\\]^{|}]/g, String.raw`\$&`);
     })
     .join("");
-  // A trailing "/*" also covers the bare prefix ("github.com/a/b").
+  // A trailing "/*" also covers the bare prefix ("example-news.com/world").
   return new RegExp(`^${source.replace(/\/\.\*$/, "(?:/.*)?")}$`).test(subject);
 }
 
