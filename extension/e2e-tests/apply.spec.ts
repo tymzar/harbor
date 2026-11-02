@@ -325,3 +325,43 @@ test("a kept change to the site header follows the user to other pages", async (
   await expect.poll(() => second.site.locator(".topnav").getAttribute("data-smart-web-op")).toBe("emphasize");
   await expect.poll(() => second.site.locator(".frame").evaluate((element) => getComputedStyle(element).display)).toBe("block");
 });
+
+// A learned favourite inside a nav link (its icon or label) moves the whole list item to the front
+// of the bar, not the icon within its own link. Shaped like LinkedIn's top bar.
+test("a learned favourite moves its whole nav item to the front of the bar", async ({ context, extensionId }) => {
+  const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/cards.html`);
+  await panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(panel.getByTestId("screenshot")).toBeVisible();
+  const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  // The deepest scanned node for Jobs, as a click on its label would record.
+  const jobs = nodes.filter((node) => node.text === "Jobs" || node.text.startsWith("▣")).toSorted((a, b) => b.depth - a.depth)[0];
+  const plan: LayoutPlan = {
+    summary: "Feed",
+    template: { urlPattern: "127.0.0.1:4317/*", pageKind: "feed" },
+    groups: [
+      {
+        label: "You open most: Jobs",
+        urlPattern: "127.0.0.1:4317/*",
+        role: "other",
+        container: jobs.id,
+        members: [jobs.id],
+        operation: "emphasize",
+        reorderable: false,
+        identity: { source: "none", attribute: "" },
+        reason: "Learned",
+        origin: "learned",
+      },
+    ],
+  };
+  await panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await panel.getByTestId("preview-layout").click();
+  await panel.getByTestId("keep-layout").click();
+
+  const item = site.locator(".topnav li").filter({ hasText: "Jobs" });
+  await expect.poll(() => item.evaluate((element) => getComputedStyle(element).order)).toBe("-1");
+  // First on screen, still second in the DOM.
+  const lefts = await site.locator(".topnav li").evaluateAll((items) => items.map((element) => element.getBoundingClientRect().left));
+  expect(lefts[1]).toBeLessThan(lefts[0]);
+});

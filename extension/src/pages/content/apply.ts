@@ -116,15 +116,23 @@ function withShells(targets: Array<Element>): Array<Element> {
   return current;
 }
 
-// The element to move for "first": the member, or its nearest ancestor that sits in a flex or grid
-// row with siblings (a nav link inside its list item). CSS order moves it on screen only; the DOM,
-// and so reading and tab order, stay the site's own. Undefined when no such row is close by.
+// The element to move for "first": the nearest of the member and its ancestors that is one item
+// of a flex or grid row of like items (at least three siblings with its tag, like the list items of
+// a nav bar). A button's own icon-and-label row doesn't count, so clicking a nav link's icon still
+// moves the whole link. CSS order moves it on screen only; the DOM, and so reading and tab order,
+// stay the site's own. Undefined when no such row is close by.
+const ROW_LEVELS = 6;
+const MIN_ROW_ITEMS = 3;
+
 function rowItem(member: Element): Element | undefined {
   let item: Element | null = member;
-  for (let level = 0; item && level < 4; level++, item = item.parentElement) {
+  for (let level = 0; item && level < ROW_LEVELS; level++, item = item.parentElement) {
     const parent: Element | null = item.parentElement;
     if (!parent || parent === document.body) return undefined;
-    if (/^(inline-)?(flex|grid)$/.test(getComputedStyle(parent).display) && parent.children.length > 1) return item;
+    const like = [...parent.children].filter((child) => child.tagName === item!.tagName).length;
+    const style = getComputedStyle(parent);
+    const row = /^(inline-)?grid$/.test(style.display) || (/^(inline-)?flex$/.test(style.display) && style.flexDirection.startsWith("row"));
+    if (row && like >= MIN_ROW_ITEMS) return item;
   }
   return undefined;
 }

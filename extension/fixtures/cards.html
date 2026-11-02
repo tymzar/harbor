@@ -10,7 +10,12 @@
     </style>
   </head>
   <body>
-    <header class="top"><nav class="topnav" style="display: flex; gap: 1rem; padding: 0.5rem 1rem"><a href="/feed">Home</a> <a href="/jobs">Jobs</a> <a href="/messages">Messaging</a></nav></header>
+    <!-- Shaped like LinkedIn's top bar: a flex row of list items, each link a small icon-over-label column. -->
+    <header class="top"><nav class="topnav"><ul style="display: flex; gap: 1rem; list-style: none; margin: 0; padding: 0.5rem 1rem">
+      <li><a href="/feed" style="display: flex; flex-direction: column; align-items: center"><span class="icon">⌂</span><span class="label">Home</span></a></li>
+      <li><a href="/jobs" style="display: flex; flex-direction: column; align-items: center"><span class="icon">▣</span><span class="label">Jobs</span></a></li>
+      <li><a href="/messages" style="display: flex; flex-direction: column; align-items: center"><span class="icon">✉</span><span class="label">Messaging</span></a></li>
+    </ul></nav></header>
     <main>
       <section class="card post"><h2>Ana shipped a release</h2><p>Version 2 is out, with a new editor and faster sync.</p></section>
       <!-- A card whose only content is a promoted block: hiding the block must not leave the empty frame. -->
