@@ -229,3 +229,49 @@ test("hiding a card's only content takes its empty frame with it", async ({ cont
   await panel.getByTestId("restore-layout").click();
   await expect.poll(display(".frame")).toBe("block");
 });
+
+// Keep is remembered for the layout's pattern: another page it covers gets the layout as soon as
+// Harbor reads it, with no preview and no Meta call. Restore turns that off.
+test("a kept layout comes back by itself on the next page, until Restore", async ({ context, extensionId }) => {
+  const first = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/cards.html`);
+  await first.panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(first.panel.getByTestId("screenshot")).toBeVisible();
+  const session = (await first.panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${first.tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  const promo = nodes.find((node) => node.tag === "aside")!;
+  const plan: LayoutPlan = {
+    summary: "Feed",
+    template: { urlPattern: "127.0.0.1:4317/*", pageKind: "feed" },
+    groups: [
+      {
+        label: "Promoted",
+        urlPattern: "127.0.0.1:4317/*",
+        role: "other",
+        container: promo.id,
+        members: nodes.filter((node) => node.parent === promo.id).map((node) => node.id),
+        operation: "hide-secondary",
+        reorderable: false,
+        identity: { source: "none", attribute: "" },
+        reason: "",
+      },
+    ],
+  };
+  await first.panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await first.panel.getByRole("button", { name: "Rescan" }).click();
+  await first.panel.getByTestId("preview-layout").click();
+  await first.panel.getByTestId("keep-layout").click();
+  await expect(first.panel.getByTestId("layout-applied")).toBeVisible();
+
+  const frame = (page: typeof first.site) => () => page.locator(".frame").evaluate((element) => getComputedStyle(element).display);
+  const second = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/again/cards.html`);
+  await second.panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(second.panel.getByTestId("layout-applied")).toBeVisible();
+  await expect.poll(frame(second.site)).toBe("none");
+
+  await second.panel.getByTestId("restore-layout").click();
+  await expect.poll(frame(second.site)).toBe("block");
+  const third = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/third/cards.html`);
+  await third.panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(third.panel.getByTestId("preview-layout")).toBeVisible();
+  await expect.poll(frame(third.site)).toBe("block");
+});

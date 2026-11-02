@@ -4,6 +4,7 @@ import { applyAnswers, usableQuestions } from "../../shared/questions";
 import type { LayoutState, TabSession } from "../../shared/types";
 
 import type { LayoutGroup, LayoutResult } from "../content/apply";
+import { rememberKept } from "./saved-plans";
 
 export const STALE_SCAN = "The page changed since Harbor read it. Rescan, then try again.";
 
@@ -16,7 +17,9 @@ async function removeSheet(tabId: number) {
 export async function showLayout(
   session: TabSession,
   groups: Array<PlanGroup>,
-  state: LayoutState["state"]
+  state: LayoutState["state"],
+  // Off when re-applying what was already kept: a page missing a region mustn't shrink the saved choice.
+  remember = true
 ): Promise<LayoutState | undefined> {
   const tabId = session.tabId;
   const chosen = groups.filter((group) => group.operation !== "none");
@@ -44,6 +47,8 @@ export async function showLayout(
   const result = injection?.result as LayoutResult | undefined;
   if (!result) throw new Error("The page did not answer.");
   if (result.stale) throw new Error(STALE_SCAN);
+  const pattern = session.proposal?.plan?.template.urlPattern;
+  if (state === "applied" && remember && pattern) await rememberKept(pattern, chosen.map((group) => group.label));
   return { state, labels: result.applied, missing: result.missing };
 }
 

@@ -19,6 +19,23 @@ export async function rememberPlan(plan: LayoutPlan, scan: PageScan, usedScreens
   await chrome.storage.local.set({ [SAVED_PLANS_KEY]: [entry, ...others].slice(0, MAX_SAVED_PLANS) });
 }
 
+// What the user kept, per layout pattern ("site.com/news/*"): it comes back by itself on every page
+// the pattern covers, until Restore. Kept apart from the plans, which are saved before anything is kept.
+const KEPT_KEY = "keptLayouts";
+
+export async function rememberKept(pattern: string, labels?: Array<string>) {
+  const stored = await chrome.storage.local.get(KEPT_KEY);
+  const kept = { ...(stored[KEPT_KEY] as Record<string, Array<string>> | undefined) };
+  if (labels && labels.length > 0) kept[pattern] = labels;
+  else delete kept[pattern];
+  await chrome.storage.local.set({ [KEPT_KEY]: kept });
+}
+
+export async function keptLabels(pattern: string): Promise<Array<string> | undefined> {
+  const stored = await chrome.storage.local.get(KEPT_KEY);
+  return (stored[KEPT_KEY] as Record<string, Array<string>> | undefined)?.[pattern];
+}
+
 export async function rememberAnswers(url: string, answers: Answers) {
   const key = pageKey(url);
   const all = await readAll();

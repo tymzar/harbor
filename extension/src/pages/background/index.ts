@@ -3,7 +3,7 @@ import type { PageScan, PanelRequest, SessionStatus, TabSession } from "../../sh
 import { sessionKey, shotKey } from "../../shared/types";
 import { STALE_SCAN, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
-import { forgetPlan, rememberAnswers, reusePlan } from "./saved-plans";
+import { forgetPlan, keptLabels, rememberAnswers, rememberKept, reusePlan } from "./saved-plans";
 import { decide, recordActivation, setLearning } from "./learning";
 import { hideNode } from "./user-groups";
 
@@ -69,9 +69,10 @@ async function scanTab(tabId: number, settle: boolean) {
   const url = tab.url ?? "";
   const followed = await followedTabs();
   const lastOrigin = originOf(url) ?? followed[tabId];
-  // An applied layout carries over to the next scan of this tab (navigation, rescan).
+  // A layout on the page carries over to the next scan of this tab (navigation, rescan, reopening
+  // the panel), kept or still in preview.
   const previous = await readSession(tabId);
-  const keep = previous?.layout?.state === "applied" ? previous.layout.labels : undefined;
+  const carried = previous?.layout && previous.layout.labels.length > 0 ? previous.layout : undefined;
 
   // Without access Chrome hides the URL; the injection error below then tells the cases apart.
   if (RESTRICTED.test(url)) {
@@ -104,7 +105,10 @@ async function scanTab(tabId: number, settle: boolean) {
     const proposal = await reusePlan(scan);
     await chrome.storage.session.set({ [shotKey(tabId)]: screenshot });
     const session: TabSession = { tabId, status: "ready", url, lastOrigin, scan, hasScreenshot: true, proposal, updatedAt: Date.now() };
-    if (keep && proposal) session.layout = await showLayout(session, pickGroups(session, keep), "applied");
+    // Otherwise what the user kept for this kind of page comes back by itself, with no Meta call.
+    const pattern = proposal?.plan?.template.urlPattern;
+    const kept = carried ?? (pattern ? await keptLabels(pattern).then((labels) => labels && { state: "applied" as const, labels }) : undefined);
+    if (kept && proposal) session.layout = await showLayout(session, pickGroups(session, kept.labels), kept.state, false);
     await saveSession(session);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -219,7 +223,12 @@ async function changeLayout(tabId: number, action: "preview" | "apply" | "restor
   if (!session) return;
   try {
     let layout: TabSession["layout"];
-    if (action === "restore") await clearLayout(tabId);
+    if (action === "restore") {
+      await clearLayout(tabId);
+      // Restore on a kept layout turns it off for the pages it covers; cancelling a preview doesn't.
+      const pattern = session.proposal?.plan?.template.urlPattern;
+      if (session.layout?.state === "applied" && pattern) await rememberKept(pattern);
+    }
     else layout = await showLayout(session, pickGroups(session, labels), action === "preview" ? "preview" : "applied");
     await saveSession({ ...session, layout, notice: undefined, updatedAt: Date.now() });
   } catch (error) {
