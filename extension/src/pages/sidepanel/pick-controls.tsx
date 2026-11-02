@@ -15,7 +15,7 @@ export function PickControls({ session, disabled }: { session: TabSession; disab
 
   if (!picking)
     return (
-      <Button variant="secondary" isDisabled={disabled} onPress={() => send("start")} data-testid="pick-start" fullWidth>
+      <Button variant="ghost" size="sm" className="self-start" isDisabled={disabled} onPress={() => send("start")} data-testid="pick-start">
         <Target />
         Hide something else…
       </Button>

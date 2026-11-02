@@ -1,5 +1,5 @@
 import type { Key } from "react";
-import { Card, ToggleButton, ToggleButtonGroup } from "@heroui/react";
+import { ToggleButton, ToggleButtonGroup } from "@heroui/react";
 
 import type { PlanQuestion } from "../../shared/plan";
 import type { Answers } from "../../shared/questions";
@@ -16,7 +16,7 @@ export function Questions({ questions, answers, onAnswer }: QuestionsProperties)
     onAnswer({ ...answers, [question.id]: [...keys].map(Number).toSorted((a, b) => a - b) });
 
   return (
-    <Card className="gap-4 rounded-3xl p-3.5" aria-label="Questions about how you use this page" data-testid="questions">
+    <div className="flex flex-col gap-4 rounded-xl bg-surface-secondary p-3" aria-label="Questions about how you use this page" data-testid="questions">
       {questions.map((question) => (
         <fieldset key={question.id} className="flex flex-col gap-2" data-testid="question">
           <legend className="mb-2 text-sm font-medium">{question.text}</legend>
@@ -41,6 +41,6 @@ export function Questions({ questions, answers, onAnswer }: QuestionsProperties)
         </fieldset>
       ))}
       <p className="text-xs text-muted">Your answer adjusts the plan here, without asking Meta again.</p>
-    </Card>
+    </div>
   );
 }

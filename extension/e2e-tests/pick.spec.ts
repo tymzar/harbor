@@ -28,6 +28,7 @@ test("pick an element on the page, widen the selection and hide it", async ({ co
   await expect(site.locator("[data-smart-web-picker]")).toHaveCount(0);
   await expect(panel.getByTestId("plan-group").filter({ hasText: "Hidden by you" })).toHaveCount(1);
   // What is hidden on the page is ticked in the panel.
+  await panel.getByTestId("adjust-changes").locator("summary").click();
   await expect(panel.getByRole("checkbox", { name: /^Include Hidden by you: Privacy/ })).toBeChecked();
   await expect(panel.getByTestId("layout-hidden")).toContainText("Hidden by you: Privacy Terms Security");
 

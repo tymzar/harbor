@@ -135,6 +135,7 @@ test("hidden regions are dimmed in preview, hidden after Keep, and shown again f
   await expect(panel.getByTestId("layout-hidden")).toContainText("Footer links");
 
   // Untick while applied: the footer comes back, the emphasized TOC stays.
+  await panel.getByTestId("adjust-changes").locator("summary").click();
   await panel.getByTestId("plan-group").filter({ hasText: "Footer links" }).getByText("Footer links", { exact: true }).click();
   await expect.poll(style).toEqual({ display: "flex", opacity: "1" });
   await expect(panel.getByTestId("layout-applied")).toHaveText("1 change on the page");
@@ -186,4 +187,45 @@ test("hiding one member of a region leaves the rest of the region", async ({ con
   await expect(foot.getByRole("link", { name: "Terms" })).toBeVisible();
   await expect(foot).toBeVisible();
   await expect(site.locator(".toc")).toBeHidden();
+});
+
+// Hiding everything inside a card hides the card's frame too, instead of leaving an empty box;
+// the cards around it stay, and Restore brings the frame back.
+test("hiding a card's only content takes its empty frame with it", async ({ context, extensionId }) => {
+  const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/cards.html`);
+  await panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(panel.getByTestId("screenshot")).toBeVisible();
+
+  const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  const promo = nodes.find((node) => node.tag === "aside")!;
+  const plan: LayoutPlan = {
+    summary: "Feed",
+    template: { urlPattern: "127.0.0.1:4317/*", pageKind: "feed" },
+    groups: [
+      {
+        label: "Promoted",
+        urlPattern: "127.0.0.1:4317/*",
+        role: "other",
+        container: promo.id,
+        members: nodes.filter((node) => node.parent === promo.id).map((node) => node.id),
+        operation: "hide-secondary",
+        reorderable: false,
+        identity: { source: "none", attribute: "" },
+        reason: "",
+      },
+    ],
+  };
+  await panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect(panel.getByTestId("plan-reused")).toBeVisible();
+
+  const display = (selector: string) => () => site.locator(selector).first().evaluate((element) => getComputedStyle(element).display);
+  await panel.getByTestId("preview-layout").click();
+  await panel.getByTestId("keep-layout").click();
+  await expect.poll(display(".frame")).toBe("none");
+  await expect.poll(display(".post")).toBe("block");
+
+  await panel.getByTestId("restore-layout").click();
+  await expect.poll(display(".frame")).toBe("block");
 });

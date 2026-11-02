@@ -1,12 +1,12 @@
 import { memo, useEffect, useState } from "react";
-import { Alert, Button, Card, Chip, Separator, Spinner } from "@heroui/react";
+import { Alert, Button, Card, Chip, Spinner } from "@heroui/react";
 import { ArrowsRotateRight, Eye, EyeSlash, Gear } from "@gravity-ui/icons";
 
 import { HarborLogo } from "../../components/HarborLogo/harbor-logo";
 import type { NodeKind, PageScan, PanelRequest, ScanNode, TabSession } from "../../shared/types";
 import { sessionKey, shotKey } from "../../shared/types";
 import { Onboarding } from "./onboarding";
-import { PlanCard } from "./plan-card";
+import { FlowSteps, PlanCard } from "./plan-card";
 import { useProfile } from "./use-profile";
 import { NeedsAccess, SiteAccessSwitch } from "./site-access";
 
@@ -65,7 +65,7 @@ const ElementList = memo(
     };
     return (
       <details
-        className="rounded-3xl px-3.5 py-3 text-sm text-muted"
+        className="rounded-xl px-1 py-1 text-xs text-muted"
         onToggle={(event) => setOpen(event.currentTarget.open)}
         data-testid="element-list"
       >
@@ -184,37 +184,26 @@ function FirstOpen({ onRead, isPending, isDisabled }: { onRead: () => void; isPe
   );
 }
 
-function PageCard({ session, scan, screenshot, onRescan, scanning }: { session: TabSession; scan: PageScan; screenshot: string | undefined; onRescan: () => void; scanning: boolean }) {
+// The page Harbor read: one quiet line, not a card. The flow below is the panel's focus.
+function PageLine({ scan, screenshot, onRescan, scanning }: { scan: PageScan; screenshot: string | undefined; onRescan: () => void; scanning: boolean }) {
   return (
-    <Card className="gap-2 rounded-3xl p-3.5">
-      <div className="flex items-start gap-2">
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-medium" data-testid="page-title">
-            {scan.title || scan.url}
-          </p>
-          <p className="truncate text-xs text-muted">{scan.url}</p>
-        </div>
-        <Button isIconOnly size="sm" variant="ghost" aria-label="Rescan" onPress={onRescan} isPending={scanning}>
-          <ArrowsRotateRight />
-        </Button>
+    <div className="flex items-center gap-2 px-1">
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium" data-testid="page-title">
+          {scan.title || scan.url}
+        </p>
+        <p className="flex gap-1 text-xs text-muted">
+          <span className="min-w-0 truncate">{scan.url}</span>
+          <span className="shrink-0">
+            · <span data-testid="node-count">{scan.nodes.length}</span> elements
+            {screenshot && <span data-testid="screenshot"> · screenshot</span>}
+          </span>
+        </p>
       </div>
-      <div className="flex flex-wrap gap-1.5">
-        <Chip size="sm" variant="soft">
-          <span data-testid="node-count">{scan.nodes.length}</span> elements
-        </Chip>
-        {screenshot && (
-          <Chip size="sm" variant="soft" data-testid="screenshot">
-            Screenshot ready
-          </Chip>
-        )}
-      </div>
-      {session.lastOrigin && session.status !== "needs-access" && (
-        <>
-          <Separator className="my-1" />
-          <SiteAccessSwitch origin={session.lastOrigin} />
-        </>
-      )}
-    </Card>
+      <Button isIconOnly size="sm" variant="ghost" aria-label="Rescan" onPress={onRescan} isPending={scanning}>
+        <ArrowsRotateRight />
+      </Button>
+    </div>
   );
 }
 
@@ -262,9 +251,14 @@ export function SidePanel() {
       {settingUp ? (
         <Onboarding initial={harbor.onboarding === "editing" ? harbor.profile : undefined} />
       ) : (scan && session ? (
-        <PageCard session={session} scan={scan} screenshot={screenshot} onRescan={requestScan} scanning={isScanning} />
+        <PageLine scan={scan} screenshot={screenshot} onRescan={requestScan} scanning={isScanning} />
       ) : (
-        !unreadable && <FirstOpen onRead={requestScan} isPending={isScanning} isDisabled={tabId === undefined} />
+        !unreadable && (
+          <>
+            <FlowSteps step={0} />
+            <FirstOpen onRead={requestScan} isPending={isScanning} isDisabled={tabId === undefined} />
+          </>
+        )
       ))}
 
       {!settingUp && session?.status === "needs-access" && <NeedsAccess tabId={session.tabId} origin={session.lastOrigin} />}
@@ -284,7 +278,12 @@ export function SidePanel() {
       )}
 
       {!settingUp && scan && session && <PlanCard session={session} profile={harbor.profile} />}
-      {!settingUp && scan && session && <ElementList scan={scan} tabId={session.tabId} />}
+      {!settingUp && scan && session && (
+        <footer className="mt-auto flex flex-col gap-1 border-t border-separator pt-2.5">
+          {session.lastOrigin && session.status !== "needs-access" && <SiteAccessSwitch origin={session.lastOrigin} />}
+          <ElementList scan={scan} tabId={session.tabId} />
+        </footer>
+      )}
     </main>
   );
 }

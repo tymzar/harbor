@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Harbor fixture: cards</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; margin: 0; background: #f3f2ef; }
+      main { max-width: 36rem; margin: 2rem auto; display: flex; flex-direction: column; gap: 0.75rem; }
+      .card { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 12px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card post"><h2>Ana shipped a release</h2><p>Version 2 is out, with a new editor and faster sync.</p></section>
+      <!-- A card whose only content is a promoted block: hiding the block must not leave the empty frame. -->
+      <div class="card frame"><div class="frame-inner"><aside class="promo"><h2>Promoted</h2><p>Try Premium free for a month. Cancel any time.</p></aside></div></div>
+      <section class="card post"><h2>Ben wrote about caching</h2><p>Three patterns that kept our API fast under load.</p></section>
+    </main>
+  </body>
+</html>

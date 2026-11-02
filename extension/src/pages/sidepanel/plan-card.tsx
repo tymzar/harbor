@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Card, Checkbox, Chip, Label, Separator, Spinner, Switch, TextArea, TextField } from "@heroui/react";
+import { Alert, Button, Card, Checkbox, Chip, Label, Spinner, Switch, TextArea, TextField } from "@heroui/react";
 import { ArrowUturnCcwLeft, Check, ChevronRight, Eye, MagicWand, PaperPlane, Pencil, TrashBin } from "@gravity-ui/icons";
 
 import { HarborLogo } from "../../components/HarborLogo/harbor-logo";
@@ -182,9 +182,34 @@ function HarborRow({ profile }: { profile: Profile }) {
   );
 }
 
+// Where the user is: one step at a time, so the panel always shows a single next thing to do.
+type Stage = "ask" | "drafting" | "review" | "preview" | "kept";
+const FLOW = ["Read", "Suggest", "Preview", "Keep"] as const;
+const STAGE_STEP: Record<Stage, number> = { ask: 1, drafting: 1, review: 2, preview: 3, kept: 4 };
+
+export function FlowSteps({ step }: { step: number }) {
+  return (
+    <ol className="flex items-center gap-1.5" aria-label="Steps" data-testid="flow-steps">
+      {FLOW.map((name, index) => {
+        let state: StepState = "pending";
+        if (index < step) state = "done";
+        else if (index === step) state = "active";
+        return (
+          <li key={name} className="flex flex-1 flex-col gap-1" aria-current={state === "active" ? "step" : undefined}>
+            <span className={`h-1 rounded-full ${state === "pending" ? "bg-separator" : "bg-accent"} ${state === "active" ? "opacity-60" : ""}`} />
+            <span className={`text-[11px] ${state === "active" ? "font-medium" : "text-muted"}`}>{name}</span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 export function PlanCard({ session, profile }: { session: TabSession; profile: Profile | undefined }) {
   const [includeScreenshot, setIncludeScreenshot] = useState(false);
   const [goal, setGoal] = useSiteGoal(session.lastOrigin);
+  // "Ask again" goes back to the request, so the special request can change first.
+  const [asking, setAsking] = useState(false);
   const scan = session.scan!;
   const proposal = session.proposal;
   // A rescan replaces the elements a plan refers to.
@@ -232,37 +257,43 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
   };
 
   const send = () => {
+    setAsking(false);
     const request: PanelRequest = { type: "propose", tabId: session.tabId, includeScreenshot, goal };
     void chrome.runtime.sendMessage(request);
   };
 
   const done = current?.status === "done" && current.plan ? current : undefined;
+  let stage: Stage = "ask";
+  if (layout?.state === "applied") stage = "kept";
+  else if (layout?.state === "preview") stage = "preview";
+  else if (running) stage = "drafting";
+  else if (done && !asking) stage = "review";
+
+  const changeList = done && groups.length > 0 && (
+    <ul className="-mx-0.5 flex flex-col divide-y divide-separator border-t border-separator" aria-label="Proposed changes">
+      {groups.map((group) => (
+        <GroupRow
+          key={`${group.container}-${group.label}`}
+          group={group}
+          plan={done.plan!}
+          selected={selected.includes(group.label)}
+          onSelect={(include) => toggle(group.label, include)}
+          profile={profile}
+        />
+      ))}
+    </ul>
+  );
 
   return (
     <div className="flex flex-col gap-3" data-testid="plan-card">
-      {layout?.state === "applied" && (
-        <div className="flex flex-col gap-1 rounded-3xl bg-accent-soft px-3.5 py-3 text-accent-soft-foreground" data-testid="layout-controls">
-          <div className="flex items-center gap-2">
-            <Check />
-            <span className="flex-1 text-sm font-medium" data-testid="layout-applied">
-              {plural(layout.labels.length, "change", "changes")} on the page
-            </span>
-            <Button size="sm" variant="tertiary" onPress={() => sendLayout("restore")} data-testid="restore-layout">
-              <ArrowUturnCcwLeft />
-              Restore
-            </Button>
-          </div>
-          <p className="text-xs">Comes back wherever this layout applies, with no Meta call.</p>
-          {layout.missing.length > 0 && (
-            <p className="text-xs text-warning" data-testid="layout-missing">
-              Not found on the page any more: {layout.missing.join(", ")}. Rescan to read it again.
-            </p>
-          )}
-        </div>
-      )}
+      <FlowSteps step={STAGE_STEP[stage]} />
 
-      {!layout && (
+      {stage === "ask" && (
         <Card className="gap-3 rounded-3xl p-3.5">
+          <div>
+            <p className="text-base font-medium">Suggest a layout for this page</p>
+            <p className="text-xs text-muted">Muse Spark drafts it from your harbor. Nothing changes until you keep it.</p>
+          </div>
           {profile && <HarborRow profile={profile} />}
           {/* One-off wishes on top of the harbor, for this page only. Folded until wanted. */}
           <details className="group rounded-xl border border-separator px-3 py-2" open={!profile || Boolean(goal)} data-testid="special-request">
@@ -284,117 +315,140 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
               Also send the screenshot to SAM 3.1
             </Switch.Content>
           </Switch>
+          {current?.status === "error" && (
+            <Alert status="danger" data-testid="plan-error">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Title>No plan this time</Alert.Title>
+                <Alert.Description>{current.error}</Alert.Description>
+              </Alert.Content>
+            </Alert>
+          )}
+          <Button variant="primary" onPress={send} data-testid="send-plan" fullWidth>
+            {done ? <PaperPlane /> : <MagicWand />}
+            {done ? "Ask again" : "Suggest a layout"}
+          </Button>
           <p className="text-xs text-muted">
             Sent to Meta: {scan.nodes.length} elements with tags, positions and short text. Form fields go without
             their contents.
           </p>
-          <Button variant={done ? "tertiary" : "primary"} isPending={running} onPress={send} data-testid="send-plan" fullWidth>
-            {done ? <PaperPlane /> : <MagicWand />}
-            {done ? "Ask again" : "Suggest a layout"}
-          </Button>
+          {done && (
+            <Button variant="ghost" size="sm" className="self-start" onPress={() => setAsking(false)}>
+              Back to the last suggestion
+            </Button>
+          )}
         </Card>
       )}
 
-      {running && current && <Progress proposal={current} elements={scan.nodes.length} />}
+      {stage === "drafting" && current && <Progress proposal={current} elements={scan.nodes.length} />}
 
-      {current?.status === "error" && (
-        <Alert status="danger" data-testid="plan-error" className="rounded-3xl">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>No plan this time</Alert.Title>
-            <Alert.Description>{current.error}</Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
-
-      {done && (
-        <div className="flex flex-col gap-3" data-testid="plan-result">
-          <Card className="gap-2 rounded-3xl p-3.5">
-            <p className="text-base font-medium">{plural(changeable.length, "change", "changes")} for this page</p>
-            {done.plan!.summary && <p className="text-sm text-muted">{done.plan!.summary}</p>}
-            <div className="flex flex-wrap items-center gap-1.5">
-              <Chip size="sm" variant="soft" color="accent" data-testid="plan-template">
-                Applies to {done.plan!.template.urlPattern}
-              </Chip>
-              {done.reused && (
-                <Chip size="sm" variant="soft" color="success" data-testid="plan-reused">
-                  Saved layout · no Meta call
+      {done && (stage === "review" || stage === "preview") && (
+        <Card className="gap-3 rounded-3xl p-3.5" data-testid="plan-result">
+          {stage === "review" ? (
+            <div className="flex flex-col gap-1.5">
+              <p className="text-base font-medium">{plural(changeable.length, "change", "changes")} for this page</p>
+              {done.plan!.summary && <p className="text-sm text-muted">{done.plan!.summary}</p>}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <Chip size="sm" variant="soft" color="accent" data-testid="plan-template">
+                  Applies to {done.plan!.template.urlPattern}
                 </Chip>
-              )}
-            </div>
-            {done.reused && (
-              <div className="flex items-center justify-between gap-2 text-xs text-muted">
-                <span className="truncate">
-                  {done.reused.match === "page" ? "Saved for this page" : `Saved on ${done.reused.fromUrl.replace(/^https?:\/\//, "")}`} ·{" "}
-                  {new Date(done.reused.savedAt).toLocaleDateString()}
-                </span>
-                <Button size="sm" variant="ghost" onPress={forget} data-testid="forget-plan">
-                  <TrashBin />
-                  Forget
-                </Button>
+                {done.reused && (
+                  <Chip size="sm" variant="soft" color="success" data-testid="plan-reused">
+                    Saved layout · no Meta call
+                  </Chip>
+                )}
               </div>
-            )}
-            {done.reused?.drift && <Drift drift={done.reused.drift} />}
-          </Card>
+              {done.reused?.drift && <Drift drift={done.reused.drift} />}
+              {changeable.length > 0 && <p className="text-xs text-muted">Untick anything you'd rather keep as it is.</p>}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1" data-testid="layout-controls">
+              <p className="text-base font-medium">Try it on the page</p>
+              <p className="text-sm" data-testid="preview-summary">
+                {plural(layout!.labels.length, "region", "regions")} changed and outlined: {layout!.labels.join(", ")}.
+              </p>
+              <p className="text-xs text-muted">Use the page as usual. Esc on the page cancels.</p>
+            </div>
+          )}
 
           {questions.length > 0 && <Questions questions={questions} answers={answers} onAnswer={answer} />}
 
-          <Card className="rounded-3xl px-3.5 py-1.5">
-            <ul className="flex flex-col divide-y divide-separator" aria-label="Proposed changes">
-              {groups.map((group) => (
-                <GroupRow
-                  key={`${group.container}-${group.label}`}
-                  group={group}
-                  plan={done.plan!}
-                  selected={selected.includes(group.label)}
-                  onSelect={(include) => toggle(group.label, include)}
-                  profile={profile}
-                />
-              ))}
-            </ul>
-          </Card>
+          {changeList}
 
           {changeable.length === 0 && (done.accepted?.length ?? 0) > 0 && (
-            <p className="rounded-3xl bg-surface-secondary p-3.5 text-sm text-muted" data-testid="no-changes">
+            <p className="text-sm text-muted" data-testid="no-changes">
               {questions.length > 0
                 ? "Nothing changes yet. Answer a question above, or ask again for another plan."
-                : "Muse Spark found these regions but proposed no visible change for any of them, so there is nothing to preview. Ask again for another plan."}
+                : "Muse Spark found these regions but proposed no visible change for any of them. Ask again for another plan."}
             </p>
           )}
 
-          {changeable.length > 0 && !layout && (
-            <div data-testid="layout-controls">
-              <Button variant="primary" isDisabled={selected.length === 0} onPress={() => sendLayout("preview")} data-testid="preview-layout" fullWidth>
-                <Eye />
-                Preview on the page
+          {stage === "review" ? (
+            <div className="flex flex-col gap-1.5">
+              {changeable.length > 0 && (
+                <Button variant="primary" isDisabled={selected.length === 0} onPress={() => sendLayout("preview")} data-testid="preview-layout" fullWidth>
+                  <Eye />
+                  Preview on the page
+                </Button>
+              )}
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="sm" onPress={() => setAsking(true)} data-testid="ask-again">
+                  <PaperPlane />
+                  Ask again
+                </Button>
+                {done.reused && (
+                  <Button variant="ghost" size="sm" className="ml-auto" onPress={forget} data-testid="forget-plan">
+                    <TrashBin />
+                    Forget saved
+                  </Button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Button variant="primary" onPress={() => sendLayout("apply")} data-testid="keep-layout" className="flex-1">
+                <Check />
+                Keep
+              </Button>
+              <Button variant="ghost" onPress={() => sendLayout("restore")} data-testid="cancel-layout">
+                Cancel
               </Button>
             </div>
           )}
+        </Card>
+      )}
 
-          {layout?.state === "preview" && (
-            <Card className="gap-2 rounded-3xl p-3.5" data-testid="layout-controls">
-              <p className="text-sm font-medium" data-testid="preview-summary">
-                {plural(layout.labels.length, "region", "regions")} changed and outlined on the page: {layout.labels.join(", ")}.
-              </p>
-              <p className="text-xs text-muted">Use the page as usual; press Esc on it to cancel.</p>
-              <div className="flex gap-2">
-                <Button variant="primary" onPress={() => sendLayout("apply")} data-testid="keep-layout" className="flex-1">
-                  <Check />
-                  Keep
-                </Button>
-                <Button variant="ghost" onPress={() => sendLayout("restore")} data-testid="cancel-layout">
-                  Cancel
-                </Button>
-              </div>
-            </Card>
+      {stage === "kept" && layout && (
+        <Card className="gap-3 rounded-3xl p-3.5" data-testid="layout-controls">
+          <div className="flex items-center gap-2 rounded-xl bg-accent-soft px-3 py-2.5 text-accent-soft-foreground">
+            <Check />
+            <span className="flex-1">
+              <span className="block text-sm font-medium" data-testid="layout-applied">
+                {plural(layout.labels.length, "change", "changes")} on the page
+              </span>
+              <span className="block text-xs">Comes back wherever this layout applies.</span>
+              {done?.reused && (
+                <span className="mt-1 block text-xs font-medium" data-testid="plan-reused">
+                  Saved layout · no Meta call
+                </span>
+              )}
+            </span>
+            <Button size="sm" variant="tertiary" onPress={() => sendLayout("restore")} data-testid="restore-layout">
+              <ArrowUturnCcwLeft />
+              Restore
+            </Button>
+          </div>
+          {layout.missing.length > 0 && (
+            <p className="text-xs text-warning" data-testid="layout-missing">
+              Not found on the page any more: {layout.missing.join(", ")}. Rescan to read it again.
+            </p>
           )}
-
           {hidden.length > 0 && (
-            <Card className="gap-1 rounded-3xl p-3.5" data-testid="layout-hidden">
-              <p className="text-sm font-medium">Hidden on the page</p>
+            <div className="flex flex-col" data-testid="layout-hidden">
+              <p className="text-xs font-medium text-muted">Hidden on the page</p>
               <ul className="flex flex-col">
                 {hidden.map((group) => (
-                  <li key={group.label} className="flex items-center gap-2 py-1 text-sm">
+                  <li key={group.label} className="flex items-center gap-2 py-0.5 text-sm">
                     <span className="min-w-0 flex-1 truncate">{group.label}</span>
                     <Button size="sm" variant="ghost" onPress={() => toggle(group.label, false)} aria-label={`Show ${group.label} again`}>
                       <Eye />
@@ -403,45 +457,51 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
                   </li>
                 ))}
               </ul>
-            </Card>
+            </div>
           )}
-
-          {(done.errors?.length ?? 0) > 0 && (
-            <Alert status="warning" data-testid="plan-rejected" className="rounded-3xl">
-              <Alert.Indicator />
-              <Alert.Content>
-                <Alert.Title>
-                  {done.plan!.groups.length - (done.accepted?.length ?? 0)} proposed groups were set aside
-                  {done.repaired && " after one repair attempt"}
-                </Alert.Title>
-                <Alert.Description>
-                  <ul className="list-disc pl-4">
-                    {done.errors!.map((error) => (
-                      <li key={error}>{error}</li>
-                    ))}
-                  </ul>
-                </Alert.Description>
-              </Alert.Content>
-            </Alert>
+          {questions.length > 0 && <Questions questions={questions} answers={answers} onAnswer={answer} />}
+          {changeList && (
+            <details className="group" data-testid="adjust-changes">
+              <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm font-medium">
+                <ChevronRight className="shrink-0 transition-transform group-open:rotate-90" />
+                Adjust the changes
+              </summary>
+              <div className="mt-2">{changeList}</div>
+            </details>
           )}
-        </div>
+        </Card>
       )}
 
-      {layout?.state === "applied" && <LearningCard session={session} />}
+      {stage === "kept" && <LearningCard session={session} />}
 
       <PickControls session={session} disabled={running} />
 
-      {current && current.calls.length > 0 && (
-        <>
-          <Separator />
-          <ul className="flex flex-col gap-0.5 text-xs text-muted" aria-label="Model calls" data-testid="plan-calls">
-            {current.calls.map((call, index) => (
-              <li key={index}>
-                <span className="font-medium">{call.model}</span> {call.purpose} · {callSummary(call)}
-              </li>
-            ))}
-          </ul>
-        </>
+      {current && ((done?.errors?.length ?? 0) > 0 || current.calls.length > 0) && (
+        <details className="rounded-xl px-1 text-xs text-muted">
+          <summary className="cursor-pointer py-1">What Harbor sent and checked</summary>
+          {(done?.errors?.length ?? 0) > 0 && (
+            <div className="mt-1" data-testid="plan-rejected">
+              <p className="font-medium">
+                {done!.plan!.groups.length - (done!.accepted?.length ?? 0)} proposed groups were set aside
+                {done!.repaired && " after one repair attempt"}
+              </p>
+              <ul className="list-disc pl-4">
+                {done!.errors!.map((error) => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {current.calls.length > 0 && (
+            <ul className="mt-1 flex flex-col gap-0.5" aria-label="Model calls" data-testid="plan-calls">
+              {current.calls.map((call, index) => (
+                <li key={index}>
+                  <span className="font-medium">{call.model}</span> {call.purpose} · {callSummary(call)}
+                </li>
+              ))}
+            </ul>
+          )}
+        </details>
       )}
     </div>
   );

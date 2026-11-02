@@ -75,6 +75,45 @@ function hideTargets(container: Element, members: Array<Element>): Array<Element
   return mostlyMembers(container, new Set(members)) ? [regionOf(container)] : members;
 }
 
+// Hiding what is inside a card can leave the card's own frame on screen: an empty bordered,
+// rounded box. Climb to the outermost ancestor that holds nothing else visible, a few levels at
+// most and never past the page's main content, and hide that instead.
+const SHELL_STOP = "body, main, [role='main']";
+const SHELL_LEVELS = 4;
+
+function showsSomething(element: Element): boolean {
+  if (!element.checkVisibility({ checkVisibilityCSS: true })) return false;
+  const box = element.getBoundingClientRect();
+  return box.width > 0 && box.height > 0;
+}
+
+function shellOf(target: Element, hidden: Set<Element>): Element {
+  let shell = target;
+  for (let level = 0; level < SHELL_LEVELS; level++) {
+    const parent = shell.parentElement;
+    if (!parent || parent.matches(SHELL_STOP)) break;
+    const text = [...parent.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+    const rest = [...parent.children].some((child) => child !== shell && !hidden.has(child) && showsSomething(child));
+    if (text || rest) break;
+    shell = parent;
+  }
+  return shell;
+}
+
+// Hidden targets, widened to their empty frames. Repeated so two hidden siblings take their shared frame.
+function withShells(targets: Array<Element>): Array<Element> {
+  let current = targets;
+  for (let pass = 0; pass < 3; pass++) {
+    const hidden = new Set(current);
+    const next = [...new Set(current.map((target) => shellOf(target, hidden)))];
+    // An outer frame replaces the targets inside it.
+    const outer = next.filter((target) => !next.some((other) => other !== target && other.contains(target)));
+    if (outer.length === current.length && outer.every((target, index) => target === current[index])) break;
+    current = outer;
+  }
+  return current;
+}
+
 function mark(element: Element, name: string, value: string) {
   element.setAttribute(name, value);
   owned.add(element);
@@ -165,6 +204,7 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
   // IDs from another scan would mark the wrong elements.
   if (scannedAt !== currentScan()) return { applied: [], missing: groups.map((group) => group.label), stale: true };
 
+  const planned: Array<{ index: number; group: LayoutGroup; targets: Array<Element>; found: Array<{ id: string; element: Element }> }> = [];
   for (const [index, group] of groups.entries()) {
     const container = resolve(group.container);
     const found = group.members.flatMap((id) => {
@@ -185,6 +225,23 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
     let targets = [regionOf(container)];
     if (group.operation === "grid" || group.operation === "compact") targets = [layoutParent(container, members)];
     if (group.operation === "hide-secondary" || group.operation === "collapse") targets = hideTargets(container, members);
+    planned.push({ index, group, targets, found });
+  }
+
+  // Frames are worked out over every hidden region at once, before anything is marked.
+  const hides = planned.filter(({ group }) => group.operation === "hide-secondary");
+  const shells = new Map<Element, Element>();
+  const widened = withShells(hides.flatMap(({ targets }) => targets));
+  for (const target of hides.flatMap(({ targets }) => targets)) shells.set(target, widened.find((shell) => shell.contains(target)) ?? target);
+  const claimed = new Set<Element>();
+
+  for (const { index, group, targets: planTargets, found } of planned) {
+    let targets = planTargets;
+    if (group.operation === "hide-secondary") {
+      // A frame shared by two groups is marked once, by the first.
+      targets = [...new Set(targets.map((target) => shells.get(target) ?? target))].filter((target) => !claimed.has(target));
+      for (const target of targets) claimed.add(target);
+    }
     for (const target of targets) {
       mark(target, GROUP, String(index));
       mark(target, OP, group.operation);
