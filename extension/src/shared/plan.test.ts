@@ -118,6 +118,20 @@ describe("validatePlan", () => {
 const feedPage = (nodes: Array<ScanNode>): PageScan => ({ ...scan, url: "https://www.linkedin.com/feed/", nodes });
 const feedGroup = (container: string): PlanGroup => ({ ...tabsGroup, label: container, container, urlPattern: "www.linkedin.com/feed/*" });
 
+describe("urlPatternMatches across www", () => {
+  it("matches a pattern written without www. against a www. page, and the other way round", () => {
+    expect(urlPatternMatches("linkedin.com/*", "https://www.linkedin.com/messaging/thread/2-NTE1YT==/")).toBe(true);
+    expect(urlPatternMatches("www.linkedin.com/*", "https://linkedin.com/feed/")).toBe(true);
+    expect(urlPatternMatches("linkedin.com/feed/*", "https://www.linkedin.com/messaging/")).toBe(false);
+  });
+
+  it("treats both spellings of the whole-site pattern as site-wide", () => {
+    expect(isSiteWide("linkedin.com/*", "https://www.linkedin.com/messaging/thread/x==/")).toBe(true);
+    expect(isSiteWide("www.linkedin.com/*", "https://www.linkedin.com/feed/")).toBe(true);
+    expect(isSiteWide("www.linkedin.com/feed/*", "https://www.linkedin.com/feed/")).toBe(false);
+  });
+});
+
 describe("siteWide", () => {
   const page = feedPage;
   const group = feedGroup;

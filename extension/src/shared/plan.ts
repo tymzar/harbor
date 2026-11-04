@@ -153,6 +153,8 @@ export const PLAN_SCHEMA = {
 
 export const LIMITS = { groups: 15, members: 200 };
 
+const bareHost = (host: string) => host.replace(/^www\./, "");
+
 // "example-news.com/{section}/*" → matches example-news.com/world and example-news.com/world/storm.
 export function urlPatternMatches(pattern: string, url: string): boolean {
   let target: URL;
@@ -161,9 +163,11 @@ export function urlPatternMatches(pattern: string, url: string): boolean {
   } catch {
     return false;
   }
-  const subject = `${target.host}${target.pathname}`.replace(/\/$/, "");
+  // "www." is dropped on both sides: the model writes "linkedin.com/*" for www.linkedin.com pages.
+  const subject = `${bareHost(target.host)}${target.pathname}`.replace(/\/$/, "");
   const source = pattern
     .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
     .replace(/\/$/, "")
     .split(/({[^/}]+}|\*)/)
     .map((part) => {
@@ -199,7 +203,9 @@ export function siteWide(groups: Array<PlanGroup>, scan: PageScan): Array<PlanGr
   return host ? groups.map((group) => (inChrome(group.container) ? { ...group, urlPattern: `${host}/*` } : group)) : groups;
 }
 
-export const isSiteWide = (pattern: string, url: string) => URL.canParse(url) && pattern === `${new URL(url).host}/*`;
+// A whole-site pattern, with or without "www.": the model's "linkedin.com/*" counts for www.linkedin.com.
+export const isSiteWide = (pattern: string, url: string) =>
+  URL.canParse(url) && pattern.replace(/^https?:\/\//, "").replace(/^www\./, "") === `${bareHost(new URL(url).host)}/*`;
 
 function identityValue(node: ScanNode, group: PlanGroup): string | undefined {
   switch (group.identity.source) {
