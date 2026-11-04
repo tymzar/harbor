@@ -18,9 +18,12 @@ Built for the Meta AI Developer Hackathon (27 Oct – 4 Nov 2026).
    on a screenshot) proposes changes: hide, fold behind a "Show …" button, compact, grid, emphasise. Each
    change says why ("because your harbor: ads cleared", or "Muse Spark's own idea: …"). Preview outlines
    them on the real page; untick anything; Keep.
-3. **It stays.** A kept layout is saved per change and re-applied, with no Meta call, wherever it applies.
-   The page's own header and navigation count as site-wide, so a change to the top bar follows you across
-   the site. Saved layouts are found again after the site changes its markup (region-level fingerprints).
+3. **It stays.** A kept layout is saved per change and re-applied, with no Meta call, wherever its
+   regions are found again. Matching is by structure, not URL: every saved layout on a site is tried on
+   every page of that site, and a region whose fingerprint is re-found with high confidence is applied
+   there, so a change to the top bar follows you from the feed to a messaging thread. On a site you
+   follow, a page of a new kind gets a Muse Spark suggestion by itself (at most once per page shape per
+   day; a switch in Settings turns it off), drafted around what is already on the page.
 4. **It learns your order (on this device, opt-in).** Harbor checks which regions the page lays out as one
    row of like items (a nav bar, tabs) and marks them "learns your order". After 8 clicks in such a row,
    the on-device network's ranking is offered as a whole order, e.g. *Messaging · Jobs · Home*.
@@ -91,8 +94,9 @@ Organizers confirmed on 29 Oct that pre-event code may be reused if credited.
 - **During the event (27 Oct – 4 Nov, everything after that):** the whole extension: page scanning,
   the Muse Spark and SAM 3.1 integration and proxy, plan schema and validation, the executor (hide, fold,
   compact, grid, emphasise, order), preview/keep/restore, saved layouts and region-level fingerprints, the
-  onboarding and profile rules, site-wide chrome, learning in the extension, the order check and
-  suggestions, the evaluation harness, and the report in `report/`.
+  onboarding and profile rules, structure-based matching across a site, automatic suggestions on new
+  page kinds, learning in the extension, the order check and suggestions, the evaluation harness, and
+  the report in `report/`.
 
 Internal identifiers (`smart-web` folder, `data-smart-web-*` attributes) keep the project's working name.
 
