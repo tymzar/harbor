@@ -474,6 +474,22 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
               </ul>
             </div>
           )}
+          {current?.status === "error" && current.auto && (
+            <Alert status="warning" data-testid="plan-error">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Title>No more changes this time (asked automatically)</Alert.Title>
+                <Alert.Description>{current.error}</Alert.Description>
+              </Alert.Content>
+            </Alert>
+          )}
+          {done?.auto && changeable.some((group) => !layout.labels.includes(group.label)) && (
+            <p className="text-sm" data-testid="plan-auto-more">
+              Muse Spark suggests {changeable.filter((group) => !layout.labels.includes(group.label)).length} more{" "}
+              {changeable.filter((group) => !layout.labels.includes(group.label)).length === 1 ? "change" : "changes"} for this kind of page. Tick them
+              under Adjust the changes to try them.
+            </p>
+          )}
           {questions.length > 0 && <Questions questions={questions} answers={answers} onAnswer={answer} />}
           {changeList && (
             <details className="group" data-testid="adjust-changes">

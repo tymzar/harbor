@@ -62,6 +62,9 @@ export type OrderCheck = { ok: boolean; items: number; reason?: string };
 
 export type Proposal = {
   status: "running" | "done" | "error";
+  // Groups carried into an automatic plan from other pages' saved plans (label → saved url):
+  // they stay saved there, like reused.transferred.
+  transferred?: Record<string, string>;
   // Per group label: can its items be put in the user's own order on this page (a row of like
   // items)? Checked on the page once the plan is ready; only groups of 3+ items that stay visible.
   orderable?: Record<string, OrderCheck>;

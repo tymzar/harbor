@@ -105,3 +105,54 @@ test("the settings page has the switch, on by default, and remembers it", async 
   await expect(toggle.getByRole("switch")).not.toBeChecked();
   expect(await page.evaluate(() => chrome.storage.local.get("autoSuggest"))).toEqual({ autoSuggest: false });
 });
+
+// A page that already got changes from another page's saved layout (found by structure, not by
+// URL) is drafted around them: they stay on the page while Spark works, and afterwards.
+test("an automatic draft keeps the changes other pages' layouts put on the page", async ({ context, extensionId }) => {
+  const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/cards.html`);
+  const [worker] = context.serviceWorkers();
+  await standInForProxy(worker);
+  await panel.evaluate((profile) => chrome.storage.local.set({ harborProfile: profile }), startingProfile("chosen"));
+  await panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(panel.getByTestId("screenshot")).toBeVisible();
+
+  // The promo hidden, saved for this page only; not site chrome, so it travels by fingerprint alone.
+  const session = (await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  const promo = nodes.find((node) => node.tag === "aside")!;
+  const plan: LayoutPlan = {
+    summary: "Feed",
+    template: { urlPattern: `${HOST}/cards.html`, pageKind: "feed" },
+    groups: [
+      {
+        label: "Promoted",
+        urlPattern: `${HOST}/cards.html`,
+        role: "other",
+        container: promo.id,
+        members: nodes.filter((node) => node.parent === promo.id).map((node) => node.id),
+        operation: "hide-secondary",
+        reorderable: false,
+        identity: { source: "none", attribute: "" },
+        reason: "",
+      },
+    ],
+  };
+  await panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect(panel.getByTestId("plan-reused")).toBeVisible();
+  await panel.getByTestId("preview-layout").click();
+  await panel.getByTestId("keep-layout").click();
+  await expect(panel.getByTestId("layout-applied")).toBeVisible();
+
+  // Elsewhere on the site: the promo goes by itself, then Spark is asked, and the promo stays
+  // hidden the whole time, through the failed answer too.
+  await site.goto(`${FIXTURE_ORIGIN}/elsewhere/cards.html`);
+  const hidden = () => site.locator(".frame").evaluate((element) => getComputedStyle(element).display);
+  await expect.poll(hidden, { timeout: 10_000 }).toBe("none");
+  await expect.poll(() => proxyCalls(worker), { timeout: 10_000 }).toBe(1);
+  await expect(panel.getByTestId("layout-applied")).toBeVisible();
+  expect(await hidden()).toBe("none");
+  await expect(panel.getByTestId("plan-error")).toContainText("asked automatically", { timeout: 10_000 });
+  await expect(panel.getByTestId("layout-applied")).toBeVisible();
+  expect(await hidden()).toBe("none");
+});

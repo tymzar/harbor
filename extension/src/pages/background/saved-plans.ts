@@ -22,7 +22,10 @@ export async function rememberPlan(plan: LayoutPlan, scan: PageScan, usedScreens
 // The groups of a proposal that belong to this page's own plan: not the ones transferred from
 // other pages' plans, which are saved where they came from.
 export const ownGroups = (proposal: Proposal): Array<PlanGroup> =>
-  (proposal.accepted ?? []).filter((group) => !proposal.reused?.transferred?.[group.label]);
+  (proposal.accepted ?? []).filter((group) => !transferredFrom(proposal)[group.label]);
+
+// Where a transferred group is saved, whether the plan was reused or drafted around it.
+export const transferredFrom = (proposal: Proposal): Record<string, string> => ({ ...proposal.reused?.transferred, ...proposal.transferred });
 
 // What the user kept, per change: its site and label ("linkedin.com\nTop navigation"). A kept
 // change comes back by itself on every page of the site where its region is found again, until

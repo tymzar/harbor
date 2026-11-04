@@ -9,8 +9,8 @@ import type { CallLog, PageScan, Proposal, TabSession } from "../../shared/types
 import { sessionKey, shotKey } from "../../shared/types";
 import type { ChatMessage } from "./meta";
 import { proposeJson, segment } from "./meta";
-import { checkOrderable, clearLayout } from "./layout";
-import { rememberPlan } from "./saved-plans";
+import { checkOrderable, clearLayout, effectiveGroups } from "./layout";
+import { rememberPlan, transferredFrom } from "./saved-plans";
 import { userGroups } from "./user-groups";
 
 // SAM matches what things look like, not UI names: "card" and "menu" return nothing on
@@ -88,9 +88,15 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
   if (!session || !scan) return;
   // Hides the user made by hand outlive a new plan for the same scan.
   const ownGroups = userGroups(session, scan.scannedAt);
+  // An automatic plan is drafted around what other pages' saved layouts already put on this page
+  // (the site's header, a learned order): those stay on the page and in the plan; Spark's own
+  // group for the same element gives way. The user's "Ask again" starts clean instead.
+  const transferred = auto && session.proposal ? transferredFrom(session.proposal) : {};
+  const transferredGroups = auto && session.proposal ? effectiveGroups(session).filter((group) => transferred[group.label]) : [];
+  const keepLayout = session.layout?.state === "applied" && transferredGroups.length > 0;
 
   // A new plan replaces the one the current layout came from.
-  if (session.layout) await clearLayout(tabId);
+  if (session.layout && !keepLayout) await clearLayout(tabId);
   const shot = await chrome.storage.session.get(shotKey(tabId));
   const screenshot = shot[shotKey(tabId)] as string | undefined;
   const usedScreenshot = includeScreenshot && Boolean(screenshot);
@@ -99,7 +105,7 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
   await chrome.storage.session.set({
     [key]: {
       ...session,
-      layout: undefined,
+      layout: keepLayout ? session.layout : undefined,
       proposal: {
         status: "running",
         step: usedScreenshot ? "segmenting" : "planning",
@@ -108,6 +114,7 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
         calls,
         repaired: false,
         ...(auto ? { auto: true as const } : {}),
+        ...(transferredGroups.length > 0 ? { transferred } : {}),
         startedAt,
       },
       updatedAt: Date.now(),
@@ -154,9 +161,11 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
       repaired = true;
     }
 
-    const carried = ownGroups.filter((own) => !plan.groups.some((group) => group.label === own.label));
+    const kept = [...ownGroups, ...transferredGroups.filter((group) => !ownGroups.some((own) => own.label === group.label))];
+    const carried = kept.filter((own) => !plan.groups.some((group) => group.label === own.label));
     plan = { ...plan, groups: [...plan.groups, ...carried] };
-    const accepted = siteWide([...clampToProfile(validation.accepted, profile, Boolean(special)), ...carried], scan);
+    const fresh = validation.accepted.filter((group) => !transferredGroups.some((other) => other.container === group.container));
+    const accepted = siteWide([...clampToProfile(fresh, profile, Boolean(special)), ...carried], scan);
     plan = { ...plan, groups: plan.groups.map((group) => accepted.find((own) => own.label === group.label) ?? group) };
 
     await updateProposal(tabId, {
@@ -171,7 +180,8 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
       repaired,
       finishedAt: Date.now(),
     });
-    if (accepted.length > 0) await rememberPlan({ ...plan, groups: accepted }, scan, usedScreenshot);
+    const own = accepted.filter((group) => !transferred[group.label]);
+    if (own.length > 0) await rememberPlan({ ...plan, groups: own }, scan, usedScreenshot);
     console.info("[smart-web] proposal", { url: scan.url, calls, errors: validation.errors });
   } catch (error) {
     await updateProposal(tabId, {

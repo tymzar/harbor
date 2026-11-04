@@ -7,7 +7,7 @@ import type { PlanGroup } from "../../shared/plan";
 import { validatePlan } from "../../shared/plan";
 import type { TabSession } from "../../shared/types";
 import { effectiveGroups, pickGroups, showLayout } from "./layout";
-import { ownGroups, rememberPlan, rememberWithSource } from "./saved-plans";
+import { ownGroups, rememberPlan, rememberWithSource, transferredFrom } from "./saved-plans";
 
 // Learning is per site and off until the user turns it on; counts stay on this device.
 
@@ -190,7 +190,7 @@ async function acceptOrder(session: TabSession, offer: NonNullable<TabSession["s
   if (!source || !proposal.plan) return session;
   const label = orderLabel(offer.group);
   // Transferred groups name their plan; a plan matched by template is another page's as a whole.
-  const fromUrl = proposal.reused?.transferred?.[offer.group] ?? (proposal.reused?.match === "template" ? proposal.reused.fromUrl : undefined);
+  const fromUrl = transferredFrom(proposal)[offer.group] ?? (proposal.reused?.match === "template" ? proposal.reused.fromUrl : undefined);
   const group: PlanGroup = {
     ...source,
     label,
