@@ -138,9 +138,13 @@ export async function reusePlan(scan: PageScan): Promise<Proposal | undefined> {
       plan: { ...found.saved.plan, groups: found.saved.plan.groups.map((group) => ({ ...group, urlPattern: changed.get(group.label) ?? group.urlPattern })) },
     });
   }
-  // The page's own plan speaks for a region first: a transferred group on the same element, or
-  // with the same name, is left out.
-  const extra = shared.filter(({ group }) => !own.accepted.some((other) => other.label === group.label || other.container === group.container));
+  // The page's own plan speaks for a region first: a transferred group with the same name, or one
+  // that would fight the own group on the same element (the same operation, or either side hiding
+  // or folding it), is left out. A learned order over an emphasised header is no fight: both apply.
+  const takesOut = (operation: PlanGroup["operation"]) => operation === "hide-secondary" || operation === "collapse";
+  const fights = (own: PlanGroup, other: PlanGroup) =>
+    own.container === other.container && (own.operation === other.operation || takesOut(own.operation) || takesOut(other.operation));
+  const extra = shared.filter(({ group }) => !own.accepted.some((other) => other.label === group.label || fights(other, group)));
   const accepted = [...own.accepted, ...extra.map(({ group }) => group)];
   if (accepted.length === 0) return undefined;
   const host = new URL(scan.url).host;
