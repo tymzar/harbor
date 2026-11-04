@@ -1,7 +1,7 @@
 import { savePlan } from "../src/shared/cache";
 import type { LayoutPlan, PlanGroup } from "../src/shared/plan";
 import type { TabSession } from "../src/shared/types";
-import { test, expect, openWithPanel } from "./fixtures";
+import { test, expect, openWithPanel, PAGE_TO_PAGE_URL } from "./fixtures";
 import { FIXTURE_ORIGIN } from "../playwright.config";
 
 // Day 3 exit check on an owned, uninstrumented page: preview → cancel → preview → keep →
@@ -324,6 +324,71 @@ test("a kept change to the site header follows the user to other pages", async (
   await expect(second.panel.getByTestId("layout-applied")).toHaveText("1 change on the page");
   await expect.poll(() => second.site.locator(".topnav").getAttribute("data-smart-web-op")).toBe("emphasize");
   await expect.poll(() => second.site.locator(".frame").evaluate((element) => getComputedStyle(element).display)).toBe("block");
+});
+
+// Structure decides, not the URL pattern: a layout kept on one page, with a pattern that names only
+// that page, follows the user to a page with no plan of its own where the same regions are found
+// again. The order learned there is saved into the one layout it came from, not as a second entry.
+test("a kept layout follows the user by structure to a page no pattern names, in one saved layout", async ({ context, extensionId }) => {
+  const first = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/cards.html`);
+  await first.panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(first.panel.getByTestId("screenshot")).toBeVisible();
+  const session = (await first.panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${first.tabId}`)) as TabSession;
+  const nodes = session.scan!.nodes;
+  const links = nodes.filter((node) => node.tag === "a" && /Home|Jobs|Messaging/.test(node.text));
+  const promo = nodes.find((node) => node.tag === "aside")!;
+  // Like the model's "www.linkedin.com/feed/*": a pattern that does not cover the other page.
+  const here = "127.0.0.1:4317/cards.html";
+  const plan: LayoutPlan = {
+    summary: "Feed",
+    template: { urlPattern: here, pageKind: "feed" },
+    groups: [
+      { label: "Top navigation", urlPattern: here, role: "navigation", container: nodes.find((node) => node.tag === "ul")!.id, members: links.map((link) => link.id), operation: "emphasize", reorderable: true, identity: { source: "text", attribute: "" }, reason: "" },
+      { label: "Promoted", urlPattern: here, role: "promo", container: promo.id, members: nodes.filter((node) => node.parent === promo.id).map((node) => node.id), operation: "hide-secondary", reorderable: false, identity: { source: "none", attribute: "" }, reason: "" },
+    ],
+  };
+  await first.panel.evaluate((entry) => chrome.storage.local.set({ savedPlans: [entry] }), savePlan(plan, session.scan!, false, Date.now()));
+  await first.panel.getByRole("button", { name: "Rescan" }).click();
+  await first.panel.getByTestId("preview-layout").click();
+  await first.panel.getByTestId("keep-layout").click();
+  await expect(first.panel.getByTestId("layout-applied")).toHaveText("2 changes on the page");
+
+  // A different path, no plan of its own: both regions are found again, and both changes come back.
+  const { site, panel, tabId } = await openWithPanel(context, extensionId, `${FIXTURE_ORIGIN}/elsewhere/cards.html`);
+  await panel.getByRole("button", { name: "Read this page" }).click();
+  await expect(panel.getByTestId("layout-applied")).toHaveText("2 changes on the page");
+  await expect.poll(() => site.locator(".topnav ul").getAttribute("data-smart-web-op")).toBe("emphasize");
+  await expect.poll(() => site.locator(".frame").evaluate((element) => getComputedStyle(element).display)).toBe("none");
+
+  const settings = await context.newPage();
+  await settings.goto(`chrome-extension://${extensionId}/${PAGE_TO_PAGE_URL.OPTIONS}`);
+  await expect(settings.getByTestId("saved-plan")).toHaveCount(1);
+  await expect(settings.getByTestId("saved-plan-page")).toHaveText("Saved on 127.0.0.1:4317/cards.html");
+
+  // An order learned on this page is saved with the layout the bar came from: still one entry.
+  await panel.getByText("Learn what I open on this site").click();
+  await expect(panel.getByTestId("order-row")).toContainText("0 of 8 clicks");
+  const link = (name: string) => site.locator(".topnav a").filter({ hasText: name });
+  for (const name of ["Messaging", "Jobs", "Messaging", "Jobs", "Messaging", "Messaging", "Jobs", "Messaging"]) {
+    await link(name).click();
+    if (await panel.getByTestId("suggestion").count() && !(await panel.getByTestId("suggestion-order").count())) await panel.getByTestId("suggestion-dismiss").click();
+  }
+  await expect(panel.getByTestId("suggestion-order")).toContainText(/Messaging.*Jobs.*Home/);
+  await panel.getByTestId("suggestion-accept").click();
+  await expect(panel.getByTestId("order-row")).toContainText("Your order is on");
+  const left = (name: string) => site.locator(".topnav li").filter({ hasText: name }).evaluate((element) => element.getBoundingClientRect().left);
+  await expect.poll(async () => (await left("Messaging")) < (await left("Jobs")) && (await left("Jobs")) < (await left("Home"))).toBe(true);
+  await expect(settings.getByTestId("saved-plan")).toHaveCount(1);
+  await settings.getByTestId("saved-plan").getByRole("button", { name: "Show 3 groups" }).click();
+  await expect(settings.getByTestId("saved-plan")).toContainText("Your order: Top navigation");
+
+  // Read again: the order comes back from that one layout.
+  const scannedAt = async () =>
+    ((await panel.evaluate(async (key) => (await chrome.storage.session.get(key))[key], `session:${tabId}`)) as TabSession).scan?.scannedAt ?? 0;
+  const lastScan = await scannedAt();
+  await panel.getByRole("button", { name: "Rescan" }).click();
+  await expect.poll(scannedAt).toBeGreaterThan(lastScan);
+  await expect.poll(async () => (await left("Messaging")) < (await left("Jobs")) && (await left("Jobs")) < (await left("Home"))).toBe(true);
 });
 
 // A learned favourite inside a nav link (its icon or label) moves the whole list item to the front

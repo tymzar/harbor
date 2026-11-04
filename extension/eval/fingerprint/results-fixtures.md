@@ -21,8 +21,8 @@ Totals over 351 changed groups: baseline 269 correct / 0 wrong / 82 none; region
 
 | Band | Groups | Correct | Wrong (if applied) |
 |---|---|---|---|
-| same | 226 | 100% | 0% |
-| moved | 101 | 99% | 1% |
+| same | 228 | 100% | 0% |
+| moved | 99 | 99% | 1% |
 | skipped | 35 | 46% | 54% |
 | lost | 16 | 81% | 0% |
 | dropped | 0 | – | – |

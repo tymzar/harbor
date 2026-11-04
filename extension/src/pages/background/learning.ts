@@ -7,7 +7,7 @@ import type { PlanGroup } from "../../shared/plan";
 import { validatePlan } from "../../shared/plan";
 import type { TabSession } from "../../shared/types";
 import { effectiveGroups, pickGroups, showLayout } from "./layout";
-import { rememberPlan } from "./saved-plans";
+import { ownGroups, rememberPlan, rememberWithSource } from "./saved-plans";
 
 // Learning is per site and off until the user turns it on; counts stay on this device.
 
@@ -175,17 +175,22 @@ export async function decide(session: TabSession, accept: boolean): Promise<TabS
   next.proposal = { ...proposal, plan, accepted: [...(proposal.accepted ?? []), group] };
   const labels = [...(session.layout?.labels ?? []), group.label];
   next.layout = await showLayout(next, pickGroups(next, labels), "applied");
-  await rememberPlan({ ...plan, groups: next.proposal.accepted! }, scan, proposal.usedScreenshot);
+  // Groups transferred from other pages' plans stay saved there; this page keeps its own.
+  await rememberPlan({ ...plan, groups: ownGroups(next.proposal) }, scan, proposal.usedScreenshot);
   return next;
 }
 
 // Accepting an order: a "reorder" group over the same items, replacing an earlier order of that
-// group, applied at once and saved with the plan (site-wide when its group is, like a nav bar).
+// group, applied at once and saved with the plan its group lives in: this page's own, or, when the
+// group was found here from another page's saved plan (the feed's header on the messaging page),
+// that plan, so one saved layout carries both the group and its order.
 async function acceptOrder(session: TabSession, offer: NonNullable<TabSession["suggestion"]>, scan: NonNullable<TabSession["scan"]>): Promise<TabSession> {
   const proposal = session.proposal!;
   const source = effectiveGroups(session).find((group) => group.label === offer.group);
   if (!source || !proposal.plan) return session;
   const label = orderLabel(offer.group);
+  // Transferred groups name their plan; a plan matched by template is another page's as a whole.
+  const fromUrl = proposal.reused?.transferred?.[offer.group] ?? (proposal.reused?.match === "template" ? proposal.reused.fromUrl : undefined);
   const group: PlanGroup = {
     ...source,
     label,
@@ -199,10 +204,12 @@ async function acceptOrder(session: TabSession, offer: NonNullable<TabSession["s
   if (validatePlan({ ...proposal.plan, groups: [group] }, scan).accepted.length === 0) return session;
   const others = (groups: Array<PlanGroup>) => groups.filter((other) => other.label !== label);
   const plan = { ...proposal.plan, groups: [...others(proposal.plan.groups), group] };
-  const next: TabSession = { ...session, proposal: { ...proposal, plan, accepted: [...others(proposal.accepted ?? []), group] } };
+  const reused = proposal.reused && fromUrl ? { ...proposal.reused, transferred: { ...proposal.reused.transferred, [label]: fromUrl } } : proposal.reused;
+  const next: TabSession = { ...session, proposal: { ...proposal, plan, accepted: [...others(proposal.accepted ?? []), group], reused } };
   const labels = [...(session.layout?.labels ?? []).filter((name) => name !== label), label];
   next.layout = await showLayout(next, pickGroups(next, labels), "applied");
-  await rememberPlan({ ...plan, groups: next.proposal!.accepted! }, scan, proposal.usedScreenshot);
+  if (fromUrl && (await rememberWithSource(fromUrl, offer.group, group))) return next;
+  await rememberPlan({ ...plan, groups: [...ownGroups(next.proposal!).filter((other) => other.label !== label), group] }, scan, proposal.usedScreenshot);
   return next;
 }
 

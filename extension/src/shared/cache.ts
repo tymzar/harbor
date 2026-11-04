@@ -1,6 +1,6 @@
-import type { LayoutPlan, Operation } from "./plan";
+import type { LayoutPlan, Operation, PlanGroup } from "./plan";
 import type { Answers } from "./questions";
-import { groupPattern, urlPatternMatches } from "./plan";
+import { groupPattern, isSiteWide, urlPatternMatches, validatePlan } from "./plan";
 import type { PagePrint, RegionPrint } from "./region";
 import { contextFor, distinctIdentity, findMembers, findRows, matchRegions, pageChanged, pagePrint, regionHolds, regionPrint, treeOf } from "./region";
 import type { NodeKind, PageScan, Rect, ScanNode } from "./types";
@@ -229,4 +229,50 @@ export function remapRegions(saved: SavedPlan, scan: PageScan, keep: Array<Band>
     return keep.includes(band) ? [{ ...group, container: match.id, members }] : [];
   });
   return { plan: { ...saved.plan, groups }, report, changed: pageChanged(saved.page, page) };
+}
+
+// A site is its host without "www.": the model writes "linkedin.com/*" for www.linkedin.com pages.
+export const siteOf = (url: string) => (URL.canParse(url) ? new URL(url).host.replace(/^www\./, "") : undefined);
+
+export type Transferred = { group: PlanGroup; fromUrl: string };
+
+// Groups of the other plans saved on this site, found again on this page by structure rather than
+// by URL pattern: the header a plan changed on the feed is the same region on the messaging page,
+// whatever pattern the model wrote. A group is taken in band same; in band moved only when its own
+// pattern already covers this page (or is site-wide). Hiding keeps its stricter threshold (bandOf).
+// Taken groups get the site-wide pattern so they validate here. Newest plans first, one group per
+// label; each says which saved plan it came from, so what is learned on it is saved back there.
+export function transferGroups(all: Array<SavedPlan>, skip: SavedPlan | undefined, scan: PageScan): Array<Transferred> {
+  const site = siteOf(scan.url);
+  if (!site) return [];
+  const wide = `${new URL(scan.url).host}/*`;
+  const found: Array<Transferred> = [];
+  const take = (groups: Array<PlanGroup>, fromUrl: string) => {
+    for (const group of groups) if (!found.some((other) => other.group.label === group.label)) found.push({ group, fromUrl });
+  };
+  for (const saved of all.toSorted((a, b) => b.savedAt - a.savedAt)) {
+    if (saved === skip || siteOf(saved.url) !== site) continue;
+    if (!saved.regions) {
+      // Plans saved before region fingerprints: their site-wide groups only, element by element.
+      const plan = remapNodes(saved, scan);
+      const groups = plan.groups.filter((group) => isSiteWide(groupPattern(saved.plan, group), scan.url)).map((group) => ({ ...group, urlPattern: wide }));
+      take(validatePlan({ ...plan, template: { ...plan.template, urlPattern: wide }, groups }, scan).accepted, saved.url);
+      continue;
+    }
+    const covered = new Set(
+      saved.plan.groups.filter((group) => {
+        const pattern = groupPattern(saved.plan, group);
+        return urlPatternMatches(pattern, scan.url) || isSiteWide(pattern, scan.url);
+      }).map((group) => group.label)
+    );
+    const widened: SavedPlan = {
+      ...saved,
+      plan: { ...saved.plan, template: { ...saved.plan.template, urlPattern: wide }, groups: saved.plan.groups.map((group) => ({ ...group, urlPattern: wide })) },
+    };
+    const remap = remapRegions(widened, scan);
+    const taken = new Set(remap.report.filter((entry) => entry.band === "same" || (entry.band === "moved" && covered.has(entry.label))).map((entry) => entry.label));
+    const plan = { ...remap.plan, groups: remap.plan.groups.filter((group) => taken.has(group.label)) };
+    take(validatePlan(plan, scan).accepted, saved.url);
+  }
+  return found;
 }

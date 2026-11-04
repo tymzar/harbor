@@ -59,8 +59,7 @@ export async function showLayout(
   const result = injection?.result as LayoutResult | undefined;
   if (!result) throw new Error("The page did not answer.");
   if (result.stale) throw new Error(STALE_SCAN);
-  const plan = session.proposal?.plan;
-  if (state === "applied" && remember && plan) await rememberKept(plan, effectiveGroups(session), chosen.map((group) => group.label));
+  if (state === "applied" && remember && session.url) await rememberKept(session.url, effectiveGroups(session), chosen.map((group) => group.label));
   return { state, labels: result.applied, missing: result.missing };
 }
 

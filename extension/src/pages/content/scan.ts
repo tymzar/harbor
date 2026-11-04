@@ -119,6 +119,9 @@ const MAX_ATTRS = 4;
 function linkPath(element: Element): string | undefined {
   if (!(element instanceof HTMLAnchorElement) || !element.href) return undefined;
   const url = new URL(element.href);
+  // A link to a place on this page is that place ("#jobs"), not the page's own path: the same
+  // bar on another page of the site then carries the same links, and its items are found again.
+  if (url.origin === location.origin && url.pathname === location.pathname && url.hash) return url.hash;
   return url.origin === location.origin ? url.pathname : `${url.host}${url.pathname}`;
 }
 

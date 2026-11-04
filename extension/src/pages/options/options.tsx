@@ -96,6 +96,19 @@ function useLearning() {
 }
 
 const host = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/\*$/, "");
+const site = (url: string) => host(url).replace(/^www\./, "").split("/")[0];
+
+// Saved layouts with something of their own. An entry without groups, or whose every group is
+// also in a newer layout of the same site (a page whose changes were all found again from
+// another page's plan), has nothing to show or forget.
+export function ownSavedPlans(plans: Array<SavedPlan>): Array<SavedPlan> {
+  const newestFirst = plans.toSorted((a, b) => b.savedAt - a.savedAt);
+  return newestFirst.filter((saved, index) => {
+    if (saved.plan.groups.length === 0) return false;
+    const labels = new Set(newestFirst.slice(0, index).filter((other) => site(other.url) === site(saved.url)).flatMap((other) => other.plan.groups.map((group) => group.label)));
+    return saved.plan.groups.some((group) => !labels.has(group.label));
+  });
+}
 
 // One settings row: what, its state, one action.
 function Row({ title, detail, children, testId }: { title: string; detail: string; children: ReactNode; testId?: string }) {
@@ -121,6 +134,9 @@ function SavedPlanRow({ saved, onForget }: { saved: SavedPlan; onForget: () => v
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{saved.plan.template.urlPattern}</p>
+          <p className="truncate text-xs text-muted" data-testid="saved-plan-page">
+            Saved on {host(saved.url)}
+          </p>
           <p className="truncate text-xs text-muted">
             {saved.plan.summary || host(saved.url)} · {changes} {changes === 1 ? "change" : "changes"} · saved{" "}
             {new Date(saved.savedAt).toLocaleDateString()}
@@ -240,7 +256,8 @@ function Section({ title, description, children, action }: { title: string; desc
 }
 
 export function Options() {
-  const { plans, remove, removeAll } = useSavedPlans();
+  const { plans: allPlans, remove, removeAll } = useSavedPlans();
+  const plans = ownSavedPlans(allPlans);
   const sites = useFollowedSites();
   const learning = useLearning();
   const learned = Object.entries(learning);
@@ -264,9 +281,9 @@ export function Options() {
 
         <Section
           title="Saved layouts"
-          description="Come back automatically, with no Meta call, on every page their pattern covers."
+          description="Come back automatically, with no Meta call, wherever their regions are found again on the site."
           action={
-            plans.length > 0 && (
+            allPlans.length > 0 && (
               <Button size="sm" variant="danger-soft" onPress={() => void removeAll()} data-testid="forget-all">
                 Forget all
               </Button>
