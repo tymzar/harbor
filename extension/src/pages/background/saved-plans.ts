@@ -1,7 +1,7 @@
 import type { Band, SavedPlan } from "../../shared/cache";
-import { MAX_SAVED_PLANS, SAVED_PLANS_KEY, findSavedPlan, pageKey, remapPlan, remapRegions, savePlan } from "../../shared/cache";
+import { MAX_SAVED_PLANS, SAVED_PLANS_KEY, findSavedPlan, pageKey, remapPlan, remapRegions, savePlan, siteOf, transferGroups } from "../../shared/cache";
 import type { LayoutPlan, PlanGroup } from "../../shared/plan";
-import { groupPattern, isSiteWide, siteWide, urlPatternMatches, validatePlan } from "../../shared/plan";
+import { siteWide, validatePlan } from "../../shared/plan";
 import type { Answers } from "../../shared/questions";
 import type { PageScan, Proposal } from "../../shared/types";
 
@@ -19,31 +19,37 @@ export async function rememberPlan(plan: LayoutPlan, scan: PageScan, usedScreens
   await chrome.storage.local.set({ [SAVED_PLANS_KEY]: [entry, ...others].slice(0, MAX_SAVED_PLANS) });
 }
 
-// What the user kept, per change: its pattern and label ("www.linkedin.com/*\nTop navigation").
-// A kept change comes back by itself on every page its pattern covers, until Restore; site-wide
-// changes (the header) therefore follow the user across the site. Kept apart from the plans, which
-// are saved before anything is kept.
+// The groups of a proposal that belong to this page's own plan: not the ones transferred from
+// other pages' plans, which are saved where they came from.
+export const ownGroups = (proposal: Proposal): Array<PlanGroup> =>
+  (proposal.accepted ?? []).filter((group) => !proposal.reused?.transferred?.[group.label]);
+
+// What the user kept, per change: its site and label ("linkedin.com\nTop navigation"). A kept
+// change comes back by itself on every page of the site where its region is found again, until
+// Restore: a header change kept on the feed is kept on the messaging page too. Kept apart from the
+// plans, which are saved before anything is kept. (Keys were "<pattern>\n<label>" until 4 Nov;
+// old keys are ignored.)
 const KEPT_KEY = "keptChanges";
-const keptKey = (plan: LayoutPlan, group: PlanGroup) => `${groupPattern(plan, group)}\n${group.label}`;
+const keptKey = (url: string, group: PlanGroup) => `${siteOf(url) ?? url}\n${group.label}`;
 
 async function readKept(): Promise<Record<string, true>> {
   const stored = await chrome.storage.local.get(KEPT_KEY);
   return (stored[KEPT_KEY] as Record<string, true> | undefined) ?? {};
 }
 
-// Of the plan's groups, those in `labels` are kept and the others not; no labels clears them all.
-export async function rememberKept(plan: LayoutPlan, groups: Array<PlanGroup>, labels: Array<string> = []) {
+// Of the page's groups, those in `labels` are kept and the others not; no labels clears them all.
+export async function rememberKept(url: string, groups: Array<PlanGroup>, labels: Array<string> = []) {
   const kept = await readKept();
   for (const group of groups) {
-    if (labels.includes(group.label)) kept[keptKey(plan, group)] = true;
-    else delete kept[keptKey(plan, group)];
+    if (labels.includes(group.label)) kept[keptKey(url, group)] = true;
+    else delete kept[keptKey(url, group)];
   }
   await chrome.storage.local.set({ [KEPT_KEY]: kept });
 }
 
-export async function keptLabels(plan: LayoutPlan, groups: Array<PlanGroup>): Promise<Array<string>> {
+export async function keptLabels(url: string, groups: Array<PlanGroup>): Promise<Array<string>> {
   const kept = await readKept();
-  return groups.filter((group) => kept[keptKey(plan, group)]).map((group) => group.label);
+  return groups.filter((group) => kept[keptKey(url, group)]).map((group) => group.label);
 }
 
 export async function rememberAnswers(url: string, answers: Answers) {
@@ -72,36 +78,35 @@ async function upgradePlan(old: SavedPlan, next: SavedPlan) {
 // The entries of a per-group list (groups, rows, regions) whose group is kept.
 const only = <T,>(list: Array<T> | undefined, keep: Array<boolean>) => list?.filter((_, index) => keep[index]);
 
-// Site-wide groups (header, top navigation) saved with other pages' plans, rebuilt for this scan:
-// they apply on every page of the site, whichever page they were planned on.
-function siteWideGroups(all: Array<SavedPlan>, skip: SavedPlan | undefined, scan: PageScan): Array<PlanGroup> {
-  const found: Array<PlanGroup> = [];
-  for (const saved of all.toSorted((a, b) => b.savedAt - a.savedAt)) {
-    if (saved === skip) continue;
-    const keep = saved.plan.groups.map((group) => {
-      const pattern = groupPattern(saved.plan, group);
-      return isSiteWide(pattern, scan.url) && urlPatternMatches(pattern, scan.url);
-    });
-    if (!keep.some(Boolean)) continue;
-    const part: SavedPlan = {
-      ...saved,
-      plan: { ...saved.plan, template: { ...saved.plan.template, urlPattern: groupPattern(saved.plan, saved.plan.groups[keep.indexOf(true)]) }, groups: only(saved.plan.groups, keep)! },
-      rows: only(saved.rows, keep),
-      regions: only(saved.regions, keep),
-    };
-    const plan = remapPlan(part, scan);
-    for (const group of validatePlan(plan, scan).accepted)
-      if (!found.some((other) => other.label === group.label)) found.push(group);
-  }
-  return found;
+// A group learned over a transferred group (its order) is saved with the plan the source group
+// lives in, over the source's saved elements, so it is found again wherever the source is: the
+// one saved layout grows instead of a second entry appearing for the page it was learned on.
+// False when that plan or group is gone.
+export async function rememberWithSource(savedUrl: string, sourceLabel: string, group: PlanGroup): Promise<boolean> {
+  const all = await readAll();
+  const saved = all.find((entry) => entry.url === savedUrl);
+  const index = saved?.plan.groups.findIndex((candidate) => candidate.label === sourceLabel) ?? -1;
+  if (!saved || index < 0) return false;
+  const source = saved.plan.groups[index];
+  const keep = saved.plan.groups.map((candidate) => candidate.label !== group.label);
+  const learned: PlanGroup = { ...group, urlPattern: source.urlPattern, container: source.container, members: source.members };
+  await upgradePlan(saved, {
+    ...saved,
+    plan: { ...saved.plan, groups: [...only(saved.plan.groups, keep)!, learned] },
+    rows: saved.rows && [...only(saved.rows, keep)!, saved.rows[index]],
+    regions: saved.regions && [...only(saved.regions, keep)!, saved.regions[index]],
+  });
+  return true;
 }
 
-// A saved plan rebuilt for this scan, plus the site-wide groups of other saved plans; undefined when
-// none applies or nothing survives validation.
+// A saved plan rebuilt for this scan, plus the groups of the site's other saved plans found again
+// on it; undefined when none applies or nothing survives validation.
 export async function reusePlan(scan: PageScan): Promise<Proposal | undefined> {
   const all = await readAll();
   const found = findSavedPlan(all, scan.url);
-  const shared = siteWideGroups(all, found?.saved, scan);
+  // A plan matched by template is read by URL first; the groups whose pattern leaves this page out
+  // are then looked for by structure like any other plan's. The exact page's plan has none such.
+  const shared = transferGroups(all, found?.match === "page" ? found.saved : undefined, scan);
   if (!found && shared.length === 0) return undefined;
 
   // Plans saved with region fingerprints are matched region by region and say what moved; older
@@ -130,13 +135,15 @@ export async function reusePlan(scan: PageScan): Promise<Proposal | undefined> {
       plan: { ...found.saved.plan, groups: found.saved.plan.groups.map((group) => ({ ...group, urlPattern: changed.get(group.label) ?? group.urlPattern })) },
     });
   }
-  const extra = shared.filter((group) => !own.accepted.some((other) => other.label === group.label));
-  const accepted = [...own.accepted, ...extra];
+  // The page's own plan speaks for a region first: a transferred group on the same element, or
+  // with the same name, is left out.
+  const extra = shared.filter(({ group }) => !own.accepted.some((other) => other.label === group.label || other.container === group.container));
+  const accepted = [...own.accepted, ...extra.map(({ group }) => group)];
   if (accepted.length === 0) return undefined;
   const host = new URL(scan.url).host;
   const merged: LayoutPlan = plan
-    ? { ...plan, groups: [...plan.groups, ...extra] }
-    : { summary: "Site-wide changes you kept elsewhere on this site.", template: { urlPattern: `${host}/*`, pageKind: "other" }, groups: extra };
+    ? { ...plan, groups: [...plan.groups, ...extra.map(({ group }) => group)] }
+    : { summary: "Changes you kept elsewhere on this site.", template: { urlPattern: `${host}/*`, pageKind: "other" }, groups: extra.map(({ group }) => group) };
 
   const now = Date.now();
   return {
@@ -149,7 +156,13 @@ export async function reusePlan(scan: PageScan): Promise<Proposal | undefined> {
     errors: own.errors,
     repaired: false,
     answers: found?.saved.answers,
-    reused: { match: found?.match ?? "template", savedAt: found?.saved.savedAt ?? now, fromUrl: found?.saved.url ?? host, drift },
+    reused: {
+      match: found?.match ?? "template",
+      savedAt: found?.saved.savedAt ?? now,
+      fromUrl: found?.saved.url ?? host,
+      drift,
+      transferred: extra.length > 0 ? Object.fromEntries(extra.map(({ group, fromUrl }) => [group.label, fromUrl])) : undefined,
+    },
     startedAt: now,
     finishedAt: now,
   };

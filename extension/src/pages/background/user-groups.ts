@@ -3,7 +3,7 @@ import type { LayoutPlan, PlanGroup } from "../../shared/plan";
 import { validatePlan } from "../../shared/plan";
 import type { Proposal, TabSession } from "../../shared/types";
 import { pickGroups, showLayout } from "./layout";
-import { rememberAnswers, rememberPlan } from "./saved-plans";
+import { ownGroups, rememberAnswers, rememberPlan } from "./saved-plans";
 
 // The plan pattern for a page with no plan yet: this page only.
 const thisPage = (url: string) => pageKey(url).replace(/^https?:\/\//, "");
@@ -68,7 +68,8 @@ export async function hideNode(session: TabSession, nodeId: string): Promise<Tab
   const labels = [...(session.layout?.labels ?? []), label];
   next.layout = await showLayout(next, pickGroups(next, labels), session.layout?.state ?? "applied");
 
-  await rememberPlan({ ...nextPlan, groups: next.proposal!.accepted! }, scan, proposal.usedScreenshot);
+  // Groups transferred from other pages' plans stay saved there; this page keeps its own.
+  await rememberPlan({ ...nextPlan, groups: ownGroups(next.proposal!) }, scan, proposal.usedScreenshot);
   if (proposal.answers) await rememberAnswers(scan.url, proposal.answers);
   return next;
 }

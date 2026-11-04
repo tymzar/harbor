@@ -107,7 +107,7 @@ async function scanTab(tabId: number, settle: boolean) {
     await chrome.storage.session.set({ [shotKey(tabId)]: screenshot });
     const session: TabSession = { tabId, status: "ready", url, lastOrigin, scan, hasScreenshot: true, proposal, updatedAt: Date.now() };
     // Otherwise what the user kept for this kind of page comes back by itself, with no Meta call.
-    const keptHere = proposal?.plan ? await keptLabels(proposal.plan, effectiveGroups(session)) : [];
+    const keptHere = proposal?.plan ? await keptLabels(scan.url, effectiveGroups(session)) : [];
     const kept = carried ?? (keptHere.length > 0 ? { state: "applied" as const, labels: keptHere } : undefined);
     if (kept && proposal) session.layout = await showLayout(session, pickGroups(session, kept.labels), kept.state, false);
     if (proposal) session.suggestion = await orderOffer(session);
@@ -228,8 +228,7 @@ async function changeLayout(tabId: number, action: "preview" | "apply" | "restor
     if (action === "restore") {
       await clearLayout(tabId);
       // Restore on a kept layout turns it off for the pages it covers; cancelling a preview doesn't.
-      const plan = session.proposal?.plan;
-      if (session.layout?.state === "applied" && plan) await rememberKept(plan, effectiveGroups(session));
+      if (session.layout?.state === "applied" && session.url) await rememberKept(session.url, effectiveGroups(session));
     }
     else layout = await showLayout(session, pickGroups(session, labels), action === "preview" ? "preview" : "applied");
     await saveSession({ ...session, layout, notice: undefined, updatedAt: Date.now() });

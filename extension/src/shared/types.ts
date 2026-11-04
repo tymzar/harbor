@@ -86,6 +86,9 @@ export type Proposal = {
     // Groups found less surely or elsewhere (applied), too unsurely to apply, or not at all,
     // by label; and whether the page's skeleton or structure differs from when it was saved.
     drift?: { moved: Array<string>; skipped: Array<string>; lost: Array<string>; changed: boolean };
+    // Groups found again here from other pages' saved plans, by label: the saved page they came
+    // from. What is learned over them is saved back there, not under this page.
+    transferred?: Record<string, string>;
   };
   error?: string;
   startedAt: number;
