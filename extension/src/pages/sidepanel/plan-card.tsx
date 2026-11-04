@@ -147,8 +147,11 @@ function Step({ state, children }: { state: StepState; children: string }) {
   );
 }
 
+const hostOf = (url: string | undefined) => (url && URL.canParse(url) ? new URL(url).host.replace(/^www\./, "") : "this site");
+
 // While Meta works: what happened, what is happening, what is next. Nothing on the page changes yet.
-function Progress({ proposal, elements }: { proposal: Proposal; elements: number }) {
+// An automatic request (a new kind of page on a followed site) says so, since nobody clicked.
+function Progress({ proposal, elements, url }: { proposal: Proposal; elements: number; url: string | undefined }) {
   const step = proposal.step;
   const sam: StepState = step === "segmenting" || step === "matching" ? "active" : "done";
   let spark: StepState = "done";
@@ -157,7 +160,9 @@ function Progress({ proposal, elements }: { proposal: Proposal; elements: number
   const check: StepState = step === "repairing" ? "active" : "pending";
   return (
     <Card className="gap-3 rounded-3xl p-3.5" data-testid="plan-progress">
-      <p className="text-base font-medium">Drafting a layout for this page</p>
+      <p className="text-base font-medium" data-testid="plan-progress-title">
+        {proposal.auto ? `New kind of page on ${hostOf(url)}: drafting a layout from your harbor` : "Drafting a layout for this page"}
+      </p>
       <ul className="flex flex-col gap-2.5">
         <Step state="done">{`Read ${elements} elements`}</Step>
         {proposal.usedScreenshot && <Step state={sam}>SAM 3.1 looks for groups that look alike</Step>}
@@ -324,7 +329,7 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
             <Alert status="danger" data-testid="plan-error">
               <Alert.Indicator />
               <Alert.Content>
-                <Alert.Title>No plan this time</Alert.Title>
+                <Alert.Title>{current.auto ? "No plan this time (asked automatically)" : "No plan this time"}</Alert.Title>
                 <Alert.Description>{current.error}</Alert.Description>
               </Alert.Content>
             </Alert>
@@ -345,7 +350,7 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
         </Card>
       )}
 
-      {stage === "drafting" && current && <Progress proposal={current} elements={scan.nodes.length} />}
+      {stage === "drafting" && current && <Progress proposal={current} elements={scan.nodes.length} url={session.url} />}
 
       {done && (stage === "review" || stage === "preview") && (
         <Card className="gap-3 rounded-3xl p-3.5" data-testid="plan-result">
@@ -364,6 +369,11 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
                 )}
               </div>
               {done.reused?.drift && <Drift drift={done.reused.drift} />}
+              {done.auto && (
+                <p className="text-xs text-muted" data-testid="plan-auto">
+                  Suggested automatically: a new kind of page on {hostOf(session.url)}, where you keep a layout.
+                </p>
+              )}
               {changeable.length > 0 && <p className="text-xs text-muted">Untick anything you'd rather keep as it is.</p>}
             </div>
           ) : (

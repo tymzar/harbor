@@ -80,7 +80,8 @@ async function findVisualGroups(
   return groups;
 }
 
-export async function propose(tabId: number, includeScreenshot: boolean, goal: string | undefined) {
+// auto: Harbor asked by itself (a new kind of page on a followed site), not the user.
+export async function propose(tabId: number, includeScreenshot: boolean, goal: string | undefined, auto = false) {
   const key = sessionKey(tabId);
   const session = await readSession(tabId);
   const scan = session?.status === "ready" ? session.scan : undefined;
@@ -106,6 +107,7 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
         usedScreenshot,
         calls,
         repaired: false,
+        ...(auto ? { auto: true as const } : {}),
         startedAt,
       },
       updatedAt: Date.now(),

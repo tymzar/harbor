@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { Button, Card, Chip } from "@heroui/react";
+import { Button, Card, Chip, Switch } from "@heroui/react";
 import { TrashBin } from "@gravity-ui/icons";
 
 import { HarborLogo } from "../../components/HarborLogo/harbor-logo";
 
+import { AUTO_SUGGEST_KEY } from "../../shared/auto-suggest";
 import type { SavedPlan } from "../../shared/cache";
 import { SAVED_PLANS_KEY } from "../../shared/cache";
 import type { SiteLearning } from "../../shared/learning";
@@ -190,6 +191,39 @@ function HarborSection() {
   );
 }
 
+// On by default: absent means on.
+function useAutoSuggest() {
+  const [on, setOn] = useState(true);
+  useEffect(() => {
+    void chrome.storage.local.get(AUTO_SUGGEST_KEY).then((stored) => setOn(stored[AUTO_SUGGEST_KEY] !== false));
+  }, []);
+  const set = (next: boolean) => {
+    setOn(next);
+    void chrome.storage.local.set({ [AUTO_SUGGEST_KEY]: next });
+  };
+  return [on, set] as const;
+}
+
+// Whether Harbor asks Spark by itself on a new kind of page of a site the user follows.
+function AutoSuggestSection() {
+  const [on, setOn] = useAutoSuggest();
+  return (
+    <Section
+      title="Suggestions as you browse"
+      description="On a site where you keep a layout, a page of a new kind gets a suggestion without a click: once a day per kind of page, nothing changes until you keep it."
+    >
+      <Switch isSelected={on} onChange={setOn} size="sm" className="py-3" data-testid="auto-suggest">
+        <Switch.Content className="text-sm">
+          <Switch.Control>
+            <Switch.Thumb />
+          </Switch.Control>
+          Suggest layouts on new pages of sites I follow
+        </Switch.Content>
+      </Switch>
+    </Section>
+  );
+}
+
 function Section({ title, description, children, action }: { title: string; description: string; children: ReactNode; action?: ReactNode }) {
   return (
     <Card className="gap-1 rounded-3xl p-5">
@@ -225,6 +259,8 @@ export function Options() {
         </header>
 
         <HarborSection />
+
+        <AutoSuggestSection />
 
         <Section
           title="Saved layouts"

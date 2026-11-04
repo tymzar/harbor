@@ -88,6 +88,8 @@ export type Proposal = {
     drift?: { moved: Array<string>; skipped: Array<string>; lost: Array<string>; changed: boolean };
   };
   error?: string;
+  // Set when Harbor asked by itself: a new kind of page on a site the user follows and kept a layout on.
+  auto?: true;
   startedAt: number;
   finishedAt?: number;
 };

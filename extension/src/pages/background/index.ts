@@ -3,6 +3,7 @@ import type { PageScan, PanelRequest, SessionStatus, TabSession } from "../../sh
 import { sessionKey, shotKey } from "../../shared/types";
 import { STALE_SCAN, checkOrderable, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
+import { noteAutoSuggested, shouldAutoSuggest } from "./auto-suggest";
 import { forgetPlan, keptLabels, rememberAnswers, rememberKept, reusePlan } from "./saved-plans";
 import { decide, orderOffer, recordActivation, setLearning } from "./learning";
 import { hideNode } from "./user-groups";
@@ -112,6 +113,15 @@ async function scanTab(tabId: number, settle: boolean) {
     if (kept && proposal) session.layout = await showLayout(session, pickGroups(session, kept.labels), kept.state, false);
     if (proposal) session.suggestion = await orderOffer(session);
     await saveSession(session);
+
+    // A new kind of page on a site the user follows and kept a layout on gets a suggestion without
+    // a click, once a day per kind of page. Not while a request is already under way for this tab.
+    if (previous?.proposal?.status === "running") return;
+    const shape = await shouldAutoSuggest(scan.url);
+    if (shape) {
+      await noteAutoSuggested(shape);
+      await propose(tabId, false, "", true);
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     // activeTab lapses on a full page load; that is the common cause of an access error.
