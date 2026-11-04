@@ -192,7 +192,7 @@ test("clicks on a nav bar lead to the user's own order of it", async ({ context,
   await panel.getByRole("button", { name: "Rescan" }).click();
   await expect.poll(scannedAt).toBeGreaterThan(lastScan);
   await expect(panel.getByTestId("suggestion-order")).toContainText(/Messaging.*Jobs.*Home/);
-  if (process.env.SHOT) await panel.getByTestId("learning").screenshot({ path: process.env.SHOT });
+  if (process.env.SHOT) await panel.getByTestId("plan-card").screenshot({ path: process.env.SHOT });
   await panel.getByTestId("suggestion-accept").click();
   await expect(panel.getByTestId("order-row")).toContainText("Your order is on");
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Card, Switch } from "@heroui/react";
+import { Button, Card, Switch } from "@heroui/react";
 import { ArrowRightArrowLeft, Eye, EyeSlash, MagicWand, Sparkles } from "@gravity-ui/icons";
 
 import type { SiteLearning } from "../../shared/learning";
@@ -35,7 +35,6 @@ export function LearningCard({ session }: { session: TabSession }) {
     void chrome.runtime.sendMessage(request);
   };
   const uses = Object.values(learning.groups).reduce((total, group) => total + group.uses.reduce((sum, count) => sum + count, 0), 0);
-  const offer = session.suggestion;
   // Rows the page can rearrange (checked on the page), and those already in a learned order.
   const orderable = Object.entries(session.proposal?.orderable ?? {}).filter(([, check]) => check.ok);
   const ordered = new Set((session.proposal?.accepted ?? []).flatMap((group) => (group.operation === "reorder" ? [group.label.replace(/^Your order: /, "")] : [])));
@@ -85,41 +84,7 @@ export function LearningCard({ session }: { session: TabSession }) {
         </div>
       )}
       {learning.enabled && showModel && <ModelView session={session} />}
-      {offer && (
-        <Alert status="accent" data-testid="suggestion" className="rounded-3xl">
-          <Alert.Indicator>
-            <Sparkles />
-          </Alert.Indicator>
-          <Alert.Content>
-            {offer.kind === "order" ? (
-              <>
-                <Alert.Title>Your order for {offer.group}</Alert.Title>
-                <Alert.Description>
-                  From your last {offer.uses} clicks: <span className="font-medium" data-testid="suggestion-order">{offer.text}</span>. On screen only;
-                  the keyboard keeps the site's order.
-                </Alert.Description>
-              </>
-            ) : (
-              <>
-                <Alert.Title>
-                  You opened “{offer.text}” {offer.uses} times
-                </Alert.Title>
-                <Alert.Description>Move it to the front of {offer.group}, on every page where it appears?</Alert.Description>
-              </>
-            )}
-            <div className="mt-2 flex gap-2">
-              <Button size="sm" variant="primary" onPress={() => send("accept")} data-testid="suggestion-accept">
-                <MagicWand />
-                {offer.kind === "order" ? "Use this order" : "Move to the front"}
-              </Button>
-              <Button size="sm" variant="ghost" onPress={() => send("dismiss")} data-testid="suggestion-dismiss">
-                Not now
-              </Button>
-            </div>
-          </Alert.Content>
-        </Alert>
-      )}
-      {learning.enabled && uses > 0 && !offer && (
+      {learning.enabled && uses > 0 && !session.suggestion && (
         <p className="text-xs text-muted" data-testid="learning-threshold">
           Harbor offers a change once one item has {MIN_USES} opens and at least half of the clicks in its group, or,
           in a row it can rearrange, a whole order after {ORDER_MIN_USES} clicks.
@@ -130,6 +95,49 @@ export function LearningCard({ session }: { session: TabSession }) {
           Reset what was learned
         </Button>
       )}
+    </Card>
+  );
+}
+
+// The learning model's offer, as a card of its own at the top of the panel: solid accent, one
+// primary action. Inside the learning card it was easy to miss.
+export function SuggestionCard({ session }: { session: TabSession }) {
+  const offer = session.suggestion;
+  if (!offer) return;
+  const send = (action: LearningAction) => {
+    const request: PanelRequest = { type: "learning", tabId: session.tabId, action };
+    void chrome.runtime.sendMessage(request);
+  };
+  return (
+    <Card className="gap-3 rounded-3xl border-2 border-accent bg-accent-soft p-3.5 text-accent-soft-foreground" data-testid="suggestion">
+      <div className="flex items-start gap-2.5">
+        <Sparkles className="mt-1 shrink-0 text-accent" />
+        <div className="min-w-0 flex-1">
+          {offer.kind === "order" ? (
+            <>
+              <p className="text-base font-semibold tracking-tight">Harbor learned your order for {offer.group}</p>
+              <p className="mt-1 text-sm">
+                From your last {offer.uses} clicks: <span className="font-semibold" data-testid="suggestion-order">{offer.text}</span>
+              </p>
+              <p className="mt-1 text-xs opacity-80">On screen only; the keyboard keeps the site's order.</p>
+            </>
+          ) : (
+            <>
+              <p className="text-base font-semibold tracking-tight">You opened “{offer.text}” {offer.uses} times</p>
+              <p className="mt-1 text-sm">Move it to the front of {offer.group}, on every page where it appears?</p>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <Button variant="primary" className="flex-1" onPress={() => send("accept")} data-testid="suggestion-accept">
+          <MagicWand />
+          {offer.kind === "order" ? "Use this order" : "Move to the front"}
+        </Button>
+        <Button variant="ghost" onPress={() => send("dismiss")} data-testid="suggestion-dismiss">
+          Not now
+        </Button>
+      </div>
     </Card>
   );
 }

@@ -11,7 +11,7 @@ import type { LayoutPlan, Operation, PlanGroup } from "../../shared/plan";
 import { groupPattern } from "../../shared/plan";
 import type { Answers } from "../../shared/questions";
 import { applyAnswers, usableQuestions } from "../../shared/questions";
-import { LearningCard } from "./learning-card";
+import { LearningCard, SuggestionCard } from "./learning-card";
 import { PickControls } from "./pick-controls";
 import { Questions } from "./questions-card";
 import type { CallLog, PanelRequest, Proposal, TabSession } from "../../shared/types";
@@ -314,6 +314,7 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
   return (
     <div className="flex flex-col gap-3" data-testid="plan-card">
       <FlowSteps step={STAGE_STEP[stage]} />
+      {stage === "kept" && <SuggestionCard session={session} />}
 
       {stage === "ask" && (
         <Card className="gap-3 rounded-3xl p-3.5">
