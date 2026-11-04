@@ -1,6 +1,6 @@
 # Astra UX ideas: a reversible adaptive layer for the web
 
-> Synthesis note: this is an independent ideation record. [Selected UX](ux-spec.md) resolves the provisional product name, authentication, preview interaction, and default-adaptation alternatives. Smart Web is the product; Meta is the runtime planner; Astra produced this design proposal.
+> Synthesis note: this is an independent ideation record. [Selected UX](ux-spec.md) resolves the provisional product name, authentication, preview interaction, and default-adaptation alternatives. Harbor is the product; Meta is the runtime planner; Astra produced this design proposal.
 
 Planning contribution by one of the two requested Astra ideation agents. No agents spawned. Scope: UX principles, screens, interaction ideas, recovery, and validation. Planning only; none of the extension behavior below is implemented by this document.
 

@@ -1,4 +1,4 @@
-# Smart Web / Astra technical validation
+# Harbor / Astra technical validation
 
 27 October 2026 · Independent planning review using the inherited session model; no GPT-5.6 selection, delegated agents, paid inference, deployment, or implementation changes.
 

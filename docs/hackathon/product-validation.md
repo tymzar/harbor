@@ -1,4 +1,4 @@
-# Smart Web: independent product, UX and judging validation
+# Harbor: independent product, UX and judging validation
 
 27 October 2026. Desk research and source inspection using the inherited default model; no model switch or agents spawned. Sole owned deliverable: this report. No human participants, application runs, provider calls or implementation tests were performed. Recommendations and acceptance targets below are proposed, not achieved results.
 
@@ -52,14 +52,14 @@ The small release is an experiment within the full vision, not a substitute defi
 
 This is a targeted official-source comparison, not an exhaustive competitor survey or a claim of invention.
 
-| Alternative / verified capability | Overlap | Differentiation Smart Web must demonstrate |
+| Alternative / verified capability | Overlap | Differentiation Harbor must demonstrate |
 |---|---|---|
 | [Chrome Reading mode](https://support.google.com/chrome/answer/14218344?hl=EN) provides adjustable text presentation, spacing and read-aloud, in full-screen or side-panel views; its settings apply within reading mode | Comfortable reading, reduced distraction and personalization are established benefits | Operate on useful regions of the original working page while preserving its interactions; show why a reading view does not solve the selected task |
 | [Copilot in Edge](https://support.microsoft.com/en-us/edge/copilot/getting-started-with-copilot-in-microsoft-edge) uses page context for answers and summaries; [Browse with Copilot](https://support.microsoft.com/en-us/edge/copilot/browse-with-copilot) also documents browser actions | Understanding page content and assisting workflows are not unique; “other sidebars only summarize” is inaccurate | A persistent, reviewable layout contract and local preference loop that lets the person operate the adapted page; compare on that outcome |
 | [Stylus](https://github.com/openstyles/stylus), maintained as a userstyles manager | Changing website presentation is not new by itself | Generate and validate a page-grounded configuration without asking users to write styles, then sustain useful preferences and explain failures |
 | Native search, bookmarks, site settings and manually pinned shortcuts | Low-setup access to repeated destinations; proposed benchmark controls | Net benefit after setup, fewer wrong-target activations, and useful improvements beyond a fixed shortcut list |
 
-**Defensible positioning hypothesis:** “Smart Web proposes a reviewable layout for supported regions of your working page, then helps you refine it with local preferences.” Its potential novelty is the integrated configuration and adaptation loop. Neither local ranking, generated JSON, a side panel, CSS inference nor page restyling alone establishes novelty. No broad “first,” “unique,” “works everywhere” or market superiority claim is supported by this research.
+**Defensible positioning hypothesis:** “Harbor proposes a reviewable layout for supported regions of your working page, then helps you refine it with local preferences.” Its potential novelty is the integrated configuration and adaptation loop. Neither local ranking, generated JSON, a side panel, CSS inference nor page restyling alone establishes novelty. No broad “first,” “unique,” “works everywhere” or market superiority claim is supported by this research.
 
 ## Good paths and bad paths: remaining acceptance details
 
@@ -94,7 +94,7 @@ Accessibility validation needs more than attractive tokens:
 
 - Test reflow at the equivalent of **320 CSS pixels**, commonly a 1280-pixel desktop viewport at 400% zoom, accounting for permitted two-dimensional content exceptions. A 200% check alone does not establish this. [W3C Reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
 - Apply text overrides together: line height 1.5 times font size, paragraph spacing 2 times, letter spacing 0.12 times, and word spacing 0.16 times; verify no lost content or functionality. These are override-resilience checks, not mandatory default styling. [W3C Text Spacing](https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html).
-- Preserve meaningful, operable focus order; exact visual/DOM identity is not an absolute WCAG rule. Smart Web can adopt the stricter conservative policy for generic transformations without misquoting the standard. Test screen-reader browse order separately from keyboard focus, including when focus stays in the panel while the page changes. [W3C Focus Order](https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html).
+- Preserve meaningful, operable focus order; exact visual/DOM identity is not an absolute WCAG rule. Harbor can adopt the stricter conservative policy for generic transformations without misquoting the standard. Test screen-reader browse order separately from keyboard focus, including when focus stays in the panel while the page changes. [W3C Focus Order](https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html).
 - Keep 44-pixel targets as the selected product ambition; the AA minimum criterion is 24 by 24 CSS pixels with exceptions. Measure rendered targets and spacing rather than treating a token as compliance. [W3C Target Size](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html).
 
 Full-product accessibility evidence must include people using the relevant access methods. Developer keyboard and screen-reader smoke checks can catch defects; they do not establish user benefit or certify the host website.

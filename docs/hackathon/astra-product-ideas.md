@@ -1,6 +1,6 @@
 # Astra product ideation: a personal layout compiler
 
-> Synthesis note: this is an independent ideation record. [Selected UX](ux-spec.md) and the [system plan](system-plan.md) supersede alternatives below. “Astra” in tentative product wording is not the runtime model: Smart Web uses Meta for page planning. A shortcut-only fallback is explicitly a shortfall against the requested in-page layout scope.
+> Synthesis note: this is an independent ideation record. [Selected UX](ux-spec.md) and the [system plan](system-plan.md) supersede alternatives below. “Astra” in tentative product wording is not the runtime model: Harbor uses Meta for page planning. A shortcut-only fallback is explicitly a shortfall against the requested in-page layout scope.
 
 Planning only · 27 October 2026 · Product-concepts contribution from one of the two requested Astra ideation agents. No agents spawned. This document is the sole owned deliverable.
 

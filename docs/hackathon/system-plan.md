@@ -1,4 +1,4 @@
-# Smart Web: end-to-end system plan
+# Harbor: end-to-end system plan
 
 Status: proposed architecture, 27 October 2026. This document specifies future work; the existing repository is an adaptive app prototype, not a shipping browser extension. Read [research and scoring](research-and-scoring.md) for sources and evidence boundaries.
 
@@ -12,7 +12,7 @@ Full vision is cross-site smart layout, not just a side-panel shortcut list. The
 
 **Required end-to-end learning proof:** a Meta-generated catalog grounded to actual page nodes receives deliberate local activation/pin feedback, produces a queued preference-driven proposal, and after user acceptance changes an approved **in-page** property such as emphasis of the preferred card. Static page reflow plus an unrelated learned shortcut list does not satisfy this gate. Record the chain from node IDs through catalog, observations, ranking delta and accepted transaction. Distinguish initial model-proposed layout from later locally learned changes.
 
-Provisional product name: Smart Web. Core promise: **Your page, arranged for your task.** Recommend Build for Your World; choose Indie only if the actual team fits it. The goal is a compelling new extension contribution with useful evidence, not maximum feature count.
+Provisional product name: Smart Web (the working name; the product has since been renamed Harbor). Core promise: **Your page, arranged for your task.** Recommend Build for Your World; choose Indie only if the actual team fits it. The goal is a compelling new extension contribution with useful evidence, not maximum feature count.
 
 ### Delivery tiers
 

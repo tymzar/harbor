@@ -24,6 +24,6 @@ Later live runs write to `evidence/<date>-effort-<level>/` (set `EVIDENCE_RUN` t
 
 ## Day 3 — 28 Oct, real plans applied to the page (`day3-effort-low/`)
 
-Live Spark plans (DOM only, effort low) for both fixtures were previewed, kept and restored on the actual page by the extension; `*-applied.png` shows the page with the layout on. Docs: sidebar `compact`, "Next steps" cards `grid`. Catalog: filters `compact`, product cards `grid`. Per-group URL patterns came back as intended: site-wide parts (nav, sidebar, footer) `127.0.0.1:4317/*`, page content narrowed to its own page. After restore no Smart Web attribute remained on the page.
+Live Spark plans (DOM only, effort low) for both fixtures were previewed, kept and restored on the actual page by the extension; `*-applied.png` shows the page with the layout on. Docs: sidebar `compact`, "Next steps" cards `grid`. Catalog: filters `compact`, product cards `grid`. Per-group URL patterns came back as intended: site-wide parts (nav, sidebar, footer) `127.0.0.1:4317/*`, page content narrowed to its own page. After restore no Harbor attribute (`data-smart-web-*`) remained on the page.
 
 The visible change on these tidy fixtures is modest (even card grid, tighter sidebar). Larger effects are expected on crowded real sites; not yet measured.

@@ -1,4 +1,4 @@
-# Smart Web — hackathon planning handoff
+# Harbor — hackathon planning handoff
 
 Prepared 27 October 2026. **Planning package; the extension is not implemented.**
 

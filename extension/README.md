@@ -1,6 +1,6 @@
-# Smart Web extension (MV3)
+# Harbor extension (MV3)
 
-Chrome side-panel extension for Smart Web. Clicking the toolbar icon opens the side panel, injects a content
+Chrome side-panel extension for Harbor. Clicking the toolbar icon opens the side panel, injects a content
 script into the current tab, scans the visible area and captures a screenshot. Results are kept per tab in
 `chrome.storage.session`; the panel's **Scan page / Rescan** button repeats the scan while the grant lasts.
 
@@ -15,7 +15,7 @@ template, imported unmodified in commit `9e48354`); everything after that commit
 - `@gravity-ui/icons`
 - esbuild 0.25, TypeScript (`moduleResolution: bundler`), ESLint 9 flat config, Playwright
 
-Theme tokens (the harbor-teal `--accent`) match the Smart Web app in the repo root. Dark mode follows the OS
+Theme tokens (the harbor-teal `--accent`) match the Harbor app in the repo root. Dark mode follows the OS
 via the `dark` class set in `PageRoot`, since MV3 pages can't run an inline theme script.
 
 ## Running

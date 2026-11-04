@@ -1,4 +1,4 @@
-# Smart Web: selected UX specification
+# Harbor: selected UX specification
 
 This is the selected design contract, synthesized from the two Astra proposals. It overrides conflicting alternatives in the ideation documents. All behaviors are planned; no extension UI has been built or user-tested in this planning task.
 
@@ -6,7 +6,7 @@ This is the selected design contract, synthesized from the two Astra proposals. 
 
 | Question | Selected behavior | Why |
 |---|---|---|
-| Product versus model name | Product is Smart Web; Meta Muse Spark is the page planner; Astra is an ideation-agent model only | Avoid making a non-Meta runtime claim in a Meta hackathon |
+| Product versus model name | Product is Harbor; Meta Muse Spark is the page planner; Astra is an ideation-agent model only | Avoid making a non-Meta runtime claim in a Meta hackathon |
 | Default adaptation | Suggestions queued for review; automatic small changes are a later explicit region-level opt-in | Predictability is the default; local learning still produces real personalization |
 | Actual layout scope | Density, card-grid reflow and emphasis on approved page regions in the hackathon slice | A sidebar alone would not meet the requested smart-page-layout goal |
 | Generic reordering | No generic reordering of live interactive page subtrees | Browser focus order and host application assumptions need adapter-specific evidence |
@@ -35,7 +35,7 @@ The main surface is a Chromium side panel, targeting 360–440 CSS px and remain
 
 | Screen | Content and main action | Exit / failure behavior |
 |---|---|---|
-| Ready | Current site; “Arrange this page for your task”; Inspect page / Try sample | New tab without access: “Click Smart Web in the browser toolbar to allow this page” |
+| Ready | Current site; “Arrange this page for your task”; Inspect page / Try sample | New tab without access: “Click Harbor in the browser toolbar to allow this page” |
 | Scan | Stage labels; Stop; bounded candidate-region list; capability and reason per region | Empty or partial scan is explicit; no fake compatibility percentage |
 | Data review | Exact sanitized request preview; provider/model; excluded categories; optional image reviewed separately | Local-only path remains usable; rejected upload leaves page unchanged |
 | Goal and proposal | Choose task; selected regions; allowed changes; protected areas; concise reasons; editable inclusion/pins | Invalid or stale proposals cannot be previewed; region correction regenerates affected plan |
@@ -50,7 +50,7 @@ Do not bury the primary action beneath a large prompt composer. Start with three
 
 ```text
 ┌──────────────────────────────────────┐
-│ Smart Web             docs.example   │
+│ Harbor                docs.example   │
 │ Review your layout                   │
 │ Task: Find reference sections        │
 │                                      │
@@ -93,7 +93,7 @@ Focus restoration applies when the extension owns the interaction; do not steal 
 | Trigger | Required outcome | User-facing copy |
 |---|---|---|
 | Protected browser page | Stop injection attempts; offer sample/another page | “Your browser does not allow changes here.” |
-| Different tab lacks access | Clear old site's controls; never apply old proposal | “Allow this page from the Smart Web toolbar button.” |
+| Different tab lacks access | Clear old site's controls; never apply old proposal | “Allow this page from the Harbor toolbar button.” |
 | Sensitive or inaccessible region | Explain exclusion before upload/preview | “This area will stay unchanged.” |
 | Wrong semantic group | User edits selection; validator reruns | “Choose which items belong together.” |
 | Model timeout / temporary failure | Preserve scan, no mutation; bounded retry | “No proposal was applied. Try again or keep the original.” |
