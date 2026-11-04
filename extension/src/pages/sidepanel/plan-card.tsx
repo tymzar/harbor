@@ -15,6 +15,7 @@ import { LearningCard } from "./learning-card";
 import { PickControls } from "./pick-controls";
 import { Questions } from "./questions-card";
 import type { CallLog, PanelRequest, Proposal, TabSession } from "../../shared/types";
+import { DRAFT_SLOW_MS } from "../../shared/types";
 
 // What each operation means to the user.
 const OPERATION_LABEL: Record<Operation, string> = {
@@ -151,8 +152,15 @@ const hostOf = (url: string | undefined) => (url && URL.canParse(url) ? new URL(
 
 // While Meta works: what happened, what is happening, what is next. Nothing on the page changes yet.
 // An automatic request (a new kind of page on a followed site) says so, since nobody clicked.
-function Progress({ proposal, elements, url }: { proposal: Proposal; elements: number; url: string | undefined }) {
+function Progress({ proposal, elements, url, onCancel }: { proposal: Proposal; elements: number; url: string | undefined; onCancel: () => void }) {
   const step = proposal.step;
+  // Ticks so the card can notice a draft that has gone on too long.
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  const slow = now - proposal.startedAt > DRAFT_SLOW_MS;
   const sam: StepState = step === "segmenting" || step === "matching" ? "active" : "done";
   let spark: StepState = "done";
   if (step === "planning") spark = "active";
@@ -169,7 +177,16 @@ function Progress({ proposal, elements, url }: { proposal: Proposal; elements: n
         <Step state={spark}>{spark === "active" ? "Muse Spark is drafting a layout…" : "Muse Spark drafts a layout"}</Step>
         <Step state={check}>{check === "active" ? "Fixing parts the check rejected…" : "Check the plan against the page"}</Step>
       </ul>
-      <p className="text-xs text-muted">Usually 10–20 seconds. Nothing on the page changes yet.</p>
+      {slow ? (
+        <div className="flex items-center gap-2" data-testid="plan-slow">
+          <p className="flex-1 text-xs text-warning">Taking much longer than usual. Chrome may have stopped Harbor's worker mid-request.</p>
+          <Button size="sm" variant="secondary" onPress={onCancel} data-testid="cancel-propose">
+            Cancel
+          </Button>
+        </div>
+      ) : (
+        <p className="text-xs text-muted">Usually 10–20 seconds. Nothing on the page changes yet.</p>
+      )}
     </Card>
   );
 }
@@ -350,7 +367,17 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
         </Card>
       )}
 
-      {stage === "drafting" && current && <Progress proposal={current} elements={scan.nodes.length} url={session.url} />}
+      {stage === "drafting" && current && (
+        <Progress
+          proposal={current}
+          elements={scan.nodes.length}
+          url={session.url}
+          onCancel={() => {
+            const request: PanelRequest = { type: "cancel-propose", tabId: session.tabId };
+            void chrome.runtime.sendMessage(request);
+          }}
+        />
+      )}
 
       {done && (stage === "review" || stage === "preview") && (
         <Card className="gap-3 rounded-3xl p-3.5" data-testid="plan-result">

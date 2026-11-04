@@ -137,6 +137,7 @@ export type PanelRequest =
   | { type: "rescan"; tabId: number }
   // goal: the user's own words for what they come to this page for (optional).
   | { type: "propose"; tabId: number; includeScreenshot: boolean; goal?: string }
+  | { type: "cancel-propose"; tabId: number }
   | { type: "forget"; tabId: number }
   | { type: "answer"; tabId: number; answers: Answers }
   | { type: "pick"; tabId: number; action: "start" | "wider" | "narrower" | "hide" | "cancel" }
@@ -153,4 +154,9 @@ export type PanelRequest =
   | { type: "learning"; tabId: number; action: "enable" | "disable" | "reset" | "accept" | "dismiss" };
 
 export const sessionKey = (tabId: number) => `session:${tabId}`;
+
+// A draft that has run this long is offered a Cancel (two model calls plus a repair fit inside);
+// one older than DRAFT_ABANDONED_MS when the worker restarts was lost with the worker.
+export const DRAFT_SLOW_MS = 120_000;
+export const DRAFT_ABANDONED_MS = 240_000;
 export const shotKey = (tabId: number) => `shot:${tabId}`;

@@ -1,6 +1,6 @@
 import type { Answers } from "../../shared/questions";
 import type { PageScan, PanelRequest, SessionStatus, TabSession } from "../../shared/types";
-import { sessionKey, shotKey } from "../../shared/types";
+import { DRAFT_ABANDONED_MS, sessionKey, shotKey } from "../../shared/types";
 import { STALE_SCAN, checkOrderable, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
 import { noteAutoSuggested, shouldAutoSuggest } from "./auto-suggest";
@@ -322,8 +322,33 @@ async function hideFromList(tabId: number, nodeId: string) {
   }
 }
 
+// A draft the user gave up on, or one the worker lost: the proposal ends in its error state, so
+// the panel offers "Suggest a layout" again. A draft still in flight that finishes later overwrites it.
+const INTERRUPTED = "Harbor was interrupted while drafting. Ask again.";
+
+async function abandonDraft(tabId: number, reason: string) {
+  const session = await readSession(tabId);
+  if (session?.proposal?.status !== "running") return;
+  await saveSession({ ...session, proposal: { ...session.proposal, status: "error", step: undefined, error: reason, finishedAt: Date.now() }, updatedAt: Date.now() });
+}
+
+// Chrome stops the worker between events; a draft that was running when it did is stuck "running"
+// in session storage with nothing to finish it. Swept on every start.
+async function sweepAbandonedDrafts() {
+  const all = await chrome.storage.session.get();
+  const now = Date.now();
+  for (const [key, value] of Object.entries(all)) {
+    if (!key.startsWith("session:")) continue;
+    const session = value as TabSession;
+    if (session.proposal?.status === "running" && now - session.proposal.startedAt > DRAFT_ABANDONED_MS) await abandonDraft(session.tabId, INTERRUPTED);
+  }
+}
+// eslint-disable-next-line unicorn/prefer-top-level-await -- a classic worker script, no top-level await
+void sweepAbandonedDrafts();
+
 chrome.runtime.onMessage.addListener((message: PanelRequest, sender) => {
   if (message.type === "rescan") void scanTab(message.tabId, false);
+  if (message.type === "cancel-propose") void abandonDraft(message.tabId, "Stopped by you.");
   if (message.type === "propose") void propose(message.tabId, message.includeScreenshot, message.goal);
   if (message.type === "forget") void forget(message.tabId);
   if (message.type === "answer") void answer(message.tabId, message.answers);
