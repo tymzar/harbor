@@ -102,6 +102,11 @@ export async function rememberWithSource(savedUrl: string, sourceLabel: string, 
   return true;
 }
 
+const takesOut = (operation: PlanGroup["operation"]) => operation === "hide-secondary" || operation === "collapse";
+// Two groups on one element that cannot both apply: the same operation, or either hiding/folding it.
+const fights = (own: PlanGroup, other: PlanGroup) =>
+  own.container === other.container && (own.operation === other.operation || takesOut(own.operation) || takesOut(other.operation));
+
 // A saved plan rebuilt for this scan, plus the groups of the site's other saved plans found again
 // on it; undefined when none applies or nothing survives validation.
 export async function reusePlan(scan: PageScan): Promise<Proposal | undefined> {
@@ -141,9 +146,6 @@ export async function reusePlan(scan: PageScan): Promise<Proposal | undefined> {
   // The page's own plan speaks for a region first: a transferred group with the same name, or one
   // that would fight the own group on the same element (the same operation, or either side hiding
   // or folding it), is left out. A learned order over an emphasised header is no fight: both apply.
-  const takesOut = (operation: PlanGroup["operation"]) => operation === "hide-secondary" || operation === "collapse";
-  const fights = (own: PlanGroup, other: PlanGroup) =>
-    own.container === other.container && (own.operation === other.operation || takesOut(own.operation) || takesOut(other.operation));
   const extra = shared.filter(({ group }) => !own.accepted.some((other) => other.label === group.label || fights(other, group)));
   const accepted = [...own.accepted, ...extra.map(({ group }) => group)];
   if (accepted.length === 0) return undefined;
