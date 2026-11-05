@@ -115,6 +115,10 @@ export type TabSession = {
   tabId: number;
   status: SessionStatus;
   url?: string;
+  // Chrome's ID of the frame Harbor reads and changes in this tab, when it is not the top frame:
+  // a frame of the site's own that fills the window (LinkedIn's messaging pages run the older app
+  // in such an iframe under a new shell whose own document is empty). Set with each scan.
+  frameId?: number;
   scan?: PageScan;
   // The screenshot of this scan is stored separately under shotKey(tabId): it is ~100 KB and
   // every small state change would otherwise rewrite and resend it.

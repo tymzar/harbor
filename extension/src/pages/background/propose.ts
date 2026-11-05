@@ -9,7 +9,8 @@ import type { CallLog, PageScan, Proposal, TabSession } from "../../shared/types
 import { sessionKey, shotKey } from "../../shared/types";
 import type { ChatMessage } from "./meta";
 import { proposeJson, segment } from "./meta";
-import { checkOrderable, clearLayout, effectiveGroups } from "./layout";
+import type { PageTarget } from "./layout";
+import { checkOrderable, clearLayout, effectiveGroups, pageTarget } from "./layout";
 import { rememberPlan, transferredFrom } from "./saved-plans";
 import { userGroups } from "./user-groups";
 
@@ -40,14 +41,14 @@ async function updateProposal(tabId: number, change: Partial<Proposal>) {
 
 // Elements SAM found looking alike, matched to scanned elements and grouped by shared parent.
 async function findVisualGroups(
-  tabId: number,
+  target: PageTarget,
   scan: PageScan,
   screenshot: string,
   calls: Array<CallLog>
 ): Promise<Array<VisualGroup>> {
   const answers = await Promise.all(SAM_CONCEPTS.map((concept) => segment(concept, screenshot)));
 
-  await updateProposal(tabId, { step: "matching", calls: [...calls, ...answers.map((answer) => answer.log)] });
+  await updateProposal(target.tabId, { step: "matching", calls: [...calls, ...answers.map((answer) => answer.log)] });
 
   const parentOf = new Map(scan.nodes.map((node) => [node.id, node.parent]));
   const groups: Array<VisualGroup> = [];
@@ -59,7 +60,7 @@ async function findVisualGroups(
       continue;
     }
     const [injection] = await chrome.scripting.executeScript({
-      target: { tabId },
+      target: pageTarget(target),
       func: (rects) => globalThis.smartWeb!.match(rects),
       args: [boxes],
     });
@@ -96,7 +97,7 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
   const keepLayout = session.layout?.state === "applied" && transferredGroups.length > 0;
 
   // A new plan replaces the one the current layout came from.
-  if (session.layout && !keepLayout) await clearLayout(tabId);
+  if (session.layout && !keepLayout) await clearLayout(session);
   const shot = await chrome.storage.session.get(shotKey(tabId));
   const screenshot = shot[shotKey(tabId)] as string | undefined;
   const usedScreenshot = includeScreenshot && Boolean(screenshot);
@@ -122,7 +123,7 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
   });
 
   try {
-    const visualGroups = usedScreenshot ? await findVisualGroups(tabId, scan, screenshot!, calls) : undefined;
+    const visualGroups = usedScreenshot ? await findVisualGroups(session, scan, screenshot!, calls) : undefined;
     await updateProposal(tabId, { step: "planning", calls: [...calls], visualGroups });
 
     // The user's harbor goes with every request; without one (setup skipped in tests) Spark's defaults apply.
@@ -175,7 +176,7 @@ export async function propose(tabId: number, includeScreenshot: boolean, goal: s
       visualGroups,
       plan,
       accepted,
-      orderable: await checkOrderable(tabId, accepted),
+      orderable: await checkOrderable(session, accepted),
       errors: validation.errors,
       repaired,
       finishedAt: Date.now(),

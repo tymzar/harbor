@@ -69,7 +69,7 @@ test("restricted pages are reported, not scanned", async ({ context, extensionId
 
   const panel = await context.newPage();
   await panel.goto(`chrome-extension://${extensionId}/${PAGE_TO_PAGE_URL.SIDEPANEL}?tabId=${tabId}`);
-  await panel.getByRole("button", { name: "Read this page" }).click();
-
+  // Known without a click: Chrome hides the tab's URL, and every site is already allowed.
   await expect(panel.getByText("Chrome doesn't allow extensions here")).toBeVisible();
+  await expect(panel.getByRole("button", { name: "Read this page" })).toHaveCount(0);
 });

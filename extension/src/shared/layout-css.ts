@@ -26,8 +26,11 @@ export const LAYOUT_CSS = `
   min-height: 0 !important; line-height: 1.3 !important;
 }
 
+/* The outline sits inside the region's own box. Drawn outside it (outline-offset 4px), it
+   spilled past the region's container: a nav bar at the top of the page lost its top edge
+   above the viewport and its bottom edge ran over the content below. */
 [data-smart-web-op="emphasize"] {
-  outline: 2px solid rgb(${ACCENT}) !important; outline-offset: 4px !important;
+  outline: 2px solid rgb(${ACCENT}) !important; outline-offset: -2px !important;
   border-radius: 8px !important; background-color: rgb(${ACCENT} / 0.06) !important;
 }
 

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Postbox — Inbox</title>
+<style>
+  /* Shaped like a webmail inbox: the page itself does not scroll, the list does, inside its own box. */
+  html, body { height: 100%; margin: 0; }
+  body { display: flex; flex-direction: column; overflow: hidden; font: 14px/20px system-ui, sans-serif; color: #202124; background: #f6f8fc; }
+  .topbar { display: flex; align-items: center; gap: 16px; flex: none; padding: 10px 16px; }
+  .topbar strong { font-size: 20px; }
+  .topbar input { flex: 1; max-width: 640px; padding: 8px 12px; border: 1px solid #dadce0; border-radius: 8px; }
+  .shell { display: flex; flex: 1; min-height: 0; }
+  .folders { flex: none; width: 200px; padding: 8px 12px; }
+  .folders a { display: block; padding: 4px 12px; color: inherit; text-decoration: none; border-radius: 12px; }
+  .list { flex: 1; min-width: 0; overflow-y: auto; background: #fff; border-radius: 12px 0 0 0; }
+  .section { margin: 0; }
+
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  td { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+  /* A row's height comes from its inherited line height and its cells' padding, as a webmail's does:
+     every row is one line tall, so like rows are the same height whatever their text. */
+  .mail { line-height: 32px; background: #fff; cursor: pointer; }
+  .mail td { padding: 4px 8px; }
+  .mail.read { background: #f2f6fc; }
+  .mail.unread .from, .mail.unread .subject { font-weight: 700; }
+  .mail .tick { width: 24px; }
+  .mail .sender { width: 180px; }
+  .mail .when { width: 64px; text-align: end; }
+  .mail .snippet { color: #5f6368; }
+  .box { display: inline-block; width: 14px; height: 14px; vertical-align: middle; border: 1px solid #80868b; border-radius: 2px; }
+
+  /* Not like the rows: other cells, other heights. Anything that restyled them would show. */
+  .section-head { line-height: 24px; background: #e8eaed; }
+  .section-head td { padding: 10px 8px; font-weight: 600; }
+  .list-foot { line-height: 18px; background: #f1f3f4; }
+  .list-foot td { padding: 16px 8px; color: #5f6368; text-align: center; }
+</style>
+</head>
+<body>
+  <header class="topbar"><strong>Postbox</strong><input type="search" aria-label="Search mail" placeholder="Search mail"></header>
+  <div class="shell">
+    <nav class="folders" aria-label="Folders">
+      <a href="#inbox">Inbox</a><a href="#starred">Starred</a><a href="#sent">Sent</a><a href="#drafts">Drafts</a>
+    </nav>
+    <main class="list" id="list">
+      <div class="section"><table id="section-priority"><tbody id="rows-priority"></tbody></table></div>
+      <div class="section"><table id="section-rest"><tbody id="rows-rest"></tbody></table></div>
+    </main>
+  </div>
+<script>
+  // Made-up people and subjects only. Everything is rendered by script, as a webmail renders it.
+  const SENDERS = ["Aster Holm", "Birch Hollow Books", "Cedar Lane Dental", "Dune Cycling Club", "Elm Street Bakery", "Fennel & Sons", "Garnet Travel", "Harbour Yoga", "Ivy Tenants Group", "Juniper Weekly"];
+  const SUBJECTS = ["Your order is on its way", "Minutes from Tuesday", "Reminder: appointment next week", "Saturday ride, new route", "Fresh loaves this weekend", "Invoice attached", "Your itinerary has changed", "Class timetable for the winter", "Notes on the boiler repair", "This week's reading list"];
+  const SNIPPETS = ["Thanks for your patience, here is what happens next.", "Please read before we meet again.", "Reply to this message if the time no longer suits you.", "Meet at the usual place, bring water.", "Nothing to do on your side, this is only for your records."];
+
+  let made = 0;
+  function mailRow() {
+    const n = made++;
+    const row = document.createElement("tr");
+    // Read and unread rows differ by class, like the two kinds of row in a real inbox. Both are mail.
+    row.className = `mail ${n % 3 === 0 ? "unread" : "read"}`;
+    row.dataset.mail = String(n);
+    row.innerHTML = `<td class="tick"><span class="box" role="checkbox" aria-checked="false" aria-label="Select"></span></td>` +
+      `<td class="sender"><span class="from">${SENDERS[n % SENDERS.length]}</span></td>` +
+      `<td><span class="subject">${SUBJECTS[(n * 3) % SUBJECTS.length]} (${n})</span> <span class="snippet">- ${SNIPPETS[n % SNIPPETS.length]}</span></td>` +
+      `<td class="when">${(n % 12) + 1} Nov</td>`;
+    return row;
+  }
+  function wholeRow(className, text) {
+    const row = document.createElement("tr");
+    row.className = className;
+    row.innerHTML = `<td colspan="4">${text}</td>`;
+    return row;
+  }
+
+  // Each section: its header row, its mail rows, its footer row, all siblings in one tbody.
+  function section(id, title, count) {
+    const body = document.getElementById(id);
+    body.append(wholeRow("section-head", title));
+    for (let i = 0; i < count; i += 1) body.append(mailRow());
+    body.append(wholeRow("list-foot", `End of ${title}`));
+  }
+  section("rows-priority", "Priority", 130);
+  section("rows-rest", "Everything else", 110);
+
+  // For tests: what the site does on scroll or redraw, more rows above the section's footer.
+  // Returns the indexes (data-mail) of the rows it added.
+  window.appendMail = (count, sectionId = "rows-priority") => {
+    const body = document.getElementById(sectionId);
+    const foot = body.querySelector(".list-foot");
+    const added = [];
+    for (let i = 0; i < count; i += 1) {
+      const row = mailRow();
+      body.insertBefore(row, foot);
+      added.push(Number(row.dataset.mail));
+    }
+    return added;
+  };
+</script>
+</body>
+</html>

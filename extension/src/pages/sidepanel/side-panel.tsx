@@ -8,7 +8,7 @@ import { sessionKey, shotKey } from "../../shared/types";
 import { Onboarding } from "./onboarding";
 import { FlowSteps, PlanCard } from "./plan-card";
 import { useProfile } from "./use-profile";
-import { NeedsAccess, SiteAccessSwitch } from "./site-access";
+import { NeedsAccess, SiteAccessSwitch, useAllSites, useTabReadable } from "./site-access";
 
 const KIND_COLOR: Record<NodeKind, "accent" | "default" | "success" | "warning"> = {
   landmark: "accent",
@@ -168,6 +168,7 @@ function PanelHeader({ site, busy, status }: { site: string | undefined; busy: b
 
 // Before anything is read: one action, and what it will and won't read.
 function FirstOpen({ onRead, isPending, isDisabled }: { onRead: () => void; isPending: boolean; isDisabled: boolean }) {
+  const allSites = useAllSites();
   return (
     <Card className="gap-3 rounded-3xl p-3.5">
       <h2 className="text-xl font-semibold tracking-tight">Make this page work your way</h2>
@@ -179,7 +180,9 @@ function FirstOpen({ onRead, isPending, isDisabled }: { onRead: () => void; isPe
         <Eye />
         Read this page
       </Button>
-      <p className="text-xs text-muted">Runs only when you click. Form fields are never read.</p>
+      <p className="text-xs text-muted">
+        {allSites ? "Allowed on all sites: other pages wait for you, and sites with a saved layout are read as they load." : "Runs only when you click."} Form fields are never read.
+      </p>
     </Card>
   );
 }
@@ -225,6 +228,7 @@ export function SidePanel() {
   const scan = session?.status === "ready" ? session.scan : undefined;
   const isScanning = session?.status === "scanning";
   const screenshot = useScreenshot(tabId, scan?.scannedAt);
+  const readable = useTabReadable(tabId);
 
   const requestScan = () => {
     if (tabId === undefined) return;
@@ -253,21 +257,28 @@ export function SidePanel() {
       ) : (scan && session ? (
         <PageLine scan={scan} screenshot={screenshot} onRescan={requestScan} scanning={isScanning} />
       ) : (
-        !unreadable && (
+        !unreadable &&
+        (tabId === undefined || readable !== undefined) &&
+        (readable === false && !session ? (
+          // Reading it can only fail, so say so now rather than after a click.
+          <NeedsAccess tabId={tabId!} origin={undefined} />
+        ) : (
           <>
             <FlowSteps step={0} />
             <FirstOpen onRead={requestScan} isPending={isScanning} isDisabled={tabId === undefined} />
           </>
-        )
+        ))
       ))}
 
-      {!settingUp && session?.status === "needs-access" && <NeedsAccess tabId={session.tabId} origin={session.lastOrigin} />}
+      {!settingUp && session?.status === "needs-access" && <NeedsAccess tabId={session.tabId} origin={session.lastOrigin} error={session.error} />}
       {session?.notice && <Warning status="warning" title={session.notice} testId="notice" />}
       {session?.status === "restricted" && (
         <Warning
           status="default"
           title="Chrome doesn't allow extensions here"
-          description="Browser pages and the Web Store can't be changed. Open a regular website."
+          // Names the tab it means: the panel follows the window's active tab, which may not be
+          // the one the user has in mind (chrome://extensions after a reload, a new tab page).
+          description={`${session.url ? `${session.url.replace(/[#?].*$/, "")}: b` : "B"}rowser pages and the Web Store can't be changed. Open a regular website.`}
         />
       )}
       {session?.status === "error" && (

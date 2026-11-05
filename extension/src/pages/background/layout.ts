@@ -5,12 +5,18 @@ import type { LayoutState, OrderCheck, TabSession } from "../../shared/types";
 
 import type { LayoutGroup, LayoutResult } from "../content/apply";
 import { itemKey } from "../../shared/learning";
-import { rememberKept } from "./saved-plans";
+import { rememberKept, rememberShapes, shapesFor } from "./saved-plans";
 
 export const STALE_SCAN = "The page changed since Harbor read it. Rescan, then try again.";
 
-async function removeSheet(tabId: number) {
-  await chrome.scripting.removeCSS({ target: { tabId }, css: LAYOUT_CSS }).catch(() => {});
+// Where Harbor reads and changes a tab: its top frame, or the frame the scan chose (see
+// contentFrame in index.ts). A session is one.
+export type PageTarget = { tabId: number; frameId?: number };
+export const pageTarget = ({ tabId, frameId }: PageTarget): chrome.scripting.InjectionTarget =>
+  frameId ? { tabId, frameIds: [frameId] } : { tabId };
+
+async function removeSheet(target: PageTarget) {
+  await chrome.scripting.removeCSS({ target: pageTarget(target), css: LAYOUT_CSS }).catch(() => {});
 }
 
 // Puts the chosen groups on the page. Returns the new layout state for the session.
@@ -22,7 +28,6 @@ export async function showLayout(
   // Off when re-applying what was already kept: a page missing a region mustn't shrink the saved choice.
   remember = true
 ): Promise<LayoutState | undefined> {
-  const tabId = session.tabId;
   const chosen = groups.filter((group) => group.operation !== "none");
   if (chosen.length === 0) return undefined;
   // Regions the plan leaves alone are still watched for clicks, so learning sees them
@@ -31,8 +36,8 @@ export async function showLayout(
     (group) => group.operation === "none" && !chosen.some((other) => other.label === group.label)
   );
 
-  await removeSheet(tabId);
-  await chrome.scripting.insertCSS({ target: { tabId }, css: LAYOUT_CSS });
+  await removeSheet(session);
+  await chrome.scripting.insertCSS({ target: pageTarget(session), css: LAYOUT_CSS });
   const byId = new Map((session.scan?.nodes ?? []).map((node) => [node.id, node]));
   // A learned order's members, first to last: by their item keys; items it doesn't name go last.
   const ordered = (group: PlanGroup) => {
@@ -43,15 +48,17 @@ export async function showLayout(
     };
     return group.members.toSorted((a, b) => place(a) - place(b));
   };
+  const shapes = session.url ? await shapesFor(session.url) : {};
   const layout: Array<LayoutGroup> = [...chosen, ...watched].map((group) => ({
     label: group.label,
     container: group.container,
     members: group.operation === "reorder" ? ordered(group) : group.members,
     operation: group.operation,
     first: group.origin === "learned" && group.operation === "emphasize",
+    shape: shapes[group.label],
   }));
   const [injection] = await chrome.scripting.executeScript({
-    target: { tabId },
+    target: pageTarget(session),
     func: (groups: Array<LayoutGroup>, preview: boolean, scannedAt: number) =>
       globalThis.smartWeb!.apply(groups, preview, scannedAt),
     args: [layout, state === "preview", session.scan?.scannedAt ?? 0] as [Array<LayoutGroup>, boolean, number],
@@ -59,20 +66,21 @@ export async function showLayout(
   const result = injection?.result as LayoutResult | undefined;
   if (!result) throw new Error("The page did not answer.");
   if (result.stale) throw new Error(STALE_SCAN);
+  if (state === "applied" && session.url && result.shapes) await rememberShapes(session.url, result.shapes);
   if (state === "applied" && remember && session.url) await rememberKept(session.url, effectiveGroups(session), chosen.map((group) => group.label));
   return { state, labels: result.applied, missing: result.missing };
 }
 
 // Which of these groups could take the user's own order on the page: groups of 3+ items that stay
 // on screen. Read-only; an empty record when the page can't be asked.
-export async function checkOrderable(tabId: number, groups: Array<PlanGroup>): Promise<Record<string, OrderCheck>> {
+export async function checkOrderable(target: PageTarget, groups: Array<PlanGroup>): Promise<Record<string, OrderCheck>> {
   const candidates = groups
     .filter((group) => !group.origin && group.members.length >= 3 && !["hide-secondary", "collapse"].includes(group.operation))
     .map(({ label, members }) => ({ label, members }));
   if (candidates.length === 0) return {};
   const [injection] = await chrome.scripting
     .executeScript({
-      target: { tabId },
+      target: pageTarget(target),
       func: (list: Array<{ label: string; members: Array<string> }>) => globalThis.smartWeb!.checkOrder(list),
       args: [candidates] as [Array<{ label: string; members: Array<string> }>],
     })
@@ -80,11 +88,11 @@ export async function checkOrderable(tabId: number, groups: Array<PlanGroup>): P
   return (injection?.result as Record<string, OrderCheck> | undefined) ?? {};
 }
 
-export async function clearLayout(tabId: number) {
+export async function clearLayout(target: PageTarget) {
   await chrome.scripting
-    .executeScript({ target: { tabId }, func: () => globalThis.smartWeb?.restore() })
+    .executeScript({ target: pageTarget(target), func: () => globalThis.smartWeb?.restore() })
     .catch(() => {});
-  await removeSheet(tabId);
+  await removeSheet(target);
 }
 
 // The plan's groups with the user's answers applied.

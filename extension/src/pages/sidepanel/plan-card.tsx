@@ -525,6 +525,7 @@ export function PlanCard({ session, profile }: { session: TabSession; profile: P
                 <ChevronRight className="shrink-0 transition-transform group-open:rotate-90" />
                 Adjust the changes
               </summary>
+              <p className="mt-2 text-xs text-muted" data-testid="adjust-hint">Changes apply as you tick them.</p>
               <div className="mt-2">{changeList}</div>
             </details>
           )}

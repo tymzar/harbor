@@ -1,5 +1,6 @@
 import type { Band, SavedPlan } from "../../shared/cache";
 import { MAX_SAVED_PLANS, SAVED_PLANS_KEY, findSavedPlan, pageKey, remapPlan, remapRegions, savePlan, siteOf, transferGroups } from "../../shared/cache";
+import type { ItemShape } from "../../shared/item-shape";
 import type { LayoutPlan, PlanGroup } from "../../shared/plan";
 import { siteWide, validatePlan } from "../../shared/plan";
 import type { Answers } from "../../shared/questions";
@@ -10,6 +11,14 @@ import type { PageScan, Proposal } from "../../shared/types";
 async function readAll(): Promise<Array<SavedPlan>> {
   const stored = await chrome.storage.local.get(SAVED_PLANS_KEY);
   return (stored[SAVED_PLANS_KEY] as Array<SavedPlan> | undefined) ?? [];
+}
+
+// Whether anything was ever saved on this page's site: a site with no plan has nothing to bring back.
+export async function hasPlansOn(url: string): Promise<boolean> {
+  const site = siteOf(url);
+  if (!site) return false;
+  const all = await readAll();
+  return all.some((saved) => siteOf(saved.url) === site);
 }
 
 export async function rememberPlan(plan: LayoutPlan, scan: PageScan, usedScreenshot: boolean) {
@@ -48,6 +57,27 @@ export async function rememberKept(url: string, groups: Array<PlanGroup>, labels
     else delete kept[keptKey(url, group)];
   }
   await chrome.storage.local.set({ [KEPT_KEY]: kept });
+}
+
+// What the items of each kept list look like, per site and label (see item-shape.ts). Learned from
+// every page the change is kept on, so all of a site's pages treat the list the same way.
+const SHAPES_KEY = "itemShapes";
+
+export async function shapesFor(url: string): Promise<Record<string, ItemShape>> {
+  const stored = await chrome.storage.local.get(SHAPES_KEY);
+  const site = siteOf(url);
+  const all = (stored[SHAPES_KEY] as Record<string, Record<string, ItemShape>> | undefined) ?? {};
+  return (site && all[site]) || {};
+}
+
+export async function rememberShapes(url: string, shapes: Record<string, ItemShape>) {
+  const site = siteOf(url);
+  if (!site) return;
+  const stored = await chrome.storage.local.get(SHAPES_KEY);
+  const all = (stored[SHAPES_KEY] as Record<string, Record<string, ItemShape>> | undefined) ?? {};
+  const next = { ...all[site], ...shapes };
+  if (JSON.stringify(next) === JSON.stringify(all[site])) return;
+  await chrome.storage.local.set({ [SHAPES_KEY]: { ...all, [site]: next } });
 }
 
 export async function keptLabels(url: string, groups: Array<PlanGroup>): Promise<Array<string>> {

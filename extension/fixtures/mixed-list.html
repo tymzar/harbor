@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mixed feed</title>
+<style>
+  body { margin: 0; font: 14px/2.4 sans-serif; }
+  .feed { display: block; width: 600px; margin: 0 auto; }
+  .card { display: block; padding: 2px 8px; border-bottom: 1px solid #ccc; }
+  .banner { display: block; height: 240px; background: #eee; }
+</style>
+</head>
+<body>
+  <main class="feed" id="feed"></main>
+  <script>
+    // One feed, three kinds of item: articles, sections and links in a box of their own shape.
+    const feed = document.getElementById("feed");
+    for (let n = 0; n < 60; n++) {
+      const kind = ["article", "section", "aside"][n % 3];
+      const card = document.createElement(kind);
+      card.className = "card";
+      card.dataset.card = String(n);
+      card.innerHTML = kind === "article" ? `<h2 style="font-size:14px;margin:0">Post ${n}</h2>` : kind === "section" ? `<p style="margin:0">Note ${n}</p><span>tag</span>` : `<a href="#${n}">Link ${n}</a>`;
+      feed.append(card);
+    }
+    const banner = document.createElement("div");
+    banner.className = "banner";
+    banner.textContent = "A different thing";
+    feed.append(banner);
+  </script>
+</body>
+</html>

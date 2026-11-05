@@ -1,10 +1,11 @@
 import type { Answers } from "../../shared/questions";
 import type { PageScan, PanelRequest, SessionStatus, TabSession } from "../../shared/types";
 import { DRAFT_ABANDONED_MS, sessionKey, shotKey } from "../../shared/types";
-import { STALE_SCAN, checkOrderable, clearLayout, effectiveGroups, pickGroups, showLayout } from "./layout";
+import type { PageTarget } from "./layout";
+import { STALE_SCAN, checkOrderable, clearLayout, effectiveGroups, pageTarget, pickGroups, showLayout } from "./layout";
 import { propose } from "./propose";
 import { noteAutoSuggested, shouldAutoSuggest } from "./auto-suggest";
-import { forgetPlan, keptLabels, rememberAnswers, rememberKept, reusePlan } from "./saved-plans";
+import { forgetPlan, hasPlansOn, keptLabels, rememberAnswers, rememberKept, reusePlan } from "./saved-plans";
 import { decide, orderOffer, recordActivation, setLearning } from "./learning";
 import { hideNode } from "./user-groups";
 
@@ -18,6 +19,42 @@ const ACCESS_ERROR = /cannot access|permission|activetab|must request/i;
 
 // Opening the side panel narrows the page; wait for the reflow before measuring.
 const SETTLE_MS = 350;
+
+// Some sites draw the page inside one frame of their own: LinkedIn's messaging pages, reached
+// from the feed, run the older app in an iframe that fills the window, under a shell whose own
+// document is empty. Harbor reads and changes the frame that fills the window and is in front,
+// the top frame otherwise. In front matters: the feed keeps the same iframe full-size behind
+// the page (opacity 0, z-index -1) ready for that jump. Only a frame of the site's own origin
+// counts: another site's frame is its own page.
+const FRAME_FILL = 0.8;
+
+async function contentFrame(tabId: number): Promise<number | undefined> {
+  const probes = await chrome.scripting
+    .executeScript({
+      target: { tabId, allFrames: true },
+      func: () => {
+        const top = globalThis.self === globalThis.top;
+        // Null at the top and in a frame of another origin, which is never chosen anyway.
+        const frame = globalThis.frameElement;
+        let shown = top;
+        if (frame) {
+          const rect = frame.getBoundingClientRect();
+          const at = (fx: number, fy: number) => frame.ownerDocument.elementFromPoint(rect.left + rect.width * fx, rect.top + rect.height * fy);
+          shown =
+            frame.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) &&
+            [at(0.5, 0.5), at(0.25, 0.25), at(0.75, 0.75)].includes(frame);
+        }
+        return { top, shown, origin: location.origin, area: innerWidth * innerHeight };
+      },
+    })
+    .catch(() => []);
+  const top = probes.find((probe) => probe.result?.top)?.result;
+  if (!top || top.area === 0) return undefined;
+  const filling = probes
+    .filter(({ result }) => result && !result.top && result.shown && result.origin === top.origin && result.area >= FRAME_FILL * top.area)
+    .toSorted((a, b) => b.result!.area - a.result!.area);
+  return filling[0]?.frameId;
+}
 
 // Chrome allows two captureVisibleTab calls per second; quick rescans (navigation plus a
 // click) would otherwise fail. Captures are spaced out instead.
@@ -65,7 +102,25 @@ async function unfollow(tabId: number) {
 
 const originOf = (url: string) => (URL.canParse(url) ? new URL(url).origin : undefined);
 
+// The newest read of a tab wins: one overtaken by a later one (the toolbar clicked while a
+// followed site's automatic read is under way) saves nothing, so the panel never shows a scan
+// whose element numbers a later scan is about to replace.
+const scanSeq = new Map<number, number>();
+// A toolbar click right after an automatic read of the same page keeps that read; reading again
+// would only renumber the elements the panel is showing.
+const FRESH_MS = 1500;
+
 async function scanTab(tabId: number, settle: boolean) {
+  // Whatever automatic read was waiting for this tab, this one replaces it.
+  clearTimeout(pendingRescans.get(tabId));
+  pendingRescans.delete(tabId);
+  const seq = (scanSeq.get(tabId) ?? 0) + 1;
+  scanSeq.set(tabId, seq);
+  const current = () => scanSeq.get(tabId) === seq;
+  const save = async (session: TabSession) => {
+    if (current()) await saveSession(session);
+  };
+
   const tab = await chrome.tabs.get(tabId);
   const url = tab.url ?? "";
   const followed = await followedTabs();
@@ -74,49 +129,52 @@ async function scanTab(tabId: number, settle: boolean) {
   // the panel), kept or still in preview.
   const previous = await readSession(tabId);
   const carried = previous?.layout && previous.layout.labels.length > 0 ? previous.layout : undefined;
+  if (settle && previous?.status === "ready" && previous.url === url && previous.scan && Date.now() - previous.scan.scannedAt < FRESH_MS) return;
 
   // Without access Chrome hides the URL; the injection error below then tells the cases apart.
   if (RESTRICTED.test(url)) {
-    await saveSession({ tabId, status: "restricted", url, updatedAt: Date.now() });
+    await save({ tabId, status: "restricted", url, updatedAt: Date.now() });
     return;
   }
 
-  await saveSession({ tabId, status: "scanning", url, lastOrigin, updatedAt: Date.now() });
+  await save({ tabId, status: "scanning", url, lastOrigin, updatedAt: Date.now() });
   if (lastOrigin) await follow(tabId, lastOrigin);
 
   try {
     if (settle) await new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
 
+    const frameId = await contentFrame(tabId);
+    const target = pageTarget({ tabId, frameId });
     // Injecting restores any marks left by the previous copy, so the scan measures the site's own layout.
-    await chrome.scripting.executeScript({
-      target: { tabId },
-      files: ["content/index.js"],
-    });
-    const [injection] = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: () => globalThis.smartWeb!.scan(),
-    });
+    await chrome.scripting.executeScript({ target, files: ["content/index.js"] });
+    const [injection] = await chrome.scripting.executeScript({ target, func: () => globalThis.smartWeb!.scan() });
     const scan = injection?.result as PageScan | undefined;
     if (!scan) throw new Error("The page returned no scan result.");
 
-    // Captured right after the scan so boxes and pixels describe the same layout.
-    const screenshot = await captureTab(tab.windowId);
+    // Captured right after the scan so boxes and pixels describe the same layout. Chrome captures
+    // the window's visible tab: a tab read in the background (a followed site loading) gets none.
+    // Chrome also only allows the capture with activeTab (the toolbar click) or <all_urls>; a
+    // site grant ("Follow me on …", or all http/https sites) is refused. The read goes on without
+    // a screenshot then, which only the optional SAM pass needs: a refused capture must not turn
+    // a page Harbor has just read into "needs access".
+    const screenshot = tab.active ? await captureTab(tab.windowId).catch(() => "") : "";
 
     // A plan saved for this page (or its template) comes back without a Meta call.
     const proposal = await reusePlan(scan);
-    if (proposal) proposal.orderable = await checkOrderable(tabId, proposal.accepted ?? []);
-    await chrome.storage.session.set({ [shotKey(tabId)]: screenshot });
-    const session: TabSession = { tabId, status: "ready", url, lastOrigin, scan, hasScreenshot: true, proposal, updatedAt: Date.now() };
+    if (proposal) proposal.orderable = await checkOrderable({ tabId, frameId }, proposal.accepted ?? []);
+    await (screenshot ? chrome.storage.session.set({ [shotKey(tabId)]: screenshot }) : chrome.storage.session.remove(shotKey(tabId)));
+    const session: TabSession = { tabId, status: "ready", url, frameId, lastOrigin, scan, hasScreenshot: Boolean(screenshot), proposal, updatedAt: Date.now() };
     // Otherwise what the user kept for this kind of page comes back by itself, with no Meta call.
     const keptHere = proposal?.plan ? await keptLabels(scan.url, effectiveGroups(session)) : [];
     const kept = carried ?? (keptHere.length > 0 ? { state: "applied" as const, labels: keptHere } : undefined);
+    if (!current()) return;
     if (kept && proposal) session.layout = await showLayout(session, pickGroups(session, kept.labels), kept.state, false);
     if (proposal) session.suggestion = await orderOffer(session);
-    await saveSession(session);
+    await save(session);
 
     // A new kind of page on a site the user follows and kept a layout on gets a suggestion without
     // a click, once a day per kind of page. Not while a request is already under way for this tab.
-    if (previous?.proposal?.status === "running") return;
+    if (!current() || previous?.proposal?.status === "running") return;
     const shape = await shouldAutoSuggest(scan.url);
     if (shape) {
       await noteAutoSuggested(shape);
@@ -128,7 +186,10 @@ async function scanTab(tabId: number, settle: boolean) {
     let status: SessionStatus = "error";
     if (RESTRICTED_ERROR.test(message)) status = "restricted";
     else if (ACCESS_ERROR.test(message)) status = "needs-access";
-    await saveSession({ tabId, status, url, lastOrigin, error: message, updatedAt: Date.now() });
+    // In the worker's console (chrome://extensions → Harbor → "service worker"): the panel shows
+    // the message only for a plain error, and an access problem's wording tells which call failed.
+    console.warn("[harbor] read failed", { tabId, url, status, message });
+    await save({ tabId, status, url, lastOrigin, error: message, updatedAt: Date.now() });
   }
 }
 
@@ -201,7 +262,7 @@ async function forget(tabId: number) {
   const session = stored[key] as TabSession | undefined;
   if (!session?.url) return;
   await forgetPlan(session.url);
-  if (session.layout) await clearLayout(tabId);
+  if (session.layout) await clearLayout(session);
   await saveSession({ ...session, proposal: undefined, layout: undefined, updatedAt: Date.now() });
 }
 
@@ -236,7 +297,7 @@ async function changeLayout(tabId: number, action: "preview" | "apply" | "restor
   try {
     let layout: TabSession["layout"];
     if (action === "restore") {
-      await clearLayout(tabId);
+      await clearLayout(session);
       // Restore on a kept layout turns it off for the pages it covers; cancelling a preview doesn't.
       if (session.layout?.state === "applied" && session.url) await rememberKept(session.url, effectiveGroups(session));
     }
@@ -266,8 +327,8 @@ async function answer(tabId: number, answers: Answers) {
 
 type PickResult = { nodeId: string; description: string; scannedAt: number } | undefined;
 
-async function runInPage<T>(tabId: number, inPage: () => T | Promise<T>): Promise<T | undefined> {
-  const [injection] = await chrome.scripting.executeScript({ target: { tabId }, func: inPage });
+async function runInPage<T>(target: PageTarget, inPage: () => T | Promise<T>): Promise<T | undefined> {
+  const [injection] = await chrome.scripting.executeScript({ target: pageTarget(target), func: inPage });
   return injection?.result as T | undefined;
 }
 
@@ -278,7 +339,7 @@ async function pick(tabId: number, action: "start" | "wider" | "narrower" | "hid
   try {
     if (action === "start") {
       await saveSession({ ...session, picking: { phase: "pointing" }, notice: undefined, updatedAt: Date.now() });
-      const chosen = await runInPage<PickResult>(tabId, () => globalThis.smartWeb!.pick());
+      const chosen = await runInPage<PickResult>(session, () => globalThis.smartWeb!.pick());
       const latest = await readSession(tabId);
       if (!latest) return;
       await saveSession({
@@ -291,15 +352,15 @@ async function pick(tabId: number, action: "start" | "wider" | "narrower" | "hid
     if (action === "wider" || action === "narrower") {
       const chosen =
         action === "wider"
-          ? await runInPage<PickResult>(tabId, () => globalThis.smartWeb!.adjustPick("wider"))
-          : await runInPage<PickResult>(tabId, () => globalThis.smartWeb!.adjustPick("narrower"));
+          ? await runInPage<PickResult>(session, () => globalThis.smartWeb!.adjustPick("wider"))
+          : await runInPage<PickResult>(session, () => globalThis.smartWeb!.adjustPick("narrower"));
       // No answer means the page was rescanned and the selection went with it.
       await (chosen
         ? saveSession({ ...session, picking: { phase: "selected", ...chosen }, updatedAt: Date.now() })
         : fail(session, new Error(STALE_SCAN)));
       return;
     }
-    await runInPage(tabId, () => globalThis.smartWeb!.endPick());
+    await runInPage(session, () => globalThis.smartWeb!.endPick());
     const picked = session.picking?.phase === "selected" ? session.picking : undefined;
     if (action === "hide" && picked && picked.scannedAt !== session.scan.scannedAt) {
       await saveSession({ ...session, picking: undefined, notice: STALE_SCAN, updatedAt: Date.now() });
@@ -369,15 +430,35 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   void unfollow(tabId);
 });
 
+// A site the user let Harbor follow ("Follow me on …" in the panel): persistent access, granted
+// through Chrome's own prompt.
+async function siteFollowed(origin: string): Promise<boolean> {
+  if (!/^https?:/.test(origin)) return false;
+  return chrome.permissions.contains({ origins: [`${origin}/*`] }).catch(() => false);
+}
+
+// Access just granted: the tabs that were waiting for it are read now.
+chrome.permissions.onAdded.addListener(() => {
+  void chrome.storage.session.get().then((stored) => {
+    for (const value of Object.values(stored) as Array<TabSession | undefined>) {
+      if (value?.status === "needs-access") scheduleRescan(value.tabId);
+    }
+  });
+});
+
 // A new URL invalidates node IDs (and, for a full page load, the activeTab grant).
 // Followed tabs are read again automatically; saved plans make that free of model calls.
-chrome.tabs.onUpdated.addListener((tabId, change) => {
+// So is any tab that loads a followed site where something was saved, panel open or not: what
+// the user kept there comes back by itself in a new tab or after Chrome restarts, with no click
+// on the toolbar. A site with nothing saved waits for the click: there is nothing to bring back,
+// and a page the user never asked about is not read on its own.
+chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
   if (!change.url && change.status !== "complete") return;
-  void followedTabs().then((followed) => {
-    if (!(tabId in followed)) {
-      if (change.url) void chrome.storage.session.remove([sessionKey(tabId), shotKey(tabId)]);
-      return;
-    }
-    scheduleRescan(tabId);
+  void followedTabs().then(async (followed) => {
+    if (tabId in followed) return scheduleRescan(tabId);
+    const url = change.url ?? tab.url ?? "";
+    const origin = originOf(url);
+    if (origin && (await siteFollowed(origin)) && (await hasPlansOn(url))) return scheduleRescan(tabId);
+    if (change.url) void chrome.storage.session.remove([sessionKey(tabId), shotKey(tabId)]);
   });
 });

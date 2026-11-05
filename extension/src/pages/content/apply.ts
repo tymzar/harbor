@@ -1,11 +1,14 @@
+import type { ItemShape } from "../../shared/item-shape";
 import type { Operation } from "../../shared/plan";
 import type { OrderCheck } from "../../shared/types";
+import { isLikeItem, listOf, peersOf, type LikeList } from "./like-items";
 import { currentScan, elementIds, nodeRegistry } from "./scan";
 import { pressFeatures, startSignals, stopSignals } from "./signals";
 
 // first: the members move to the front of their row (a learned "you open this most").
-export type LayoutGroup = { label: string; container: string; members: Array<string>; operation: Operation; first?: boolean };
-export type LayoutResult = { applied: Array<string>; missing: Array<string>; stale?: true };
+export type LayoutGroup = { label: string; container: string; members: Array<string>; operation: Operation; first?: boolean; shape?: ItemShape };
+// shapes: what the items of each list looked like, for the next page (see item-shape.ts).
+export type LayoutResult = { applied: Array<string>; missing: Array<string>; stale?: true; shapes?: Record<string, ItemShape> };
 
 const GROUP = "data-smart-web-group";
 const OP = "data-smart-web-op";
@@ -20,12 +23,21 @@ const folds = new Set<HTMLButtonElement>();
 
 // Every element Harbor marked, so restore can unmark exactly those.
 const owned = new Set<Element>();
+// Marked elements the layout can do without: a row the site removes is just a row gone, and its
+// replacement is picked up below. The site replacing anything else is a redraw.
+const loose = new WeakSet<Element>();
+// Lists whose like items a style change reaches, followed for as long as the layout is on the page.
+const followed: Array<{ list: LikeList; index: number; operation: Operation }> = [];
 let onEscape: ((event: KeyboardEvent) => void) | undefined;
 // Watches an applied layout for the site replacing the elements it marked (single-page apps
 // re-render whole regions); the background then reads the page again and re-applies the plan.
+// Also how rows the site adds reach a followed list, in preview too.
 let redrawWatch: MutationObserver | undefined;
-// Mutations arrive in bursts while a site re-renders; report once it has settled.
+let redrawPending: ReturnType<typeof setTimeout> | undefined;
+// Mutations arrive in bursts while a site re-renders; act once it has settled.
 const REDRAW_SETTLE_MS = 300;
+// Some sites mutate without pause: however long a pass over the lists takes, it gets 2% of the time at most.
+const MAX_WATCH_SHARE = 50;
 // Items of a kept layout, for learning which ones the user opens: element → its group and node.
 const itemOf = new Map<Element, { label: string; nodeId: string }>();
 let onActivate: ((event: MouseEvent) => void) | undefined;
@@ -162,10 +174,33 @@ function mark(element: Element, name: string, value: string) {
   owned.add(element);
 }
 
+// Marks what the plan could not name: every like item of the followed lists, and the like lists beside them.
+function reachLists() {
+  for (const { list, index, operation } of followed) {
+    const parents = list.parents.filter((parent) => parent.isConnected);
+    for (const parent of new Set([...parents, ...parents.flatMap((named) => peersOf(named, list))])) {
+      if (!owned.has(parent)) {
+        mark(parent, GROUP, String(index));
+        mark(parent, OP, operation);
+        loose.add(parent);
+      }
+      for (const item of parent.children) {
+        // Most are marked already: this runs again each time the site changes something.
+        if (owned.has(item) || !isLikeItem(item, list)) continue;
+        for (const element of [item, ...(list.inner ? item.querySelectorAll(`:scope > ${list.inner}`) : [])]) {
+          mark(element, MEMBER, "");
+          loose.add(element);
+        }
+      }
+    }
+  }
+}
+
 export function restoreLayout(): number {
   const count = owned.size;
   for (const element of owned) for (const name of [GROUP, OP, MEMBER, OPEN, FIRST, ORDER]) element.removeAttribute(name);
   owned.clear();
+  followed.length = 0;
   for (const fold of folds) fold.remove();
   folds.clear();
   document.documentElement.removeAttribute(PREVIEW);
@@ -173,6 +208,8 @@ export function restoreLayout(): number {
   onEscape = undefined;
   redrawWatch?.disconnect();
   redrawWatch = undefined;
+  clearTimeout(redrawPending);
+  redrawPending = undefined;
   if (onActivate) globalThis.removeEventListener("click", onActivate, true);
   onActivate = undefined;
   stopSignals();
@@ -205,17 +242,31 @@ function watchActivations() {
   globalThis.addEventListener("click", onActivate, true);
 }
 
-function watchForRedraw() {
-  let pending: ReturnType<typeof setTimeout> | undefined;
+// reportRedraw: a kept layout comes back after a redraw; a preview is left to the user (see redrawn
+// in the background), and only follows its lists.
+function watchPage(reportRedraw: boolean) {
+  let settle = REDRAW_SETTLE_MS;
   redrawWatch = new MutationObserver(() => {
-    if (pending) return;
-    pending = setTimeout(() => {
-      pending = undefined;
-      if (![...owned].some((element) => !element.isConnected)) return;
-      // Reported once; the rescan re-injects this script and the new layout watches again.
-      redrawWatch?.disconnect();
-      void chrome.runtime.sendMessage({ type: "page-redrawn" });
-    }, REDRAW_SETTLE_MS);
+    if (redrawPending) return;
+    redrawPending = setTimeout(() => {
+      redrawPending = undefined;
+      const started = performance.now();
+      let redrawn = false;
+      for (const element of owned) {
+        if (element.isConnected) continue;
+        // Forgotten, so a site that puts it back gets it marked and restored like any other.
+        if (loose.has(element)) owned.delete(element);
+        else redrawn = true;
+      }
+      if (redrawn && reportRedraw) {
+        // Reported once; the rescan re-injects this script and the new layout watches again.
+        redrawWatch?.disconnect();
+        void chrome.runtime.sendMessage({ type: "page-redrawn" });
+        return;
+      }
+      reachLists();
+      settle = Math.max(REDRAW_SETTLE_MS, (performance.now() - started) * MAX_WATCH_SHARE);
+    }, settle);
   });
   redrawWatch.observe(document.body, { childList: true, subtree: true });
 }
@@ -247,7 +298,7 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
   // IDs from another scan would mark the wrong elements.
   if (scannedAt !== currentScan()) return { applied: [], missing: groups.map((group) => group.label), stale: true };
 
-  const planned: Array<{ index: number; group: LayoutGroup; targets: Array<Element>; found: Array<{ id: string; element: Element }> }> = [];
+  const planned: Array<{ index: number; group: LayoutGroup; targets: Array<Element>; found: Array<{ id: string; element: Element }>; list?: LikeList }> = [];
   for (const [index, group] of groups.entries()) {
     const container = resolve(group.container);
     const found = group.members.flatMap((id) => {
@@ -282,9 +333,14 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
       continue;
     }
     let targets = [regionOf(container)];
-    if (group.operation === "grid" || group.operation === "compact") targets = [layoutParent(container, members)];
+    let list: LikeList | undefined;
+    if (group.operation === "grid" || group.operation === "compact") {
+      const others = groups.flatMap((other, at) => (at === index ? [] : [other.container, ...other.members]));
+      list = listOf(members, container, new Set(others.flatMap((id) => resolve(id) ?? [])), group.shape);
+      targets = list?.parents ?? [layoutParent(container, members)];
+    }
     if (group.operation === "hide-secondary" || group.operation === "collapse") targets = hideTargets(container, members);
-    planned.push({ index, group, targets, found });
+    planned.push({ index, group, targets, found, list });
   }
 
   // Frames are worked out over every hidden region at once, before anything is marked.
@@ -294,7 +350,7 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
   for (const target of hides.flatMap(({ targets }) => targets)) shells.set(target, widened.find((shell) => shell.contains(target)) ?? target);
   const claimed = new Set<Element>();
 
-  for (const { index, group, targets: planTargets, found } of planned) {
+  for (const { index, group, targets: planTargets, found, list } of planned) {
     let targets = planTargets;
     if (group.operation === "hide-secondary") {
       // A frame shared by two groups is marked once, by the first.
@@ -312,13 +368,17 @@ export function applyLayout(groups: Array<LayoutGroup>, preview: boolean, scanne
       if (item) mark(item, FIRST, "");
       if (group.operation !== "hide-secondary" && group.operation !== "collapse") itemOf.set(element, { label: group.label, nodeId: id });
     }
+    if (list) {
+      followed.push({ list, index, operation: group.operation });
+      result.shapes = { ...result.shapes, [group.label]: list.shape };
+      for (const { element } of found) loose.add(element);
+    }
     result.applied.push(group.label);
   }
+  reachLists();
 
-  if (!preview && result.applied.length > 0) {
-    watchForRedraw();
-    watchActivations();
-  }
+  if (result.applied.length > 0 && (!preview || followed.length > 0)) watchPage(!preview);
+  if (!preview && result.applied.length > 0) watchActivations();
   if (preview && result.applied.length > 0) {
     document.documentElement.setAttribute(PREVIEW, "");
     onEscape = (event) => {

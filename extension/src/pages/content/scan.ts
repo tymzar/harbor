@@ -151,6 +151,16 @@ let registryScan = 0;
 export const currentScan = () => registryScan;
 export const scannedScrollOffset = () => scannedScroll;
 
+// The tab's URL, which names the kind of page, when this script runs in a frame of the site's own
+// that fills the window (see contentFrame in the background); the frame's otherwise.
+function pageUrl(): string {
+  try {
+    return window.top?.location.href ?? location.href;
+  } catch {
+    return location.href;
+  }
+}
+
 export function scanPage(): PageScan {
   const started = performance.now();
   const nodes: Array<ScanNode> = [];
@@ -242,7 +252,7 @@ export function scanPage(): PageScan {
   }
 
   return {
-    url: location.href,
+    url: pageUrl(),
     title: document.title,
     viewport: {
       w: innerWidth,
