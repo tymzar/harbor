@@ -18,3 +18,8 @@ report/*.fdb_latexmk
 report/*.fls
 report/*.out
 report/*.toc
+
+# Launch video and submission material stay out of the repo
+brag-output/
+brag-output-*/
+docs/video-script.md
