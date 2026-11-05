@@ -127,6 +127,7 @@ evaluation/  scenario definitions and scoring for live-site runs (snapshots stay
 evidence/    raw outputs of live runs
 src/         the pre-event Harbor app whose model the extension reuses
 e2e/         browser tests for the pre-event app
+public/      icons for the pre-event app
 reports/     pre-event blog post, persona sessions and screenshots
 research/    pre-event experiments on computing in CSS
 ```
