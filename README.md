@@ -23,7 +23,10 @@ Built for the Meta AI Developer Hackathon (27 Oct – 4 Nov 2026).
    every page of that site, and a region whose fingerprint is re-found with high confidence is applied
    there, so a change to the top bar follows you from the feed to a messaging thread. On a site you
    follow, a page of a new kind gets a Muse Spark suggestion by itself (at most once per page shape per
-   day; a switch in Settings turns it off), drafted around what is already on the page.
+   day; a switch in Settings turns it off), drafted around what is already on the page. A style change
+   on a repeated list (compact, grid) reaches every like item, including rows below the fold, rows added
+   later and kinds the plan didn't name; what the items look like is remembered per site. Hide, fold and
+   order act only on what the plan names.
 4. **It learns your order (on this device, opt-in).** Harbor checks which regions the page lays out as one
    row of like items (a nav bar, tabs) and marks them "learns your order". After 8 clicks in such a row,
    the on-device network's ranking is offered as a whole order, e.g. *Messaging · Jobs · Home*.
@@ -67,14 +70,17 @@ Pin Harbor, open a normal website, click the icon. The first open shows the thre
 
 Chrome only lets Harbor read a page after you click its icon (`activeTab`). To have kept layouts come
 back on every page of a site without clicking, switch on **Follow me on <site>** at the bottom of the
-panel; Chrome asks you once, for that one site.
+panel; Chrome asks you once, for that one site. On a tab Harbor can't read yet, the panel offers the same
+for all sites (**Allow on all sites**). From then on, any tab that loads an allowed site where you saved a
+layout is read as it loads, with the panel closed too: what you kept is on the page in a new tab and after
+a restart. A site with nothing saved still waits for your click.
 
 ## Tests
 
 ```console
 cd extension
-npm test            # 67 unit tests (Vitest)
-npm run test:e2e    # 24 browser tests (Playwright, real Chrome with the extension, owned fixture pages)
+npm test            # 85 unit tests (Vitest)
+npm run test:e2e    # 39 browser tests (Playwright, real Chrome with the extension, owned fixture pages)
 npm run lint && npm run typecheck
 npm run eval:region # fingerprint benchmark on fixtures (and on local snapshots if collected)
 ```
@@ -106,7 +112,9 @@ Internal identifiers (`smart-web` folder, `data-smart-web-*` attributes) keep th
   without notice, and a saved layout can miss a region (the panel says which).
 - Reordering is visual only (CSS `order`): keyboard Tab order and screen readers keep the site's order.
   It only works where the page lays items out as one row; elsewhere Harbor emphasises instead.
-- Iframes and shadow DOM aren't read; Chrome pages and the Web Store can't be changed.
+- A frame of the site's own that fills the window is read in place of the empty shell around it
+  (LinkedIn's messaging pages); other iframes and shadow DOM aren't read. Chrome pages and the Web
+  Store can't be changed.
 
 ## Repository
 
