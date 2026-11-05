@@ -45,7 +45,7 @@ Both are called through a local LiteLLM proxy, so the Meta key never enters the 
 
 ## Install from scratch
 
-Requirements: Chrome 121+, Node 20+, Python 3.10+, a Meta Model API key.
+Requirements: Chrome 121+, Node 22.18+, Python 3.10+, a Meta Model API key.
 
 ```console
 git clone <this repo> harbor && cd harbor
@@ -124,5 +124,9 @@ proxy/       LiteLLM config for the Meta Model API
 report/      technical report (main.pdf)
 docs/        design notes: fingerprinting, hackathon planning and validation
 evaluation/  scenario definitions and scoring for live-site runs (snapshots stay local)
+evidence/    raw outputs of live runs
 src/         the pre-event Harbor app whose model the extension reuses
+e2e/         browser tests for the pre-event app
+reports/     pre-event blog post, persona sessions and screenshots
+research/    pre-event experiments on computing in CSS
 ```
